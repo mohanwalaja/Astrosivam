@@ -145,4 +145,106 @@ checkLimit(astro_ip_in_cidr('2607:4700::1111', '2606:4700::/32') === false, 'IPv
 unset($_SERVER['REMOTE_ADDR']);
 unset($_SERVER['HTTP_X_FORWARDED_FOR']);
 
+// ---------------------------------------------------------------------------
+// 4. Failed-credential budgets (H1): per-IP, per-IP-per-endpoint, global
+// ---------------------------------------------------------------------------
+checkLimit(
+    astro_rate_limit_failure_gate(0, 20, 1000, 1000, $window)['allowed'] === true,
+    'A network with no recorded failures may attempt a credential'
+);
+checkLimit(
+    astro_rate_limit_failure_gate(19, 20, 1000, 1000, $window)['allowed'] === true,
+    'The last failure slot is still allowed'
+);
+$locked = astro_rate_limit_failure_gate(20, 20, 1000, 1000, $window);
+checkLimit($locked['allowed'] === false, 'The request after the failure budget is refused');
+checkLimit(
+    $locked['retryAfterSeconds'] === 900,
+    'The refusal reports the time left in the failure window'
+);
+checkLimit(
+    astro_rate_limit_failure_gate(20, 20, 1000, 1500, $window)['retryAfterSeconds'] === 400,
+    'The failure-window retry hint shrinks as the window elapses'
+);
+checkLimit(
+    astro_rate_limit_failure_gate(25, 20, 1000, 1000, $window)['allowed'] === false,
+    'A failure counter above the budget stays blocked until the window resets'
+);
+checkLimit(
+    astro_rate_limit_failure_gate(0, 0, 1000, 1000, $window)['allowed'] === true,
+    'A nonsensical zero failure budget still permits exactly one attempt'
+);
+checkLimit(
+    astro_rate_limit_failure_gate(1, 0, 1000, 1000, $window)['allowed'] === false,
+    'A nonsensical zero failure budget does not become unlimited'
+);
+
+$limits = astro_auth_failure_limits();
+checkLimit($limits['perEndpointMax'] >= 1, 'The per-endpoint failure budget is a positive integer');
+checkLimit($limits['perIpMax'] >= 1, 'The per-IP failure budget is a positive integer');
+checkLimit($limits['globalMax'] >= 1, 'The global failure budget is a positive integer');
+checkLimit($limits['windowSeconds'] >= 60, 'The failure window is at least one minute');
+checkLimit(
+    $limits['perEndpointMax'] <= $limits['perIpMax'] && $limits['perIpMax'] <= $limits['globalMax'],
+    'Budgets tighten from global to per-endpoint (endpoint <= IP <= global)'
+);
+
+putenv('AUTH_FAIL_LIMIT_IP=5');
+checkLimit(astro_auth_failure_limits()['perIpMax'] === 5, 'The per-IP budget honours a valid env override');
+putenv('AUTH_FAIL_LIMIT_IP=not-a-number');
+checkLimit(astro_auth_failure_limits()['perIpMax'] === 20, 'A non-numeric env override falls back to the default');
+putenv('AUTH_FAIL_LIMIT_IP=-3');
+checkLimit(astro_auth_failure_limits()['perIpMax'] === 20, 'An out-of-range env override falls back to the default');
+putenv('AUTH_FAIL_LIMIT_IP');
+
+checkLimit(astro_env_int('AUTH_FAIL_LIMIT_GLOBAL', 300) === 300, 'astro_env_int returns the default when unset');
+putenv('AUTH_FAIL_LIMIT_GLOBAL=1234');
+checkLimit(astro_env_int('AUTH_FAIL_LIMIT_GLOBAL', 300) === 1234, 'astro_env_int reads a valid override');
+putenv('AUTH_FAIL_LIMIT_GLOBAL');
+
+// The three failure counters one failed guess advances: most specific first.
+$failBuckets = astro_auth_failure_buckets('203.0.113.9', 'login');
+checkLimit(count($failBuckets) === 3, 'One failed guess feeds exactly three counters');
+checkLimit($failBuckets[0]['bucket'] === 'auth-fail-ip-endpoint', 'First checked: the per-IP-per-endpoint counter');
+checkLimit($failBuckets[0]['identifier'] === '203.0.113.9|login', 'The endpoint counter combines IP and endpoint');
+checkLimit($failBuckets[1]['bucket'] === 'auth-fail-ip', 'Second checked: the per-IP counter');
+checkLimit($failBuckets[2]['bucket'] === 'auth-fail-global', 'Last checked: the site-wide global counter');
+checkLimit(
+    strpos(astro_rate_limit_key($failBuckets[0]['bucket'], $failBuckets[0]['identifier']), 'auth-fail-ip-endpoint:') === 0,
+    'Failure counters are namespaced like every other bucket'
+);
+checkLimit(
+    astro_rate_limit_key('auth-fail-ip', '203.0.113.9') !== astro_rate_limit_key('auth-fail-ip-endpoint', '203.0.113.9|login'),
+    'The per-IP and per-endpoint failure counters never collide'
+);
+
+// ---------------------------------------------------------------------------
+// 5. httpOnly auth cookie (H3): attributes and header/cookie precedence
+// ---------------------------------------------------------------------------
+$cookieOptions = astro_auth_cookie_options(2592000, 1000, true);
+checkLimit($cookieOptions['httponly'] === true, 'The auth cookie is always httpOnly (unreadable to JavaScript)');
+checkLimit($cookieOptions['samesite'] === 'Lax', 'The auth cookie is always SameSite=Lax (no cross-site POSTs)');
+checkLimit($cookieOptions['path'] === '/', 'The auth cookie is scoped to the whole site');
+checkLimit($cookieOptions['secure'] === true, 'The auth cookie is Secure on HTTPS');
+checkLimit($cookieOptions['expires'] === 1000 + 2592000, 'The auth cookie expires with the token TTL');
+checkLimit(
+    astro_auth_cookie_options(2592000, 1000, false)['secure'] === false,
+    'The auth cookie relaxes Secure on plain-HTTP development hosts'
+);
+checkLimit(
+    astro_auth_cookie_options(10, 1000, true)['expires'] === 1060,
+    'A nonsensical tiny TTL is clamped to at least one minute'
+);
+
+// Header token wins over the cookie; the cookie is the fallback.
+unset($_SERVER['HTTP_AUTHORIZATION'], $_SERVER['REDIRECT_HTTP_AUTHORIZATION'], $_SERVER['HTTP_X_AUTHORIZATION'], $_SERVER['HTTP_X_AUTH_TOKEN']);
+$_COOKIE[AUTH_COOKIE_NAME] = 'cookie-token-value';
+checkLimit(extractBearerToken() === 'cookie-token-value', 'With no Authorization header the httpOnly cookie authenticates');
+$_SERVER['HTTP_AUTHORIZATION'] = 'Bearer header-token-value';
+checkLimit(extractBearerToken() === 'header-token-value', 'An explicit Authorization header wins over the cookie');
+unset($_SERVER['HTTP_AUTHORIZATION']);
+$_COOKIE[AUTH_COOKIE_NAME] = '';
+checkLimit(extractBearerToken() === null, 'An empty auth cookie authenticates nothing');
+unset($_COOKIE[AUTH_COOKIE_NAME]);
+
 echo "\nPHP rate limiting & client IP tests passed.\n";

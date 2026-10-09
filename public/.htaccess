@@ -46,6 +46,21 @@
 
   # Legacy XSS protection for older browsers
   Header always set X-XSS-Protection "1; mode=block"
+
+  # Content-Security-Policy (H2): XSS containment layer for the SPA.
+  # The app renders user-controlled content (names, messages, order data) and
+  # keeps sessions in an httpOnly cookie, so every script/source that may load
+  # is explicitly allow-listed here:
+  #   script-src  - own bundles, Google Sign-In, Razorpay checkout
+  #   style-src   - own CSS, React inline styles, Google Fonts CSS
+  #   font-src    - Google Fonts files, inline data: fonts
+  #   img-src     - own assets, data:/blob: exports, map tiles + provider logos (https:)
+  #   connect-src - /api (self), Google sign-in, Razorpay, the Leaflet geocoders
+  #   frame-src   - PDF preview iframes (blob:), Google + Razorpay payment frames
+  # JSON-LD in <head> is a non-executable data block and is not affected by
+  # script-src. Keep this policy in sync with the deployment notes in
+  # AUTH_SECURITY_HARDENING.md when adding new third-party origins.
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' https://accounts.google.com https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://accounts.google.com https://api.razorpay.com https://checkout.razorpay.com https://nominatim.openstreetmap.org https://photon.komoot.io; frame-src 'self' blob: https://accounts.google.com https://api.razorpay.com https://checkout.razorpay.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
 </IfModule>
 
 # ------------------------------------------------------------------------------

@@ -63,7 +63,9 @@ async function openCheckout(page: Page, options: {
   await page.goto('/');
   await page.waitForFunction(() => (window as any).__vite_plugin_react_preamble_installed__);
   await page.evaluate(async ({ options, serviceTypes }) => {
-    localStorage.setItem('astrosivam_token', 'test-authenticated-session');
+    // H3: the session now lives in an httpOnly cookie - the mocked GET /me
+    // route above restores it. Planted localStorage tokens must no longer
+    // authenticate anything (they are purged on load).
     // Simulate an admin returning to an existing cart/payment selection that
     // contains retail prices. Admin pricing must still zero every line.
     localStorage.setItem('astrosivam_family_cart_payment_method', 'GPAY');
