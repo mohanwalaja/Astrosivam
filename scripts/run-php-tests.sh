@@ -14,6 +14,7 @@ php_tests=(
   tests/node-php-parity.test.php
   tests/jathagam-summary-parity.test.php
   tests/jathagam-navamsa-page1.test.php
+  tests/report-dob-format.test.php
 )
 
 for test_file in "${php_tests[@]}"; do

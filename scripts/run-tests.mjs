@@ -22,6 +22,7 @@ const testFiles = [
   'tests/porutham-reference.test.ts',
   'tests/muhurtham-astronomy-regression.test.ts',
   'tests/sample-engine-meaning.test.ts',
+  'tests/report-dob-format.test.ts',
   'tests/lockfile-drift.test.ts'
 ];
 const tsxCli = resolve(projectRoot, 'node_modules/tsx/dist/cli.mjs');

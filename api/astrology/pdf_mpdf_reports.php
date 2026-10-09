@@ -44,6 +44,24 @@ class AstroReportViews {
         return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8');
     }
 
+    /**
+     * THE date-of-birth format used in every report PDF: DD/MM/YYYY
+     * (e.g. "27/07/1990"). Accepts ISO YYYY-MM-DD (optionally with a time
+     * suffix), YYYY/MM/DD, or an already day-first DD-MM-YYYY value.
+     * Anything unrecognised is returned unchanged (or $fallback when empty).
+     */
+    public static function birthDate($value, string $fallback = ''): string {
+        $raw = trim((string) ($value ?? ''));
+        if ($raw === '') { return $fallback; }
+        if (preg_match('/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})(?:$|[T\s])/', $raw, $m)) {
+            return str_pad($m[3], 2, '0', STR_PAD_LEFT) . '/' . str_pad($m[2], 2, '0', STR_PAD_LEFT) . '/' . $m[1];
+        }
+        if (preg_match('/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/', $raw, $m)) {
+            return str_pad($m[1], 2, '0', STR_PAD_LEFT) . '/' . str_pad($m[2], 2, '0', STR_PAD_LEFT) . '/' . $m[3];
+        }
+        return $raw;
+    }
+
     private static function validRasiNumber($value): ?int {
         if (!is_numeric($value) || (float) $value !== (float) (int) $value || (int) $value < 1 || (int) $value > 12) {
             return null;
@@ -707,7 +725,7 @@ HTML;
 
         $orderNumber = $order['order_number'] ?? $order['orderNumber'] ?? 'ORD-JATHAGAM';
         $name = self::e($result['devoteeName'] ?? $result['nativeName'] ?? ($order['user_name'] ?? 'User'));
-        $dob = self::e($result['dob'] ?? 'N/A');
+        $dob = self::e(self::birthDate($result['dob'] ?? '', 'N/A'));
         $tob = self::e($result['tob'] ?? 'N/A');
         $placeRaw = trim((string) ($result['birthPlace'] ?? ''));
         $countryRaw = trim((string) ($result['country'] ?? ''));
@@ -2833,10 +2851,10 @@ CSS;
         $brideMarsHouse = self::e(is_numeric($brideMarsHouseValue) && (float) $brideMarsHouseValue === (float) (int) $brideMarsHouseValue && (int) $brideMarsHouseValue >= 1 && (int) $brideMarsHouseValue <= 12 ? 'House ' . (int) $brideMarsHouseValue : 'N/A');
         $groomMarsHouse = self::e(is_numeric($groomMarsHouseValue) && (float) $groomMarsHouseValue === (float) (int) $groomMarsHouseValue && (int) $groomMarsHouseValue >= 1 && (int) $groomMarsHouseValue <= 12 ? 'House ' . (int) $groomMarsHouseValue : 'N/A');
 
-        $groomDob = self::e($result['groomDob'] ?? $groom['dob'] ?? 'N/A');
+        $groomDob = self::e(self::birthDate($result['groomDob'] ?? $groom['dob'] ?? '', 'N/A'));
         $groomTob = self::e($result['groomTob'] ?? $groom['tob'] ?? 'N/A');
         $groomPlace = self::e($result['groomPlace'] ?? 'N/A');
-        $brideDob = self::e($result['brideDob'] ?? $bride['dob'] ?? 'N/A');
+        $brideDob = self::e(self::birthDate($result['brideDob'] ?? $bride['dob'] ?? '', 'N/A'));
         $brideTob = self::e($result['brideTob'] ?? $bride['tob'] ?? 'N/A');
         $bridePlace = self::e($result['bridePlace'] ?? 'N/A');
 
@@ -3168,7 +3186,7 @@ HTML;
                 : ($result['windowLabelEn'] ?? '2 months before the selected month + the selected month and the following 3 months'));
 
         $devoteeName = self::e($result['devoteeName'] ?? ($order['user_name'] ?? 'User'));
-        $dob = self::e($result['dob'] ?? '—');
+        $dob = self::e(self::birthDate($result['dob'] ?? '', '—'));
         $tob = self::e($result['tob'] ?? '—');
         $birthPlaceRaw = trim((string) ($result['birthPlace'] ?? '—'));
         $countryRaw = trim((string) ($result['country'] ?? ''));
@@ -3198,7 +3216,7 @@ HTML;
             $persons[] = [
                 'role' => $role,
                 'name' => (string) ($person['name'] ?? ''),
-                'dob' => self::muhurthamReportDate((string) ($person['dob'] ?? '')),
+                'dob' => self::birthDate($person['dob'] ?? ''),
                 'tob' => (string) ($person['tob'] ?? ''),
                 'place' => (string) ($person['birthPlace'] ?? ''),
                 'star' => (string) $personStar,
@@ -3857,7 +3875,7 @@ HTML;
         $rasi = self::e(self::rasiNameForNumber($resolvedChandraRasi, $lang));
         $nak = self::e($isTa ? ($nakshatraLetters['nakshatraNameTa'] ?? $result['janmaNakshatraTa'] ?? 'N/A') : ($isHi ? ($nakshatraLetters['nakshatraNameHi'] ?? 'N/A') : ($nakshatraLetters['nakshatraNameEn'] ?? $result['janmaNakshatraEn'] ?? 'N/A')));
         $pada = self::e($birthPada);
-        $dob = self::e($result['dob'] ?? 'N/A');
+        $dob = self::e(self::birthDate($result['dob'] ?? '', 'N/A'));
         $tob = self::e($result['tob'] ?? 'N/A');
         $birthPlaceRaw = trim((string) ($result['birthPlace'] ?? 'N/A'));
         $countryRaw = trim((string) ($result['country'] ?? ''));
