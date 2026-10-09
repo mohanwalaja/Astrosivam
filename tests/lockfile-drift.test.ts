@@ -1,16 +1,9 @@
 /**
  * ASTRO SIVAM — lockfiles must agree with package.json.
  *
- * WHY THIS EXISTS: on 6 Oct 2026 a commit shipped a `bun.lock` that had been
- * regenerated from an OLDER package.json. Thirteen of thirty-five packages
- * silently disagreed, including `express ^5.2.1 -> ^4.21.2` while
- * `server.ts` uses the Express-5-only `app.get('/*splat', ...)` route syntax,
- * and `tz-lookup` (imported by src/lib/timezone.ts to turn a birth place into
- * an IANA zone) vanished from the lock entirely.
- *
- * Nothing broke at the time only because this repo installs with npm, which
- * ignores bun.lock — the damage was dormant until the first `bun install` on
- * a new machine or in CI. This test makes that drift loud instead of silent.
+ * WHY THIS EXISTS: npm and Bun lockfiles can drift from package.json, leaving
+ * frontend builds dependent on whichever installer happens to be used. This
+ * test checks that both lockfiles pin the same declared version ranges.
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -119,22 +112,6 @@ check('package-lock.json describes this project and the same declared ranges', (
     `package-lock.json is out of sync with package.json (${drift.length} package(s)):\n  ` +
       drift.join('\n  ') +
       '\n\nRegenerate it with `npm install`.'
-  );
-});
-
-check('Express stays on v5 while server.ts uses the v5-only named-wildcard route', () => {
-  const serverSource = fs.readFileSync(path.join(projectRoot, 'server.ts'), 'utf8');
-  if (!/app\.get\(\s*['"`]\/\*\w+['"`]/.test(serverSource)) {
-    console.log('    (server.ts no longer uses a named wildcard — skipped)');
-    return;
-  }
-  // `/*splat` requires path-to-regexp v8, which ships with Express 5.
-  const range = declared.express ?? '';
-  assert.match(
-    range,
-    /^[~^]?5\./,
-    `server.ts uses the Express-5-only '/*splat' route syntax but package.json ` +
-      `pins express "${range}". Express 4 throws or mis-routes on that pattern.`
   );
 });
 

@@ -1,5 +1,8 @@
 # Navamsa (D9) chart on Birth Jathagam page 1
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 ## Symptom
 
 On page 1 of the Birth Jathagam, the Navamsa (D9) chart showed

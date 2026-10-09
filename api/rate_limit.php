@@ -4,9 +4,8 @@
  *
  * WHY THIS EXISTS: api/auth/index.php accepted unlimited password guesses
  * (a customer *and* an admin could be brute-forced), and registration, payment
- * session creation and the report generator were unlimited too. The Node
- * backend has had a shared limiter for a while; this is the cPanel/PHP
- * equivalent, so both deployments enforce the same policy.
+ * session creation and the report generator were unlimited too. This
+ * database-backed limiter protects the PHP API deployed on shared hosting.
  *
  * DESIGN
  *   - Fixed window counters in MySQL, keyed by an HMAC of the identifier, so no

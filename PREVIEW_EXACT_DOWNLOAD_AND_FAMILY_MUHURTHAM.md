@@ -1,5 +1,8 @@
 # The download IS the preview — and Subha Muhurtham joined the Family Order
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 > **30 September 2026 update:** font loading alone did not prevent downloaded
 > rows being cut in half. A website image reset affected html2canvas's hidden
 > parent-document baseline probes. Those probes are now scoped/reset during

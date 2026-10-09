@@ -1,5 +1,8 @@
 # Reports & Invoices — full-page layout (no empty space)
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 Every generated document — Birth Jathagam, Marriage Matching, Baby Naming,
 Muhurtham and the tax invoice (single and family) — must cover its A4 sheets
 from the header down to the footer band. A page may never end halfway down the

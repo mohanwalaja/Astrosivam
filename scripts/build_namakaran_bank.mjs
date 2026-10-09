@@ -7,7 +7,7 @@
  *   node scripts/build_namakaran_bank.mjs --check    # validate only (CI / tests)
  *
  * Outputs:
- *   server/astrology/namakaranNameBank.ts        (browser preview + Node PDF)
+ *   src/lib/astrology/namakaranNameBank.ts        (browser preview + browser-side TypeScript)
  *   api/astrology/namakaran_name_bank.php        (official PHP/mPDF report)
  *
  * The two generated files carry the same content hash, so a test can prove the
@@ -30,7 +30,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const TSV_PATH = resolve(ROOT, 'data', 'namakaran_name_bank.tsv');
-const OUT_TS = resolve(ROOT, 'server', 'astrology', 'namakaranNameBank.ts');
+const OUT_TS = resolve(ROOT, 'src', 'lib', 'astrology', 'namakaranNameBank.ts');
 const OUT_PHP = resolve(ROOT, 'api', 'astrology', 'namakaran_name_bank.php');
 
 const MAX_PER_SIDE = 8;
@@ -315,7 +315,7 @@ function writeTs(bank, hash, aksharaOrder) {
  * Content hash    : ${hash}
  *
  * The same hash is written into api/astrology/namakaran_name_bank.php so the
- * live preview, the Node PDF and the official mPDF report can be proven to
+ * live preview, the browser-side TypeScript and the official mPDF report can be proven to
  * show an identical name bank.
  */
 
@@ -391,7 +391,7 @@ function writePhp(bank, hash, aksharaOrder) {
  * Generator       : scripts/build_namakaran_bank.mjs
  * Content hash    : ${hash}
  *
- * Kept byte-for-byte in step with server/astrology/namakaranNameBank.ts so the
+ * Kept byte-for-byte in step with src/lib/astrology/namakaranNameBank.ts so the
  * live preview and the official mPDF report always print the same names.
  * Each entry is [name, meaning]; 'south' and 'north' are the two columns of
  * page 2 of the Vedic Namakaran report.
@@ -472,7 +472,7 @@ function main() {
   const aksharaOrder = padaTable.map(p => p.letterTa).filter((ak, i, arr) => arr.indexOf(ak) === i);
   writeTs(bank, hash, aksharaOrder);
   writePhp(bank, hash, aksharaOrder);
-  console.log(`✓ Wrote server/astrology/namakaranNameBank.ts and api/astrology/namakaran_name_bank.php (hash ${hash}).`);
+  console.log(`✓ Wrote src/lib/astrology/namakaranNameBank.ts and api/astrology/namakaran_name_bank.php (hash ${hash}).`);
 }
 
 main();

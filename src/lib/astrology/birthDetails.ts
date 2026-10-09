@@ -1,5 +1,5 @@
 /** Server-side validation shared by the four paid astrology services. */
-import { getTimeZoneIdForCoordinates, resolveLocalDateTimeInTimeZone } from '../../src/lib/timezone.js';
+import { getTimeZoneIdForCoordinates, resolveLocalDateTimeInTimeZone } from '../timezone.js';
 
 function trimmedString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';

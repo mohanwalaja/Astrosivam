@@ -1,9 +1,9 @@
 <?php
 /**
- * Node↔PHP parity: the PHP half.
+ * TypeScript↔PHP parity: the PHP half.
  *
  * The site renders the same report from two engines — this PHP engine
- * (api/astrology/engine.php) and the Node engine in server/astrology/. They
+ * (api/astrology/engine.php) and the TypeScript engine in src/lib/astrology/. They
  * used to disagree on the two things a customer actually reads: the Sevvay/Kuja
  * Dosha verdict and the ayanamsa behind every sidereal longitude.
  *
@@ -201,11 +201,11 @@ if ($failures !== []) {
     if (count($failures) > 20) {
         echo '[FAIL] … and ' . (count($failures) - 20) . " more\n";
     }
-    throw new RuntimeException(count($failures) . ' Node↔PHP parity mismatch(es)');
+    throw new RuntimeException(count($failures) . ' TypeScript↔PHP parity mismatch(es)');
 }
 
 printf(
-    "  [PASS] %d Kuja verdicts (%d doctrine), %d birth charts and %d ayanamsa instants match the Node↔PHP contract\n",
+    "  [PASS] %d Kuja verdicts (%d doctrine), %d birth charts and %d ayanamsa instants match the TypeScript↔PHP contract\n",
     count($corpus['kujaCharts']),
     $doctrineChecked,
     count($corpus['birthCharts']),

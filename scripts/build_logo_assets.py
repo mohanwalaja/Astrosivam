@@ -32,10 +32,9 @@ Outputs (in --target, default public/)
     android-chrome-{192,512}.png
 
 Live mode additionally writes src/assets/*, api/assets/astrosivam_logo.png and
-patches the base64 data URI in src/services/logoData.ts and
-server/astrology/logoBase64.ts. The test suite asserts those three stay
-byte-identical, so they are always regenerated together - never by hand, and all
-three come out of _encode_png() so they also share one budget.
+patches the browser report emblem in src/services/logoData.ts. The PHP API reads
+its own logo copy from api/assets; both are regenerated from the same encoded
+PNG so the browser and shared-host PDF/email artwork stay in lockstep.
 
 Budget
 ------
@@ -207,9 +206,9 @@ def _encode_png(img: Image.Image, optimize: bool = True) -> bytes:
     """
     The ONE place a logo becomes bytes.
 
-    Both the written file and the embedded base64 in src/services/logoData.ts /
-    server/astrology/logoBase64.ts go through here, so the three stay
-    byte-identical (asserted by tests/logo-assets.test.ts) and share the budget.
+    Both the written file and the embedded base64 in src/services/logoData.ts
+    go through here, so the browser and PHP logo copies stay identical and
+    share the same size budget.
     """
     buf = io.BytesIO()
     _palette(img).save(buf, "PNG", optimize=optimize)
@@ -408,7 +407,6 @@ def build(variant: str, target_pub: str, live: bool, report: list,
 
         for rel, const in (
             (os.path.join("src", "services", "logoData.ts"), "ASTRO_LOGO_BASE64"),
-            (os.path.join("server", "astrology", "logoBase64.ts"), "EMBEDDED_LOGO_BASE64"),
         ):
             path = os.path.join(ROOT, rel)
             if not os.path.isfile(path):

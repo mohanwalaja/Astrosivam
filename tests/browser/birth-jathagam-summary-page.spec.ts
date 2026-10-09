@@ -1,7 +1,7 @@
 import { test, expect, type Frame, type Page } from '@playwright/test';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { calculatePrecisionHoroscope } from '../../server/astrology/astronomy';
+import { calculatePrecisionHoroscope } from '../../src/lib/astrology/astronomy';
 import { buildJathagamHtml } from '../../src/services/jathagamHtmlBuilder';
 import { classifyJathagamPlanetsForSummary } from '../../src/services/jathagamPlanetSummary';
 import { assertReportFontsLoaded, routeReportFonts } from '../../scripts/report-fonts.mjs';

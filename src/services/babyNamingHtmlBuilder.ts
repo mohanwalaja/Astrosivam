@@ -1,13 +1,13 @@
-import { firstNameSound, nameMatchesPada } from '../../server/astrology/namakaranSound';
-import { BabyNamingResult, AppLanguage, Rasi } from '../../server/astrology/types';
-import { RASI_INFO } from '../../server/astrology/astronomy';
+import { firstNameSound, nameMatchesPada } from '../lib/astrology/namakaranSound';
+import { BabyNamingResult, AppLanguage, Rasi } from '../lib/astrology/types';
+import { RASI_INFO } from '../lib/astrology/astronomy';
 import { REPORT_FONT_LINK_TAG } from './reportFonts';
-import { ALL_NAKSHATRA_LETTERS } from '../../server/astrology/babynames';
+import { ALL_NAKSHATRA_LETTERS } from '../lib/astrology/babynames';
 import {
   buildNamakaranPadaNamesFromResult,
   NAMAKARAN_MAX_PER_SIDE,
   type NamakaranPadaNames
-} from '../../server/astrology/namakaranNames';
+} from '../lib/astrology/namakaranNames';
 import { getGunam } from './gunamData';
 import { formatBirthPlace } from './formatUtils';
 import { normalizeReportLanguage } from './reportLanguage';

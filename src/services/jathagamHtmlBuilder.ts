@@ -1,4 +1,4 @@
-import { HoroscopeResult, AppLanguage, Rasi, Graha } from '../../server/astrology/types';
+import { HoroscopeResult, AppLanguage, Rasi, Graha } from '../lib/astrology/types';
 import { REPORT_FONT_LINK_TAG } from './reportFonts';
 import {
   JATHAGAM_PLANET_PROFILES,
@@ -11,13 +11,13 @@ import {
 } from './jathagamDoshaData';
 import { classifyJathagamPlanetsForSummary } from './jathagamPlanetSummary';
 import { withDerivedNavamsa } from './navamsa';
-import { kujaDoshaFromHoroscope } from '../../server/astrology/kujaDosha';
+import { kujaDoshaFromHoroscope } from '../lib/astrology/kujaDosha';
 import {
   dignityCardLine,
   debilitationSign,
   EXALTATION_SIGN,
   OWN_SIGNS
-} from '../../server/astrology/dignity';
+} from '../lib/astrology/dignity';
 import { formatBirthPlace } from './formatUtils';
 import { formatUtcOffset } from '../lib/timezone';
 import { buildReportHeaderHtml, reportHeaderCss } from './reportHeader';
@@ -897,7 +897,7 @@ export function buildJathagamHtml(result: HoroscopeResult, lang: AppLanguage = '
     ? 'badge-clean'
     : 'badge-moderate';
   // The dosha card prints the fuller ancestral remedy (page 1). The short
-  // prayer stays in traditionalRemedy* for the Node/PHP parity contract, so it
+  // prayer stays in traditionalRemedy* for the TypeScript/PHP parity contract, so it
   // is deliberately not repeated here.
   const pitruExtendedRemedy = pitruEngine
     ? ((isTa ? pitruEngine.extendedRemedyTa : isHi ? pitruEngine.extendedRemedyHi : pitruEngine.extendedRemedyEn) || '')

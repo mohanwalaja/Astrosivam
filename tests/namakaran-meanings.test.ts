@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { ALL_NAKSHATRA_LETTERS } from '../server/astrology/babynames.js';
-import { NAMAKARAN_MEANING_GLOSSARY } from '../server/astrology/namakaranMeaningData.js';
-import { localizeNamakaranMeaning } from '../server/astrology/namakaranMeaning.js';
-import { buildNamakaranPadaNames, buildNamakaranPadaNamesFromResult } from '../server/astrology/namakaranNames.js';
+import { ALL_NAKSHATRA_LETTERS } from '../src/lib/astrology/babynames.js';
+import { NAMAKARAN_MEANING_GLOSSARY } from '../src/lib/astrology/namakaranMeaningData.js';
+import { localizeNamakaranMeaning } from '../src/lib/astrology/namakaranMeaning.js';
+import { buildNamakaranPadaNames, buildNamakaranPadaNamesFromResult } from '../src/lib/astrology/namakaranNames.js';
 import { buildBabyNamingHtml } from '../src/services/babyNamingHtmlBuilder.js';
 
 /**
@@ -142,7 +142,7 @@ for (const phrase of [
 }
 
 // ── 6. Both report engines share one glossary ───────────────────────────────
-const tsData = readFileSync(resolve('server/astrology/namakaranMeaningData.ts'), 'utf8');
+const tsData = readFileSync(resolve('src/lib/astrology/namakaranMeaningData.ts'), 'utf8');
 const phpData = readFileSync(resolve('api/astrology/namakaran_meanings.php'), 'utf8');
 const tsHash = /NAMAKARAN_MEANING_GLOSSARY_HASH = '([0-9a-f]+)'/.exec(tsData)?.[1];
 const phpHash = /\* Content hash    : ([0-9a-f]+)/.exec(phpData)?.[1];
@@ -172,10 +172,10 @@ expectedGroups.forEach((stars, group) => stars.forEach(index => {
 assert.match(ALL_NAKSHATRA_LETTERS[14].rajjuEn, /Kantha/);
 assert.match(ALL_NAKSHATRA_LETTERS[13].rajjuEn, /Siro/);
 
-const { firstTamilSound, nameMatchesPada, nameFingerprint } = await import('../server/astrology/namakaranSound');
+const { firstTamilSound, nameMatchesPada, nameFingerprint } = await import('../src/lib/astrology/namakaranSound');
 const { transliterateToTamil } = await import('../src/services/indicTransliteration');
-const { calculateBabyNamingDetails } = await import('../server/astrology/babynames');
-const { NAMAKARAN_BANK } = await import('../server/astrology/namakaranNameBank');
+const { calculateBabyNamingDetails } = await import('../src/lib/astrology/babynames');
+const { NAMAKARAN_BANK } = await import('../src/lib/astrology/namakaranNameBank');
 for (const star of ALL_NAKSHATRA_LETTERS) for (const gender of ['M', 'F'] as const) {
   const seen = new Set<string>();
   for (const column of buildNamakaranPadaNames(star.padas, gender)) {

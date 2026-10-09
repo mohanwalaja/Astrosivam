@@ -1,6 +1,6 @@
 # ASTRO SIVAM - Complete cPanel File Manager & Database Master Installation Guide
 
-This step-by-step guide walks you through setting up **ASTRO SIVAM** on **BigRock cPanel** hosting using **cPanel File Manager** and **cPanel MySQL Database Wizard**.
+This step-by-step guide walks you through setting up **ASTRO SIVAM** on **BigRock cPanel** hosting using **cPanel File Manager** and **cPanel MySQL Database Wizard**. The hosted application uses Apache/PHP and MySQL only: **BigRock does not need Node.js or a Node server**. Node.js is used by GitHub Actions/developers only to compile the frontend before deployment.
 
 ---
 
@@ -58,6 +58,8 @@ When you extract or upload `dist.zip` to your cPanel `public_html/`, it contains
 - `assets/` (all optimized CSS, JS, and font assets)
 - `api/` (the complete PHP backend: `config.php`, `schema.sql`, `provision_admin.php`, `astrology/engine.php`, `auth/`, `services/`, `admin/`, etc.)
 - `BIGROCK_CPANEL_DEPLOYMENT_GUIDE.md`
+
+The package contains only the compiled static website, PHP API, and deployment notes. It does **not** include a Node server, Node bundle, or Node runtime dependencies.
 
 ---
 
@@ -154,8 +156,7 @@ When you extract or upload `dist.zip` to your cPanel `public_html/`, it contains
    ```
 
 3. To explicitly promote an already-existing account, first verify that you control its email address, then pass `--promote-existing`; this also rotates its password. Never expose `provision_admin.php` as a web endpoint.
-4. For the Node/JSON deployment, provision an admin with `ASTROSIVAM_ADMIN_EMAIL`, `ASTROSIVAM_ADMIN_NAME`, and `ASTROSIVAM_ADMIN_PASSWORD`, then run `npm run provision:admin`. Set `ASTROSIVAM_DATA_DIR` to a private, persistent server directory; do not add its `database.json` to source control.
-5. Do not reuse shared demo credentials. Admin status is stored as a database role and is not granted merely because an email appears in settings or an allow-list.
+4. Do not reuse shared demo credentials. Admin status is stored as a database role and is not granted merely because an email appears in settings or an allow-list.
 
 ---
 

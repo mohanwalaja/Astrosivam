@@ -15,8 +15,8 @@ import {
   NAKSHATRAM_NAMES_EN,
   calculateLahiriAyanamsa,
   calculatePrecisionHoroscope
-} from '../server/astrology/astronomy.js';
-import { evaluateKujaDosha, type KujaDoshaAssessment } from '../server/astrology/kujaDosha.js';
+} from '../src/lib/astrology/astronomy.js';
+import { evaluateKujaDosha, type KujaDoshaAssessment } from '../src/lib/astrology/kujaDosha.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(here, '..');

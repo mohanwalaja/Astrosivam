@@ -13,8 +13,8 @@
   Options -MultiViews
 </IfModule>
 
-# Block access to hidden, environment, backup and sensitive source files
-# Never expose backend bundles or source maps from a mixed Node/PHP build.
+# Block access to hidden, environment, backup and sensitive source files.
+# Never expose source maps or executable build artifacts from the static site.
 <FilesMatch "(\.(map|cjs|sql|env|log|lock|ini|conf|bak|sh|md|git|key|yml|yaml|htaccess|htpasswd)|composer\.(json|lock)|package\.json|tsconfig\.json)$">
   <IfModule mod_authz_core.c>
     Require all denied

@@ -576,7 +576,7 @@ class AstroReportViews {
     /* Page 2 Life Cards Grid.
        Item 7: every card is sized to its own content. mPDF grows a row to its
        tallest cell, so no row height is ever forced here — that is the PHP
-       equivalent of the Node report's `grid-auto-rows: auto` + content-sized
+       equivalent of the browser report's `grid-auto-rows: auto` + content-sized
        fitter. Shorter cards simply end early instead of being stretched. */
     table.life-grid { width: 100%; border-collapse: separate; border-spacing: 2.5mm; margin-bottom: 2mm; }
     table.life-grid td.life-card p { margin-top: 1mm; }
@@ -605,7 +605,7 @@ class AstroReportViews {
     ul.navagraha-list li strong { color: #7a1f1f; }
     .navagraha-closing { font-style: italic; font-size: 8px; line-height: 1.3; color: #2d5a3d; font-weight: bold; text-align: center; margin: 0.8mm 0 0; }
     /* Item 7: the Navagraha table is the reference table of the remedies page,
-       so it is set at the same 10px floor as the Node/HTML report instead of
+       so it is set at the same 10px floor as the browser HTML report instead of
        the old 7.4px/6.8px that was unreadable once printed. */
     table.navagraha-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 1.5mm; }
     table.navagraha-table th { background: #7a1f1f; color: #ffffff; font-size: 10px; font-weight: bold; padding: 0.4mm 1mm; text-align: left; border: 1px solid #7a1f1f; line-height: 1.12; }
@@ -838,8 +838,8 @@ HTML;
         $chartRows = $buildRasiRows($planetsByRasi, $lagnaRasiNum, $lagnaTag, ($isTa ? 'ராசி கட்டம்' : ($isHi ? 'राशि चक्र' : 'RASI CHAKRA')));
 
         // Item 7: Navamsa (D9) grouping. The engine's own navamsaRasi wins when
-        // the payload carries it (the Node engine sends one per graha); the PHP
-        // engine does not, so the same rule the Node engine uses is applied to
+        // the payload carries it (the TypeScript engine sends one per graha); the PHP
+        // engine does not, so the same rule the TypeScript engine uses is applied to
         // the same sidereal longitude: padaOverall = floor(lon / 3°20′),
         // navamsa rasi = padaOverall % 12 + 1. Never a fabricated sign.
         $navamsaPlanetsByRasi = [];
@@ -1174,7 +1174,7 @@ HTML;
             if ($rasiValue !== null) { $rasiByGrahaForLife[$grahaKey] = $rasiValue; }
             // Items 2/3 need the graha's longitude (10° conjunction orb) and its
             // dignity. Prefer the engine's own totalDegrees, else rebuild it from
-            // the rasi + degrees the same way the Node engine does.
+            // the rasi + degrees the same way the TypeScript engine does.
             $totalDegreesForLife = null;
             if (is_numeric($p['totalDegrees'] ?? null)) {
                 $totalDegreesForLife = fmod((float) $p['totalDegrees'] + 360.0, 360.0);
@@ -1203,7 +1203,7 @@ HTML;
         // Navagraha table said the nodes have no sign dignity.
         $debilitationRasiForLife = ['sun' => 7, 'moon' => 8, 'mars' => 4, 'mercury' => 12, 'jupiter' => 10, 'venus' => 6, 'saturn' => 1];
         // Item 3a: exaltation (uchcha) and own sign (swakshetra) rasis, the same
-        // two tables server/astrology/dignity.ts uses.
+        // two tables src/lib/astrology/dignity.ts uses.
         $exaltationRasiForLife = ['sun' => 1, 'moon' => 2, 'mars' => 10, 'mercury' => 6, 'jupiter' => 4, 'venus' => 12, 'saturn' => 7];
         $ownSignsForLife = ['sun' => [5], 'moon' => [4], 'mars' => [1, 8], 'mercury' => [3, 6], 'jupiter' => [9, 12], 'venus' => [2, 7], 'saturn' => [10, 11]];
         $naturalMaleficsForLife = ['mars' => true, 'saturn' => true, 'rahu' => true, 'ketu' => true];
@@ -1329,7 +1329,7 @@ HTML;
         };
 
         // Item 6: natural karakas and the role houses, named on the same cards
-        // as the Node report — Venus (marriage), Jupiter (wealth), the 11th lord
+        // as the browser report — Venus (marriage), Jupiter (wealth), the 11th lord
         // (income/Labha) and the 6th lord (health/Roga). A missing graha yields
         // '' so a card never invents a placement.
         $reportNamesForLife = [
@@ -2383,7 +2383,7 @@ CSS;
      * The ONE Birth Jathagam page-3 rule, mirrored statement-for-statement
      * from src/services/jathagamPlanetSummary.ts::classifyJathagamPlanetsForSummary().
      *
-     * Same dignity tables (server/astrology/dignity.ts == AstroEngine::planetDignityTable()),
+     * Same dignity tables (src/lib/astrology/dignity.ts == AstroEngine::planetDignityTable()),
      * same houses, same 10-degree conjunction orb, same scoring, same ordering.
      * tests/fixtures/jathagam-summary-parity.json holds the outputs both stacks
      * must reproduce.
@@ -2398,7 +2398,7 @@ CSS;
         $data = self::jathagamSummaryRemedyData();
         $summaryText = self::jathagamSummaryText($lang);
 
-        // Classical dignity tables, value-for-value with server/astrology/dignity.ts.
+        // Classical dignity tables, value-for-value with src/lib/astrology/dignity.ts.
         $signLords = [1 => 'mars', 2 => 'venus', 3 => 'mercury', 4 => 'moon', 5 => 'sun', 6 => 'mercury', 7 => 'venus', 8 => 'mars', 9 => 'jupiter', 10 => 'saturn', 11 => 'saturn', 12 => 'jupiter'];
         $exaltationSign = ['sun' => 1, 'moon' => 2, 'mars' => 10, 'mercury' => 6, 'jupiter' => 4, 'venus' => 12, 'saturn' => 7];
         $ownSigns = ['sun' => [5], 'moon' => [4], 'mars' => [1, 8], 'mercury' => [3, 6], 'jupiter' => [9, 12], 'venus' => [2, 7], 'saturn' => [10, 11]];
@@ -3425,7 +3425,7 @@ HTML;
                 $gradeClass = $row['isBest'] ? 'grade-best' : 'grade-good';
                 // A three-window Nalla Neram line is wider than the column at the
                 // larger densities: step that one cell down (same 80% floor as the
-                // browser/Node builders) so it cannot print across the grade cell.
+                // browser builders) so it cannot print across the grade cell.
                 $timeLength = function_exists('mb_strlen') ? mb_strlen($row['nalla']) : strlen($row['nalla']);
                 $timeScale = self::muhurthamTimeFontScale($timeLength, $cellFontPt);
                 $timeFont = number_format($cellFontPt * $timeScale, 3, '.', '');

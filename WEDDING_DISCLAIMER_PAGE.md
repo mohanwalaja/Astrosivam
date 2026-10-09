@@ -1,5 +1,8 @@
 # Marriage Matching Report — Page 2 Disclaimer
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 The **Marriage Compatibility (10-Porutham) report is now a 2-page document**.
 Page 1 carries the profiles, score, 10 Poruthams, Kuja Dosha and final verdict.
 Page 2 is the **Marriage Matching disclaimer**, printed in the language the

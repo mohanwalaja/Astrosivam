@@ -4,8 +4,8 @@
  *
  * Run: npx tsx scripts/verify-chart.ts
  */
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy';
-import { Graha } from '../server/astrology/types';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy';
+import { Graha } from '../src/lib/astrology/types';
 
 const CASES: Array<{
   label: string;

@@ -1,15 +1,15 @@
 /**
  * ASTRO SIVAM — Birth Jathagam page 3 (Short Summary): planet classification.
  *
- * ONE named rule for both engines. The Node report (browser HTML builder and
- * jsPDF backend) and the PHP report (api/astrology/pdf_mpdf_reports.php) must
- * print the SAME supportive / needs-care lists for the same chart, so the rule
- * lives here once and `api/astrology/pdf_mpdf_reports.php` mirrors it
- * statement-for-statement (see `jathagamPlanetSummaryLists()` there and the
- * parity fixture tests/fixtures/jathagam-summary-parity.json).
+ * ONE named rule for the browser HTML/jsPDF renderers and the PHP report
+ * (`api/astrology/pdf_mpdf_reports.php`). They must print the SAME supportive /
+ * needs-care lists for the same chart, so the browser rule lives here once and
+ * the PHP report mirrors it statement-for-statement (see
+ * `jathagamPlanetSummaryLists()` and the parity fixture
+ * tests/fixtures/jathagam-summary-parity.json).
  *
  * The rule reuses the report's EXISTING Navagraha material and nothing else:
- *   - dignity        : server/astrology/dignity.ts (EXALTATION_SIGN, OWN_SIGNS,
+ *   - dignity        : src/lib/astrology/dignity.ts (EXALTATION_SIGN, OWN_SIGNS,
  *                      debilitationSign) — the same table the planet table and
  *                      the engine's screening indicators already use.
  *   - combustion     : `isCombust` from the computed chart (Astangata).
@@ -25,10 +25,10 @@
  *                      charity) plus the additive lamp-oil and mantra fields in
  *                      jathagamDoshaData.ts. No second remedy system.
  *
- * This module is deliberately DOM-free and dependency-light so the jsPDF
- * backend, the browser builder and the test suites can all import it.
+ * This module is deliberately DOM-free and dependency-light so the browser
+ * jsPDF exporter, the HTML builder and the test suites can all import it.
  */
-import { Graha, Rasi } from '../../server/astrology/types';
+import { Graha, Rasi } from '../lib/astrology/types';
 import {
   NAVAGRAHA_DOSHA_DATA,
   NAVAGRAHA_ORDER,
@@ -46,7 +46,7 @@ import {
   houseFromSign,
   SIGN_LORDS,
   SIGN_EXALTED_BY
-} from '../../server/astrology/dignity';
+} from '../lib/astrology/dignity';
 
 /** Houses read as challenging (Dusthana) by the report's screening rule. */
 export const SUMMARY_CHALLENGING_HOUSES: number[] = [6, 8, 12];

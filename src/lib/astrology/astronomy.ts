@@ -1,13 +1,13 @@
 import * as Astronomy from 'astronomy-engine';
-import { hasValidBirthDetails } from '../services/birthDetails.js';
-import { NAVAGRAHA_DOSHA_DATA, navagrahaRemedyText } from '../../src/services/jathagamDoshaData.js';
+import { hasValidBirthDetails } from './birthDetails.js';
+import { NAVAGRAHA_DOSHA_DATA, navagrahaRemedyText } from '../../services/jathagamDoshaData.js';
 import {
   formatTimeInTimeZone,
   getLocalDateKey,
   getTimeZoneIdForCoordinates,
   getZonedDateTimeParts,
   resolveLocalDateTimeInTimeZone
-} from '../../src/lib/timezone.js';
+} from '../timezone.js';
 import { kujaDoshaFromHoroscope } from './kujaDosha.js';
 import {
   Graha,
@@ -64,7 +64,7 @@ export const NAKSHATRAM_NAMES_HI = [
  * always states which convention produced its chart. Override with the
  * ASTRO_RAHU_NODE_TYPE environment variable (MEAN | TRUE), the same setting
  * the PHP engine reads from api/config.php. The default is MEAN for both
- * stacks so a Node preview and a PHP-rendered PDF describe the same node.
+ * stacks so the browser preview and a PHP-rendered PDF describe the same lunar node.
  */
 export type RahuNodeType = 'TRUE' | 'MEAN';
 
@@ -1419,7 +1419,7 @@ export function calculatePrecisionHoroscope(
       traditionalRemedyHi: 'महाविष्णु का नाम लेकर प्रार्थना करें।',
       // Item 5: the fuller ancestral remedy the report prints for a Pitru
       // indicator. The short prayer above stays in traditionalRemedy* so the
-      // ordered Node/PHP remedy parity contract (tests/remedies.test.ts) holds.
+      // ordered TypeScript/PHP remedy parity contract (tests/remedies.test.ts) holds.
       extendedRemedyTa: 'அமாவாசை தர்ப்பணம் செய்யுங்கள்; காகங்களுக்கும் பசுக்களுக்கும் உணவளியுங்கள்; மகா விஷ்ணு பெயரைச் சொல்லி பிரார்த்தனை செய்யுங்கள்.',
       extendedRemedyEn: 'Offer Amavasya tarpanam; feed crows and cows; pray to Maha Vishnu.',
       extendedRemedyHi: 'अमावस्या तर्पण करें; कौओं और गायों को भोजन कराएँ; महाविष्णु का नाम लेकर प्रार्थना करें।'

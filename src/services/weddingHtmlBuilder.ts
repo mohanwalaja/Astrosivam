@@ -1,4 +1,4 @@
-import { WeddingMatchResult, AppLanguage, PoruthamStatus } from '../../server/astrology/types';
+import { WeddingMatchResult, AppLanguage, PoruthamStatus } from '../lib/astrology/types';
 import { REPORT_FONT_LINK_TAG } from './reportFonts';
 import { buildReportHeaderHtml, reportHeaderCss } from './reportHeader';
 import { normalizeReportLanguage } from './reportLanguage';

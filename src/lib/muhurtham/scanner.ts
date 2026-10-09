@@ -10,10 +10,10 @@ import {
 // which silently returned the MEAN value while every other engine returned the
 // TRUE one. Import the shared implementation so a Muhurtham day and the chart
 // of the same instant are computed from the same ayanamsa.
-import { calculateLahiriAyanamsa } from '../../../server/astrology/ayanamsa.js';
+import { calculateLahiriAyanamsa } from '../astrology/ayanamsa.js';
 // The Lagna shown beside each person's Nakshatra/Rasi is the same sidereal
 // ascendant every chart report prints (one shared formula, no second copy).
-import { calculateSiderealAscendant } from '../../../server/astrology/astronomy.js';
+import { calculateSiderealAscendant } from '../astrology/astronomy.js';
 
 export type MuhurthamEventKey =
   | 'wedding'
@@ -57,7 +57,7 @@ export const MUHURTHAM_ALGORITHM_VERSION = 6;
  *
  * These are the classical Surya Siddhanta values and are the SAME numbers the
  * rest of the engine already uses (`getCombustionLimit()` in
- * server/astrology/astronomy.ts and `AstroEngine::COMBUSTION_LIMITS` in
+ * src/lib/astrology/astronomy.ts and `AstroEngine::COMBUSTION_LIMITS` in
  * api/astrology/engine.php): Guru 11°, Sukra 10°. Sukra is the wedding karaka,
  * so the report must not rate a date on a narrower 8° orb — a retrograde Venus
  * is given no looser standard than a direct one.
@@ -231,7 +231,7 @@ export interface DayMuhurthamResult {
   /**
    * One short line printed in the date row summarising the Chandrashtama /
    * Tara Bala check for every person (empty when no chart was supplied). The
-   * report shows it verbatim, so browser, Node and PHP agree.
+   * report shows it verbatim, so the browser and PHP agree.
    */
   personalNoteEn: string;
   personalNoteTa: string;
@@ -1047,7 +1047,7 @@ export function findNakshatraIndexByName(name: string): number | null {
  * Builds the report-facing record for one person: their Janma Nakshatra, Rasi
  * and Lagna from their OWN birth details. Used for the bride and the groom of a
  * wedding order (and for the single person of every other ceremony) so the
- * browser, the Node engine and the order payload always carry the same values.
+ * browser, the TypeScript engine and the order payload always carry the same values.
  */
 export function describePersonForMuhurtham(
   role: PersonRole,

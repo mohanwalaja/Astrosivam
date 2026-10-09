@@ -1,5 +1,8 @@
 # Family Order Fix — 1 order, 1 email, logo everywhere
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 Two reported problems are fixed in this branch:
 
 1. A family order (3 charts, 1 payment) showed in the admin panel as **3 separate

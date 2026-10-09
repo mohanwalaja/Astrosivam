@@ -2,7 +2,7 @@
 /**
  * Generate api/astrology/tz_lookup_data.php from the `tz-lookup` npm package
  * (CC0-1.0 / public domain) so the PHP API resolves coordinates → IANA zone
- * with exactly the same quadtree the browser and Node server use.
+ * with exactly the same quadtree the browser and browser client use.
  *
  *   node scripts/build-tz-lookup-table.mjs
  *

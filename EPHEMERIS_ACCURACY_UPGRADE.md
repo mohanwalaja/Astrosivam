@@ -1,5 +1,8 @@
 # PHP Ephemeris Accuracy Upgrade (Lahiri + nutation, VSOP87D, ELP2000-82)
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 `api/astrology/engine.php` previously used low-order Meeus formulas (13 lunar
 terms, unperturbed Keplerian elements for the planets) with UT treated as TT.
 Against Swiss Ephemeris that drifted up to **4.5′ for the Moon**, ~1′ for

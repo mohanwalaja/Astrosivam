@@ -1,4 +1,4 @@
-import rajjuTable from '../../api/astrology/rajju.json' with { type: 'json' };
+import rajjuTable from '../../../api/astrology/rajju.json' with { type: 'json' };
 import {
   Rasi,
   NakshatraBabyLetters,

@@ -10,9 +10,9 @@ import {
   lahiriAyanamsaMean,
   normalizeDelta,
   RASI_INFO
-} from '../server/astrology/astronomy.js';
-import { calculateWeddingCompatibility } from '../server/astrology/matchmaking.js';
-import { Graha, PoruthamStatus, Rasi } from '../server/astrology/types.js';
+} from '../src/lib/astrology/astronomy.js';
+import { calculateWeddingCompatibility } from '../src/lib/astrology/matchmaking.js';
+import { Graha, PoruthamStatus, Rasi } from '../src/lib/astrology/types.js';
 
 /**
  * Sidereal geocentric reference longitudes generated with Swiss Ephemeris

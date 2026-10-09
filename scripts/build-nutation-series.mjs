@@ -1,5 +1,5 @@
 /**
- * Regenerates server/astrology/nutationSeries.ts from the SAME IAU 1980
+ * Regenerates src/lib/astrology/nutationSeries.ts from the SAME IAU 1980
  * 63-term nutation table the PHP engine loads
  * (api/astrology/ephemeris_tables.php).
  *
@@ -56,5 +56,5 @@ ${lines}
 ];
 `;
 
-writeFileSync(path.join(root, 'server', 'astrology', 'nutationSeries.ts'), output, 'utf8');
-console.log(`Wrote ${rows.length} IAU 1980 nutation terms to server/astrology/nutationSeries.ts`);
+writeFileSync(path.join(root, 'src', 'lib', 'astrology', 'nutationSeries.ts'), output, 'utf8');
+console.log(`Wrote ${rows.length} IAU 1980 nutation terms to src/lib/astrology/nutationSeries.ts`);

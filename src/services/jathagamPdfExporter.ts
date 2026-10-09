@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-import { HoroscopeResult, WeddingMatchResult, BabyNamingResult, AppLanguage } from '../../server/astrology/types';
+import { HoroscopeResult, WeddingMatchResult, BabyNamingResult, AppLanguage } from '../lib/astrology/types';
 import { Order } from '../types';
 import { buildJathagamHtml } from './jathagamHtmlBuilder';
 import { buildWeddingMatchHtml } from './weddingHtmlBuilder';
@@ -656,7 +656,7 @@ const OFFSET_MATCH_TOLERANCE_HOURS = 1 / 3600;
 /**
  * Compares the timezone fields as a BIRTH INSTANT, never as raw values.
  *
- * Both engines (Node `calculatePrecisionHoroscope` and the PHP engine)
+ * The TypeScript calculation module and the PHP engine
  * intentionally replace the submitted fixed offset with the IANA historical
  * offset in force at the moment of birth — DST included — so a chart computed
  * from these exact inputs may legitimately store an offset that differs from
@@ -668,7 +668,7 @@ const OFFSET_MATCH_TOLERANCE_HOURS = 1 / 3600;
  *
  * The chart matches when its stored offset equals one of the offsets the
  * engines would compute from these same inputs: the IANA zone mapped from the
- * saved coordinates (Node engine), the IANA zone the payload itself carries
+ * saved coordinates (TypeScript calculation module), the IANA zone the payload itself carries
  * (PHP engine), or the submitted fixed offset (legacy rows).
  */
 function birthTimeOffsetsMatch(chartOffset: number | null, input: any): boolean {
@@ -702,7 +702,7 @@ function birthTimeOffsetsMatch(chartOffset: number | null, input: any): boolean 
  * Canonical 24-hour `HH:MM` for a saved or engine-stored birth time.
  *
  * The engines agree on this canonical form (`AstroEngine::normalizeBirthTime()`
- * and the Node engine both store `06:30`), but order rows saved before the
+ * and the TypeScript calculation module both store `06:30`), but order rows saved before the
  * birth-time input was canonicalised — and every order placed through the PHP
  * API, which accepts `6:30`, `06:30:00` and `6:30 PM` — keep what the customer
  * typed. Comparing the raw strings made those charts permanently stale: the
@@ -793,7 +793,7 @@ function isRasiNumber(value: unknown): boolean {
  * Is this a COMPLETE Birth Jathagam chart — the same contract both astrology
  * engines produce and the report renderer consumes?
  *
- * The old marker was `Boolean(result.bhavas)`, and only the Node engine emits a
+ * The old marker was `Boolean(result.bhavas)`, and only the TypeScript calculation module emits a
  * `bhavas` table: the production PHP engine (`AstroEngine::calculateHoroscope()`)
  * stores the twelve houses on every `planetPositions` entry instead. So on the
  * PHP deployment EVERY rescued member was rejected as "inconsistent with the
@@ -1395,7 +1395,7 @@ const NESTED_BIRTH_PEOPLE = [
 /**
  * The payload the astrology engines accept for a recalculation.
  *
- * Both engines consume a canonical `YYYY-MM-DD` / 24-hour `HH:MM` wall clock,
+ * The TypeScript and PHP engines consume a canonical `YYYY-MM-DD` / 24-hour `HH:MM` wall clock,
  * but saved rows may hold what the customer typed (`6:30`, `06:30:00`,
  * `6:30 PM` — the PHP API accepts and stores all three). Sending those bytes
  * unchanged made the recalculation itself fail with "the saved birth date,

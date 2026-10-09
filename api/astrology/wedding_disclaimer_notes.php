@@ -6,7 +6,7 @@
  * (wedding_disclaimer_notes.json) that is consumed by:
  *   - api/astrology/pdf_mpdf_reports.php   (server-side mPDF export)
  *   - src/services/weddingDisclaimerNotes.ts (browser preview + html2canvas PDF)
- *   - server/astrology/pdfGenerator.ts     (Node PDF fallback)
+ *   - src/lib/astrology/pdfGenerator.ts     (PHP PDF renderer)
  *
  * Paragraphs may contain **bold** emphasis markers; browser/mPDF renderers
  * convert them to <strong>. The legacy plain-PHP PDF writer has been removed.

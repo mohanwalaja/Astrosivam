@@ -4,7 +4,7 @@
  *
  * ONE table for both stacks: `AstroEngine::planetDignityTable()` in
  * api/astrology/engine.php mirrors the constants below value-for-value, so a
- * Node preview and a PHP-rendered PDF can never disagree about whether Mars is
+ * Browser TypeScript calculations and PHP-rendered PDFs cannot disagree about whether Mars is
  * debilitated.
  *
  * Classical values used (BPHS / Jataka Parijata):

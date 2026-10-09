@@ -71,12 +71,16 @@ if [ -f "$ROOT/src/lib/muhurtham/rules.json" ]; then
   cp -f "$ROOT/src/lib/muhurtham/rules.json" "$TARGET/src/lib/muhurtham/rules.json"
 fi
 
-# Front-end bundle (dist/*), same exclusions as .cpanel.yml: no node bundles,
-# no source maps, no api zip.
+# Static front-end bundle (dist/*), same source-map exclusion as .cpanel.yml.
+# A CommonJS server bundle is not part of the PHP/shared-host deployment.
 if [ -d "$ROOT/dist" ]; then
   while IFS= read -r -d '' file; do
     case "$file" in
-      *server.cjs|*.cjs|*.map) continue ;;
+      *.map) continue ;;
+      *.cjs)
+        echo "error: refusing to deploy executable server bundle: $file" >&2
+        exit 1
+        ;;
     esac
     destination="$TARGET/${file#"$ROOT"/dist/}"
     mkdir -p "$(dirname "$destination")"

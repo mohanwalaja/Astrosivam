@@ -9,7 +9,7 @@
  *   node scripts/build_namakaran_glossary.mjs --check    # validate only (CI / tests)
  *
  * Outputs:
- *   server/astrology/namakaranMeaningData.ts    (browser preview + Node PDF)
+ *   src/lib/astrology/namakaranMeaningData.ts    (browser preview + browser-side TypeScript)
  *   api/astrology/namakaran_meanings.php        (official PHP/mPDF report)
  *
  * The generated files carry the same content hash, so a test can prove the live
@@ -34,7 +34,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const TSV_PATH = resolve(ROOT, 'data', 'namakaran_meaning_glossary.tsv');
 const BANK_PATH = resolve(ROOT, 'data', 'namakaran_name_bank.tsv');
-const OUT_TS = resolve(ROOT, 'server', 'astrology', 'namakaranMeaningData.ts');
+const OUT_TS = resolve(ROOT, 'src', 'lib', 'astrology', 'namakaranMeaningData.ts');
 const OUT_PHP = resolve(ROOT, 'api', 'astrology', 'namakaran_meanings.php');
 
 const LATIN_LEAK = /[A-Za-z]/;
@@ -132,7 +132,7 @@ function writeTs(rows, hash) {
  * The Tamil and Hindi text printed under every name on page 2 of the Vedic
  * Namakaran report, keyed by the English meaning of the name bank. The same
  * hash is written into api/astrology/namakaran_meanings.php so the live
- * preview, the Node PDF and the official mPDF report can be proven to show an
+ * preview, the browser-side TypeScript and the official mPDF report can be proven to show an
  * identical meaning for every name.
  */
 
@@ -169,7 +169,7 @@ function writePhp(rows, hash) {
  *
  * Tamil and Hindi meanings for page 2 of the Vedic Namakaran report, keyed by
  * the English meaning of the name bank. Kept byte-for-byte in step with
- * server/astrology/namakaranMeaningData.ts so the live preview and the official
+ * src/lib/astrology/namakaranMeaningData.ts so the live preview and the official
  * mPDF report always localize a meaning identically.
  *
  * The bank deliberately keeps one short English meaning as its source value and
@@ -223,7 +223,7 @@ function main() {
 
   writeTs(rows, hash);
   writePhp(rows, hash);
-  console.log(`✓ Wrote server/astrology/namakaranMeaningData.ts and api/astrology/namakaran_meanings.php (hash ${hash}).`);
+  console.log(`✓ Wrote src/lib/astrology/namakaranMeaningData.ts and api/astrology/namakaran_meanings.php (hash ${hash}).`);
 }
 
 main();

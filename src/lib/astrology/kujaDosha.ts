@@ -3,15 +3,15 @@
  *
  * PORT OF `AstroEngine::evaluateKujaDosha()` (api/astrology/engine.php).
  *
- * WHY: the Node matchmaking engine used to test Mars in houses 2,4,7,8,12 from
+ * WHY: the legacy TypeScript matchmaking calculation used to test Mars in houses 2,4,7,8,12 from
  * the Lagna only, while the PHP engine tested houses 1,2,4,7,8,12 from the
  * Lagna, Moon AND Venus with a much longer exception list. On 400 random charts
  * the two engines disagreed 20.8% of the time, and in 60 of those the PHP engine
- * found a dosha the Node engine silently missed — so the same couple could be
+ * found a dosha the TypeScript engine silently missed — so the same couple could be
  * told "clean match" or "Manglik, remedies advised" depending on which stack
  * rendered the report.
  *
- * This module is the PHP algorithm, so both stacks emit the same verdict:
+ * This module is the PHP algorithm, so the TypeScript and PHP calculations now emit the same verdict:
  *
  *   houses       2, 4, 7, 8, 12 (South Indian rule; the 1st house is NOT a
  *                Kuja house here) counted whole-sign from Lagna, Moon, Venus
@@ -29,6 +29,12 @@
  */
 import { Rasi } from './types.js';
 import { RASI_INFO } from './astronomy.js';
+
+/** Read optional Node environment settings without requiring Node in the browser. */
+function runtimeSetting(name: string): string {
+  if (typeof process === 'undefined' || !process.env) return '';
+  return String(process.env[name] ?? '').trim();
+}
 
 /**
  * Houses (whole-sign, counted from a reference rasi) that constitute
@@ -78,7 +84,7 @@ export type KujaVerdict = (typeof KUJA_VERDICTS)[number] | 'not-assessed';
 
 /** Houses used by the live evaluation (env override, else the documented default). */
 export function activeKujaHouses(): readonly number[] {
-  const raw = String(process.env.ASTRO_KUJA_HOUSES ?? '').trim();
+  const raw = runtimeSetting('ASTRO_KUJA_HOUSES');
   if (raw === '') return KUJA_DOSHA_HOUSES;
   const parsed = raw
     .split(',')

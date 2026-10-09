@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 20 (frontend build tools only)
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -42,8 +42,8 @@ jobs:
             fi
           fi
 
-      # Install Node dependencies with fallback to npm install
-      - name: Install Node dependencies
+      # Node.js runs only in CI to compile the static frontend; BigRock receives no Node server.
+      - name: Install frontend build dependencies
         run: |
           npm ci || npm install
 
@@ -54,7 +54,15 @@ jobs:
 
       - name: Verify dist.zip content
         run: |
-          python3 -c "import zipfile; z = zipfile.ZipFile('dist.zip'); names = z.namelist(); assert 'index.html' in names, 'Missing index.html'; assert any(n.startswith('api/') for n in names), 'Missing api/ folder'; print(f'dist.zip verified successfully! Total files: {len(names)}')"
+          python3 - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('dist.zip') as archive:
+              names = archive.namelist()
+          assert 'index.html' in names, 'Missing index.html'
+          assert any(name.startswith('api/') for name in names), 'Missing PHP api/ folder'
+          assert not any(name.endswith(('.cjs', '.map')) for name in names), 'Server bundle or source map must not be deployed'
+          print(f'Static/PHP dist.zip verified successfully! Total files: {len(names)}')
+          PY
 
       - name: Upload dist.zip as build artifact
         uses: actions/upload-artifact@v4

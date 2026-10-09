@@ -6,7 +6,7 @@
  * Generator       : scripts/build_namakaran_bank.mjs
  * Content hash    : c15e1c5ff9dec371
  *
- * Kept byte-for-byte in step with server/astrology/namakaranNameBank.ts so the
+ * Kept byte-for-byte in step with src/lib/astrology/namakaranNameBank.ts so the
  * live preview and the official mPDF report always print the same names.
  * Each entry is [name, meaning]; 'south' and 'north' are the two columns of
  * page 2 of the Vedic Namakaran report.

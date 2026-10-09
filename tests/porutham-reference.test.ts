@@ -4,9 +4,9 @@ import {
   calculateLahiriAyanamsa,
   calculatePrecisionHoroscope,
   RASI_INFO
-} from '../server/astrology/astronomy.js';
-import { calculateWeddingCompatibility } from '../server/astrology/matchmaking.js';
-import { PoruthamStatus, Rasi } from '../server/astrology/types.js';
+} from '../src/lib/astrology/astronomy.js';
+import { calculateWeddingCompatibility } from '../src/lib/astrology/matchmaking.js';
+import { PoruthamStatus, Rasi } from '../src/lib/astrology/types.js';
 
 /**
  * Ten Porutham (Dasa Porutham) reference validation.

@@ -281,9 +281,9 @@ test('The shared isolated HTML exporter still renders the other reports and invo
   await openReport(page, 'en');
   const results = await page.evaluate(async () => {
     const load = (path: string) => import(path);
-    const { calculatePrecisionHoroscope } = await load('/server/astrology/astronomy.ts');
-    const { calculateBabyNamingDetails } = await load('/server/astrology/babynames.ts');
-    const { calculateWeddingCompatibility } = await load('/server/astrology/matchmaking.ts');
+    const { calculatePrecisionHoroscope } = await load('/src/lib/astrology/astronomy.ts');
+    const { calculateBabyNamingDetails } = await load('/src/lib/astrology/babynames.ts');
+    const { calculateWeddingCompatibility } = await load('/src/lib/astrology/matchmaking.ts');
     const { buildJathagamHtml } = await load('/src/services/jathagamHtmlBuilder.ts');
     const { buildBabyNamingHtml } = await load('/src/services/babyNamingHtmlBuilder.ts');
     const { buildWeddingMatchHtml } = await load('/src/services/weddingHtmlBuilder.ts');

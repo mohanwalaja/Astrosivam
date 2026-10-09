@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { test, expect, type Frame, type Page } from '@playwright/test';
-import { ALL_NAKSHATRA_LETTERS, calculateBabyNamingDetails } from '../../server/astrology/babynames';
-import { buildNamakaranPadaNames } from '../../server/astrology/namakaranNames';
+import { ALL_NAKSHATRA_LETTERS, calculateBabyNamingDetails } from '../../src/lib/astrology/babynames';
+import { buildNamakaranPadaNames } from '../../src/lib/astrology/namakaranNames';
 import { buildBabyNamingHtml } from '../../src/services/babyNamingHtmlBuilder';
 
 // Load the bundled faces in the parent, report and capture clone alike.

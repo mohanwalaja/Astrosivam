@@ -1,5 +1,8 @@
 # Family Report Skip Fix — "the recalculated chart was rejected as inconsistent"
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 Reported again after the DST-offset fix:
 
 > Family package is not complete (3/4 high-quality reports, invoice ready).

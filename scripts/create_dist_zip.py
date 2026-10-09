@@ -21,8 +21,8 @@ def create_dist_zip():
 
     print(f"Creating compact {zip_name} (target: ~7MB)...")
     
-    # Excluded extensions and directories to keep the deployment lightweight
-    excluded_files = {'.DS_Store', 'Thumbs.db', 'server.cjs', 'server.cjs.map'}
+    # Excluded files and directories to keep the shared-host deployment lightweight.
+    excluded_files = {'.DS_Store', 'Thumbs.db'}
     excluded_dirs = {'__pycache__', '.git', 'node_modules', 'vendor', '.github', 'tests'}
 
     def is_runtime_artifact(file_path):
@@ -46,9 +46,11 @@ def create_dist_zip():
                 # Filter out excluded directories
                 dirs[:] = [d for d in dirs if d not in excluded_dirs]
                 for file in files:
-                    if file in excluded_files or file.endswith(('.map', '.cjs')):
-                        continue
                     file_path = os.path.join(root, file)
+                    if file in excluded_files or file.endswith('.map'):
+                        continue
+                    if file.endswith('.cjs'):
+                        raise RuntimeError(f'Unexpected executable server bundle in static cPanel deployment: {file_path}')
                     arcname = os.path.relpath(file_path, dist_dir)
                     zipf.write(file_path, arcname)
                     
@@ -57,9 +59,11 @@ def create_dist_zip():
             for root, dirs, files in os.walk(api_dir):
                 dirs[:] = [d for d in dirs if d not in excluded_dirs]
                 for file in files:
-                    if file in excluded_files or file.endswith(('.map', '.cjs')):
-                        continue
                     file_path = os.path.join(root, file)
+                    if file in excluded_files or file.endswith('.map'):
+                        continue
+                    if file.endswith('.cjs'):
+                        raise RuntimeError(f'Unexpected executable server bundle in static cPanel deployment: {file_path}')
                     if is_runtime_artifact(file_path):
                         continue
                     arcname = os.path.relpath(file_path, '.')

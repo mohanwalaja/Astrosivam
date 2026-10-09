@@ -18,13 +18,8 @@ public/dist_and_api.zip
 public_html/
 public_html_combined.zip
 
-# Runtime account, order, and personal-data store (never commit)
-data/database.json
-
-# Locally generated HMAC signing key for bearer tokens (never commit)
-data/app_secret_key.txt
+# PHP runtime signing key (never commit)
 api/astrology/tmp/app_secret_key.txt
-data/family_docs/
 
 # Python bytecode cache from the scripts/ asset builders
 __pycache__/
@@ -33,14 +28,11 @@ __pycache__/
 # Locally generated report previews / verification harness output (repository root)
 /tmp/
 
-# PHP runtime directory: the HMAC signing key (api/config.php) and the mPDF font
-# cache live here and are never committed. Only the Apache guard that denies all
-# HTTP access to the directory is tracked — the runtime gate depends on it
-# (tests/full-suite.test.ts) and the deploy scripts copy it to the server.
+# PHP runtime directory: signing keys and the mPDF font cache are generated on
+# the host and never committed. Only its Apache access-control file is tracked.
 api/astrology/tmp/*
 !api/astrology/tmp/.htaccess
 
-# Node↔PHP parity: regenerable engine output (the committed contract is
-# tests/fixtures/node-php-parity-expected.json).
+# Regenerable TypeScript/PHP parity output (the committed contract is in fixtures).
 tests/fixtures/parity-node.json
 tests/fixtures/parity-php.json

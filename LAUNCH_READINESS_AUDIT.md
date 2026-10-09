@@ -1,5 +1,8 @@
 # ASTRO SIVAM — Pre-Launch Final Audit
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 **Date:** 7 October 2026
 **Branch:** `arena/7f5ec6e5-astrosivam` (from `main` @ `86c71c1`)
 **Auditor:** Arena agent mode (fresh audit, code reading + automated suites)
