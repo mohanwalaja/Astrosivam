@@ -25,5 +25,11 @@ export default defineConfig(() => {
         ? { '/api': { target: `http://127.0.0.1:${process.env.DEV_PREVIEW_API_PORT || 8787}`, changeOrigin: true } }
         : undefined,
     },
+    preview: {
+      allowedHosts: true as const,
+      proxy: process.env.DEV_PREVIEW_API
+        ? { '/api': { target: `http://127.0.0.1:${process.env.DEV_PREVIEW_API_PORT || 8787}`, changeOrigin: true } }
+        : undefined,
+    },
   };
 });
