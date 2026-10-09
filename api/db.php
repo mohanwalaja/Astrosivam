@@ -20,6 +20,7 @@ function getDbConnection() {
     try {
         $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         $pdo->exec("SET NAMES 'utf8mb4'");
+        astro_ensure_auth_security_schema($pdo);
         return $pdo;
     } catch (PDOException $e) {
         error_log("Database connection error: " . $e->getMessage());
@@ -28,6 +29,35 @@ function getDbConnection() {
             'success' => false,
             'message' => 'Database service temporarily unavailable. Please try again later.'
         ], 500);
+    }
+}
+
+/**
+ * Adds the columns used by session revocation and password reset to `users`.
+ * Idempotent: it runs once per process and only issues ALTER TABLE for columns
+ * that are missing. See api/migrations/006_password_reset_and_token_revocation.sql.
+ */
+function astro_ensure_auth_security_schema($pdo) {
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    $columns = [
+        'token_version' => "ALTER TABLE users ADD COLUMN token_version INT UNSIGNED NOT NULL DEFAULT 0",
+        'password_reset_hash' => "ALTER TABLE users ADD COLUMN password_reset_hash VARCHAR(255) NULL",
+        'password_reset_expires_at' => "ALTER TABLE users ADD COLUMN password_reset_expires_at DATETIME NULL",
+        'password_reset_attempts' => "ALTER TABLE users ADD COLUMN password_reset_attempts INT UNSIGNED NOT NULL DEFAULT 0",
+    ];
+    try {
+        $existing = $pdo->query("SHOW COLUMNS FROM `users`")->fetchAll(PDO::FETCH_COLUMN, 0);
+        foreach ($columns as $name => $sql) {
+            if (!in_array($name, $existing, true)) {
+                $pdo->exec($sql);
+            }
+        }
+    } catch (Exception $e) {
+        error_log('ASTRO SIVAM: auth security schema check failed - ' . $e->getMessage());
     }
 }
 

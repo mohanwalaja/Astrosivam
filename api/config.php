@@ -294,9 +294,48 @@ function astro_clear_auth_cookie() {
  * httpOnly auth cookie, so browsers keep the credential out of page storage.
  */
 function astro_issue_auth_token($user, $ttlSeconds = 2592000) {
-    $token = createBearerToken($user, $ttlSeconds);
+    $tokenVersion = astro_user_token_version($user);
+    $token = createBearerToken($user, $ttlSeconds, $tokenVersion);
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        $_SESSION['auth_tv'] = $tokenVersion;
+    }
     astro_set_auth_cookie($token, $ttlSeconds);
     return $token;
+}
+
+/**
+ * The account's current revocation counter. Bumping it invalidates every
+ * bearer token and PHP session issued with an older value.
+ */
+function astro_user_token_version($user) {
+    if (isset($user['token_version'])) {
+        return (int)$user['token_version'];
+    }
+    if (function_exists('getDbConnection') && !empty($user['id'])) {
+        try {
+            $stmt = getDbConnection()->prepare("SELECT token_version FROM users WHERE id = ? LIMIT 1");
+            $stmt->execute([$user['id']]);
+            $row = $stmt->fetch();
+            if ($row) {
+                return (int)$row['token_version'];
+            }
+        } catch (Exception $e) {
+            // Fall through to the zero default below.
+        }
+    }
+    return 0;
+}
+
+/**
+ * Invalidates all existing sessions and bearer tokens for one account.
+ * Returns the new token version.
+ */
+function astro_revoke_user_sessions($pdo, $userId) {
+    $pdo->prepare("UPDATE users SET token_version = token_version + 1, updated_at = NOW() WHERE id = ?")->execute([$userId]);
+    $stmt = $pdo->prepare("SELECT token_version FROM users WHERE id = ? LIMIT 1");
+    $stmt->execute([$userId]);
+    $row = $stmt->fetch();
+    return $row ? (int)$row['token_version'] : 0;
 }
 
 function extractBearerToken() {
@@ -341,11 +380,17 @@ function extractBearerToken() {
 function getAuthUser($pdo) {
     $user = null;
 
-    // 1. Check PHP Session first
+    // 1. Check PHP Session first. A session is only honoured while its
+    // revocation counter still matches the account (see astro_revoke_user_sessions).
     if (!empty($_SESSION['user_id'])) {
-        $stmt = $pdo->prepare("SELECT id, name, email, mobile, role, country FROM users WHERE id = ? LIMIT 1");
+        $stmt = $pdo->prepare("SELECT id, name, email, mobile, role, country, token_version FROM users WHERE id = ? LIMIT 1");
         $stmt->execute([$_SESSION['user_id']]);
-        $user = $stmt->fetch();
+        $row = $stmt->fetch();
+        if ($row && (int)$row['token_version'] === (int)($_SESSION['auth_tv'] ?? 0)) {
+            $user = $row;
+        } elseif ($row) {
+            unset($_SESSION['user_id'], $_SESSION['user_role'], $_SESSION['user_email'], $_SESSION['auth_tv']);
+        }
     }
 
     // 2. Check signed Authorization token from request headers
@@ -357,9 +402,14 @@ function getAuthUser($pdo) {
                 // The immutable account ID is the only token subject. Never
                 // fall back to e-mail: after account deletion/reuse, an old
                 // signed token must not authenticate the new owner.
-                $stmt = $pdo->prepare("SELECT id, name, email, mobile, role, country FROM users WHERE id = ? LIMIT 1");
+                // Tokens minted before revocation existed carry no "tv" claim
+                // and count as version 0, which is correct until a revocation.
+                $stmt = $pdo->prepare("SELECT id, name, email, mobile, role, country, token_version FROM users WHERE id = ? LIMIT 1");
                 $stmt->execute([$decoded['id']]);
-                $user = $stmt->fetch();
+                $row = $stmt->fetch();
+                if ($row && (int)$row['token_version'] === (int)($decoded['tv'] ?? 0)) {
+                    $user = $row;
+                }
             }
         }
     }
@@ -367,6 +417,8 @@ function getAuthUser($pdo) {
     if ($user) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_role'] = $user['role'];
+        $_SESSION['auth_tv'] = (int)$user['token_version'];
+        unset($user['token_version']);
         return $user;
     }
 
@@ -404,11 +456,12 @@ function requireAdmin($pdo) {
 /**
  * Creates a signed, expiring bearer token: base64(payload) + '.' + HMAC-SHA256(payload).
  */
-function createBearerToken($user, $ttlSeconds = 2592000) { // 30 days
+function createBearerToken($user, $ttlSeconds = 2592000, $tokenVersion = null) { // 30 days
     $payload = [
         'id' => $user['id'],
         'email' => $user['email'],
         'role' => $user['role'],
+        'tv' => $tokenVersion === null ? astro_user_token_version($user) : (int)$tokenVersion,
         'iat' => time(),
         'exp' => time() + $ttlSeconds,
     ];
@@ -467,6 +520,25 @@ function generateOtp() {
 
 function hashOtp($otp, $email) {
     return hash_hmac('sha256', $otp . '|' . strtolower($email), APP_SECRET_KEY);
+}
+
+/**
+ * Password-reset codes use a different HMAC domain from registration OTPs, so
+ * a code from one flow can never be replayed in the other.
+ */
+function hashResetCode($code, $email) {
+    return hash_hmac('sha256', 'password-reset|' . $code . '|' . strtolower($email), APP_SECRET_KEY);
+}
+
+/** Returns an error message for an unacceptable new password, or null. */
+function astro_password_policy_error($password) {
+    if (!is_string($password) || trim($password) === '') {
+        return 'Please enter a new password.';
+    }
+    if (strlen($password) < 6 || strlen($password) > 72) {
+        return 'Password must be 6 to 72 UTF-8 bytes long.';
+    }
+    return null;
 }
 
 function verifyOtpHash($otp, $email, $storedHash) {

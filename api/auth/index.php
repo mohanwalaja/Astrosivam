@@ -30,6 +30,47 @@ $isResendOtpRoute = strpos($path, 'resend-register-otp') !== false || strpos($pa
     || $action === 'resend-register-otp' || $action === 'resend-otp';
 $isMeRoute = strpos($path, 'me') !== false || $action === 'me';
 $isLogoutRoute = strpos($path, 'logout') !== false || $action === 'logout';
+$isForgotPasswordRoute = strpos($path, 'forgot-password') !== false || $action === 'forgot-password';
+$isResetPasswordRoute = strpos($path, 'reset-password') !== false || $action === 'reset-password';
+$isLogoutAllRoute = strpos($path, 'logout-all') !== false || $action === 'logout-all';
+$isRevokeSessionsRoute = strpos($path, 'revoke-sessions') !== false || $action === 'revoke-sessions';
+
+/** Sends the password-reset code email. Same brand style as the registration OTP. */
+function sendPasswordResetEmail($pdo, $toEmail, $toName, $code) {
+    $logoTag = function_exists('astro_email_logo_tag') ? astro_email_logo_tag(52) : '';
+    $safeToName = htmlspecialchars((string)$toName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $safeCode = preg_replace('/\D/', '', (string)$code);
+    $html = "<div style='font-family:Arial,sans-serif; max-width:520px; margin:0 auto;'>
+      <div style='background:#7a1f1f; color:#fff; text-align:center; padding:20px;'>
+        {$logoTag}
+        <div style='font-size:18px; font-weight:bold;'>ASTRO SIVAM</div>
+        <div style='font-size:12px; margin-top:4px;'>Reset Your Password</div>
+      </div>
+      <div style='background:#fdf6e7; padding:24px; text-align:center;'>
+        <p style='color:#333; font-size:13px;'>Namaste {$safeToName},</p>
+        <p style='color:#333; font-size:13px;'>Use the code below to reset your ASTRO SIVAM password:</p>
+        <div style='font-size:32px; font-weight:bold; letter-spacing:8px; color:#7a1f1f; background:#fff; border:2px solid #d97706; border-radius:8px; padding:14px; margin:16px 0; display:inline-block;'>{$safeCode}</div>
+        <p style='color:#666; font-size:12px;'>This code expires in 15 minutes. If you did not request a password reset, you can ignore this email. Your password will not change.</p>
+      </div>
+      <div style='background:#faf3e3; border-top:1px solid #e8d9b8; padding:14px; text-align:center;'>
+        <div style='color:#7a1f1f; font-weight:700; font-size:12px;'>ASTRO SIVAM Team</div>
+        <div style='color:#a67c1f; font-size:10.5px; margin-top:2px;'>astrosivam.com &bull; admin@astrosivam.com</div>
+      </div>
+    </div>";
+
+    $emailSettings = getEmailSettingsForAuth($pdo);
+    return AstroMailer::sendEmailWithAttachments(
+        $toEmail,
+        $toName,
+        'ASTRO SIVAM: Your Password Reset Code',
+        $html,
+        [],
+        $emailSettings
+    );
+}
+
+/** Generic reply for forgot-password. Never reveals whether an account exists. */
+const ASTRO_FORGOT_PASSWORD_MESSAGE = 'If an account exists for that email, a password reset code has been sent. The code expires in 15 minutes.';
 
 /** Fetches saved SMTP/email settings for use with AstroMailer. */
 function getEmailSettingsForAuth($pdo) {
@@ -88,6 +129,170 @@ function astro_ensure_social_identity_columns($pdo) {
         try { $pdo->exec($migration); } catch (Exception $e) {}
     }
     $ready = true;
+}
+
+// ---------------------------------------------------------------------------
+// Password reset and session revocation
+// ---------------------------------------------------------------------------
+if ($isForgotPasswordRoute) {
+    if ($method !== 'POST') {
+        jsonResponse(['success' => false, 'message' => 'Method not allowed'], 405);
+    }
+    $email = strtolower(trim($body['email'] ?? ''));
+    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        jsonResponse(['success' => false, 'message' => 'Please enter a valid email address.'], 400);
+    }
+    $forgotClientIp = getClientIpAddress();
+    astro_rate_limit_enforce(
+        $pdo,
+        'pwreset-request-ip',
+        $forgotClientIp,
+        10,
+        3600,
+        'Too many password reset requests from this network. Please try again later.'
+    );
+    astro_rate_limit_enforce(
+        $pdo,
+        'pwreset-request-email',
+        $email,
+        3,
+        3600,
+        'Too many password reset requests for this address. Please try again later.'
+    );
+
+    try {
+        $stmt = $pdo->prepare("SELECT id, name, email, role, auth_provider FROM users WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        // Social-only accounts have no password to reset; say nothing special.
+        $provider = strtolower(trim((string)($user['auth_provider'] ?? 'local')));
+        if ($user && ($provider === '' || $provider === 'local')) {
+            $code = generateOtp();
+            $upd = $pdo->prepare("UPDATE users SET password_reset_hash = ?, password_reset_expires_at = ?, password_reset_attempts = 0 WHERE id = ?");
+            $upd->execute([hashResetCode($code, $email), date('Y-m-d H:i:s', time() + 900), $user['id']]);
+
+            $mailResult = sendPasswordResetEmail($pdo, $user['email'], $user['name'], $code);
+            if (empty($mailResult['success'])) {
+                // Log for the operator; the reply stays generic so the
+                // response does not reveal whether the account exists.
+                error_log('ASTRO SIVAM: password reset email could not be sent for user ' . $user['id']);
+            } else {
+                logAudit($pdo, $user['id'], $user['name'], $user['role'], 'PASSWORD_RESET_REQUESTED', 'Reset code emailed');
+            }
+        }
+
+        jsonResponse(['success' => true, 'message' => ASTRO_FORGOT_PASSWORD_MESSAGE]);
+    } catch (PDOException $e) {
+        jsonResponse(['success' => false, 'message' => 'Service temporarily unavailable. Please try again shortly.'], 503);
+    }
+}
+
+if ($isResetPasswordRoute) {
+    if ($method !== 'POST') {
+        jsonResponse(['success' => false, 'message' => 'Method not allowed'], 405);
+    }
+    $email = strtolower(trim($body['email'] ?? ''));
+    $code = preg_replace('/\D/', '', (string)($body['code'] ?? ''));
+    $newPassword = is_string($body['password'] ?? null) ? $body['password'] : '';
+
+    if ($email === '' || $code === '' || $newPassword === '') {
+        jsonResponse(['success' => false, 'message' => 'Email, reset code, and new password are required.'], 400);
+    }
+    $policyError = astro_password_policy_error($newPassword);
+    if ($policyError !== null) {
+        jsonResponse(['success' => false, 'message' => $policyError], 400);
+    }
+
+    $resetClientIp = getClientIpAddress();
+    // H1: failed-credential budget, shared with the other auth endpoints.
+    astro_auth_failure_enforce($pdo, $resetClientIp, 'password-reset');
+    astro_rate_limit_enforce(
+        $pdo,
+        'pwreset-verify-email',
+        $email,
+        10,
+        900,
+        'Too many reset attempts for this address. Request a new code later.'
+    );
+
+    $invalidMessage = 'This reset code is incorrect or has expired. Please request a new code.';
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        $provider = strtolower(trim((string)($user['auth_provider'] ?? 'local')));
+        if (!$user || ($provider !== '' && $provider !== 'local') || empty($user['password_reset_hash'])) {
+            astro_auth_failure_record($pdo, $resetClientIp, 'password-reset');
+            jsonResponse(['success' => false, 'message' => $invalidMessage], 400);
+        }
+        if (strtotime((string)$user['password_reset_expires_at']) < time()) {
+            $pdo->prepare("UPDATE users SET password_reset_hash = NULL, password_reset_expires_at = NULL, password_reset_attempts = 0 WHERE id = ?")->execute([$user['id']]);
+            jsonResponse(['success' => false, 'message' => $invalidMessage], 400);
+        }
+
+        if (!hash_equals((string)$user['password_reset_hash'], hashResetCode($code, $email))) {
+            $attempts = (int)$user['password_reset_attempts'] + 1;
+            if ($attempts >= 5) {
+                // Five wrong codes burn this code; the user must request another.
+                $pdo->prepare("UPDATE users SET password_reset_hash = NULL, password_reset_expires_at = NULL, password_reset_attempts = 0 WHERE id = ?")->execute([$user['id']]);
+            } else {
+                $pdo->prepare("UPDATE users SET password_reset_attempts = ? WHERE id = ?")->execute([$attempts, $user['id']]);
+            }
+            astro_auth_failure_record($pdo, $resetClientIp, 'password-reset');
+            jsonResponse(['success' => false, 'message' => $invalidMessage], 400);
+        }
+
+        // Code is valid. Set the new password, consume the code, verify the
+        // email address (the reset proves ownership), and revoke every
+        // existing session and bearer token for this account.
+        $pdo->prepare("UPDATE users SET password_hash = ?, email_verified = 1, password_reset_hash = NULL, password_reset_expires_at = NULL, password_reset_attempts = 0, token_version = token_version + 1, updated_at = NOW() WHERE id = ?")
+            ->execute([password_hash($newPassword, PASSWORD_DEFAULT), $user['id']]);
+
+        astro_clear_auth_cookie();
+        $_SESSION = [];
+        session_destroy();
+
+        logAudit($pdo, $user['id'], $user['name'], $user['role'], 'PASSWORD_RESET', 'Password reset with emailed code; all sessions revoked');
+        jsonResponse(['success' => true, 'message' => 'Your password has been reset. Please sign in with your new password.']);
+    } catch (PDOException $e) {
+        error_log('ASTRO SIVAM: password reset failed - ' . $e->getMessage());
+        jsonResponse(['success' => false, 'message' => 'Service temporarily unavailable. Please try again shortly.'], 503);
+    }
+}
+
+if ($isLogoutAllRoute) {
+    if ($method !== 'POST') {
+        jsonResponse(['success' => false, 'message' => 'Method not allowed'], 405);
+    }
+    $current = requireAuth($pdo);
+    astro_revoke_user_sessions($pdo, $current['id']);
+    astro_clear_auth_cookie();
+    $_SESSION = [];
+    session_destroy();
+    logAudit($pdo, $current['id'], $current['name'], $current['role'], 'SESSIONS_REVOKED', 'Signed out of all devices');
+    jsonResponse(['success' => true, 'message' => 'You have been signed out of all devices.']);
+}
+
+if ($isRevokeSessionsRoute) {
+    if ($method !== 'POST') {
+        jsonResponse(['success' => false, 'message' => 'Method not allowed'], 405);
+    }
+    $admin = requireAdmin($pdo);
+    $targetId = trim((string)($body['userId'] ?? ''));
+    if ($targetId === '') {
+        jsonResponse(['success' => false, 'message' => 'userId is required.'], 400);
+    }
+    $stmt = $pdo->prepare("SELECT id, name, email FROM users WHERE id = ? LIMIT 1");
+    $stmt->execute([$targetId]);
+    $target = $stmt->fetch();
+    if (!$target) {
+        jsonResponse(['success' => false, 'message' => 'User not found.'], 404);
+    }
+    astro_revoke_user_sessions($pdo, $target['id']);
+    logAudit($pdo, $admin['id'], $admin['name'], $admin['role'], 'ADMIN_REVOKED_SESSIONS', 'Forced sign-out for ' . $target['email']);
+    jsonResponse(['success' => true, 'message' => 'The user has been signed out of all devices.']);
 }
 
 if ($isFacebookRoute) {
