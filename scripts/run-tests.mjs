@@ -29,6 +29,7 @@ const testFiles = [
   'tests/ai-astrologer-report.test.ts',
   'tests/ai-astrologer-access.test.ts',
   'tests/ai-astrologer-provider.test.ts',
+  'tests/ai-astrologer-consistency.test.ts',
   'tests/lockfile-drift.test.ts'
 ];
 const tsxCli = resolve(projectRoot, 'node_modules/tsx/dist/cli.mjs');
