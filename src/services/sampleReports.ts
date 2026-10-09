@@ -323,12 +323,24 @@ export async function calculateSampleResult(
     return sampleResultCache.get(cacheKey);
   }
 
-  const response = await api.calculatePreview(serviceType, payload);
-  if (!response?.success || !response.result) {
-    throw new Error(response?.message || 'The sample report could not be prepared. Please try again.');
+  try {
+    const response = await api.calculatePreview(serviceType, payload);
+    if (response?.success && response.result) {
+      sampleResultCache.set(cacheKey, response.result);
+      return response.result;
+    }
+  } catch (apiError) {
+    console.warn('[ASTRO SIVAM] Remote sample calculation unavailable, falling back to client-side engine:', apiError);
   }
-  sampleResultCache.set(cacheKey, response.result);
-  return response.result;
+
+  // Resilient fallback: compute using the high-precision client-side astrology engine
+  const { calculateLocalAstrology } = await import('./localAstrology');
+  const result = calculateLocalAstrology(serviceType, payload);
+  if (!result) {
+    throw new Error('The sample report could not be prepared. Please try again.');
+  }
+  sampleResultCache.set(cacheKey, result);
+  return result;
 }
 
 /* ------------------------------------------------------------------ *

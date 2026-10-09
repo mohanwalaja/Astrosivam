@@ -48,6 +48,14 @@ export async function safeJson<T = any>(res: Response): Promise<T> {
         status: res.status
       } as any;
     }
+    const trimmed = text.trim();
+    if (trimmed.startsWith('<?php') || trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html') || trimmed.startsWith('<?')) {
+      return {
+        success: false,
+        message: 'Server response was not in JSON format.',
+        status: res.status === 200 ? 502 : res.status
+      } as any;
+    }
     return JSON.parse(text);
   } catch (err) {
     let fallbackMsg = 'Server response was not in JSON format.';
@@ -542,7 +550,7 @@ export const api = {
         body: JSON.stringify({ serviceType, payload })
       });
       const resData = await safeJson(res);
-      if (resData.success || (res.status !== 404 && !resData.message?.includes('not found'))) {
+      if (resData.success && resData.result) {
         return resData;
       }
     } catch (e) {}
@@ -554,17 +562,36 @@ export const api = {
         body: JSON.stringify({ serviceType, payload })
       });
       const resData = await safeJson(res);
-      if (resData.success || res.status !== 404) {
+      if (resData.success && resData.result) {
         return resData;
       }
     } catch (e) {}
 
-    const res = await fetch(`${apiBase}/services/index.php?action=calculate-preview`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ serviceType, payload })
-    });
-    return safeJson(res);
+    try {
+      const res = await fetch(`${apiBase}/services/index.php?action=calculate-preview`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ serviceType, payload })
+      });
+      const resData = await safeJson(res);
+      if (resData.success && resData.result) {
+        return resData;
+      }
+    } catch (e) {}
+
+    // Resilient fallback: compute using the high-precision client-side astrology engine
+    try {
+      const { calculateLocalAstrology } = await import('./localAstrology');
+      const result = calculateLocalAstrology(serviceType, payload);
+      if (result) {
+        return { success: true, result };
+      }
+    } catch (calcError: any) {
+      console.warn('[ASTRO SIVAM] Local preview calculation failed:', calcError);
+      return { success: false, message: calcError?.message || 'Calculation failed' };
+    }
+
+    return { success: false, message: 'The calculation preview could not be prepared.' };
   },
 
   // Calculation Service Alias for Preview Testing

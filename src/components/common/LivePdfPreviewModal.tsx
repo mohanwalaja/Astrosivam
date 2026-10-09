@@ -128,17 +128,11 @@ export const LivePdfPreviewModal: React.FC<LivePdfPreviewModalProps> = ({
     let cancelled = false;
     setDynamicallyCalculated(null);
     setCalculationStatus('Refreshing this report from the saved birth particulars…');
-    fetch('/api/services/calculate-preview', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    api
+      .calculatePreview(
         serviceType,
-        // Saved rows may hold a legacy 12-hour birth time ('6:30 PM'); the
-        // engines only accept the canonical 24-hour wall clock.
-        payload: canonicalCalculationPayload(order.inputPayload)
-      })
-    })
-      .then(r => r.json())
+        canonicalCalculationPayload(order.inputPayload)
+      )
       .then(data => {
         if (cancelled) return;
         if (data.success && data.result && !resultNeedsRecalculation(order, data.result)) {
