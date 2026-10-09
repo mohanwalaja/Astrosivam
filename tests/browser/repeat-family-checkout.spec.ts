@@ -60,7 +60,9 @@ async function mountRepeatCheckout(page: Page) {
   await page.goto('/');
   await page.waitForFunction(() => (window as any).__vite_plugin_react_preamble_installed__);
   await page.evaluate(async ({ serviceTypes }) => {
-    localStorage.setItem('astrosivam_token', 'repeat-checkout-session');
+    // H3: the session now lives in an httpOnly cookie - the mocked GET /me
+    // route above restores it. Planted localStorage tokens must no longer
+    // authenticate anything (they are purged on load).
     localStorage.setItem('astrosivam_family_cart_payment_method', 'GPAY');
     localStorage.setItem('astrosivam_family_cart', JSON.stringify(serviceTypes.map((serviceType, index) => ({
       id: `first-family-chart-${index}`,

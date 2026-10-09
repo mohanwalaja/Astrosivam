@@ -39,6 +39,13 @@ if (session_status() === PHP_SESSION_NONE) {
 // SECURITY: CORS is restricted to the site's own origins. With credentials
 // enabled, a wildcard "*" origin is invalid and overly permissive.
 header('Content-Type: application/json; charset=utf-8');
+// SECURITY (H2): every API response carries a strict Content-Security-Policy.
+// These responses are JSON or downloads; nothing legitimate here needs to
+// execute script, load subresources or be framed - so any injected markup
+// under /api has no capabilities at all.
+header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'");
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 $allowedOrigins = [
     'https://astrosivam.com',
     'https://www.astrosivam.com',
@@ -222,6 +229,76 @@ function astro_normalize_report_language($value) {
 }
 
 // 7. Authentication Helper (PHP Session or signed bearer token in headers only)
+//
+// H3 (2026-10): the signed bearer token is ALSO delivered as an httpOnly,
+// SameSite=Lax, Secure-on-HTTPS cookie (see astro_issue_auth_token()). Browser
+// clients therefore never need to persist the token in localStorage, where any
+// XSS could read it and exfiltrate a 30-day credential. The Authorization
+// header path is kept for non-browser API clients, and an explicit header
+// always wins over the cookie.
+define('AUTH_COOKIE_NAME', 'astrosivam_auth');
+
+/** True when the current request arrived over HTTPS (directly or via proxy). */
+function astro_request_is_https() {
+    if (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off') return true;
+    if (strtolower((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https') return true;
+    return false;
+}
+
+/**
+ * Pure cookie attribute set (unit-testable without headers): always httpOnly
+ * and SameSite=Lax, Secure whenever the request is HTTPS.
+ *
+ * @return array{expires:int,path:string,secure:bool,httponly:bool,samesite:string}
+ */
+function astro_auth_cookie_options($ttlSeconds, $now = null, $secure = null) {
+    $now = $now === null ? time() : (int)$now;
+    $secure = $secure === null ? astro_request_is_https() : (bool)$secure;
+    return array(
+        'expires' => $now + max(60, (int)$ttlSeconds),
+        'path' => '/',
+        'secure' => $secure,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    );
+}
+
+/** Sets the httpOnly auth cookie carrying the signed bearer token. */
+function astro_set_auth_cookie($token, $ttlSeconds = 2592000) {
+    $options = astro_auth_cookie_options($ttlSeconds);
+    if (PHP_VERSION_ID >= 70300) {
+        setcookie(AUTH_COOKIE_NAME, (string)$token, $options);
+    } else {
+        // PHP < 7.3 has no options array; smuggle SameSite through the path.
+        setcookie(AUTH_COOKIE_NAME, (string)$token, $options['expires'], $options['path'] . '; samesite=' . $options['samesite'], '', $options['secure'], true);
+    }
+}
+
+/** Expires the httpOnly auth cookie (logout / account switch). */
+function astro_clear_auth_cookie() {
+    if (PHP_VERSION_ID >= 70300) {
+        setcookie(AUTH_COOKIE_NAME, '', array(
+            'expires' => time() - 42000,
+            'path' => '/',
+            'secure' => astro_request_is_https(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ));
+    } else {
+        setcookie(AUTH_COOKIE_NAME, '', time() - 42000, '/; samesite=Lax', '', astro_request_is_https(), true);
+    }
+}
+
+/**
+ * Issue an authenticated session: sign the bearer token AND set it as the
+ * httpOnly auth cookie, so browsers keep the credential out of page storage.
+ */
+function astro_issue_auth_token($user, $ttlSeconds = 2592000) {
+    $token = createBearerToken($user, $ttlSeconds);
+    astro_set_auth_cookie($token, $ttlSeconds);
+    return $token;
+}
+
 function extractBearerToken() {
     // 1. Check $_SERVER HTTP Authorization variables
     $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? $_SERVER['HTTP_X_AUTHORIZATION'] ?? $_SERVER['HTTP_X_AUTH_TOKEN'] ?? '';
@@ -248,6 +325,14 @@ function extractBearerToken() {
         if (strpos($authHeader, ' ') === false) {
             return trim($authHeader);
         }
+    }
+
+    // 3. H3: the httpOnly auth cookie. JavaScript can never read this value;
+    // the browser attaches it automatically (same-origin fetches and
+    // window.open() navigations alike).
+    $cookieToken = $_COOKIE[AUTH_COOKIE_NAME] ?? '';
+    if (is_string($cookieToken) && trim($cookieToken) !== '') {
+        return trim($cookieToken);
     }
 
     return null;

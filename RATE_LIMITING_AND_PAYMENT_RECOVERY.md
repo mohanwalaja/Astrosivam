@@ -13,6 +13,7 @@ All fixed-window counters are enforced by `api/rate_limit.php` and stored in the
 | Action | Limit | Counter key |
 | --- | --- | --- |
 | Login | 5 attempts / 15 min per account+IP; 25 / 15 min per IP | `login-pair`, `login-ip` |
+| **Failed credentials (any auth endpoint)** | **10 failures / 15 min per IP per endpoint; 20 failures / 15 min per IP; 300 failures / 15 min site-wide** | `auth-fail-ip-endpoint`, `auth-fail-ip`, `auth-fail-global` |
 | Registration | 5 / 10 min per IP; 3 / 15 min per email | `register-ip`, `register-email` |
 | Email-code verification | 10 / 15 min per IP; 5 / 15 min per email | `otp-verify-ip`, `otp-verify-email` |
 | Email-code resend | 5 / hour per IP; 3 / hour per email | `otp-resend-ip`, `otp-resend-email` |
@@ -25,6 +26,18 @@ All fixed-window counters are enforced by `api/rate_limit.php` and stored in the
 | Admin payment reconciliation | 10 / 10 min per admin | `admin-action-provider` |
 
 A successful password login clears the account+IP counter; a legitimate user is not locked out by their own correct sign-in. Admin actions that send email or call payment-provider APIs are limited per administrator, rather than per IP.
+
+### 1.1a Failed-credential budgets (credential-stuffing defence)
+
+The per-account and per-IP attempt counters above only slow an attacker who stays on one target. To stop **credential stuffing** (one IP walking thousands of different accounts), every failed credential check — wrong password, unknown account, wrong email OTP, rejected Google/Facebook token — is also counted into three shared failure budgets, and the budgets are checked **before** the next credential is evaluated:
+
+| Budget | Default | Meaning |
+| --- | --- | --- |
+| `auth-fail-ip-endpoint` | 10 failures / 15 min | Per IP **per auth endpoint** (`login`, `admin-login`, `google-login`, `facebook-login`, `otp-verify`) — targeted single-endpoint stuffing stops early |
+| `auth-fail-ip` | 20 failures / 15 min | Per IP **across all** auth endpoints — spreading guesses over many accounts/endpoints from one network still stops |
+| `auth-fail-global` | 300 failures / 15 min | **Site-wide** cap — distributed stuffing cannot run unbounded |
+
+Only *failures* advance these counters; valid sign-ins never count against them. The budgets can be tuned per deployment with the `AUTH_FAIL_LIMIT_ENDPOINT`, `AUTH_FAIL_LIMIT_IP`, `AUTH_FAIL_LIMIT_GLOBAL` and `AUTH_FAIL_WINDOW_SECONDS` environment variables. Exceeding a budget returns HTTP `429` with `Retry-After`. The global cap is deliberately generous: it exists to bound the damage of an attack wave, at the cost of briefly slowing all sign-in attempts while such a wave is in progress.
 
 ### 1.2 Storage and failure behavior
 

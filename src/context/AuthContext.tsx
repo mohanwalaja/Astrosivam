@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { User, CustomerBirthProfile, SystemSettings } from '../types';
 import { api, getAuthToken, setAuthToken, clearAuthToken } from '../services/api';
 import { cleanDisplayName, providerFallbackName, resolveDisplayName } from '../utils/displayName';
@@ -87,6 +87,13 @@ const normalizeUser = (value: any, profileName?: string | null): User => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  // Mirrors `user` synchronously so auth-dependent helpers (refreshSettings)
+  // never act on a stale closure right after a sign-in/out.
+  const userRef = useRef<User | null>(null);
+  const applyUser = (next: User | null) => {
+    userRef.current = next;
+    setUser(next);
+  };
   const [birthProfile, setBirthProfile] = useState<CustomerBirthProfile | null>(null);
   const [settings, setSettings] = useState<SystemSettings | null>(() => {
     try {
@@ -100,14 +107,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshSettings = async () => {
     try {
-      const token = getAuthToken();
-      // If a token exists, try the admin endpoint first for the complete,
-      // unredacted configuration.
+      // If a session exists (httpOnly cookie or in-memory token), try the admin
+      // endpoint first for the complete, unredacted configuration.
       // SECURITY: the admin payload contains the SMTP password, PayPal secret
       // and Facebook app secret. It is held in memory ONLY and deliberately
       // never written to localStorage, where it would survive logout and stay
       // readable to the next person using a shared computer.
-      if (token) {
+      if (getAuthToken() || userRef.current) {
         try {
           const adminRes = await api.getAdminSettings();
           if (adminRes.success && adminRes.settings) {
@@ -147,22 +153,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const initAuth = async () => {
     setIsLoading(true);
-    await refreshSettings();
-    const token = getAuthToken();
-    if (token) {
-      try {
-        const res = await api.getMe();
-        if (res.success && res.user) {
-          const profile = normalizeBirthProfile(res.birthProfile);
-          setUser(normalizeUser(res.user, profile?.name));
-          setBirthProfile(profile);
-        } else {
-          clearAuthToken();
-        }
-      } catch (e) {
+    // H3: the session lives in an httpOnly cookie, not in localStorage, so a
+    // reload must ask the server who it is instead of inspecting stored
+    // tokens. GET /api/auth/me is anonymous-safe: 401 simply means "signed
+    // out" and also purges any legacy stored token.
+    try {
+      const res = await api.getMe();
+      if (res.success && res.user) {
+        const profile = normalizeBirthProfile(res.birthProfile);
+        applyUser(normalizeUser(res.user, profile?.name));
+        setBirthProfile(profile);
+      } else {
         clearAuthToken();
       }
+    } catch (e) {
+      clearAuthToken();
     }
+    await refreshSettings();
     setIsLoading(false);
   };
 
@@ -176,7 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userObj = res.user;
       setAuthToken(res.token);
       const profile = normalizeBirthProfile(res.birthProfile);
-      setUser(normalizeUser(userObj, profile?.name));
+      applyUser(normalizeUser(userObj, profile?.name));
       setBirthProfile(profile);
       await refreshSettings();
       return { success: true, message: res.message || 'Login successful', user: normalizeUser(userObj) };
@@ -191,7 +198,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (res.success && res.token && res.user && String(res.user.role).toLowerCase() === 'admin') {
       const adminUser = res.user;
       setAuthToken(res.token);
-      setUser(normalizeUser(adminUser));
+      applyUser(normalizeUser(adminUser));
       setBirthProfile(null);
       await refreshSettings();
       return { success: true, message: res.message || 'Admin authorization granted', user: normalizeUser(adminUser) };
@@ -211,7 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userObj = res.user;
       setAuthToken(res.token);
       const profile = normalizeBirthProfile(res.birthProfile);
-      setUser(normalizeUser(userObj, profile?.name));
+      applyUser(normalizeUser(userObj, profile?.name));
       setBirthProfile(profile);
       await refreshSettings();
       return { success: true, message: res.message || 'Registration successful', user: normalizeUser(userObj) };
@@ -225,7 +232,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userObj = res.user;
       setAuthToken(res.token);
       const profile = normalizeBirthProfile(res.birthProfile);
-      setUser(normalizeUser(userObj, profile?.name));
+      applyUser(normalizeUser(userObj, profile?.name));
       setBirthProfile(profile);
       await refreshSettings();
       return { success: true, message: res.message || 'Email verified', user: normalizeUser(userObj) };
@@ -244,7 +251,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userObj: User = res.user;
       setAuthToken(res.token);
       const profile = normalizeBirthProfile(res.birthProfile);
-      setUser(normalizeUser(userObj, profile?.name));
+      applyUser(normalizeUser(userObj, profile?.name));
       setBirthProfile(profile);
       await refreshSettings();
       return { success: true, message: res.message || 'Google login successful', user: normalizeUser(userObj) };
@@ -253,8 +260,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
+    // H3: the session lives in an httpOnly cookie, so signing out must also
+    // clear it server-side - otherwise the next page load's GET /me would
+    // silently sign the user back in. Local state is dropped immediately.
+    api.logout().catch(() => {});
     clearAuthToken();
-    setUser(null);
+    applyUser(null);
     setBirthProfile(null);
     // Drop any cached configuration so an admin session leaves nothing behind.
     try {

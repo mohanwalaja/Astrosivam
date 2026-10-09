@@ -9,6 +9,8 @@
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
+// H2: strict CSP on every API response (JSON needs no capabilities at all).
+header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'");
 
 echo json_encode([
     'success' => true,

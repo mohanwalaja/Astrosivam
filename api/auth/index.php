@@ -95,6 +95,10 @@ if ($isFacebookRoute) {
         jsonResponse(['success' => false, 'message' => 'Method not allowed'], 405);
     }
 
+    // H1: failed-credential budget (per endpoint, per IP, site-wide).
+    $facebookClientIp = getClientIpAddress();
+    astro_auth_failure_enforce($pdo, $facebookClientIp, 'facebook-login');
+
     $clientAccessToken = trim($body['accessToken'] ?? '');
     $facebookGeneral = [];
     try {
@@ -116,11 +120,13 @@ if ($isFacebookRoute) {
     // Facebook Graph API verification above. (The previous fallback accepted
     // client-supplied id/email, allowing login as any account.)
     if (!$fbVerified) {
+        astro_auth_failure_record($pdo, $facebookClientIp, 'facebook-login');
         jsonResponse(['success' => false, 'message' => 'Could not verify Facebook login. Please try again.'], 401);
     }
 
     $fbId = trim((string)($fbVerified['id'] ?? ''));
     if ($fbId === '') {
+        astro_auth_failure_record($pdo, $facebookClientIp, 'facebook-login');
         jsonResponse(['success' => false, 'message' => 'Facebook did not provide a stable verified account identifier.'], 401);
     }
     $email = strtolower(trim((string)($fbVerified['email'] ?? '')));
@@ -174,7 +180,7 @@ if ($isFacebookRoute) {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_role'] = $user['role'];
-        $token = createBearerToken($user);
+        $token = astro_issue_auth_token($user);
 
         $bpStmt = $pdo->prepare("SELECT * FROM birth_profiles WHERE user_id = ? LIMIT 1");
         $bpStmt->execute([$user['id']]);
@@ -220,6 +226,10 @@ if ($isGoogleRoute) {
         jsonResponse(['success' => false, 'message' => 'Method not allowed'], 405);
     }
 
+    // H1: failed-credential budget (per endpoint, per IP, site-wide).
+    $googleClientIp = getClientIpAddress();
+    astro_auth_failure_enforce($pdo, $googleClientIp, 'google-login');
+
     $credential = trim($body['credential'] ?? '');
     $clientAccessToken = trim($body['accessToken'] ?? '');
     $googleGeneral = [];
@@ -242,11 +252,13 @@ if ($isGoogleRoute) {
     // tokeninfo/userinfo endpoints. (The previous fallback accepted
     // client-supplied sub/email, allowing login as any account.)
     if (!$googleVerified) {
+        astro_auth_failure_record($pdo, $googleClientIp, 'google-login');
         jsonResponse(['success' => false, 'message' => 'Could not verify Google login. Please try again.'], 401);
     }
 
     $googleId = trim((string)($googleVerified['sub'] ?? ''));
     if ($googleId === '') {
+        astro_auth_failure_record($pdo, $googleClientIp, 'google-login');
         jsonResponse(['success' => false, 'message' => 'Google did not provide a stable verified account identifier.'], 401);
     }
     $email = strtolower(trim((string)($googleVerified['email'] ?? '')));
@@ -300,7 +312,7 @@ if ($isGoogleRoute) {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_role'] = $user['role'];
-        $token = createBearerToken($user);
+        $token = astro_issue_auth_token($user);
 
         $bpStmt = $pdo->prepare("SELECT * FROM birth_profiles WHERE user_id = ? LIMIT 1");
         $bpStmt->execute([$user['id']]);
@@ -475,6 +487,8 @@ if ($isRegisterRoute) {
         jsonResponse(['success' => false, 'message' => 'Email and verification code are required.'], 400);
     }
     $otpClientIp = getClientIpAddress();
+    // H1: failed-credential budget (per endpoint, per IP, site-wide).
+    astro_auth_failure_enforce($pdo, $otpClientIp, 'otp-verify');
     astro_rate_limit_enforce(
         $pdo,
         'otp-verify-ip',
@@ -507,6 +521,7 @@ if ($isRegisterRoute) {
             jsonResponse(['success' => false, 'message' => 'This code has expired. Please request a new one.'], 410);
         }
         if (!verifyOtpHash($otp, $email, $user['otp_hash'] ?? '')) {
+            astro_auth_failure_record($pdo, $otpClientIp, 'otp-verify');
             jsonResponse(['success' => false, 'message' => 'Incorrect verification code. Please try again.'], 401);
         }
 
@@ -519,7 +534,7 @@ if ($isRegisterRoute) {
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['user_email'] = $user['email'];
 
-        $token = createBearerToken($user);
+        $token = astro_issue_auth_token($user);
         logAudit($pdo, $user['id'], $user['name'], $user['role'], 'USER_EMAIL_VERIFIED', "Email verified via OTP: {$email}");
 
         $bpStmt = $pdo->prepare("SELECT * FROM birth_profiles WHERE user_id = ? LIMIT 1");
@@ -619,6 +634,8 @@ if ($isRegisterRoute) {
         'birthProfile' => $birthProfile ?: null
     ]);
 } elseif ($isLogoutRoute) {
+    // H3: drop the httpOnly auth cookie alongside the PHP session.
+    astro_clear_auth_cookie();
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
         $cookie = session_get_cookie_params();
@@ -653,10 +670,17 @@ if ($isRegisterRoute) {
         jsonResponse(['success' => false, 'message' => 'Email and password are required.'], 400);
     }
 
-    // BRUTE-FORCE PROTECTION: 5 attempts per account+network and 25 per network
-    // per 15 minutes. A successful login clears the pair counter, so a normal
-    // user is never locked out by their own valid sign-ins.
+    // BRUTE-FORCE PROTECTION (H1): layered counters.
+    //   1. Failed-credential budget: 10 failures per IP per endpoint, 20
+    //      failures per IP across all auth endpoints and a site-wide global
+    //      cap per 15 minutes. Different emails from one IP share these
+    //      counters, so credential stuffing cannot walk unlimited accounts.
+    //   2. 5 attempts per account+network and 25 per network per 15 minutes.
+    //      A successful login clears the pair counter, so a normal user is
+    //      never locked out by their own valid sign-ins.
     $loginClientIp = getClientIpAddress();
+    $loginEndpoint = $isExplicitAdminLogin ? 'admin-login' : 'login';
+    astro_auth_failure_enforce($pdo, $loginClientIp, $loginEndpoint);
     astro_rate_limit_enforce(
         $pdo,
         'login-pair',
@@ -680,6 +704,9 @@ if ($isRegisterRoute) {
         $user = $stmt->fetch();
 
         if (!$user) {
+            // Unknown account: a real failed guess - count it against the
+            // per-IP / per-endpoint / global credential-stuffing budgets (H1).
+            astro_auth_failure_record($pdo, $loginClientIp, $loginEndpoint);
             jsonResponse(['success' => false, 'message' => 'Invalid email or password.'], 401);
         }
 
@@ -698,6 +725,7 @@ if ($isRegisterRoute) {
         $userRole = strtolower(trim($user['role'] ?? 'customer'));
 
         if (!$isMatch) {
+            astro_auth_failure_record($pdo, $loginClientIp, $loginEndpoint);
             jsonResponse(['success' => false, 'message' => 'Invalid email or password.'], 401);
         }
 
@@ -738,7 +766,7 @@ if ($isRegisterRoute) {
         $actionType = $isExplicitAdminLogin ? 'ADMIN_LOGIN' : 'CUSTOMER_LOGIN';
         logAudit($pdo, $user['id'], $user['name'], $userRole, $actionType, 'Logged in via ' . ($isExplicitAdminLogin ? 'Admin Portal' : 'Main Login'));
 
-        $token = createBearerToken($user);
+        $token = astro_issue_auth_token($user);
 
         // Fetch birth profile if exists
         $bpStmt = $pdo->prepare("SELECT * FROM birth_profiles WHERE user_id = ? LIMIT 1");

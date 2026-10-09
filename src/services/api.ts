@@ -8,20 +8,46 @@ export function getApiBase(): string {
 
 export const API_BASE = getApiBase();
 
+/**
+ * SECURITY (H3): the auth token must NEVER be persisted in localStorage (or
+ * any other script-readable storage). The backend sets it as an httpOnly
+ * cookie at login, the browser attaches it automatically, and this module
+ * keeps at most an in-memory copy for the Authorization header fallback -
+ * enough for older API deployments, gone on reload and unreadable to XSS
+ * looking for a stored credential.
+ */
+let inMemoryAuthToken = '';
+
+/**
+ * Pre-H3 releases persisted the token under these keys. They are purged on
+ * every load and on every auth transition so a previously stored 30-day
+ * credential cannot keep living in web-accessible storage.
+ */
+const LEGACY_TOKEN_STORAGE_KEYS = ['astrosivam_token', 'astrofiji_token', 'fijiastro_token'];
+
+function purgeLegacyStoredTokens(): void {
+  try {
+    for (const key of LEGACY_TOKEN_STORAGE_KEYS) localStorage.removeItem(key);
+  } catch (e) {
+    // Storage may be unavailable (private mode); nothing to purge then.
+  }
+}
+
+// Migrate existing installs: drop any token that older releases left behind.
+purgeLegacyStoredTokens();
+
 export function getAuthToken(): string {
-  return localStorage.getItem('astrosivam_token') || localStorage.getItem('astrofiji_token') || localStorage.getItem('fijiastro_token') || '';
+  return inMemoryAuthToken;
 }
 
 export function setAuthToken(token: string): void {
-  if (!token) return;
-  localStorage.setItem('astrosivam_token', token);
-  localStorage.setItem('astrofiji_token', token);
+  inMemoryAuthToken = token || '';
+  purgeLegacyStoredTokens();
 }
 
 export function clearAuthToken(): void {
-  localStorage.removeItem('astrosivam_token');
-  localStorage.removeItem('astrofiji_token');
-  localStorage.removeItem('fijiastro_token');
+  inMemoryAuthToken = '';
+  purgeLegacyStoredTokens();
 }
 
 function getAuthHeader(): Record<string, string> {
@@ -377,6 +403,26 @@ export const api = {
       action: 'admin-login',
       isAdmin: true
     }, { requireAdmin: true });
+  },
+
+  /**
+   * SECURITY (H3): signing out must clear the httpOnly auth cookie server-side.
+   * Dropping client state alone is not enough - the cookie would authenticate
+   * the next GET /me and silently sign the user back in. Fire-and-forget from
+   * the caller's perspective; local state is dropped either way.
+   */
+  async logout(): Promise<{ success: boolean }> {
+    const apiBase = getApiBase();
+    for (const endpoint of [`${apiBase}/auth/index.php?action=logout`, `${apiBase}/auth/logout`]) {
+      try {
+        const res = await fetch(endpoint, { method: 'POST', credentials: 'include' });
+        const data = await safeJson<any>(res);
+        if (res.status !== 404 && res.status !== 405) return { success: !!data.success };
+      } catch (e) {
+        // Try the next endpoint; the caller clears local state regardless.
+      }
+    }
+    return { success: false };
   },
 
   async register(data: {
