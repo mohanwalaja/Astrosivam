@@ -169,3 +169,55 @@ or `suppressed` freely, but `passage` requires a `verifiedPassages` entry in `so
 plus a verse or page, `chapter` requires `verifiedChapterAnchors` plus a note naming the
 chapter, and `content` requires `verification: "content-read"`. No rule may cite an id in
 `excludedSources` — the 13 Hindi books are unreachable from the rule base by construction.
+
+
+---
+
+## Part 3 — uploaded report handling (built 2026-10-09)
+
+| File | What it is | Verified by |
+| --- | --- | --- |
+| `rules/report-sections.json` | The four report types (Jathagam, Wedding Matching, Baby Naming, Subha Muhurtham), every section with a trilingual title and explanation, the chart positions it comes from, its guardrail and its source. Also holds the ownership contract and the four polite refusals. | `tests/ai-astrologer-report.test.ts` (26 checks) |
+| `src/services/aiReportSections.ts` | The executable spec for the upload gate and for "what does this line mean?". | same |
+| `api/astrology/ai_report_extract.php` | The PHP port. **Not executed** — see the caveat below. | none yet |
+
+### The ownership design, and why it is not what it looks like
+
+An uploaded PDF is untrusted input. The gate proves three things before a word of
+it is discussed: it is an ASTRO SIVAM report, it belongs to the session customer,
+and that customer's order is **PAID**.
+
+The order number is read from the page header — `AstroMpdfReports::topHeader` prints
+`<span class="header-order-ref">#ORD-…</span>` on every page, and the filename
+`ASTRO_SIVAM_Report_{order_number}.pdf` (set in `api/admin/approve_order.php`)
+corroborates it. **A filename alone never grants access**, because a customer can
+rename any file.
+
+**The PDF is an ownership token, not the source of the explanation.** mPDF embeds
+subset fonts, and glyph-to-Unicode mapping for Tamil and Devanagari runs frequently
+does not survive PDF text extraction — extracted Indic text can come back garbled or
+empty. So the gate depends only on the ASCII order number, and the content that gets
+explained is regenerated server-side from the order's saved inputs via
+`AstroEngine::rebuildReportResultFromSavedInputs`, which is already how official
+downloads are produced. The design therefore works whether or not Indic extraction
+succeeds. If extraction fails entirely, the fallback is to ask the customer to pick
+the order from their dashboard — never to guess an order from a birth date.
+
+Two retrieval details worth knowing before editing:
+
+- **Section matching scores on the longest run of consecutive shared words**, with a
+  minimum of three. Per-word hit counting was tried first and the single word
+  "this" matched a section it had nothing to do with.
+- **Identification needs two fingerprints**, or one at least 24 characters long.
+  "Janma Nakshatra" appears in both the Jathagam and Baby Naming reports, so one
+  stray phrase must not be mistaken for either.
+
+### Caveat on the PHP
+
+PHP cannot be installed in the build sandbox — `apt-get` fails because the Debian
+repositories are unreachable (only github.com, registry.npmjs.org and pypi.org are
+allowed), even with sudo. So `api/astrology/ai_report_extract.php` has **not been
+executed or even syntax-checked** here. The logic it mirrors has been executed, in
+TypeScript, by the 26 checks above, and the file is annotated to say so at the top.
+`smalot/pdfparser ^2.7` was added to `composer.json` for the extraction step; it is
+pure PHP, so it works on shared cPanel with no shell access.

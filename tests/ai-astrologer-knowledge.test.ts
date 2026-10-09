@@ -383,6 +383,7 @@ check('no knowledge base file mixes Tamil and Devanagari script', () => {
     'rules/life-areas.json',
     'rules/remedies.json',
     'rules/guardrails.json',
+    'rules/report-sections.json',
     'sources.json',
     'README.md',
     'SOURCES.md',
@@ -396,6 +397,11 @@ check('no knowledge base file mixes Tamil and Devanagari script', () => {
     for (const [i, line] of text.split('\n').entries()) {
       assert.ok(!mixed.test(line), `${rel}:${i + 1} mixes Tamil and Devanagari: ${line.slice(0, 80)}`);
       assert.ok(!strayTurkish.test(line), `${rel}:${i + 1} contains a stray non-English word: ${line.slice(0, 80)}`);
+      // a Polish "każdy" once landed inside a Hindi sentence: invisible to a
+      // reviewer, obvious to a customer. Flag any Latin-extended letter that is
+      // sitting inside a run of Indic script.
+      const insideIndic = /[\u0B80-\u0BFF\u0900-\u097F][^\n]*?[\u00C0-\u024F]| [\u00C0-\u024F][^\n]*?[\u0B80-\u0BFF\u0900-\u097F]/;
+      assert.ok(!insideIndic.test(line), `${rel}:${i + 1} has a non-English letter inside Indic text: ${line.slice(0, 80)}`);
     }
   }
 });
