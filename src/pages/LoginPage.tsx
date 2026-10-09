@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { GoogleLoginButton } from '../components/common/GoogleLoginButton';
 import { SEO } from '../components/common/SEO';
 import { BrandLockup } from '../components/common/BrandLockup';
+import { ForgotPasswordForm } from '../components/common/ForgotPasswordForm';
 
 interface LoginPageProps {
   onNavigate: (route: string) => void;
@@ -18,6 +19,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [notice, setNotice] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +69,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       {/* Login Card */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
         
+        {notice && !errorMessage && (
+          <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-xl text-xs leading-relaxed">
+            {notice}
+          </div>
+        )}
+
+        {showForgot ? (
+          <ForgotPasswordForm
+            initialEmail={email}
+            onBackToSignIn={msg => {
+              setShowForgot(false);
+              setErrorMessage('');
+              setNotice(msg || '');
+            }}
+          />
+        ) : (
+          <>
         {errorMessage && (
           <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-xl text-xs flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-500 mt-0.5" />
@@ -126,6 +146,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             </div>
           </div>
 
+          <div className="flex justify-end -mt-2">
+            <button
+              type="button"
+              onClick={() => { setErrorMessage(''); setNotice(''); setShowForgot(true); }}
+              className="text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline"
+            >
+              Forgot password?
+            </button>
+          </div>
+
           <button
             type="submit"
             disabled={isLoading}
@@ -146,6 +176,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             Register Here
           </button>
         </div>
+          </>
+        )}
 
       </div>
 

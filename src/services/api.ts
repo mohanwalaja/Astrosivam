@@ -507,6 +507,46 @@ export const api = {
     return { success: false, message: 'Verification-code resend endpoint is unavailable.' };
   },
 
+  /** Emails a password-reset code. The reply is identical whether or not the account exists. */
+  async forgotPassword(email: string): Promise<{ success: boolean; message?: string }> {
+    const apiBase = getApiBase();
+    const endpoints = [
+      `${apiBase}/auth/index.php?action=forgot-password`,
+      `${apiBase}/auth/forgot-password`
+    ];
+    for (const endpoint of endpoints) {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.toLowerCase().trim(), action: 'forgot-password' })
+      });
+      const data = await safeJson<any>(res);
+      if ((!hasJsonContentType(res) && !data.success && res.ok) || res.status === 404 || res.status === 405) continue;
+      return data;
+    }
+    return { success: false, message: 'Password reset is unavailable right now. Please try again shortly.' };
+  },
+
+  /** Sets a new password with the emailed code. Revokes all existing sessions. */
+  async resetPassword(email: string, code: string, password: string): Promise<{ success: boolean; message?: string }> {
+    const apiBase = getApiBase();
+    const endpoints = [
+      `${apiBase}/auth/index.php?action=reset-password`,
+      `${apiBase}/auth/reset-password`
+    ];
+    for (const endpoint of endpoints) {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.toLowerCase().trim(), code: code.trim(), password, action: 'reset-password' })
+      });
+      const data = await safeJson<any>(res);
+      if ((!hasJsonContentType(res) && !data.success && res.ok) || res.status === 404 || res.status === 405) continue;
+      return data;
+    }
+    return { success: false, message: 'Password reset is unavailable right now. Please try again shortly.' };
+  },
+
   async getMe(): Promise<{ success: boolean; user?: User; birthProfile?: CustomerBirthProfile }> {
     const apiBase = getApiBase();
     try {

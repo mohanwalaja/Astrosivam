@@ -4,6 +4,7 @@ import { GoogleLoginButton } from './GoogleLoginButton';
 import { X, Lock, Mail, ShieldCheck, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
 import { PersonNameField } from './PersonNameField';
 import { normalizePersonName } from '../../utils/birthDetails';
+import { ForgotPasswordForm } from './ForgotPasswordForm';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -28,8 +29,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [mobile, setMobile] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [view, setView] = useState<'auth' | 'forgot'>('auth');
+  const [notice, setNotice] = useState('');
 
   if (!isOpen) return null;
+
+  if (view === 'forgot') {
+    return (
+      <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl">
+          <ForgotPasswordForm
+            initialEmail={email}
+            onBackToSignIn={msg => {
+              setView('auth');
+              setError('');
+              setNotice(msg || '');
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,6 +170,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </div>
 
+        {/* Notice (e.g. after a password reset) */}
+        {notice && !error && (
+          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs text-emerald-700 dark:text-emerald-300">
+            {notice}
+          </div>
+        )}
+
         {/* Error Message */}
         {error && (
           <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-600 dark:text-red-400 flex items-start gap-2">
@@ -204,6 +231,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               />
             </div>
           </div>
+
+          {tab === 'signin' && (
+            <div className="flex justify-end -mt-1">
+              <button
+                type="button"
+                onClick={() => { setError(''); setNotice(''); setView('forgot'); }}
+                className="text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
 
           <button
             type="submit"
