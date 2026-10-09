@@ -110,9 +110,9 @@ checkMailer(astro_max_attachment_encoded_bytes() === 1048576, 'The MB value stil
 putenv('FAMILY_EMAIL_MAX_ATTACHMENT_MB');
 checkMailer(astro_max_attachment_encoded_bytes() === 2097152, 'The byte override applies once the MB value is unset');
 putenv('FAMILY_EMAIL_MAX_ATTACHMENT_BYTES=1000');
-checkMailer(astro_max_attachment_encoded_bytes() === 18 * 1048576, 'A byte budget below the 512 KB floor falls back to the 18 MB default');
+checkMailer(astro_max_attachment_encoded_bytes() === 25 * 1048576, 'A byte budget below the 512 KB floor falls back to the 25 MiB default');
 putenv('FAMILY_EMAIL_MAX_ATTACHMENT_MB=0.5');
-checkMailer(astro_max_attachment_encoded_bytes() === 18 * 1048576, 'A sub-1 MB budget is ignored rather than shrinking delivery to nothing');
+checkMailer(astro_max_attachment_encoded_bytes() === 25 * 1048576, 'A sub-1 MiB budget is ignored rather than shrinking delivery to nothing');
 putenv('FAMILY_EMAIL_MAX_ATTACHMENT_MB');
 putenv('FAMILY_EMAIL_MAX_ATTACHMENT_BYTES');
 

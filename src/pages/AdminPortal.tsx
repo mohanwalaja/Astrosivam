@@ -2252,7 +2252,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
                                 type="button"
                                 onClick={() => handleApproveFamilyGroup(groupId, unit.orders)}
                                 disabled={isApprovingGroup}
-                                title={`Approve all ${unit.orders.length} family charts and deliver every preview-quality report plus one consolidated invoice; large bundles may arrive in multiple emails`}
+                                title={`Approve all ${unit.orders.length} family charts and deliver every preview-quality report plus one consolidated invoice in one email when within the mail-size limit; unusually large PDFs may be split`}
                                 className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 disabled:opacity-60 cursor-pointer"
                               >
                                 <Send className={`w-3.5 h-3.5 ${isApprovingGroup ? 'animate-spin' : ''}`} />
