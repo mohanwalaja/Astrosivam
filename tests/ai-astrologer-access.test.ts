@@ -186,6 +186,7 @@ check('the endpoint only calls functions that exist somewhere in api/', () => {
   }
 
   const builtins = new Set(`if foreach for while switch catch function return use array_map array_filter
+    define strtotime ceil gmdate time error_log is_numeric file_get_contents json_decode is_file
     array_reverse array_slice implode explode trim basename pathinfo strtolower strtoupper mb_strlen mb_substr
     mb_strpos microtime round max min is_string is_array is_uploaded_file file_get_contents json_decode
     random_bytes bin2hex header error_log time date count in_array isset empty class_exists file_exists

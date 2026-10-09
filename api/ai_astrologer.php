@@ -57,34 +57,155 @@ const AI_ASTROLOGER_HISTORY_CONTEXT_MESSAGES = 20;
  */
 function astro_ai_require_paid_order(PDO $pdo, array $user): array
 {
-    $stmt = $pdo->prepare(
-        "SELECT COUNT(*) AS c
-           FROM orders
-          WHERE user_id = :uid
-            AND payment_confirmed = 1
-            AND status IN ('COMPLETED', 'PROCESSING')
-            AND (refund_status IS NULL OR refund_status = 'NONE')"
-    );
-    $stmt->execute([':uid' => $user['id']]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $entitlement = astro_ai_chat_entitlement($pdo, $user['id']);
 
-    if (!$row || (int) $row['c'] < 1) {
+    if (!$entitlement['allowed']) {
         // Trilingual, because the customer may have been browsing in any of the
         // three. Never reveals that a specific order was found and rejected.
+        $copy = astro_ai_entitlement_copy($entitlement['code'], $entitlement);
         jsonResponse([
             'success' => false,
-            'code' => 'NO_PAID_ORDER',
-            'message' => 'The AI Astrologer is available to customers with a completed paid report. '
-                . 'Once your order is complete, I will be here.',
-            'message_ta' => 'AI ஜோதிடர், முடிந்த கட்டண அறிக்கை உள்ள வாடிக்கையாளர்களுக்கு மட்டுமே. '
-                . 'உங்கள் ஆர்டர் முடிந்ததும் நான் இங்கே இருப்பேன்.',
-            'message_hi' => 'AI ज्योतिषी उन ग्राहकों के लिए उपलब्ध है जिनकी भुगतान की गई रिपोर्ट पूरी हो चुकी है। '
-                . 'आपका ऑर्डर पूरा होते ही मैं यहाँ रहूँगा।',
+            'code' => $entitlement['code'],
+            'message' => $copy['en'],
+            'message_ta' => $copy['ta'],
+            'message_hi' => $copy['hi'],
             'dashboardUrl' => '/customer/dashboard',
+            // Days left, so the UI can say "4 days left on this report's chat".
+            // Zero once expired.
+            'daysRemaining' => $entitlement['daysRemaining'],
+            'expiresAt' => $entitlement['expiresAt'],
         ], 403);
     }
 
     return $user;
+}
+
+/**
+ * How long the AI chat stays available for a report.
+ *
+ * Owner rule: the chat stays live for 7 days, starting on the day the report
+ * email was delivered, then it disables. A new paid order starts a fresh window.
+ *
+ * Two decisions that shape this:
+ *  - the clock starts at orders.email_sent_at, the real delivery timestamp, not
+ *    the order or payment date
+ *  - the NEWEST delivered order wins. An older order still inside its own window
+ *    does not extend anything.
+ *
+ * email_sent_at is NULL when the report has not been emailed yet (or the email
+ * job failed). That order simply has no window yet - which is correct, because
+ * the customer has not received the report the chat would discuss.
+ */
+define('ASTRO_AI_CHAT_WINDOW_DAYS', 7);
+
+/**
+ * @return array{allowed: bool, code: string, daysRemaining: int, expiresAt: ?string, orderNumber: ?string}
+ */
+function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
+{
+    $denied = static function (string $code): array {
+        return [
+            'allowed' => false,
+            'code' => $code,
+            'daysRemaining' => 0,
+            'expiresAt' => null,
+            'orderNumber' => null,
+        ];
+    };
+
+    // Newest delivered paid order. Ordering by email_sent_at DESC is what makes
+    // "newest order wins" true: we only ever look at the one that would expire
+    // last, so an old order cannot keep the chat alive.
+    $stmt = $pdo->prepare(
+        "SELECT order_number, email_sent_at
+           FROM orders
+          WHERE user_id = :uid
+            AND payment_confirmed = 1
+            AND status IN ('COMPLETED', 'PROCESSING')
+            AND (refund_status IS NULL OR refund_status = 'NONE')
+            AND email_sent_at IS NOT NULL
+          ORDER BY email_sent_at DESC
+          LIMIT 1"
+    );
+    $stmt->execute([':uid' => $userId]);
+    $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$order) {
+        // Either no paid order at all, or one that has not been delivered yet.
+        // Distinguishing them only for the server log - the customer sees the
+        // same message either way, so the endpoint never leaks which it was.
+        $countStmt = $pdo->prepare(
+            "SELECT COUNT(*) AS c
+               FROM orders
+              WHERE user_id = :uid
+                AND payment_confirmed = 1
+                AND status IN ('COMPLETED', 'PROCESSING')
+                AND (refund_status IS NULL OR refund_status = 'NONE')"
+        );
+        $countStmt->execute([':uid' => $userId]);
+        $paid = (int) ((array) $countStmt->fetch(PDO::FETCH_ASSOC))['c'];
+        return $denied($paid > 0 ? 'REPORT_NOT_DELIVERED' : 'NO_PAID_ORDER');
+    }
+
+    $sentAt = strtotime((string) $order['email_sent_at']);
+    if ($sentAt === false) {
+        // An unparseable timestamp must not open the chat.
+        error_log('astro_ai_chat_entitlement: unparseable email_sent_at for user ' . $userId);
+        return $denied('REPORT_NOT_DELIVERED');
+    }
+
+    $expiresAt = $sentAt + (ASTRO_AI_CHAT_WINDOW_DAYS * 86400);
+    $now = time();
+
+    if ($now >= $expiresAt) {
+        $expired = $denied('CHAT_WINDOW_EXPIRED');
+        $expired['orderNumber'] = (string) $order['order_number'];
+        return $expired;
+    }
+
+    $secondsLeft = $expiresAt - $now;
+    // Round UP so a customer on day 1 of 7 sees 7, not 6.
+    return [
+        'allowed' => true,
+        'code' => 'OK',
+        'daysRemaining' => (int) ceil($secondsLeft / 86400),
+        'expiresAt' => gmdate('Y-m-d\TH:i:s\Z', $expiresAt),
+        'orderNumber' => (string) $order['order_number'],
+    ];
+}
+
+/** Trilingual wording for each refusal, kept next to the codes that use it. */
+function astro_ai_entitlement_copy(string $code, array $entitlement): array
+{
+    if ($code === 'REPORT_NOT_DELIVERED') {
+        return [
+            'en' => 'Your report has not been delivered yet. The AI Astrologer opens as soon as '
+                . 'your report email is sent.',
+            'ta' => 'உங்கள் அறிக்கை இன்னும் அனுப்பப்படவில்லை. அறிக்கை மின்னஞ்சல் சென்றவுடன் '
+                . 'AI ஜோதிடர் தொடங்கும்.',
+            'hi' => 'आपकी रिपोर्ट अभी नहीं भेजी गई है। रिपोर्ट ईमेल भेजते ही AI ज्योतिषी शुरू हो जाएगा।',
+        ];
+    }
+
+    if ($code === 'CHAT_WINDOW_EXPIRED') {
+        return [
+            'en' => 'The 7-day AI Astrologer period for this report has ended. '
+                . 'Place a new order and the chat opens again.',
+            'ta' => 'இந்த அறிக்கைக்கான 7 நாள் AI ஜோதிடர் காலம் முடிந்தது. '
+                . 'புதிய ஆர்டர் செய்தால் மீண்டும் தொடங்கும்.',
+            'hi' => 'इस रिपोर्ट के लिए 7 दिन की AI ज्योतिषी अवधि समाप्त हो गई है। '
+                . 'नया ऑर्डर करने पर चैट फिर शुरू हो जाएगी।',
+        ];
+    }
+
+    return [
+        'en' => 'The AI Astrologer is available to customers with a completed paid report. '
+            . 'Once your order is complete, I will be here.',
+        'ta' => 'AI ஜோதிடர், முடிந்த கட்டண அறிக்கை உள்ள வாடிக்கையாளர்களுக்கு மட்டுமே. '
+            . 'உங்கள் ஆர்டர் முடிந்ததும் நான் இங்கே இருப்பேன்.',
+        'hi' => 'AI ज्योतिषी उन ग्राहकों के लिए उपलब्ध है जिनकी भुगतान की गई रिपोर्ट पूरी हो चुकी है। '
+            . 'आपका ऑर्डर पूरा होते ही मैं यहाँ रहूँगा।',
+    ];
 }
 
 /** Both gates, in order. Every action calls this and nothing else for auth. */
