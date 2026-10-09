@@ -108,7 +108,7 @@ at line 1489):
 | 4 | Career & Profession | தொழில் & உத்தியோகம் | व्यवसाय एवं आजीविका | 10th lord |
 | 5 | Marriage & Relations | திருமணம் & உறவு | विवाह एवं सम्बंध | 7th lord |
 | 6 | Property & Real Estate | வீடு, நிலம் & சொத்து | भूमि, भवन एवं संपत्ति | 4th lord |
-| 7 | Travel & Global Fortune | பயணம் & அதிर्ஷ்டம் | विदेश यात्रा एवं भाग्य | 9th lord |
+| 7 | Travel & Global Fortune | பயணம் & அதிர்ஷ்டம் | विदेश यात्रा एवं भाग्य | 9th lord |
 | 8 | Current Guidance | தற்போதைய வழிகாட்டல் | ज्योतिषीय मार्गदर्शन | current Dasha / Bhukti |
 
 The agent must answer all eight in depth from the customer's own chart, and the card titles
@@ -135,3 +135,37 @@ handoff.
   `title` of the sources actually retrieved.
 - **Every message is stored** in the per-customer chat history table with a timestamp.
 - **Paid-order check happens in PHP on every request**, never only in React.
+
+
+---
+
+## Part 2 — the rule base, retrieval and prompt (built 2026-10-09)
+
+Three rule files and one prompt, all read server-side:
+
+| File | What it is | Verified by |
+| --- | --- | --- |
+| `rules/life-areas.json` | The eight page-2 life-area cards. 34 rules, each with a chart condition, trilingual wording, an easing period, a practical step and a sourced citation. Also holds `health.suppressedRules` (the verses the agent reads but never relays) and `openEnded.routes` (the refusal routes). | `tests/ai-astrologer-knowledge.test.ts` |
+| `rules/remedies.json` | The only remedies the agent may offer: mantra, weekday, temple, charity, fasting, lifestyle — per graha. Every entry is free or near-free and sourced. `neverOffer` lists what is unreachable. | same |
+| `rules/guardrails.json` | Identity, disclaimer, health rules, prediction limits, money rules, tone, timing, retry and the astrologer handoff — in all three languages. | same |
+| `prompt/system-prompt.md` | The complete system prompt, with the placeholder map. Stored in the repo, not a database row, so every change to what the agent may say is a reviewed diff. | manual review |
+
+`src/services/aiAstrologerRetrieval.ts` is the **executable spec** for the retrieval half of
+the agent: `detectLanguage` → `matchAreas` → `matchRefusalRoute` → `evaluateCondition` →
+`remediesFor` → `formatCitation` → `checkReply`. The PHP endpoint in Part 4 must match its
+behaviour. Nothing in it calls a model; model calls live only in PHP.
+
+Two retrieval decisions worth knowing before editing:
+
+- **Card 8 (Current Guidance) is a fallback.** It has no house anchor and its rules are
+  `always` rules, so its generic phrases ("now", "this year", "இந்த வருடம்") would otherwise
+  outscore a specific topic on phrase length alone. `matchAreas` returns it only when no
+  house-anchored card matched.
+- **An empty chart can only fire `always` rules.** Every other condition type requires
+  positive chart evidence, so a partially computed chart cannot invent a finding.
+
+Citation levels are enforced by the test, not by convention: a rule may cite `book`, `note`
+or `suppressed` freely, but `passage` requires a `verifiedPassages` entry in `sources.json`
+plus a verse or page, `chapter` requires `verifiedChapterAnchors` plus a note naming the
+chapter, and `content` requires `verification: "content-read"`. No rule may cite an id in
+`excludedSources` — the 13 Hindi books are unreachable from the rule base by construction.

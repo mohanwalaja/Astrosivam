@@ -44,7 +44,11 @@ const registry = JSON.parse(
   fs.readFileSync(path.join(projectRoot, KB_DIR, 'sources.json'), 'utf8')
 ) as { sources: Source[]; sourceCount: Record<string, any>; verificationPolicy: any };
 const sources = registry.sources;
+const excluded: Source[] = registry.excludedSources ?? [];
+const transforms = registry.guardrailTransforms;
 const byId = new Map(sources.map((s) => [s.id, s]));
+/** Every id the registry knows about - active sources plus quarantined ones. */
+const knownIds = new Set([...sources, ...excluded].map((s) => s.id));
 const sourcesMd = fs.readFileSync(path.join(projectRoot, KB_DIR, 'SOURCES.md'), 'utf8');
 
 const VERIFICATION_LEVELS = [
@@ -107,15 +111,11 @@ check('every source says what it is useful for (dead links excepted)', () => {
 check('declared sourceCount matches the actual registry', () => {
   const count = (pred: (s: Source) => boolean) => sources.filter(pred).length;
   assert.equal(registry.sourceCount.total, sources.length, 'total is stale');
+  assert.equal(registry.sourceCount.excluded, excluded.length, 'excluded count is stale');
   assert.equal(
     count((s) => s.group === 'classical-english'),
     registry.sourceCount.classicalTextsEnglish,
     'classicalTextsEnglish is stale'
-  );
-  assert.equal(
-    count((s) => /-hindi$/.test(s.group)),
-    registry.sourceCount.hindiBooks,
-    'hindiBooks is stale'
   );
   assert.equal(
     count((s) => /-tamil$/.test(s.group)),
@@ -140,15 +140,31 @@ check('declared sourceCount matches the actual registry', () => {
     registry.sourceCount.reference;
   assert.equal(declaredSum, sources.length, 'declared buckets do not add up to total');
 
-  // Every entry belongs to exactly one declared bucket.
   for (const s of sources) {
     const bucketed =
       s.group === 'classical-english' ||
       s.group === 'navagraha-sthalam' ||
       s.group === 'reference' ||
-      /-hindi$/.test(s.group) ||
       /-tamil$/.test(s.group);
     assert.ok(bucketed, `${s.id} has group "${s.group}", which no declared bucket covers`);
+  }
+});
+
+check('owner decision 4 holds: no Hindi source is retrievable', () => {
+  assert.equal(registry.sourceCount.hindiBooks, 0, 'hindiBooks must be 0');
+  const hindiInUse = sources.filter((s) => s.language === 'hi' || /-hindi$/.test(s.group));
+  assert.deepEqual(
+    hindiInUse.map((s) => s.id),
+    [],
+    'Hindi sources are still in the active registry'
+  );
+  assert.ok(excluded.length >= 13, 'the 13 Hindi books should be preserved in excludedSources');
+  for (const s of excluded) {
+    assert.equal(s.retrievable, false, `${s.id} in excludedSources is still marked retrievable`);
+    assert.ok(
+      /owner decision/i.test(s.exclusionReason ?? ''),
+      `${s.id} is excluded but does not record the owner decision that excluded it`
+    );
   }
 });
 
@@ -253,12 +269,14 @@ check('SOURCES.md only cites ids that exist in sources.json', () => {
     (sourcesMd.match(/\b(?:EN|HI|TA|TP|REF)-\d{2}\b/g) ?? []).filter(Boolean)
   );
   assert.ok(cited.size > 40, `SOURCES.md cites only ${cited.size} ids; expected the full table`);
-  const missing = [...cited].filter((id) => !byId.has(id));
+  const missing = [...cited].filter((id) => !knownIds.has(id));
   assert.deepEqual(missing, [], `SOURCES.md cites ids absent from the registry: ${missing.join(', ')}`);
 });
 
 check('every registered source appears in SOURCES.md', () => {
-  const absent = sources.map((s) => s.id).filter((id) => !sourcesMd.includes(id));
+  const absent = [...sources, ...excluded]
+    .map((s) => s.id)
+    .filter((id) => !sourcesMd.includes(id));
   assert.deepEqual(absent, [], `registered but missing from the table: ${absent.join(', ')}`);
 });
 
@@ -283,6 +301,109 @@ check('no source claims a verse-level citation it cannot back up', () => {
       `${s.id} declares verifiedChapterAnchors but only EN-02's index was read`
     );
     assert.ok(anchors.length > 10, 'EN-02 anchors look truncated');
+  }
+});
+
+check('owner decision 1 holds: Tamil books are cited at passage level', () => {
+  const withPassages = sources.filter((s) => (s as any).verifiedPassages?.length);
+  assert.ok(withPassages.length >= 2, 'expected at least two passage-level Tamil sources');
+  for (const s of withPassages) {
+    assert.equal(s.verification, 'content-read', `${s.id} cites passages but is not content-read`);
+    assert.ok(s.tamilSection === true, `${s.id} carries Tamil passages but is not in the Tamil section`);
+    for (const p of (s as any).verifiedPassages) {
+      assert.ok(p.page || p.verse, `${s.id} has a passage with neither page nor verse`);
+      assert.ok(p.quote && p.quote.trim().length > 20, `${s.id} has an empty passage quote`);
+      assert.ok(p.status, `${s.id} passage ${p.page ?? p.verse} has no status ruling`);
+      assert.match(p.status, /USABLE|DO NOT RELAY|Never relayed|FEAR-LANGUAGE/i,
+        `${s.id} passage ${p.page ?? p.verse} has an unusable status: ${p.status}`);
+    }
+  }
+  // The two books named in the decision must be among them.
+  for (const id of ['TA-02', 'TA-07']) {
+    assert.ok((byId.get(id) as any)?.verifiedPassages?.length, `${id} was not read to passage level`);
+  }
+});
+
+check('passage-level books carry their real bibliographic detail', () => {
+  const t7 = byId.get('TA-07') as any;
+  assert.equal(t7.year, 1946, 'TA-07 year should be 1946, read from its title page');
+  assert.ok(t7.author && /Srinivasa Ayyangar|ஸ்ரீனிவாச அய்யங்கார்/.test(t7.author),
+    'TA-07 author missing');
+  assert.ok(/Urania/.test(t7.publisher ?? ''), 'TA-07 printer missing');
+  assert.ok(/தசை|Dasha/.test(t7.structure ?? ''), 'TA-07 Dasha-Bhukti structure not recorded');
+});
+
+check('the fear / death / disease filter is registered and covers every source passage', () => {
+  assert.ok(transforms, 'guardrailTransforms is missing');
+  const dropped = JSON.stringify(transforms.dropEntirely).toLowerCase();
+  for (const forbidden of ['death', 'disease']) {
+    assert.ok(dropped.includes(forbidden), `guardrailTransforms does not drop "${forbidden}"`);
+  }
+  assert.ok(transforms.rewriteTo && transforms.rewriteTo.length > 40, 'no rewrite guidance');
+  assert.ok(transforms.alwaysAllowed?.length >= 5, 'nothing is marked always allowed');
+
+  // Every expensive remedy named in a passage must have a cheap substitute.
+  const substitutes: { grahas: string[]; warrant?: string }[] =
+    transforms.expensiveRemedySubstitutes;
+  const passageText = sources
+    .flatMap((s) => (s as any).verifiedPassages ?? [])
+    .map((p: any) => p.quote)
+    .join(' ');
+  // Every graha whose passage prescribes an expensive dana needs a cheap route.
+  for (const graha of ['Guru', 'Budha', 'Ketu', 'Sukra', 'Sani', 'Rahu']) {
+    const hit = substitutes.filter((x) => x.grahas.includes(graha));
+    assert.ok(hit.length > 0, `no cheap substitute registered for ${graha}`);
+    for (const x of hit) {
+      assert.ok(Array.isArray(x.grahas) && x.grahas.length > 0, 'a substitute names no graha');
+      assert.ok(x.warrant && x.warrant.length > 5, `the ${graha} substitute has no warrant`);
+    }
+  }
+  // No substitute may be keyed on a comma-joined string - that is not queryable.
+  for (const x of substitutes) {
+    assert.ok(
+      x.grahas.every((g) => !g.includes(',')),
+      `substitute graha list contains a comma-joined entry: ${JSON.stringify(x.grahas)}`
+    );
+  }
+  assert.ok(/தானம்/.test(passageText), 'no dana passage was actually read');
+});
+
+check('a yathashakti warrant justifies scaling remedies down', () => {
+  const t7 = byId.get('TA-07') as any;
+  assert.ok(
+    /எதாசக்தி|யதாசக்தி/.test(t7.yathashaktiWarrant ?? ''),
+    'the yathashakti warrant must quote the Tamil phrase read from the page'
+  );
+  assert.ok(/TA-07/.test(t7.yathashaktiWarrant ?? ''), 'the warrant must name its source');
+});
+
+check('Sade Sati wording is anchored to Phaladeepika per owner decision 3', () => {
+  const ref3 = byId.get('REF-03');
+  assert.ok(ref3, 'REF-03 is missing');
+  assert.ok(/Phaladeepika/.test((ref3 as any).ownerDecision ?? ''),
+    'REF-03 must record the owner decision naming Phaladeepika');
+  const en02 = byId.get('EN-02') as any;
+  const anchors: string[] = en02.verifiedChapterAnchors ?? [];
+  assert.ok(
+    anchors.some((a) => /XXVI/.test(a) && /GOCHARA|TRANSIT/i.test(a)),
+    'EN-02 must carry a verified Adhyaya XXVI transit anchor'
+  );
+});
+
+check('SOURCES.md quarantines the excluded Hindi ids inside one clearly-marked section', () => {
+  const start = sourcesMd.indexOf('## 2.');
+  const end = sourcesMd.indexOf('## 3.');
+  assert.ok(start > 0 && end > start, 'cannot locate the exclusion section boundaries');
+  const section = sourcesMd.slice(start, end);
+  const outside = sourcesMd.slice(0, start) + sourcesMd.slice(end);
+
+  assert.ok(/excluded|not used/i.test(section), 'the section must state that these are excluded');
+  for (const s of excluded) {
+    assert.ok(section.includes(s.id), `${s.id} is excluded but not listed in the exclusion section`);
+    assert.ok(
+      !new RegExp(`\\b${s.id}\\b`).test(outside),
+      `${s.id} is mentioned outside the exclusion section, so it reads like a live source`
+    );
   }
 });
 

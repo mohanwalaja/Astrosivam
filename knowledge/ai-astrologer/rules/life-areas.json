@@ -1,0 +1,1702 @@
+{
+  "$schema": "./life-areas.schema.json",
+  "version": "1.0.0",
+  "generatedOn": "2026-10-09",
+  "_purpose": "Part 2 of the ASTRO SIVAM AI Astrologer. One entry per life-area card on page 2 of the Jathagam report, plus the four topic areas the brief calls out. Every rule names the chart positions that cause it, how it is worded in each language, when it eases, and the source it was taken from.",
+  "_cardAnchors": "Card titles, order and house anchors were read from this repository: src/services/jathagamHtmlBuilder.ts buildJathagamLifeCards (titles at lines 459-533) and api/astrology/pdf_mpdf_reports.php $lifeCardsData (line 1489). The chat reuses the same titles so the chat and the PDF agree.",
+  "_sourceLevels": "A rule may cite a source only at the level recorded in sources.json. 'passage' means a verifiedPassages entry exists and the rule may be cited to a verse or page. 'book' means book-level only. 'chapter' is allowed only for EN-02, whose printed index was read.",
+  "areas": [
+    {
+      "id": "health",
+      "cardIndex": 1,
+      "cardTitle": {
+        "en": "Health & Vitality",
+        "ta": "ஆரோக்கியம் & நல்வாழ்வு",
+        "hi": "स्वास्थ्य एवं आरोग्य"
+      },
+      "houseAnchors": [
+        1
+      ],
+      "chartInputs": [
+        "lagna",
+        "lagnaLord",
+        "lagnaLordHouse",
+        "lagnaLordDignity",
+        "moonSign",
+        "moonNakshatra",
+        "house6",
+        "house8",
+        "house12",
+        "currentDasha",
+        "currentAntardasha",
+        "saniTransitFromMoon"
+      ],
+      "customerPhrases": {
+        "en": [
+          "health",
+          "sick",
+          "illness",
+          "pain",
+          "tired",
+          "surgery",
+          "hospital",
+          "doctor"
+        ],
+        "ta": [
+          "உடல்நலம்",
+          "வியாதி",
+          "நோய்",
+          "வலி",
+          "சோர்வு",
+          "மருத்துவமனை"
+        ],
+        "hi": [
+          "स्वास्थ्य",
+          "बीमार",
+          "बिमारी",
+          "दर्द",
+          "थकान",
+          "इलाज",
+          "अस्पताल"
+        ]
+      },
+      "medicalSafety": {
+        "required": true,
+        "policy": "health-guardrails.json",
+        "note": "Every rule in this area is an astrological indication only. The retrieval layer attaches the health guardrail to the whole area, not per rule, so no rule can escape it."
+      },
+      "rules": [
+        {
+          "id": "health-lagna-lord",
+          "condition": {
+            "type": "dignity",
+            "planet": "lagnaLord",
+            "state": "weak"
+          },
+          "meaning": {
+            "en": "Your Lagna lord - the planet that rules your rising sign and stands for the body itself - is placed where it has little support. The classical reading is that stamina runs lower than average, so routine, diet and movement carry more weight for you than for most people.",
+            "ta": "உங்கள் லக்னாதிபதி - உடலையே குறிக்கும் கிரகம் - பலவீனமான இடத்தில் உள்ளது. மரபுப்படி உடல் சக்தி சராசரியை விடக் குறைவாக இருக்கும்; எனவே ஒழுக்கமான உணவு, உறக்கம், உடற்பயிற்சி உங்களுக்கு அதிகம் பலன் தரும்.",
+            "hi": "आपका लग्नेश - वह ग्रह जो लग्न राशि का स्वामी है और शरीर का कारक माना जाता है - कम समर्थन वाली स्थिति में है। परंपरा के अनुसार सहनशक्ति औसत से कम रहती है, इसलिए दिनचर्या, आहार और व्यायाम आपके लिए अधिक मायने रखते हैं।"
+          },
+          "easing": "Reads softer whenever the Lagna lord is supported by transit, and in the Dasha of a well-placed benefic.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book",
+              "note": "Lagna lord strength and its result for the body."
+            },
+            {
+              "id": "EN-06",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "fixed sleep time",
+            "daily 30-minute walk",
+            "regular meals"
+          ]
+        },
+        {
+          "id": "health-house6-lord",
+          "condition": {
+            "type": "lordOf",
+            "house": 6,
+            "placement": "weak"
+          },
+          "meaning": {
+            "en": "The lord of your 6th house - the house of ailments and of recovery - is placed where it struggles. The classical reading is that minor complaints arrive more often and take longer to clear. This is an indication to stay ahead of check-ups, not a prediction of any particular illness.",
+            "ta": "உங்கள் 6-ஆம் வீட்டின் அதிபதி - நோய் மற்றும் குணமாவதைக் குறிக்கும் வீடு - பலவீனமாக உள்ளது. மரபுப்படி சிறு தொந்தரவுகள் அடிக்கடி வந்து, நீண்ட நாள் நீடிக்கும். இது ஒரு குறிப்பிட்ட நோயின் கணிப்பு அல்ல; முன்கூட்டியே பரிசோதனை செய்துகொள்ள வேண்டும் என்ற அறிகுறி.",
+            "hi": "आपके छठे भाव - रोग और उपचार का भाव - का स्वामी कमजोर स्थिति में है। परंपरा के अनुसार छोटी शिकायतें बार-बार आती हैं और ठीक होने में समय लेती हैं। यह किसी विशेष बीमारी की भविष्यवाणी नहीं, बल्कि नियमित जाँच करते रहने का संकेत है।"
+          },
+          "easing": "Eases in the Dasha of the 6th lord once it is transited by a benefic, and generally once that Bhukti closes.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-02",
+              "level": "chapter",
+              "note": "Adhyaya VIII - debility and disease indications."
+            }
+          ],
+          "practical": [
+            "annual full check-up",
+            "keep a symptom diary for the doctor"
+          ]
+        },
+        {
+          "id": "health-moon-afflicted",
+          "condition": {
+            "type": "conjunction",
+            "planets": [
+              "Moon"
+            ],
+            "with": [
+              "Sani",
+              "Rahu",
+              "Ketu"
+            ]
+          },
+          "meaning": {
+            "en": "Your Moon sits with Saturn, Rahu or Ketu. The Moon governs mind, sleep and emotional steady-ness, so the classical reading is that sleep and mood feel the weather before the body does.",
+            "ta": "உங்கள் சந்திரன் சனி, ராகு அல்லது கேதுவுடன் சேர்ந்துள்ளது. சந்திரன் மனம், தூக்கம், உணர்வு நிலைப்பைக் குறிப்பதால், உடலுக்கு முன்னால் தூக்கமும் மனநிலையுமே முதலில் பாதிக்கப்படும் என்பது மரபுக் கருத்து.",
+            "hi": "आपका चंद्र शनि, राहु या केतु के साथ है। चंद्र मन, नींद और भावनात्मक स्थिरता का कारक है, इसलिए परंपरा के अनुसार शरीर से पहले नींद और मनोदशा प्रभावित होती है।"
+          },
+          "easing": "Softens when the Moon is transited by Guru or Sukra, and in their Dasha.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-02",
+              "level": "chapter",
+              "note": "Adhyaya XIV - Moon-related indications."
+            }
+          ],
+          "practical": [
+            "fixed sleep window",
+            "reduce late-evening screens",
+            "short daily walk outdoors"
+          ]
+        },
+        {
+          "id": "health-sade-sati",
+          "condition": {
+            "type": "transit",
+            "planet": "Sani",
+            "fromMoon": [
+              12,
+              1,
+              2
+            ]
+          },
+          "meaning": {
+            "en": "Saturn is currently passing the 12th, 1st or 2nd sign from your natal Moon. This is the seven-and-a-half-year stretch the later transit tradition calls Sade Sati; the classical basis is Phaladeepika Adhyaya XXVI, which gives Saturn's results house by house from the Moon. Read plainly it is a period of restructuring - joints, sleep and workload take priority - not a sentence of misfortune.",
+            "ta": "சனி தற்போது உங்கள் ஜன்ம ராசிக்கு 12, 1 அல்லது 2-ஆம் இடத்தில் செல்கிறது. இதுவே பிற்கால கோசார மரபு 'ஏழரைச் சனி' என்று அழைக்கும் ஏழரை ஆண்டு காலம். இதன் மரபு அடிப்படை பலதீபிகை 26-ஆம் அதிகாரம் - அது சனியின் பலன்களை சந்திரனிலிருந்து ஒவ்வொரு வீடாகத் தருகிறது. இது வாழ்வை ஒழுங்குபடுத்தும் காலம்; மூட்டு, தூக்கம், வேலைப்பளு கவனம் வேண்டும். துரதிர்ஷ்ட தண்டனை அல்ல.",
+            "hi": "शनि अभी आपकी जन्म राशि से 12वें, पहले या दूसरे स्थान से गोचर कर रहा है। यही साढ़े सात वर्ष का काल है जिसे बाद की गोचर परंपरा 'साढ़ेसाती' कहती है; इसका शास्त्रीय आधार फलदीपिका का 26वाँ अध्याय है, जो चंद्र से भाव-दर-भाव शनि के फल देता है। सीधे शब्दों में यह पुनर्व्यवस्था का काल है - जोड़, नींद और कार्यभार पर ध्यान दें। यह दुर्भाग्य का दंड नहीं।"
+          },
+          "easing": "Phased: it lifts when Saturn leaves the 2nd sign from your Moon. Name the current phase and the approximate year from the chart.",
+          "source": [
+            {
+              "id": "EN-02",
+              "level": "chapter",
+              "note": "Adhyaya XXVI - Saturn's results house by house from the natal Moon; penance at XXVI-50."
+            },
+            {
+              "id": "REF-03",
+              "level": "note",
+              "note": "\"Sade Sati\" is the later transit tradition's name; do not attribute the phrase to a classical verse."
+            },
+            {
+              "id": "TA-15",
+              "level": "book",
+              "note": "Tamil framing of சனி பெயர்ச்சி."
+            },
+            {
+              "id": "TP-03",
+              "level": "content",
+              "note": "Thirunallar is the Tamil parihara sthalam for Sani, and the temple itself names the Sambandar pathigam."
+            }
+          ],
+          "practical": [
+            "Saturday: feed a worker or a stray animal",
+            "keep a strict sleep and food routine",
+            "visit Thirunallar if a temple trip is practical"
+          ]
+        },
+        {
+          "id": "health-house8-12",
+          "condition": {
+            "type": "anyLordWeak",
+            "houses": [
+              8,
+              12
+            ]
+          },
+          "meaning": {
+            "en": "A lord of your 8th or 12th house - the houses of long treatment, hospital stay and recovery - is placed where it struggles. The classical reading is that recovery work needs patience and that you should not cut treatment short.",
+            "ta": "உங்கள் 8 அல்லது 12-ஆம் வீட்டின் அதிபதி - நீண்ட சிகிச்சை, மருத்துவமனை வாசம், குணமாவதைக் குறிக்கும் வீடுகள் - பலவீனமாக உள்ளது. மரபுப்படி குணமாகும் காலம் பொறுமை வேண்டும்; சிகிச்சையை பாதியில் நிறுத்தக்கூடாது.",
+            "hi": "आपके आठवें या बारहवें भाव - दीर्घ उपचार, अस्पताल और पुनर्प्राप्ति के भाव - का कोई स्वामी कमजोर स्थिति में है। परंपरा के अनुसार ठीक होने में धैर्य चाहिए और उपचार बीच में नहीं छोड़ना चाहिए।"
+          },
+          "easing": "Eases as the Bhukti of that lord closes and as the house receives a benefic transit.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-06",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "do not stop prescribed treatment early",
+            "second opinion is reasonable, delay is not"
+          ]
+        }
+      ],
+      "suppressedRules": [
+        {
+          "source": {
+            "id": "TA-02",
+            "level": "suppressed",
+            "verse": "53-57"
+          },
+          "reason": "Names specific medical conditions (night blindness, ear disease, eye disease; verses 59-60 add smallpox). Under the health rules the agent never diagnoses, so these verses are read but never relayed."
+        },
+        {
+          "source": {
+            "id": "TA-07",
+            "level": "suppressed",
+            "page": "15-16"
+          },
+          "reason": "The Jupiter-by-house list on this page contains death-grade wording for the 1st house. Dropped entirely."
+        },
+        {
+          "source": {
+            "id": "TA-10",
+            "level": "suppressed"
+          },
+          "reason": "Usable only for spiritual framing, always paired with 'see a qualified doctor'. Never used to name a disease or a medicine."
+        }
+      ]
+    },
+    {
+      "id": "wealth",
+      "cardIndex": 2,
+      "cardTitle": {
+        "en": "Wealth & Finance",
+        "ta": "தனம் & நிதி நிலை",
+        "hi": "धन एवं संपत्ति"
+      },
+      "houseAnchors": [
+        2
+      ],
+      "chartInputs": [
+        "house2",
+        "house2Lord",
+        "house2LordHouse",
+        "house2LordDignity",
+        "house11",
+        "house11Lord",
+        "house11LordHouse",
+        "lagnaLordHouse",
+        "guruHouse",
+        "house6",
+        "house12",
+        "currentDasha",
+        "currentAntardasha"
+      ],
+      "customerPhrases": {
+        "en": [
+          "money",
+          "salary",
+          "debt",
+          "loan",
+          "savings",
+          "loss",
+          "income"
+        ],
+        "ta": [
+          "பணம்",
+          "சம்பளம்",
+          "கடன்",
+          "சேமிப்பு",
+          "நஷ்டம்",
+          "வருமானம்"
+        ],
+        "hi": [
+          "पैसा",
+          "वेतन",
+          "कर्ज",
+          "बचत",
+          "नुकसान",
+          "आमदनी"
+        ]
+      },
+      "rules": [
+        {
+          "id": "wealth-2nd-malefic-cluster",
+          "condition": {
+            "type": "conjunction",
+            "inHouse": 2,
+            "planets": [
+              "Guru",
+              "Sani",
+              "Surya"
+            ]
+          },
+          "meaning": {
+            "en": "Jupiter, Saturn and the Sun are conjoined in your 2nd house. சாதக பாரிசாதம் verse 46 reads this as pressure on savings and family resources - money that is held tightly rather than money that is absent.",
+            "ta": "உங்கள் 2-ஆம் வீட்டில் குரு, சனி, சூரியன் சேர்ந்துள்ளனர். சாதக பாரிசாதம் 46-ஆம் பாடல் இதை சேமிப்பு மற்றும் குடும்ப நிதி மீது அழுத்தம் என்று கூறுகிறது - பணம் இல்லாமை அல்ல, பணம் இறுக்கமாக இருத்தல்.",
+            "hi": "आपके दूसरे भाव में गुरु, शनि और सूर्य युति में हैं। साधक पारिजात श्लोक 46 इसे बचत और पारिवारिक संसाधनों पर दबाव बताता है - धन की अनुपस्थिति नहीं, धन का कसकर बंधा रहना।"
+          },
+          "easing": "Relieves when benefics aspect the 2nd, and in the Dasha of a benefic placed in or aspecting it.",
+          "source": [
+            {
+              "id": "TA-02",
+              "level": "passage",
+              "verse": 46,
+              "page": "20"
+            },
+            {
+              "id": "EN-01",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "automate a fixed monthly saving first",
+            "avoid adding new debt in this Bhukti"
+          ]
+        },
+        {
+          "id": "wealth-2nd-nodes-gulika",
+          "condition": {
+            "type": "conjunction",
+            "inHouse": 2,
+            "planets": [
+              "Rahu",
+              "Ketu"
+            ]
+          },
+          "meaning": {
+            "en": "Rahu or Ketu sits in your 2nd house. சாதக பாரிசாதம் verse 46 reads this as income that arrives and leaves quickly. The practical reading is a cash-flow problem rather than an earning problem.",
+            "ta": "உங்கள் 2-ஆம் வீட்டில் ராகு அல்லது கேது உள்ளது. சாதக பாரிசாதம் 46-ஆம் பாடல் இதை விரைவில் வந்து விரைவில் போகும் வருமானம் என்று கூறுகிறது. நடைமுறையில் இது வருவாய் பிரச்சினை அல்ல; பணப்புழக்க பிரச்சினை.",
+            "hi": "आपके दूसरे भाव में राहु या केतु है। साधक पारिजात श्लोक 46 इसे जल्दी आकर जल्दी चला जाने वाला धन बताता है। व्यावहारिक रूप से यह कमाई की नहीं, नकदी प्रवाह की समस्या है।"
+          },
+          "easing": "Improves when a benefic aspects the 2nd and in the Dasha of the 11th lord.",
+          "source": [
+            {
+              "id": "TA-02",
+              "level": "passage",
+              "verse": 46,
+              "page": "20"
+            },
+            {
+              "id": "EN-09",
+              "level": "book",
+              "note": "Uttara Kalamrita's Rahu-Ketu account."
+            }
+          ],
+          "practical": [
+            "separate account for fixed expenses",
+            "three-month emergency buffer before discretionary spend"
+          ]
+        },
+        {
+          "id": "wealth-2-11-parivartana",
+          "condition": {
+            "type": "parivartana",
+            "houses": [
+              2,
+              11
+            ]
+          },
+          "meaning": {
+            "en": "Your 2nd lord sits in the 11th and your 11th lord sits in the 2nd. சாதக பாரிசாதம் verse 47 reads this exchange as a standing, well-regarded person who earns honestly - the classic wealth exchange.",
+            "ta": "உங்கள் 2-ஆம் வீட்டின் அதிபதி 11-ல் உள்ளார்; 11-ஆம் வீட்டின் அதிபதி 2-ல் உள்ளார். சாதக பாரிசாதம் 47-ஆம் பாடல் இந்த இடமாற்றத்தை நேர்மையாக சம்பாதிக்கும், மதிப்புள்ள வாழ்வு என்று கூறுகிறது.",
+            "hi": "आपके दूसरे भाव का स्वामी ग्यारहवें में और ग्यारहवें का स्वामी दूसरे में है। साधक पारिजात श्लोक 47 इस परिवर्तन को प्रतिष्ठित, ईमानदारी से कमाने वाला जीवन बताता है।"
+          },
+          "easing": "Strengthens in the Dasha of either lord.",
+          "source": [
+            {
+              "id": "TA-02",
+              "level": "passage",
+              "verse": 47,
+              "page": "20"
+            },
+            {
+              "id": "EN-02",
+              "level": "chapter",
+              "note": "Parivartana at VI-32."
+            }
+          ],
+          "practical": [
+            "this period rewards building reputation over chasing a quick deal"
+          ]
+        },
+        {
+          "id": "wealth-loss-combination",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "lordOf",
+                "house": 2,
+                "placementInHouses": [
+                  6,
+                  12
+                ]
+              },
+              {
+                "type": "lordOf",
+                "house": 12,
+                "placementInHouses": [
+                  2
+                ]
+              },
+              {
+                "type": "lordOf",
+                "house": 11,
+                "placementInHouses": [
+                  6,
+                  8,
+                  12
+                ]
+              }
+            ]
+          },
+          "meaning": {
+            "en": "One of your money houses is linked to a house of expense or obstruction - the 2nd lord in the 6th or 12th, the 12th lord in the 2nd, or the 11th lord in the 6th, 8th or 12th. சாதக பாரிசாதம் verse 48 reads this as wealth draining away. Say it as a tendency to plan around, never as a certain loss.",
+            "ta": "உங்கள் பண வீடுகளில் ஒன்று செலவு/தடை வீட்டுடன் இணைந்துள்ளது. சாதக பாரிசாதம் 48-ஆம் பாடல் இதை தன நாசம் என்று கூறுகிறது. இதை திட்டமிட்டு சமாளிக்க வேண்டிய போக்கு என்று மட்டுமே சொல்ல வேண்டும்; நிச்சயமான இழப்பு என்று அல்ல.",
+            "hi": "आपका कोई धन भाव व्यय या बाधा के भाव से जुड़ा है। साधक पारिजात श्लोक 48 इसे धन नाश बताता है। इसे योजना बनाकर संभालने वाली प्रवृत्ति कहें, निश्चित हानि कभी नहीं।"
+          },
+          "easing": "Eases as the Bhukti of the lord concerned closes.",
+          "source": [
+            {
+              "id": "TA-02",
+              "level": "passage",
+              "verse": 48,
+              "page": "22"
+            },
+            {
+              "id": "EN-01",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "freeze discretionary spending for this Bhukti",
+            "renegotiate terms rather than borrowing more"
+          ]
+        },
+        {
+          "id": "wealth-lagna-2-11-yoga",
+          "condition": {
+            "type": "allOf",
+            "conditions": [
+              {
+                "type": "lordOf",
+                "house": 1,
+                "placementInHouses": [
+                  2
+                ]
+              },
+              {
+                "type": "lordOf",
+                "house": 2,
+                "placementInHouses": [
+                  11
+                ]
+              },
+              {
+                "type": "lordOf",
+                "house": 11,
+                "placementInHouses": [
+                  1
+                ]
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Your Lagna lord is in the 2nd, your 2nd lord in the 11th and your 11th lord in the Lagna. சாதக பாரிசாதம் verse 50 reads this as wealth and the things wealth buys coming to you. Verse 51 adds that when the Lagna, 12th and 9th lords are all exalted or vargottama, the scale is large. Never state this as a guarantee.",
+            "ta": "உங்கள் லக்னாதிபதி 2-ல், 2-ஆம் அதிபதி 11-ல், 11-ஆம் அதிபதி லக்னத்தில் உள்ளனர். சாதக பாரிசாதம் 50-ஆம் பாடல் இதை செல்வம் கைகூடும் யோகம் என்று கூறுகிறது. 51-ஆம் பாடல் - லக்ன, 12, 9 அதிபதிகள் உச்சம்/வர்கோத்தமமாக இருந்தால் அளவு பெரியது. இதை உத்தரவாதமாக சொல்லக்கூடாது.",
+            "hi": "आपका लग्नेश दूसरे में, दूसरे का स्वामी ग्यारहवें में और ग्यारहवें का स्वामी लग्न में है। साधक पारिजात श्लोक 50 इसे धन लाभ का योग बताता है। श्लोक 51 जोड़ता है कि लग्न, बारहवें और नवम के स्वामी उच्च या वर्गोत्तम हों तो इसका परिणाम बड़ा होता है। इसे कभी गारंटी न कहें।"
+          },
+          "easing": "Delivers most clearly in the Dasha of the three lords.",
+          "source": [
+            {
+              "id": "TA-02",
+              "level": "passage",
+              "verse": 50,
+              "page": "23"
+            },
+            {
+              "id": "TA-02",
+              "level": "passage",
+              "verse": 51,
+              "page": "23"
+            }
+          ],
+          "practical": [
+            "this is a period to build, not to wait"
+          ]
+        },
+        {
+          "id": "wealth-speech-success",
+          "condition": {
+            "type": "beneficInHouse",
+            "house": 2,
+            "andLordIsBenefic": true
+          },
+          "meaning": {
+            "en": "Benefics sit in your 2nd house and your 2nd lord is itself a benefic. சாதக பாரிசாதம் verse 58 reads this as வாக்கு சித்தி - what you say tends to take effect. Practically: teaching, speaking, negotiating and client-facing work earn more than back-office work for you.",
+            "ta": "உங்கள் 2-ஆம் வீட்டில் சுபக்கிரகங்கள் உள்ளன; 2-ஆம் அதிபதியும் சுபக்கிரகமே. சாதக பாரிசாதம் 58-ஆம் பாடல் இதை வாக்கு சித்தி என்று கூறுகிறது - நீங்கள் சொல்வது பலிக்கும். நடைமுறையில்: கற்பித்தல், பேசுதல், பேரம், வாடிக்கையாளர் தொடர்பு வேலை உங்களுக்கு அதிக வருவாய் தரும்.",
+            "hi": "आपके दूसरे भाव में शुभ ग्रह हैं और दूसरे का स्वामी भी शुभ है। साधक पारिजात श्लोक 58 इसे वाक सिद्धि बताता है - आपका कथन प्रभावी होता है। व्यावहारिक रूप से: पढ़ाना, बोलना, मोल-भाव और ग्राहक-सम्पर्क का काम आपकी अधिक कमाई कराता है।"
+          },
+          "easing": "Strongest in the Dasha of the 2nd lord.",
+          "source": [
+            {
+              "id": "TA-02",
+              "level": "passage",
+              "verse": 58,
+              "page": "24"
+            }
+          ],
+          "practical": [
+            "prefer roles where you speak for the work"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "cardIndex": 3,
+      "cardTitle": {
+        "en": "Education & Intellect",
+        "ta": "கல்வி & அறிவுத்திறன்",
+        "hi": "शिक्षा एवं बौद्धिकता"
+      },
+      "houseAnchors": [
+        5
+      ],
+      "chartInputs": [
+        "house4",
+        "house5",
+        "house5Lord",
+        "house5LordHouse",
+        "house9",
+        "house9Lord",
+        "budhaHouse",
+        "budhaDignity",
+        "guruHouse",
+        "guruDignity",
+        "currentDasha",
+        "currentAntardasha"
+      ],
+      "customerPhrases": {
+        "en": [
+          "study",
+          "exam",
+          "college",
+          "degree",
+          "marks",
+          "concentration",
+          "memory",
+          "scholarship",
+          "higher education"
+        ],
+        "ta": [
+          "படிப்பு",
+          "தேர்வு",
+          "கல்லூரி",
+          "பட்டம்",
+          "மதிப்பெண்",
+          "கவனம்",
+          "ஞாபகம்",
+          "உயர்கல்வி"
+        ],
+        "hi": [
+          "पढ़ाई",
+          "परीक्षा",
+          "कॉलेज",
+          "डिग्री",
+          "अंक",
+          "ध्यान",
+          "स्मरण",
+          "उच्च शिक्षा"
+        ]
+      },
+      "rules": [
+        {
+          "id": "edu-5th-lord",
+          "condition": {
+            "type": "lordOf",
+            "house": 5,
+            "placement": "strong"
+          },
+          "meaning": {
+            "en": "Your 5th lord - the house of learning, memory and creative intelligence - is well placed. The classical reading is that you learn faster when you understand the reason behind a rule rather than memorising it.",
+            "ta": "உங்கள் 5-ஆம் வீட்டின் அதிபதி - கல்வி, ஞாபகசக்தி, படைப்பாற்றலைக் குறிக்கும் வீடு - நன்றாக அமைந்துள்ளது. மரபுப்படி விதியின் காரணத்தை புரிந்துகொண்டு படிக்கும்போது நீங்கள் வேகமாக கற்பீர்கள்.",
+            "hi": "आपके पाँचवें भाव - शिक्षा, स्मृति और रचनात्मक बुद्धि का भाव - का स्वामी अच्छी स्थिति में है। परंपरा के अनुसार आप नियम के पीछे का कारण समझकर पढ़ें तो तेज़ी से सीखते हैं।"
+          },
+          "easing": "Strongest in the Dasha of the 5th lord and in the Budha or Guru Bhukti.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-06",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "study by explaining the topic aloud",
+            "two 45-minute blocks beat one 3-hour block"
+          ]
+        },
+        {
+          "id": "edu-budha-afflicted",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "dignity",
+                "planet": "Budha",
+                "state": "weak"
+              },
+              {
+                "type": "conjunction",
+                "planets": [
+                  "Budha"
+                ],
+                "with": [
+                  "Sani",
+                  "Rahu",
+                  "Ketu"
+                ]
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Budha - the planet of study, memory and speech - is weak in your chart or sits with Saturn, Rahu or Ketu. The classical reading is scattered concentration rather than low ability. The problem is usually the study environment, not the mind.",
+            "ta": "புதன் - படிப்பு, ஞாபகம், பேச்சைக் குறிக்கும் கிரகம் - உங்கள் ஜாதகத்தில் பலவீனமாக அல்லது சனி/ராகு/கேதுவுடன் உள்ளது. மரபுப்படி இது திறன் குறைவு அல்ல; கவனம் சிதறுவதே. பிரச்சினை பொதுவாக படிக்கும் சூழலில் தான்.",
+            "hi": "बुध - पढ़ाई, स्मृति और वाणी का ग्रह - आपकी कुंडली में कमजोर है या शनि/राहु/केतु के साथ है। परंपरा के अनुसार यह क्षमता की कमी नहीं, ध्यान का बिखरना है। समस्या आमतौर पर पढ़ाई के माहौल में होती है, मन में नहीं।"
+          },
+          "easing": "Improves markedly in the Budha Dasha or Budha Bhukti once Budha is well transited, and when Guru aspects it.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-04",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "fixed place and fixed time for study",
+            "phone in another room",
+            "25 minutes on, 5 minutes off"
+          ]
+        },
+        {
+          "id": "edu-9th-lord-higher-study",
+          "condition": {
+            "type": "lordOf",
+            "house": 9,
+            "placement": "strong"
+          },
+          "meaning": {
+            "en": "Your 9th lord - higher study, a teacher, and study far from home - is well placed. The classical reading favours postgraduate study, a subject with a philosophical or research bent, and studying away from your birthplace.",
+            "ta": "உங்கள் 9-ஆம் வீட்டின் அதிபதி - உயர்கல்வி, குரு, பிறந்த ஊருக்கு வெளியே படிப்பு - நன்றாக அமைந்துள்ளது. மரபுப்படி முதுநிலை படிப்பு, ஆராய்ச்சி/தத்துவ சாய்வு உள்ள பாடம், பிறந்த ஊரை விட்டு வெளியே படிப்பு ஆகியவை சாதகம்.",
+            "hi": "आपके नवम भाव - उच्च शिक्षा, गुरु और जन्मस्थान से दूर पढ़ाई - का स्वामी अच्छी स्थिति में है। परंपरा के अनुसार स्नातकोत्तर शिक्षा, शोध या दर्शन झुकाव वाला विषय, और जन्मस्थान से दूर पढ़ाई अनुकूल है।"
+          },
+          "easing": "Opens in the Dasha of the 9th lord and in a Guru Bhukti.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-09",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "apply one cycle earlier than you think you need to"
+          ]
+        },
+        {
+          "id": "edu-exam-timing",
+          "condition": {
+            "type": "dashaOf",
+            "planets": [
+              "Budha",
+              "Guru",
+              "Sukra"
+            ]
+          },
+          "meaning": {
+            "en": "You are in the Dasha or Bhukti of Budha, Guru or Sukra. These are the three planets the classics treat as friendly to study, so this is a comparatively good window to sit an exam or start a course.",
+            "ta": "நீங்கள் புதன், குரு அல்லது சுக்ர தசை/புக்தியில் உள்ளீர்கள். மரபு நூல்கள் இவற்றை படிப்புக்கு உகந்த கிரகங்கள் என்று கூறுகின்றன; எனவே தேர்வு எழுத அல்லது பாடம் தொடங்க இது ஒப்பீட்டளவில் நல்ல காலம்.",
+            "hi": "आप बुध, गुरु या शुक्र की दशा/भुक्ति में हैं। शास्त्र इन्हें पढ़ाई के लिए अनुकूल ग्रह मानते हैं, इसलिए परीक्षा देने या कोर्स शुरू करने की तुलनात्मक रूप से अच्छी अवधि है।"
+          },
+          "easing": "Compare against the Saturn, Mars, Rahu and Ketu periods in the chart, which the classics treat as heavier for study.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book",
+              "note": "Vimshottari Dasha results."
+            },
+            {
+              "id": "TA-07",
+              "level": "passage",
+              "page": "15-16",
+              "note": "Guru Bhukti under Surya Dasha - the Dasha/Bhukti pairing shape."
+            }
+          ],
+          "practical": [
+            "schedule the hardest subject inside this window"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "career",
+      "cardIndex": 4,
+      "cardTitle": {
+        "en": "Career & Profession",
+        "ta": "தொழில் & உத்தியோகம்",
+        "hi": "व्यवसाय एवं आजीविका"
+      },
+      "houseAnchors": [
+        10
+      ],
+      "chartInputs": [
+        "house10",
+        "house10Lord",
+        "house10LordHouse",
+        "house10LordDignity",
+        "house6",
+        "house7",
+        "house1",
+        "suryaDignity",
+        "saniDignity",
+        "currentDasha",
+        "currentAntardasha",
+        "guruTransit",
+        "saniTransit"
+      ],
+      "customerPhrases": {
+        "en": [
+          "job",
+          "career",
+          "business",
+          "promotion",
+          "resign",
+          "boss",
+          "partnership",
+          "startup",
+          "interview"
+        ],
+        "ta": [
+          "வேலை",
+          "தொழில்",
+          "பதவி உயர்வு",
+          "ராஜினாமா",
+          "மேலதிகாரி",
+          "கூட்டாண்மை",
+          "தொடக்க நிறுவனம்"
+        ],
+        "hi": [
+          "नौकरी",
+          "व्यवसाय",
+          "प्रमोशन",
+          "इस्तीफा",
+          "बॉस",
+          "साझेदारी",
+          "स्टार्टअप",
+          "इंटरव्यू"
+        ]
+      },
+      "rules": [
+        {
+          "id": "career-10th-lord",
+          "condition": {
+            "type": "lordOf",
+            "house": 10,
+            "placement": "strong"
+          },
+          "meaning": {
+            "en": "Your 10th lord - career, public standing and the work you are known for - is well placed. The classical reading is that recognition follows responsibility, so taking the harder assignment is usually the right move for you.",
+            "ta": "உங்கள் 10-ஆம் வீட்டின் அதிபதி - தொழில், பொது மரியாதை, புகழ் - நன்றாக அமைந்துள்ளது. மரபுப்படி பொறுப்பை ஏற்றால் அங்கீகாரம் பின்வரும்; எனவே கடினமான வேலையை ஏற்பது உங்களுக்கு பொதுவாக சரியான தேர்வு.",
+            "hi": "आपके दशम भाव - कर्म, प्रतिष्ठा और पहचान - का स्वामी अच्छी स्थिति में है। परंपरा के अनुसार जिम्मेदारी के बाद मान्यता आती है, इसलिए कठिन काम लेना आपके लिए आमतौर पर सही रहता है।"
+          },
+          "easing": "Delivers in the Dasha of the 10th lord.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-06",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "keep a written record of what you delivered - it is your evidence at review"
+          ]
+        },
+        {
+          "id": "career-friction",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "conjunction",
+                "inHouse": 10,
+                "planets": [
+                  "Sani",
+                  "Sevvai"
+                ]
+              },
+              {
+                "type": "lordOf",
+                "house": 10,
+                "placement": "weak"
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Saturn or Mars sits in your 10th house, or the 10th lord is weak. The classical reading is friction with seniors and delays in decisions about your work - not a failure of the work itself. Phaladeepika places dismissal-from-office among the results of the afflicted houses at XIX-14; read it as 'the relationship needs managing', never as 'you will be dismissed'.",
+            "ta": "உங்கள் 10-ஆம் வீட்டில் சனி அல்லது செவ்வாய் உள்ளது, அல்லது 10-ஆம் அதிபதி பலவீனம். மரபுப்படி மேலதிகாரிகளுடன் உராய்வும், வேலை தொடர்பான முடிவுகளில் தாமதமும் வரும் - வேலையின் தோல்வி அல்ல. பலதீபிகை 19-ஆம் அதிகாரம், 14-ஆம் பாடல் பதவி இழப்பைக் குறிப்பிடுகிறது; அதை 'உறவை கவனமாக கையாள வேண்டும்' என்று மட்டுமே சொல்ல வேண்டும்.",
+            "hi": "आपके दशम भाव में शनि या मंगल है, या दशमेश कमजोर है। परंपरा के अनुसार वरिष्ठों से मतभेद और काम के निर्णयों में देरी होती है - काम की विफलता नहीं। फलदीपिका के 19वें अध्याय के 14वें श्लोक में पद से हटने का उल्लेख है; उसे 'संबंध को संभालना होगा' कहें, 'आप हटाए जाएँगे' कभी नहीं।"
+          },
+          "easing": "Eases when Guru transits aspect the 10th, and in the Dasha of a well-placed benefic.",
+          "source": [
+            {
+              "id": "EN-02",
+              "level": "chapter",
+              "note": "XIX-14 dismissal from an office."
+            },
+            {
+              "id": "EN-01",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "put agreements in writing",
+            "do not resign inside this Bhukti without a written offer"
+          ]
+        },
+        {
+          "id": "career-business-7th",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "lordOf",
+                "house": 7,
+                "placement": "strong"
+              },
+              {
+                "type": "beneficInHouse",
+                "house": 7
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Your 7th house - partners, clients and the public you deal with - is supported. The classical reading favours working with people: partnership, client-facing business, agency work, or a firm where your name is attached to the outcome.",
+            "ta": "உங்கள் 7-ஆம் வீடு - கூட்டாளர், வாடிக்கையாளர், பொது தொடர்பு - ஆதரவாக உள்ளது. மரபுப்படி மக்களுடன் சேர்ந்து வேலை செய்வது சாதகம்: கூட்டாண்மை, வாடிக்கையாளர் தொடர்பு தொழில், உங்கள் பெயர் முடிவுடன் இணைந்த நிறுவனம்.",
+            "hi": "आपका सातवाँ भाव - साझेदार, ग्राहक और जनसम्पर्क - समर्थित है। परंपरा के अनुसार लोगों के साथ काम करना अनुकूल है: साझेदारी, ग्राहक-सम्पर्क व्यवसाय, या ऐसी फर्म जहाँ आपका नाम परिणाम से जुड़ा हो।"
+          },
+          "easing": "Opens in the Dasha of the 7th lord.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-02",
+              "level": "chapter",
+              "note": "Adhyaya VII - kalatra bhava."
+            }
+          ],
+          "practical": [
+            "write the partnership terms before the first invoice"
+          ]
+        },
+        {
+          "id": "career-job-change-timing",
+          "condition": {
+            "type": "dashaOf",
+            "planets": [
+              "Sani",
+              "Rahu",
+              "Ketu"
+            ]
+          },
+          "meaning": {
+            "en": "You are in a Saturn, Rahu or Ketu period. The classics treat these as periods of restructuring rather than of smooth progress: a change of job in this window tends to be driven by circumstance rather than by choice. It is a reasonable time to prepare, and a poor time to sign without reading.",
+            "ta": "நீங்கள் சனி, ராகு அல்லது கேது காலத்தில் உள்ளீர்கள். மரபு இவற்றை முன்னேற்ற காலம் அல்ல, மாற்றக் காலம் என்று கூறுகிறது: இந்த காலத்தில் வேலை மாற்றம் தேர்வால் அல்ல, சூழலால் வரும். தயாராக நல்ல காலம்; அவசரமாக கையெழுத்திட தவறான காலம்.",
+            "hi": "आप शनि, राहु या केतु की अवधि में हैं। शास्त्र इन्हें प्रगति नहीं, पुनर्व्यवस्था का काल मानते हैं: इस अवधि में नौकरी बदलाव प्रायः परिस्थिति से आता है, चुनाव से नहीं। तैयारी का अच्छा समय, बिना पढ़े हस्ताक्षर का खराब।"
+          },
+          "easing": "Compare with the Budha, Guru and Sukra periods in the same chart, which read more favourably for voluntary moves.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-07",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "update the CV now, decide later",
+            "get any offer in writing before resigning"
+          ]
+        },
+        {
+          "id": "career-startup-timing",
+          "condition": {
+            "type": "dashaOf",
+            "planets": [
+              "Budha",
+              "Guru",
+              "Sukra"
+            ]
+          },
+          "meaning": {
+            "en": "You are in a Budha, Guru or Sukra period, which the classics read as favourable for starting something of your own - the risk in this window is over-expanding rather than failing to start.",
+            "ta": "நீங்கள் புதன், குரு அல்லது சுக்ர காலத்தில் உள்ளீர்கள். மரபுப்படி சொந்தமாக தொடங்க இது சாதகமான காலம் - இந்த காலத்தில் அபாயம் தொடங்க முடியாமை அல்ல, அதிகமாக விரிவடைதல்.",
+            "hi": "आप बुध, गुरु या शुक्र की अवधि में हैं। शास्त्र के अनुसार अपना कुछ शुरू करने के लिए यह अनुकूल काल है - इस अवधि का जोखिम शुरू न हो पाना नहीं, बल्कि अधिक विस्तार है।"
+          },
+          "easing": "Read alongside the 10th and 7th house condition above.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "TA-07",
+              "level": "passage",
+              "page": "15-18",
+              "note": "Dasha/Bhukti remedy pairing for Budha, Guru and Sukra."
+            }
+          ],
+          "practical": [
+            "start small and keep a cash reserve equal to six months of costs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "marriage",
+      "cardIndex": 5,
+      "cardTitle": {
+        "en": "Marriage & Relations",
+        "ta": "திருமணம் & உறவு",
+        "hi": "विवाह एवं सम्बंध"
+      },
+      "houseAnchors": [
+        7
+      ],
+      "chartInputs": [
+        "house7",
+        "house7Lord",
+        "house7LordHouse",
+        "house7LordDignity",
+        "house2",
+        "house11",
+        "guruHouse",
+        "guruDignity",
+        "sukraHouse",
+        "sukraDignity",
+        "kujaDosha",
+        "currentDasha",
+        "currentAntardasha"
+      ],
+      "customerPhrases": {
+        "en": [
+          "marriage",
+          "wedding",
+          "spouse",
+          "husband",
+          "wife",
+          "divorce",
+          "relationship",
+          "children",
+          "baby",
+          "delay"
+        ],
+        "ta": [
+          "திருமணம்",
+          "கல்யாணம்",
+          "கணவர்",
+          "மனைவி",
+          "விவாகரத்து",
+          "உறவு",
+          "குழந்தை",
+          "தாமதம்"
+        ],
+        "hi": [
+          "विवाह",
+          "शादी",
+          "पति",
+          "पत्नी",
+          "तलाक",
+          "रिश्ता",
+          "बच्चा",
+          "देरी"
+        ]
+      },
+      "rules": [
+        {
+          "id": "marriage-7th-lord",
+          "condition": {
+            "type": "lordOf",
+            "house": 7,
+            "placement": "strong"
+          },
+          "meaning": {
+            "en": "Your 7th lord is well placed. The classical reading is that the marriage itself is a source of support rather than of strain, and that a partner from outside your immediate community or hometown is more likely than one from within it.",
+            "ta": "உங்கள் 7-ஆம் வீட்டின் அதிபதி நன்றாக அமைந்துள்ளது. மரபுப்படி திருமணமே ஆதரவின் ஆதாரம்; உங்கள் ஊருக்கு/சமூகத்திற்கு வெளியிலிருந்து துணை அமையும் வாய்ப்பு அதிகம்.",
+            "hi": "आपके सातवें भाव का स्वामी अच्छी स्थिति में है। परंपरा के अनुसार विवाह स्वयं सहारा बनता है, और जीवनसाथी अपने क्षेत्र या समुदाय से बाहर से आने की संभावना अधिक है।"
+          },
+          "easing": "The marriage window reads clearly in the Dasha of the 7th lord, or of Guru or Sukra.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-02",
+              "level": "chapter",
+              "note": "Adhyaya VII - kalatra bhava; Phaladeepika X-15 on loss of wife is NOT relayed."
+            }
+          ],
+          "practical": [
+            "widen the search beyond the usual circle"
+          ]
+        },
+        {
+          "id": "marriage-delay",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "conjunction",
+                "inHouse": 7,
+                "planets": [
+                  "Sani"
+                ]
+              },
+              {
+                "type": "lordOf",
+                "house": 7,
+                "placementInHouses": [
+                  6,
+                  8,
+                  12
+                ]
+              },
+              {
+                "type": "dignity",
+                "planet": "Guru",
+                "state": "weak"
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Saturn sits in your 7th house, or the 7th lord is in the 6th, 8th or 12th, or Guru is weak. The classics read this as marriage arriving later than the social average - a delay, not an absence. The usual advice is to stop measuring against other people's timelines.",
+            "ta": "உங்கள் 7-ஆம் வீட்டில் சனி உள்ளது, அல்லது 7-ஆம் அதிபதி 6, 8, 12-ல் உள்ளார், அல்லது குரு பலவீனம். மரபுப்படி திருமணம் சமூக சராசரியை விட தாமதமாக அமையும் - தாமதம் தான், இல்லாமை அல்ல. மற்றவர்களின் காலக்கெடுவுடன் ஒப்பிடுவதை நிறுத்துவதே நல்ல ஆலோசனை.",
+            "hi": "आपके सातवें भाव में शनि है, या सातवें का स्वामी छठे, आठवें या बारहवें में है, या गुरु कमजोर है। शास्त्र इसे विवाह सामाजिक औसत से देर से होने वाला बताते हैं - देरी है, अभाव नहीं। दूसरों की समय-सीमा से तुलना बंद करना ही अच्छी सलाह है।"
+          },
+          "easing": "The window usually opens in the Dasha of the 7th lord or when Guru's transit aspects the 7th.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-06",
+              "level": "book"
+            },
+            {
+              "id": "TA-19",
+              "level": "book",
+              "note": "Tamil nadi treatment of Sukra and marriage."
+            }
+          ],
+          "practical": [
+            "keep looking without a deadline",
+            "do not accept an arrangement out of pressure"
+          ]
+        },
+        {
+          "id": "marriage-kuja-dosha",
+          "condition": {
+            "type": "dosha",
+            "name": "kujaDosha",
+            "present": true
+          },
+          "meaning": {
+            "en": "Your chart carries Kuja (Mangal) dosha - Mars placed in one of the sensitive houses. In the Tamil tradition this is treated as a matching consideration, not a verdict: the Porutham check weighs it against the other person's chart and it is often balanced out. Say it plainly and calmly, and never as a reason not to marry.",
+            "ta": "உங்கள் ஜாதகத்தில் குஜ (செவ்வாய்) தோஷம் உள்ளது - செவ்வாய் உணர்வுப்பூர்வமான வீடுகளில் ஒன்றில் உள்ளது. தமிழ் மரபில் இது பொருத்தம் பார்க்கும் ஒரு அம்சமே தவிர தீர்ப்பு அல்ல: பொருத்த பரிசோதனையில் மறு நபரின் ஜாதகத்துடன் ஒப்பிடப்பட்டு பெரும்பாலும் சமனாகிவிடும். அமைதியாக சொல்ல வேண்டும்; திருமணம் வேண்டாம் என்று சொல்லக்கூடாது.",
+            "hi": "आपकी कुंडली में कुज (मांगलिक) दोष है - मंगल संवेदनशील भावों में किसी एक में है। तमिल परंपरा में इसे मिलान का एक पहलू माना जाता है, निर्णय नहीं: पोरुतम जाँच में इसे दूसरे व्यक्ति की कुंडली से तौला जाता है और प्रायः संतुलित हो जाता है। शांति से कहें, विवाह न करने का कारण कभी नहीं।"
+          },
+          "easing": "Assessed in matching, not in timing.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-09",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "run the Marriage Compatibility report on both charts rather than judging one"
+          ]
+        },
+        {
+          "id": "marriage-children-5th",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "lordOf",
+                "house": 5,
+                "placement": "strong"
+              },
+              {
+                "type": "dignity",
+                "planet": "Guru",
+                "state": "strong"
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Your 5th lord - children - is well placed, or Guru is strong. The classical reading is favourable for children and for a warm relationship with them.",
+            "ta": "உங்கள் 5-ஆம் வீட்டின் அதிபதி - குழந்தைகளைக் குறிப்பவர் - நன்றாக உள்ளார், அல்லது குரு பலமாக உள்ளார். மரபுப்படி குழந்தை பாக்கியமும் அவர்களுடன் நல்ல உறவும் சாதகம்.",
+            "hi": "आपके पाँचवें भाव का स्वामी - संतान का कारक - अच्छी स्थिति में है, या गुरु बलवान है। परंपरा के अनुसार संतान और उनसे अच्छे संबंध अनुकूल हैं।"
+          },
+          "easing": "Reads most clearly in the Dasha of the 5th lord or of Guru.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-06",
+              "level": "book"
+            }
+          ],
+          "practical": []
+        },
+        {
+          "id": "marriage-relationship-strain",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "conjunction",
+                "inHouse": 7,
+                "planets": [
+                  "Rahu",
+                  "Ketu",
+                  "Sevvai"
+                ]
+              },
+              {
+                "type": "lordOf",
+                "house": 7,
+                "placement": "weak"
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Rahu, Ketu or Mars sits in your 7th house, or the 7th lord is weak. The classical reading is that the relationship needs more deliberate communication than most - misunderstandings arrive faster than intentions do. The remedy is behavioural first and ritual second.",
+            "ta": "உங்கள் 7-ஆம் வீட்டில் ராகு, கேது அல்லது செவ்வாய் உள்ளது, அல்லது 7-ஆம் அதிபதி பலவீனம். மரபுப்படி இந்த உறவுக்கு அதிகமான, வேண்டுமென்றேயான உரையாடல் தேவை - நோக்கத்தை விட தவறான புரிதல் வேகமாக வரும். முதல் பரிகாரம் நடத்தை; சடங்கு இரண்டாவது.",
+            "hi": "आपके सातवें भाव में राहु, केतु या मंगल है, या सातवें का स्वामी कमजोर है। परंपरा के अनुसार इस संबंध को अधिक जान-बूझकर संवाद चाहिए - इरादे से पहले गलतफहमी आती है। पहला उपाय व्यवहार है, अनुष्ठान दूसरा।"
+          },
+          "easing": "Softens when a benefic aspects the 7th and in the Dasha of a well-placed benefic.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "TA-07",
+              "level": "passage",
+              "page": "18",
+              "note": "Sukra Bhukti effects rewritten - the source text's loss-of-wife wording is dropped."
+            }
+          ],
+          "practical": [
+            "one unhurried conversation a week",
+            "never decide anything in an argument"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "property",
+      "cardIndex": 6,
+      "cardTitle": {
+        "en": "Property & Real Estate",
+        "ta": "வீடு, நிலம் & சொத்து",
+        "hi": "भूमि, भवन एवं संपत्ति"
+      },
+      "houseAnchors": [
+        4
+      ],
+      "chartInputs": [
+        "house4",
+        "house4Lord",
+        "house4LordHouse",
+        "house4LordDignity",
+        "chandraDignity",
+        "house12",
+        "house9",
+        "currentDasha",
+        "currentAntardasha"
+      ],
+      "customerPhrases": {
+        "en": [
+          "house",
+          "flat",
+          "land",
+          "property",
+          "construction",
+          "move",
+          "rent",
+          "home loan"
+        ],
+        "ta": [
+          "வீடு",
+          "மனை",
+          "நிலம்",
+          "சொத்து",
+          "கட்டுமானம்",
+          "வாடகை",
+          "கடன்"
+        ],
+        "hi": [
+          "घर",
+          "फ्लैट",
+          "जमीन",
+          "संपत्ति",
+          "निर्माण",
+          "किराया",
+          "होम लोन"
+        ]
+      },
+      "rules": [
+        {
+          "id": "property-4th-lord",
+          "condition": {
+            "type": "lordOf",
+            "house": 4,
+            "placement": "strong"
+          },
+          "meaning": {
+            "en": "Your 4th lord - home, land, and the sense of being settled - is well placed. The classical reading is that owning a place of your own is realistic for you, and that the purchase is best timed inside a favourable Bhukti rather than at any price at any time.",
+            "ta": "உங்கள் 4-ஆம் வீட்டின் அதிபதி - வீடு, நிலம், நிம்மதி - நன்றாக அமைந்துள்ளது. மரபுப்படி சொந்த வீடு வாங்குவது யதார்த்தமான இலக்கு; எந்த விலைக்கும் எப்போது வேண்டுமானாலும் வாங்குவதை விட, நல்ல புக்தியில் வாங்குவதே சிறந்தது.",
+            "hi": "आपके चौथे भाव का स्वामी - घर, भूमि और स्थिरता - अच्छी स्थिति में है। परंपरा के अनुसार अपना मकान खरीदना आपके लिए यथार्थवादी लक्ष्य है, और किसी भी मूल्य पर कभी भी खरीदने से बेहतर अनुकूल भुक्ति में खरीदना है।"
+          },
+          "easing": "Best timed in the Dasha of the 4th lord or of Guru.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-06",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "get the documents verified before the advance, not after"
+          ]
+        },
+        {
+          "id": "property-weak-moon-or-4th",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "lordOf",
+                "house": 4,
+                "placement": "weak"
+              },
+              {
+                "type": "conjunction",
+                "inHouse": 4,
+                "planets": [
+                  "Sani",
+                  "Rahu",
+                  "Ketu"
+                ]
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Saturn, Rahu or Ketu sits in your 4th house, or the 4th lord is weak. The classical reading is repeated moves, or a home that takes longer to feel settled. Renting for longer than you expected is not a failure here - it is the normal pattern.",
+            "ta": "உங்கள் 4-ஆம் வீட்டில் சனி, ராகு அல்லது கேது உள்ளது, அல்லது 4-ஆம் அதிபதி பலவீனம். மரபுப்படி அடிக்கடி வீடு மாறுதல் அல்லது வீடு நிம்மதி தர நீண்ட காலம் ஆகும். எதிர்பார்த்ததை விட நீண்ட காலம் வாடகையில் இருப்பது தோல்வி அல்ல - அதுவே இயல்பான போக்கு.",
+            "hi": "आपके चौथे भाव में शनि, राहु या केतु है, या चौथे का स्वामी कमजोर है। परंपरा के अनुसार बार-बार स्थानांतरण, या घर को स्थिर महसूस होने में अधिक समय। अपेक्षा से लंबा किराए पर रहना यहाँ विफलता नहीं, सामान्य पैटर्न है।"
+          },
+          "easing": "Settles when a benefic aspects the 4th and in the Dasha of the 4th lord.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-04",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "keep the deposit safe and the lease in writing",
+            "avoid a long loan in this Bhukti"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "travel-foreign",
+      "cardIndex": 7,
+      "cardTitle": {
+        "en": "Travel & Global Fortune",
+        "ta": "பயணம் & அதிர்ஷ்டம்",
+        "hi": "विदेश यात्रा एवं भाग्य"
+      },
+      "houseAnchors": [
+        9
+      ],
+      "chartInputs": [
+        "house9",
+        "house9Lord",
+        "house9LordHouse",
+        "house12",
+        "house12Lord",
+        "house12LordHouse",
+        "house4",
+        "rahuHouse",
+        "rahuDignity",
+        "currentDasha",
+        "currentAntardasha"
+      ],
+      "customerPhrases": {
+        "en": [
+          "abroad",
+          "foreign",
+          "visa",
+          "immigration",
+          "settle",
+          "study abroad",
+          "overseas job",
+          "travel",
+          "green card"
+        ],
+        "ta": [
+          "வெளிநாடு",
+          "விசா",
+          "குடியேற்றம்",
+          "வெளிநாட்டு வேலை",
+          "வெளிநாட்டு படிப்பு",
+          "பயணம்"
+        ],
+        "hi": [
+          "विदेश",
+          "वीजा",
+          "आप्रवासन",
+          "विदेश में नौकरी",
+          "विदेश में पढ़ाई",
+          "यात्रा"
+        ]
+      },
+      "rules": [
+        {
+          "id": "foreign-12th-lord",
+          "condition": {
+            "type": "lordOf",
+            "house": 12,
+            "placement": "strong"
+          },
+          "meaning": {
+            "en": "Your 12th lord - foreign residence, and living away from the birthplace - is well placed. The classical reading is that a life abroad is realistic for you, and that it tends to work better as a settled move than as repeated short trips.",
+            "ta": "உங்கள் 12-ஆம் வீட்டின் அதிபதி - வெளிநாட்டு வாசம், பிறந்த ஊரை விட்டு வாழ்வு - நன்றாக அமைந்துள்ளது. மரபுப்படி வெளிநாட்டு வாழ்க்கை யதார்த்தமானது; அடிக்கடி சிறு பயணங்களை விட நிரந்தர குடியேற்றமாகவே சிறப்பாக அமையும்.",
+            "hi": "आपके बारहवें भाव का स्वामी - विदेश निवास और जन्मस्थान से दूर जीवन - अच्छी स्थिति में है। परंपरा के अनुसार विदेशी जीवन आपके लिए यथार्थवादी है, और बार-बार छोटी यात्राओं की तुलना में स्थायी बसावट में बेहतर चलता है।"
+          },
+          "easing": "The move reads clearly in the Dasha of the 12th lord or of Rahu.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-09",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "start the paperwork one cycle earlier than the deadline"
+          ]
+        },
+        {
+          "id": "foreign-rahu-9-12",
+          "condition": {
+            "type": "anyOf",
+            "conditions": [
+              {
+                "type": "planetInHouse",
+                "planet": "Rahu",
+                "houses": [
+                  9,
+                  12
+                ]
+              },
+              {
+                "type": "lordOf",
+                "house": 9,
+                "placementInHouses": [
+                  12
+                ]
+              }
+            ]
+          },
+          "meaning": {
+            "en": "Rahu sits in your 9th or 12th house, or your 9th lord is in the 12th. Uttara Kalamrita gives Rahu the most detailed account in the classical literature, and this is the configuration it associates with foreign connection - a job, a course or a partner from another country.",
+            "ta": "ராகு உங்கள் 9 அல்லது 12-ஆம் வீட்டில் உள்ளது, அல்லது 9-ஆம் அதிபதி 12-ல் உள்ளார். உத்தர காலாமிருதம் ராகுவுக்கு மிக விரிவான விளக்கத்தைத் தருகிறது; வெளிநாட்டு தொடர்பு - வேலை, படிப்பு அல்லது துணை - இந்த அமைப்புடனேயே தொடர்புபடுத்தப்படுகிறது.",
+            "hi": "राहु आपके नवम या बारहवें भाव में है, या नवमेश बारहवें में है। उत्तरकालामृत राहु का सबसे विस्तृत विवरण देता है, और विदेशी सम्बन्ध - नौकरी, पढ़ाई या जीवनसाथी - इसी विन्यास से जोड़ा जाता है।"
+          },
+          "easing": "Opens in the Rahu Dasha or Rahu Bhukti.",
+          "source": [
+            {
+              "id": "EN-09",
+              "level": "book",
+              "note": "Elaborate Rahu and Ketu account."
+            },
+            {
+              "id": "EN-01",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "check visa rules directly with the embassy - astrology is not an immigration opinion"
+          ]
+        },
+        {
+          "id": "foreign-9th-lord-strong",
+          "condition": {
+            "type": "lordOf",
+            "house": 9,
+            "placement": "strong"
+          },
+          "meaning": {
+            "en": "Your 9th lord - long journeys, higher study and fortune away from home - is well placed. The classical reading favours both study abroad and travel connected with learning or teaching.",
+            "ta": "உங்கள் 9-ஆம் வீட்டின் அதிபதி - நீண்ட பயணம், உயர்கல்வி, ஊருக்கு வெளியே பாக்கியம் - நன்றாக அமைந்துள்ளது. மரபுப்படி வெளிநாட்டு படிப்பும், கற்றல்/கற்பித்தலுடன் தொடர்புடைய பயணமும் சாதகம்.",
+            "hi": "आपके नवम भाव का स्वामी - दीर्घ यात्रा, उच्च शिक्षा और जन्मस्थान से दूर भाग्य - अच्छी स्थिति में है। परंपरा के अनुसार विदेश में पढ़ाई और शिक्षण-सम्बद्ध यात्रा दोनों अनुकूल हैं।"
+          },
+          "easing": "Opens in the Dasha of the 9th lord.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            },
+            {
+              "id": "EN-06",
+              "level": "book"
+            }
+          ],
+          "practical": []
+        },
+        {
+          "id": "foreign-obstruction",
+          "condition": {
+            "type": "lordOf",
+            "house": 12,
+            "placement": "weak"
+          },
+          "meaning": {
+            "en": "Your 12th lord is weak. The classical reading is that a move abroad comes with more paperwork, more waiting and more expense than the average case - achievable, but not easy. Say it that way; never say it will not happen.",
+            "ta": "உங்கள் 12-ஆம் வீட்டின் அதிபதி பலவீனம். மரபுப்படி வெளிநாட்டு நகர்வு சராசரியை விட அதிக ஆவண வேலை, காத்திருப்பு, செலவுடன் வரும் - சாத்தியம் தான், ஆனால் எளிது அல்ல. அப்படியே சொல்ல வேண்டும்; நடக்காது என்று சொல்லக்கூடாது.",
+            "hi": "आपका बारहवाँ स्वामी कमजोर है। परंपरा के अनुसार विदेश जाने में औसत से अधिक कागजी कार्य, प्रतीक्षा और खर्च आता है - सम्भव है, आसान नहीं। बस इतना कहें; कभी 'नहीं होगा' न कहें।"
+          },
+          "easing": "Improves in the Dasha of a well-placed benefic and when the 12th receives a benefic transit.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book"
+            }
+          ],
+          "practical": [
+            "budget for the process, not only the move",
+            "keep a local option open"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "current-guidance",
+      "cardIndex": 8,
+      "cardTitle": {
+        "en": "Current Guidance",
+        "ta": "தற்போதைய வழிகாட்டல்",
+        "hi": "ज्योतिषीय मार्गदर्शन"
+      },
+      "houseAnchors": [],
+      "chartInputs": [
+        "currentDasha",
+        "currentAntardasha",
+        "currentDashaLord",
+        "currentAntardashaLord",
+        "dashaEndDate",
+        "saniTransitFromMoon",
+        "guruTransit",
+        "moonNakshatra",
+        "moonNakshatraLord"
+      ],
+      "customerPhrases": {
+        "en": [
+          "now",
+          "this year",
+          "when will it get better",
+          "current period",
+          "dashа",
+          "bhukti",
+          "peyarchi",
+          "sani peyarchi",
+          "guru peyarchi"
+        ],
+        "ta": [
+          "இப்போது",
+          "இந்த வருடம்",
+          "எப்போது நல்லாகும்",
+          "தற்போதைய காலம்",
+          "தசை",
+          "புக்தி",
+          "பெயர்ச்சி",
+          "சனி பெயர்ச்சி",
+          "குரு பெயர்ச்சி"
+        ],
+        "hi": [
+          "अभी",
+          "इस साल",
+          "कब अच्छा होगा",
+          "वर्तमान काल",
+          "दशा",
+          "भुक्ति",
+          "गोचर",
+          "शनि गोचर",
+          "गुरु गोचर"
+        ]
+      },
+      "rules": [
+        {
+          "id": "current-dasha-explained",
+          "condition": {
+            "type": "always"
+          },
+          "meaning": {
+            "en": "Name the current Mahadasha and Antardasha from the chart, give the plain one-line meaning of Dasha (the broad chapter of life you are in) and Bhukti (the shorter section inside it), and give the date the current Bhukti ends. Every timing answer must end with a date the customer can check.",
+            "ta": "ஜாதகத்திலிருந்து தற்போதைய மகாதசை மற்றும் புக்தியை சொல்ல வேண்டும். தசை (வாழ்வின் பெரிய அத்தியாயம்), புக்தி (அதற்குள் உள்ள சிறு பகுதி) ஆகியவற்றை ஒரு வரியில் விளக்க வேண்டும். தற்போதைய புக்தி முடியும் தேதியையும் சொல்ல வேண்டும். ஒவ்வொரு கால கணிப்பும் வாடிக்கையாளர் சரிபார்க்கக்கூடிய ஒரு தேதியுடன் முடிய வேண்டும்.",
+            "hi": "कुंडली से वर्तमान महादशा और अन्तर्दशा बताएँ। दशा (जीवन का बड़ा अध्याय) और भुक्ति (उसके भीतर का छोटा हिस्सा) को एक पंक्ति में समझाएँ, और वर्तमान भुक्ति समाप्त होने की तिथि दें। हर समय-अनुमान एक ऐसी तिथि पर समाप्त हो जो ग्राहक जाँच सके।"
+          },
+          "easing": "Always give the Bhukti end date as the first easing marker.",
+          "source": [
+            {
+              "id": "EN-01",
+              "level": "book",
+              "note": "Vimshottari Dasha and Antardasha results."
+            },
+            {
+              "id": "TA-07",
+              "level": "passage",
+              "page": "15-18",
+              "note": "The whole book is organised Dasha -> Bhukti -> remedy, which is the shape this rule follows."
+            }
+          ],
+          "practical": []
+        },
+        {
+          "id": "current-nakshatra",
+          "condition": {
+            "type": "always"
+          },
+          "meaning": {
+            "en": "Name the birth star (janma nakshatra) and its lord from the chart, and use it when giving a weekday or a simple practice. Tamil customers recognise the nakshatra immediately, and it is the fastest way to make a chart feel like theirs.",
+            "ta": "ஜாதகத்திலிருந்து ஜன்ம நட்சத்திரத்தையும் அதன் அதிபதியையும் சொல்ல வேண்டும்; கிழமை அல்லது எளிய ஆச்சாரத்தை சொல்லும்போது அதை பயன்படுத்த வேண்டும். தமிழ் வாடிக்கையாளர்கள் நட்சத்திரத்தை உடனே அடையாளம் காண்பார்கள்; ஜாதகம் தங்களுடையது என்று உணர இதுவே வேகமான வழி.",
+            "hi": "कुंडली से जन्म नक्षत्र और उसके स्वामी बताएँ, और वार या सरल आचरण बताते समय उसका उपयोग करें। तमिल ग्राहक नक्षत्र को तुरंत पहचानते हैं, और कुंडली को अपना महसूस कराने का यह सबसे तेज़ तरीका है।"
+          },
+          "easing": "Not a timing rule - it is the vocabulary rule.",
+          "source": [
+            {
+              "id": "TA-06",
+              "level": "book"
+            },
+            {
+              "id": "TA-11",
+              "level": "book",
+              "note": "நட்சத்திரம்-wise நவக்கிரக பலன்."
+            }
+          ],
+          "practical": []
+        },
+        {
+          "id": "current-panchangam-difference",
+          "condition": {
+            "type": "customerSays",
+            "phrases": [
+              "panchangam",
+              "panchang",
+              "பஞ்சாங்கம்",
+              "पंचांग",
+              "temple calendar",
+              "different from my"
+            ]
+          },
+          "meaning": {
+            "en": "If a customer says the chart differs from their temple panchangam, explain the two Tamil systems rather than defending ours. திருக்கணிதம் (Drik) computes planetary positions by direct astronomical observation; வாக்கியம் (Vakya) uses the traditional mnemonic tables inherited from the classical texts. சிந்தாமணி ரகுநாத சாரி (1822-1880), who worked at the Madras Observatory from 1861 to 1891, began publishing the Thirukkanitha panchangam in 1869 precisely to correct the astronomical discrepancies of the Vakya method, and it was accepted after a scholars' meeting at the Kumbakonam Sankara Mutt. A difference of a few minutes in a planet's position, or of a day in a festival date, is the expected result of choosing one system - not an error in either.",
+            "ta": "வாடிக்கையாளர் ஜாதகம் தங்கள் கோயில் பஞ்சாங்கத்துடன் வேறுபடுகிறது என்றால், நம்முடையதை நியாயப்படுத்துவதற்கு பதிலாக இரண்டு தமிழ் முறைகளையும் விளக்க வேண்டும். திருக்கணிதம் (Drik) கோள்களின் நிலையை நேரடி வானியல் கணக்கீட்டால் கணிக்கிறது; வாக்கியம் (Vakya) மரபு சூத்திர அட்டவணைகளை பயன்படுத்துகிறது. சிந்தாமணி ரகுநாத சாரி (1822-1880) 1861-1891 வரை சென்னை வானாய்வு மையத்தில் பணியாற்றியவர்; வாக்கிய முறையின் வானியல் முரண்பாடுகளை சரிசெய்ய 1869 முதல் திருக்கணித பஞ்சாங்கத்தை வெளியிடத் தொடங்கினார்; கும்பகோணம் சங்கர மட அறிஞர் கூட்டத்திற்குப் பிறகு இது அங்கீகரிக்கப்பட்டது. கோள் நிலையில் சில நிமிட வித்தியாசம் அல்லது திருவிழா தேதியில் ஒரு நாள் வேறுபாடு என்பது ஒரு முறையை தேர்வு செய்ததின் இயல்பான விளைவு - எதிலும் தவறு அல்ல.",
+            "hi": "यदि ग्राहक कहे कि कुंडली उनके मंदिर के पंचांग से अलग है, तो अपना पक्ष सही ठहराने के बजाय दोनों तमिल पद्धतियाँ समझाएँ। तिरुक्कणितम् (Drik) ग्रह स्थिति सीधी खगोलीय गणना से निकालता है; वाक्यम् (Vakya) पारंपरिक सूत्र-सारणियाँ उपयोग करता है। चिंतामणि रघुनाथ शास्त्री (1822-1880), जो 1861-1891 तक मद्रास वेधशाला में रहे, ने वाक्य पद्धति की खगोलीय विसंगतियाँ सुधारने के लिए 1869 से तिरुक्कणित पंचांग प्रकाशित करना शुरू किया; कुम्भकोणम् शंकर मठ की विद्वान सभा के बाद इसे स्वीकृति मिली। ग्रह स्थिति में कुछ मिनट या उत्सव तिथि में एक दिन का अंतर एक पद्धति चुनने का स्वाभाविक परिणाम है - किसी में त्रुटि नहीं।"
+          },
+          "easing": "Not a timing rule.",
+          "source": [
+            {
+              "id": "TA-25",
+              "level": "content",
+              "note": "Page read in full; the 1869 date, the Madras Observatory service years and the Kumbakonam acceptance are all on the page."
+            }
+          ],
+          "practical": [
+            "tell the customer which system their temple follows before comparing dates"
+          ]
+        }
+      ]
+    }
+  ],
+  "openEnded": {
+    "id": "any-other-question",
+    "note": "The brief requires the agent to handle any other life question. These are the routing rules when a question matches no area above.",
+    "routes": [
+      {
+        "match": "legal, court, case, lawsuit, வக்கீல், केस",
+        "route": "decline-with-referral",
+        "text": "Astrology is not a substitute for legal advice. Point to a qualified lawyer and offer only the general period reading."
+      },
+      {
+        "match": "invest, share, stock, mutual fund, crypto, பங்கு, शेयर",
+        "route": "decline-with-referral",
+        "text": "No financial advice. Give the general period reading and refer to a registered financial adviser."
+      },
+      {
+        "match": "medicine, tablet, dose, prescription, மாத்திரை, दवा",
+        "route": "health-guardrail",
+        "text": "Never name a medicine or a dose. Route to health-guardrails.json."
+      },
+      {
+        "match": "death, will I die, accident, lifespan, இறப்பு, மரணம், मौत, मृत्यु",
+        "route": "refuse-prediction",
+        "text": "Refuse to predict death, accident or lifespan, warmly and without alarm. Offer to speak about the current period and its remedies instead, and offer the 'Talk to our astrologer' handoff."
+      },
+      {
+        "match": "black magic, curse, spell, evil eye, செய்வினை, जादू टोना, नजर",
+        "route": "decline-respectfully",
+        "text": "Do not confirm or deny a curse. Offer the ordinary practices - temple visit, japa, charity - and refer repeated distress to the astrologer handoff."
+      },
+      {
+        "match": "price, cost, how much, discount, விலை, कीमत",
+        "route": "no-sales",
+        "text": "No price or sales talk inside an answer. Point to the dashboard instead."
+      }
+    ]
+  }
+}

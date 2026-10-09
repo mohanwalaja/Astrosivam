@@ -12,7 +12,7 @@
       "archive.org full-text derivative read (title page / index page)"
     ],
     "verificationLevels": {
-      "content-read": "The page itself was opened and its content read.",
+      "content-read": "The page was opened and its content read - including, where noted, the printed text of a book reached through its full-text derivative. Sources carrying verifiedPassages may be cited down to a passage.",
       "metadata-verified": "The item exists and its title/language/creator were returned by the catalogue API; the body text was not read page by page.",
       "catalogue-verified": "A print-book listing (ISBN / publisher / page count) was confirmed on two independent bookseller catalogues. No free full text exists.",
       "linked-not-opened": "The URL appears as a link inside a source that WAS opened, but it was not opened separately. Do not cite as an authority until opened.",
@@ -20,21 +20,30 @@
     }
   },
   "sourceCount": {
-    "_note": "Counted by category, not by the 'language' field, because the Navagraha sthalam entries are Tamil temple sources whose articles happen to be written in English.",
+    "_note": "Counted by category. Hindi books are NOT counted here - see excludedSources.",
     "classicalTextsEnglish": 9,
-    "hindiBooks": 13,
+    "hindiBooks": 0,
     "tamilBooks": 30,
     "navagrahaSthalamAndTemples": 12,
     "reference": 4,
-    "total": 68,
-    "byLanguageField": { "ta": 32, "en": 22, "hi": 11, "sa": 3 },
+    "total": 55,
+    "excluded": 13,
+    "byLanguageField": {
+      "en": 22,
+      "sa": 1,
+      "ta": 32
+    },
     "byVerificationLevel": {
       "content-read": 11,
-      "metadata-verified": 45,
+      "metadata-verified": 32,
       "catalogue-verified": 1,
       "linked-not-opened": 10,
       "dead": 1
-    }
+    },
+    "passageLevelSources": [
+      "TA-02",
+      "TA-07"
+    ]
   },
   "sources": [
     {
@@ -115,7 +124,9 @@
       "publisher": "Digital Library of India (C-DAK scan of the Aruna Press, Bangalore edition); source library Central Library, Visva-Bharati",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned title, creator, year 1937, language English, 476 pages.",
-      "usefulFor": ["Second, independently scanned copy of Phaladeepika for cross-checking the 1950 edition"]
+      "usefulFor": [
+        "Second, independently scanned copy of Phaladeepika for cross-checking the 1950 edition"
+      ]
     },
     {
       "id": "EN-04",
@@ -130,7 +141,11 @@
       "publisher": "Nirnaya Sagar Press, Bombay (scan of the Central Secretariat Library, Government of India copy)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned creator Kalyanavarman, year 1928, language English.",
-      "usefulFor": ["Rasi and graha results in each sign", "Planetary combinations in the houses", "Yogas and their strength"]
+      "usefulFor": [
+        "Rasi and graha results in each sign",
+        "Planetary combinations in the houses",
+        "Yogas and their strength"
+      ]
     },
     {
       "id": "EN-05",
@@ -145,7 +160,9 @@
       "publisher": "Robarts Library, University of Toronto",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned creators Kalya Varma and Subrahmanya Sastri V. of Bangalore, year 1907, 274 pages.",
-      "usefulFor": ["Sanskrit original for checking an English rendering of Saravali"]
+      "usefulFor": [
+        "Sanskrit original for checking an English rendering of Saravali"
+      ]
     },
     {
       "id": "EN-06",
@@ -160,7 +177,12 @@
       "publisher": "Internet Archive, opensource collection (Mysore edition lineage)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned title, creator V Subrahmanya Sastri, language English.",
-      "usefulFor": ["Graha and rasi results", "Bhava phala", "Vimshottari dasha results", "Stri jataka (charts of women)"]
+      "usefulFor": [
+        "Graha and rasi results",
+        "Bhava phala",
+        "Vimshottari dasha results",
+        "Stri jataka (charts of women)"
+      ]
     },
     {
       "id": "EN-07",
@@ -175,7 +197,12 @@
       "publisher": "Internet Archive, opensource collection",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned title, creator V Subrahmanya Sastri, language English. A companion DLI scan of chapters 10-18 (Mysore 1933) also exists at https://archive.org/details/jatak-parijata-of-vaidya-natha-dikshita-eng-translation-vol-2-chapter-10-18-myso",
-      "usefulFor": ["Ayurdaya", "Ashtakavarga", "Kalachakra dasha", "Gochara"]
+      "usefulFor": [
+        "Ayurdaya",
+        "Ashtakavarga",
+        "Kalachakra dasha",
+        "Gochara"
+      ]
     },
     {
       "id": "EN-08",
@@ -191,7 +218,9 @@
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned creator Rishi Parashara, language English, licence Public Domain Mark 1.0.",
       "caveat": "This is an abridged popular edition, not a critical translation. Use it only as a cross-check, never as the primary citation.",
-      "usefulFor": ["Plain-language cross-check of BPHS concepts"]
+      "usefulFor": [
+        "Plain-language cross-check of BPHS concepts"
+      ]
     },
     {
       "id": "EN-09",
@@ -217,203 +246,6 @@
         "Muhurta and nimitta"
       ]
     },
-
-    {
-      "id": "HI-01",
-      "group": "classical-hindi",
-      "title": "Brihat Parashar Hora Shastra, Vol. 1 (Hindi)",
-      "titleNative": "बृहत्पराशरहोराशास्त्र",
-      "author": "महर्षि पराशर",
-      "translator": null,
-      "language": "hi",
-      "year": null,
-      "url": "https://archive.org/details/brihat-parashar-hora-shastra-vol-1",
-      "publisher": "Internet Archive, booksbylanguage_hindi",
-      "verification": "content-read",
-      "verificationNote": "Metadata API opened 2026-10-09: language 'hin', OCR run with '-l hin', Devanagari script detected at 0.97 confidence, 448 scanned pages, djvu.txt derivative present.",
-      "usefulFor": ["Hindi-language citation of BPHS rules so the Hindi answer can quote a Hindi source", "Graha karakatva in Devanagari", "Bhava phala"]
-    },
-    {
-      "id": "HI-02",
-      "group": "classical-hindi",
-      "title": "Parasharahorashastra (Sanskrit)",
-      "titleNative": "पराशरहोराशास्त्र",
-      "author": "महर्षि पराशर",
-      "translator": "Ganesh Datta Pathak",
-      "language": "sa",
-      "year": null,
-      "url": "https://archive.org/details/brihat-parashar-hora-shastra",
-      "publisher": "Internet Archive, booksbylanguage_sanskrit",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned title in Devanagari, creator Ganesh Datta Pathak, language Sanskrit.",
-      "usefulFor": ["Sanskrit shlokas that a Hindi answer can quote alongside the Hindi gloss"]
-    },
-    {
-      "id": "HI-03",
-      "group": "classical-hindi",
-      "title": "Brihat Parashar Hora Shastra",
-      "titleNative": "बृहत्पराशरहोराशास्त्र",
-      "author": "महर्षि पराशर",
-      "translator": null,
-      "language": "sa",
-      "year": 1944,
-      "url": "https://archive.org/details/BrihatParasharHoraShastra",
-      "publisher": "Girdhari Lal edition (first publicly available version); also published by Khemraj Press",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned creator Sanatan Dharm, language Sanskrit. The item description states the book contains 71 chapters, that the final chapter says the original had 100 chapters and about 11,000 shlokas, and that this edition holds roughly 5,100 verses not found in modern versions.",
-      "usefulFor": ["Older verse numbering when a modern edition differs", "Verses dropped from current printings"]
-    },
-    {
-      "id": "HI-04",
-      "group": "classical-hindi",
-      "title": "Jyotish Ratnakara",
-      "titleNative": "ज्योतिष-रत्नाकर",
-      "author": "देवकीनन्दन सिंह",
-      "translator": null,
-      "language": "hi",
-      "year": 1934,
-      "url": "https://archive.org/details/20230523_20230523_1342",
-      "publisher": "Internet Archive, booksbylanguage_hindi",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned creator देवकीनन्दन सिंह, year 1934, language Hindi.",
-      "usefulFor": ["Hindi predictive compendium", "Graha in house and sign results", "Dasha and gochara phala in Hindi"]
-    },
-    {
-      "id": "HI-05",
-      "group": "classical-hindi",
-      "title": "Phalit Rajendra",
-      "titleNative": "फलित राजेन्द्र",
-      "author": "Brajesh Pathak 'Jyotishacharya'",
-      "translator": null,
-      "language": "hi",
-      "year": 2020,
-      "url": "https://archive.org/details/phalit-rajendra",
-      "publisher": "Internet Archive, booksbylanguage_hindi",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned title, creator and year 2020, language Hindi.",
-      "usefulFor": ["Modern Hindi predictive rules written for practitioners", "Timing of events from dasha and bhukti"]
-    },
-    {
-      "id": "HI-06",
-      "group": "remedies-hindi",
-      "title": "Durlabh Laghu Prayog evam Navagraha Mahavisheshank",
-      "titleNative": "दुर्लभ लघु प्रयोग एवं नवग्रह महाविशेषांक",
-      "author": "Ajay Uttam",
-      "translator": null,
-      "language": "hi",
-      "year": 2023,
-      "url": "https://archive.org/details/20230220_20230220_0800",
-      "publisher": "Internet Archive, booksbylanguage_hindi",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned title, creator Ajay Uttam, year 2023, language Hindi.",
-      "usefulFor": ["Navagraha-specific simple remedies (laghu prayog)", "Weekday observances", "Charity and dana items per graha"]
-    },
-    {
-      "id": "HI-07",
-      "group": "remedies-hindi",
-      "title": "Ratna Jyotish",
-      "titleNative": "रत्न ज्योतिष",
-      "author": "डॉ. नारायण दत्त श्रीमाली",
-      "translator": null,
-      "language": "hi",
-      "year": 2023,
-      "url": "https://archive.org/details/2011_20230112",
-      "publisher": "Internet Archive, booksbylanguage_hindi",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned title, creator Ajay Uttam as uploader's credit line, year 2023, language Hindi.",
-      "usefulFor": ["Gemstone suitability and, importantly, the CAUTIONS and contra-indications before any gem is recommended"]
-    },
-    {
-      "id": "HI-08",
-      "group": "remedies-hindi",
-      "title": "Vedic Ratna Rashi Astrology",
-      "titleNative": "वैदिक रत्न राशि ज्योतिष",
-      "author": "Ashwin",
-      "translator": null,
-      "language": "hi",
-      "year": 2018,
-      "url": "https://archive.org/details/VedicRatnaRashiAstrology",
-      "publisher": "Internet Archive",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned creator Ashwin, year 2018, language Hindi.",
-      "usefulFor": ["Rashi-wise gemstone guidance", "Gemstone caution list"]
-    },
-    {
-      "id": "HI-09",
-      "group": "remedies-hindi",
-      "title": "Hanuman Jyotish",
-      "titleNative": "हनुमान ज्योतिष",
-      "author": "Unknown",
-      "translator": null,
-      "language": "hi",
-      "year": null,
-      "url": "https://archive.org/details/hanuman-jyotish-hindi",
-      "publisher": "Internet Archive, booksbylanguage_hindi",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned title in Devanagari and English, language Hindi.",
-      "usefulFor": ["Mangal and Shani related devotional practice that is free, simple and non-fear-based (Hanuman Chalisa, Tuesday and Saturday seva)"]
-    },
-    {
-      "id": "HI-10",
-      "group": "classical-hindi",
-      "title": "Prashnachudamani",
-      "titleNative": "प्रश्नचूड़ामणि",
-      "author": "विष्णुदत्त",
-      "translator": null,
-      "language": "hi",
-      "year": 1890,
-      "url": "https://archive.org/details/in.ernet.dli.2015.319916",
-      "publisher": "Digital Library of India",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned creator विष्णुदत्त, year 1890, language Hindi.",
-      "usefulFor": ["Prashna shastra - answering a question raised without birth details, which is what the chat often has to do"]
-    },
-    {
-      "id": "HI-11",
-      "group": "classical-hindi",
-      "title": "Brihat Samhita arthat Barahisamhita",
-      "titleNative": "बृहसंहिता अर्थात बाराहीसंहिता",
-      "author": "वराहमिहिर",
-      "translator": null,
-      "language": "hi",
-      "year": 1893,
-      "url": "https://archive.org/details/in.ernet.dli.2015.321684",
-      "publisher": "Digital Library of India",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned creator वराहमिहिर, year 1893, language Hindi.",
-      "usefulFor": ["Gochara and samvatsara phala", "Nimitta (omens)", "General well-being and public-life indications"]
-    },
-    {
-      "id": "HI-12",
-      "group": "classical-hindi",
-      "title": "Sugam Jyotish",
-      "titleNative": "सुगम ज्योतिष",
-      "author": null,
-      "translator": null,
-      "language": "hi",
-      "year": null,
-      "url": "https://archive.org/details/20210212_20210212_1718",
-      "publisher": "Internet Archive, booksbylanguage_hindi",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned title सुगम ज्योतिष, language Hindi.",
-      "usefulFor": ["Plain-language Hindi explanations of terms such as dasha, bhukti, gochara, dosha - useful for the one-line term glosses the chat must give"]
-    },
-    {
-      "id": "HI-13",
-      "group": "classical-hindi",
-      "title": "Tarkik Jyotish (with new articles and case studies)",
-      "titleNative": "तार्किक ज्योतिष नए लेख व केस स्टडी के साथ",
-      "author": "Vipul Joshi",
-      "translator": null,
-      "language": "hi",
-      "year": 2023,
-      "url": "https://archive.org/details/vipul-sir-book-compressed",
-      "publisher": "Internet Archive, booksbylanguage_hindi",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned title, creator Vipul Joshi, year 2023, language Hindi.",
-      "usefulFor": ["Reasoned, non-fatalistic Hindi framing of predictions - matches the no-guarantee, no-fear guardrail"]
-    },
-
     {
       "id": "TA-01",
       "group": "classical-tamil",
@@ -428,7 +260,10 @@
       "publisher": "தமிழ் இணையக் கல்விக் கழகம் / Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam' in the TamilVirtualAcademy and JaiGyan collections.",
-      "usefulFor": ["Tamil-language Parashari rules - the Tamil answer can cite a Tamil book rather than an English one", "Graha and bhava results in Tamil terminology"]
+      "usefulFor": [
+        "Tamil-language Parashari rules - the Tamil answer can cite a Tamil book rather than an English one",
+        "Graha and bhava results in Tamil terminology"
+      ]
     },
     {
       "id": "TA-02",
@@ -443,8 +278,64 @@
       "url": "https://archive.org/details/tdl.8526-nuul-caatk-paaricaatm",
       "publisher": "Tamil Digital Library (Saraswathi Mahal Library, Thanjavur lineage)",
       "verification": "content-read",
-      "verificationNote": "Details page opened 2026-10-09. Keywords listed on the item are தமிழ் சோதிடம், சோதிடம், சாதக பாரிசாதம், சாதகம். OCR ran with '-l tam+Tamil', detected language ta and script Tamil at 1.00 confidence. Item size 168.0M. The item record also names tamildigitallibrary.in as the original source.",
-      "usefulFor": ["Tamil rendering of Jataka Parijata", "Graha in rasi and bhava results in Tamil", "Dasha and gochara in Tamil"]
+      "verificationNote": "Item page opened 2026-10-09 (keywords தமிழ் சோதிடம், சோதிடம், சாதக பாரிசாதம், சாதகம்; OCR -l tam+Tamil at 1.00 confidence). Full-text derivative opened and read 2026-10-09 (chunk 7 = printed pp.20-24, the குடும்ப / வாக்கு ஸ்தானம் section). OCR is good here: 26,136 of ~32,726 indexed words (80%) scored confidence 91-100.",
+      "usefulFor": [
+        "Tamil rendering of Jataka Parijata",
+        "Graha in rasi and bhava results in Tamil",
+        "Dasha and gochara in Tamil"
+      ],
+      "structure": "Verse (பாடல்) followed by a prose gloss introduced by \"(இ-ள்.)\" = \"the meaning is\". Verses are numbered in the printed text and the page number appears in the running header, so a rule can be cited to a verse number.",
+      "verifiedPassages": [
+        {
+          "verse": 46,
+          "page": "20",
+          "topic": "குடும்பத்தான பலன் (2nd house results)",
+          "quote": "இரண்டாம் இடத்தில் காரகன், சனி, சூரியன் இவர்களோடு சேர்ந்தால் வறுமை உண்டாகும். இரண்டாம் இடத்தில் இராகு அல்லது கேதோடு குளிகன் கூடி அமர்ந்திட அச்சாதகன் வறுமையுடன் வாழ்வான். இரண்டாம் இடத்தை சுபக்கோள்கள் பார்க்க அல்லது இரண்டாம் இடத்தில் நற்கோள்கள் கூடி நிற்க குடும்பத்திற்கு நன்மையாகும்",
+          "status": "USABLE for the Wealth and Finance card."
+        },
+        {
+          "verse": 47,
+          "page": "20",
+          "topic": "புகமுடையவன் (2nd / 11th exchange)",
+          "quote": "இரண்டாமிடத்துக்கு உடையவன், பதினோராம் இடத்தில் நிற்க, பதினோராம் இடத்துக்கு உடையவன் இரண்டாம் இடத்தே நிற்க, அல்லவென்றால் இரண்டு கிரகங்களும் கேந்திர திரிகோணங்களிலே நிற்க இச்சாதகன் தர்மவானாய்க் கீர்த்திமானாக இருப்பான்",
+          "status": "USABLE. Parivartana between the 2nd and 11th lords, or both in kendra/trikona."
+        },
+        {
+          "verse": 48,
+          "page": "22",
+          "topic": "பொருள் நட்டம் அடைபவன் (wealth loss)",
+          "quote": "இரண்டாம் இடத்துக்கு உடையவன், ஆறாம் இடத்திலாவது, பன்னிரண்டாம் இடத்திலாவது இருக்க, பன்னிரண்டாம் இடத்துக்கு உடையவன் இரண்டாம் இடத்தே நிற்க, பதினோராம் இடத்திற்கு உடையவன் ஆறாமிடம், எட்டாமிடம், பன்னிரண்டாமிடம் இவற்றில் நிற்க, இச்சாதகனுக்குத் தன நாசம் வரும்",
+          "status": "USABLE. State as a tendency to plan around, never as a fixed loss."
+        },
+        {
+          "verse": 50,
+          "page": "23",
+          "topic": "செல்வன் (wealth yoga)",
+          "quote": "இலக்கனாதிபதி, இரண்டாம் இடத்தில் இருக்க, இரண்டாம் இடத்துக்கு உடையவன் பதினோராம் இடத்தில் இருக்க, பதினோராம் இடத்துக்கு உடையவன் இலக்கனத்தில் இருக்க இச்சாதகனுக்கு செல்வம் முதலாய் இருக்கின்ற பொருள்கள் கிடைக்கும்",
+          "status": "USABLE. Lagna lord in the 2nd, 2nd lord in the 11th, 11th lord in the lagna."
+        },
+        {
+          "verse": 51,
+          "page": "23",
+          "topic": "great wealth yoga",
+          "quote": "இலக்கனத்துக்கு உடையவனும் பன்னிரண்டாம் இடத்துக்கு உடையவனும், ஒன்பதாம் இடத்துக்கு உடையவனும் இவர்கள் மூன்று பேரும் உச்சாங்கிசத்திலே இருக்க அல்லது வைசேடியாங்கிசம் ஏறி இருக்க இச்சாதகன் கோடி பணத்திற்கு எல்லாம் எசமானனாவான்",
+          "status": "USABLE. Never as a guarantee."
+        },
+        {
+          "verse": "53-57",
+          "page": "23-24",
+          "topic": "eye, ear and speech indications",
+          "quote": "சந்திரன், சுங்கன், வித்தைக் கதிபன் ... மாலைக்கண் நோய் ... இரண்டாம் இடத்துக்கு உடையவன் செவ்வாயுடனே கூடி இலக்கனத்தில் இருக்கப் பிறந்தவன் காதிலே நோயுண்டாய் ... சனியும் செவ்வாயும் குளிகனும் கூடி ... நேத்திர ரோகமாய் இருப்பான் ... சுபக்கிரகங்களுடனே கூடி இருக்க ... குளிர்ந்த பார்வையையும் நல்ல நயனத்தையும் உடையவனாக இருப்பான்",
+          "status": "DO NOT RELAY. These are named medical conditions (night blindness, ear disease, eye disease; verses 59-60 add smallpox and burns). Under the health rules the agent never diagnoses. Only the positive framing of verses 57-58 is usable; every negative health indication routes to \"see a qualified doctor\"."
+        },
+        {
+          "verse": 58,
+          "page": "24",
+          "topic": "வாக்கு சித்தி உடையவன் (speech success)",
+          "quote": "இரண்டாம் இடத்தில் சுபக்கிரகங்கள் இருந்து, உச்ச வர்க்கத்தில் இருக்க, இரண்டாம் இடத்துக்கு உடையவன் சுபக்கிரகமாக, உச்ச வர்க்கத்திலே இருக்க, வாக்குச் சித்தி உண்டாய் இருப்பான்",
+          "status": "USABLE. Benefics in the 2nd in exaltation or own varga, with the 2nd lord a benefic similarly placed, gives வாக்கு சித்தி. Supports Education and Career answers about speaking, teaching and negotiation."
+        }
+      ]
     },
     {
       "id": "TA-03",
@@ -460,7 +351,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["The standard Tamil commentary on Varahamihira's Brihat Jataka", "Tamil vocabulary for graha strength, yoga and dosha"]
+      "usefulFor": [
+        "The standard Tamil commentary on Varahamihira's Brihat Jataka",
+        "Tamil vocabulary for graha strength, yoga and dosha"
+      ]
     },
     {
       "id": "TA-04",
@@ -476,7 +370,11 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'. The title itself is a Tamil treatise on gochara (transit).",
-      "usefulFor": ["Gochara rules in Tamil", "Sani and Guru peyarchi effects", "Explaining to a Tamil customer why a period is difficult and when it eases"]
+      "usefulFor": [
+        "Gochara rules in Tamil",
+        "Sani and Guru peyarchi effects",
+        "Explaining to a Tamil customer why a period is difficult and when it eases"
+      ]
     },
     {
       "id": "TA-05",
@@ -492,7 +390,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Tamil karaka tables - which graha signifies which life area", "Tamil time-cycle (kala) reference for dasha wording"]
+      "usefulFor": [
+        "Tamil karaka tables - which graha signifies which life area",
+        "Tamil time-cycle (kala) reference for dasha wording"
+      ]
     },
     {
       "id": "TA-06",
@@ -508,7 +409,11 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'. A second part exists at https://archive.org/details/tdl.8554 covering Uththiram to Poorattathi.",
-      "usefulFor": ["Birth star (janma nakshatra) results in Tamil", "Nakshatra lord and its remedies", "Baby naming sound linkage"]
+      "usefulFor": [
+        "Birth star (janma nakshatra) results in Tamil",
+        "Nakshatra lord and its remedies",
+        "Baby naming sound linkage"
+      ]
     },
     {
       "id": "TA-07",
@@ -516,15 +421,66 @@
       "tamilSection": true,
       "title": "Navagraha Dosha Pariharam ennum Jathaka Thesarishta Nivarani",
       "titleNative": "நூல் - நவக்கிரக தோஷ பரிகாரம் என்னும் ஜாதக தெசாரிஷ்ட நிவாரணி",
-      "author": null,
+      "author": "கோமடம் ஸ்ரீனிவாச அய்யங்கார் (Gomadam Srinivasa Ayyangar), astrologer",
       "translator": null,
       "language": "ta",
-      "year": null,
+      "year": 1946,
       "url": "https://archive.org/details/tdl.39589-nuul-nvkkirk-tooss-prikaarm-ennnnnnum-jaatk-tecaarisstt-nivaarnni",
-      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
-      "verification": "metadata-verified",
-      "verificationNote": "Catalogue API returned the identifier with language 'tam'. The title is literally 'Navagraha dosha remedy, called the reliever of the ten chart afflictions'.",
-      "usefulFor": ["PRIMARY Tamil remedies source: graha-wise pariharam", "Dosha identification in Tamil vocabulary", "Simple, non-expensive remedial actions"]
+      "publisher": "Printed at the \"C. G. Urania\" press, Ayalore Muthialu Mudali Street No. 86, Sowcarpet, Chennai, 1946",
+      "verification": "content-read",
+      "verificationNote": "Full-text derivative opened and read 2026-10-09 (chunk 0 = title page, chunk 4 = printed pp.14-18). The title page gives author, reviewer, printer, place and the year 1946. OCR quality is MODERATE: of ~12,803 indexed words 7,029 (55%) scored confidence 91-100 while 228 scored 0-10, so the Tamil quotations below carry OCR noise and must be re-read against the scan before being shown verbatim to a customer.",
+      "usefulFor": [
+        "PRIMARY Tamil remedies source: graha-wise pariharam",
+        "Dosha identification in Tamil vocabulary",
+        "Simple, non-expensive remedial actions"
+      ],
+      "edition": "As taught by C. G. Rajan; reviewed by O. Govinda Rajan, B.A. (Mathematics), editor of the Namagal Thirukkanitha Panchangam and of the Thennattu Vakya Panchangam, editor of Brihat Jataka, author of Jathaka Kanitham and of Raja Jothida Kanitham (Navagraha sphuta kanitham)",
+      "structure": "Organised as தசை -> புக்தி -> சாந்தி: for each Mahadasha / Antardasha pair, the dosha indicated and the remedy prescribed. This is exactly the shape the chat needs for \"which Dasha and Bhukti causes this, and what do I do about it\".",
+      "verifiedPassages": [
+        {
+          "page": "15",
+          "topic": "மஹிஷீதானம் for மஹா அபிமிருத்யு தோஷம் (Rahu-linked)",
+          "quote": "அப்படி மஹிஷீதானம் செய்தாலும் மஹா அபிமிருத்யு தோஷம் பரிகாரமாகும்",
+          "status": "FEAR-LANGUAGE and EXPENSIVE. Never relayed. See guardrailTransforms."
+        },
+        {
+          "page": "15-16",
+          "topic": "சூரிய தசை / குரு புக்தி சாந்தி",
+          "quote": "குருவுக்கு பிரீதிகரமாக சுவர்ண தானம் செய்ய வேண்டியது ... குருவாரம் புண்ணிய காலங்களில் விதிப்படி ஸ்வர்ணதானம் கொடுக்கவேண்டும் ... எதாசக்தி தக்ஷணையுடன்",
+          "status": "USABLE. Jupiter remedy = Thursday, gold dana scaled to capacity. The Jupiter-by-house list on the same page contains death-grade wording for the 1st house, which is dropped."
+        },
+        {
+          "page": "16-17",
+          "topic": "சூரிய தசை / சனி புக்தி சாந்தி",
+          "quote": "அஷ்டமி, சதுர்த்தசி, அமாவாசை, ஜன்ம நட்சத்திரத்தில், குரூர காலத்தில், பர்வதினத்தில், ஞாயிறு, செவ்வாய், வெள்ளி இவ்வாரங்களிலே சாந்தி செய்கிறவன் ... கோதுமை தானியத்தையும் ... உளுந்து தானியத்தையும் ... நெல்லு தானியமும் ... எள் தானியத்தையும் ... நீல வஸ்திரத்தை ... மிருத்யுஞ்ஜயேஸ்வானை பூஜித்த ... ஆடு தானம்",
+          "status": "USABLE IN PART. The timing list, the four grains, the blue cloth and the Mrityunjaya worship are free or cheap. The goat donation is replaced by the yathashakti substitute. The framing \"அகால மிருத்யு பரிகாரம்\" is fear language and is dropped."
+        },
+        {
+          "page": "17",
+          "topic": "சூரிய தசை / புதன் புக்தி சாந்தி",
+          "quote": "புதனுக்குப் பிரீதியாக 11 பலம் வெள்ளியினால் பிரதிமை யொன்று செய்து தானம் கொடுக்கவேண்டும் ... புதன்மேமையிலும் ... மல்லிகை, ஜாதி முதலாகிய புஷ்பங்களால் பூஜித்து பச்சை வஸ்திரத்தைத் தரித்து",
+          "status": "USABLE IN PART. Wednesday, jasmine and jasmine-family flowers, green cloth. The 11-palam silver image is expensive and is substituted."
+        },
+        {
+          "page": "17",
+          "topic": "சூரிய தசை / கேது புக்தி சாந்தி",
+          "quote": "கேது, 9, 7-மிடங்களிலிருந்தாலும் அல்லது அர்த்த ஸ்தானாதிபதிகளுடன் சேர்ந்து இருந்தாலும் ... துர்க்கை ஜெபம் செய்து ஆடு தானம் செய்யவேண்டியது. அதன் பிறகு மஹா மிருத்யுஞ்ஜய ஜபம் செய்தால் தோஷம் சாந்தப்படும்",
+          "status": "USABLE IN PART. Ketu in the 9th or 7th, or conjoined with the lords of those houses. Durga japa and Mrityunjaya japa are free; the goat dana is substituted."
+        },
+        {
+          "page": "18",
+          "topic": "சூரிய தசை / சுக்ர புக்தி சாந்தி",
+          "quote": "துஷ்ட ஸ்தானங்களிலிருக்கிற சுக்கிரன் தன நாசமும் விசேஷ பயமும, தேக பாதையும், தாரா, புத்திராதி காசனமும், ஸ்த்ரீகளால் கலகமும், ஸ்தான நாசமும் செய்வன் ... வெள்ளைப் பட்ட தானம், மிருத்யுஞ்ஜய ஜபம், ருத்ராட்ச ஜபம்",
+          "status": "USABLE IN PART. White cloth dana, Mrityunjaya japa and rudraksha japa are cheap. The effect list names loss of wife and children in fear terms and is rewritten into the register the guardrails allow."
+        },
+        {
+          "page": "18",
+          "topic": "சந்திர தசை / சந்திர பிரீதி தானம்",
+          "quote": "சந்திரன் பலமீனனாகி 12-மிடம், 8-மிடம், ஜன்மம் இந்த ராசிகளில் சஞ்சரிக்கற காலங்களில் வெள்ளி தாமிர தானம் செய்ய வேணும் ... திங்கட்கிழமை தினம் ... பச்சரிசையை அம்பாசமாக கொட்டி அதன்பேரில் வெள்ளி தாமரைப்பூ வைத்து வெள்ளை வஸ்திரத்தை ... பிராம்மணனுக்கு வெள்ளை வஸ்திரமாக கொடுத்து",
+          "status": "USABLE. A weak Moon transiting the 12th, the 8th or its own natal sign. Monday, raw rice, a silver lotus, a white cloth - all affordable at small scale."
+        }
+      ],
+      "yathashaktiWarrant": "Read from TA-07 itself: pp.15-18 repeatedly qualify the dana and the dakshina with \"எதாசக்தி\" / \"யதாசக்தி\" - according to one's capacity (p.16 \"எதாசக்தி தக்ஷணையுடன்\", p.17 \"யதாசக்தி தக்ஷணை தாம்பூலம் சகிதமாக\"). That phrase, taken off the page, is the textual warrant for substituting a cheap equivalent for gold, a silver image, a goat or a buffalo. The substitution is not an invention by ASTRO SIVAM; it is the book's own scale dial, and the retrieval layer must quote it as TA-07 when it explains why a remedy is being offered in a cheaper form."
     },
     {
       "id": "TA-08",
@@ -540,7 +496,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Tamil description of each of the nine grahas", "Graha swaroopa, weekday, colour, direction, deity"]
+      "usefulFor": [
+        "Tamil description of each of the nine grahas",
+        "Graha swaroopa, weekday, colour, direction, deity"
+      ]
     },
     {
       "id": "TA-09",
@@ -556,7 +515,9 @@
       "publisher": "Digital Library of India / Tamil Virtual Academy",
       "verification": "metadata-verified",
       "verificationNote": "Returned in the TamilVirtualAcademy collection search on 2026-10-09.",
-      "usefulFor": ["Cross-check of the Tamil Navagraha descriptions in TA-08"]
+      "usefulFor": [
+        "Cross-check of the Tamil Navagraha descriptions in TA-08"
+      ]
     },
     {
       "id": "TA-10",
@@ -572,7 +533,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'. A parallel edition exists at https://archive.org/details/dli.jZY9lup2kZl6TuXGlZQdjZp1kZhy.TVA_BOK_0005515 and https://archive.org/details/tdl.5515-nuul-nooykllukkuc-citt-prikaarm-paakm-1",
-      "usefulFor": ["Tamil spiritual remedial practice connected with illness", "USED ONLY for spiritual support wording. The agent must never use this to name a disease, a medicine, or to suggest delaying treatment."],
+      "usefulFor": [
+        "Tamil spiritual remedial practice connected with illness",
+        "USED ONLY for spiritual support wording. The agent must never use this to name a disease, a medicine, or to suggest delaying treatment."
+      ],
       "usageRestriction": "health-safety: spiritual framing only, always paired with an instruction to see a qualified doctor"
     },
     {
@@ -589,7 +553,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'. The title is a nakshatra-wise Navagraha results volume.",
-      "usefulFor": ["Birth-star-wise Navagraha results in Tamil", "The Tamil way of expressing graha effects per janma nakshatra"]
+      "usefulFor": [
+        "Birth-star-wise Navagraha results in Tamil",
+        "The Tamil way of expressing graha effects per janma nakshatra"
+      ]
     },
     {
       "id": "TA-12",
@@ -605,7 +572,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Subha muhurtham selection in Tamil", "Supporting the Subha Muhurtham report section the chat must explain"]
+      "usefulFor": [
+        "Subha muhurtham selection in Tamil",
+        "Supporting the Subha Muhurtham report section the chat must explain"
+      ]
     },
     {
       "id": "TA-13",
@@ -621,7 +591,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Tamil explanation of the rules (vidhi) behind a reading", "Word-for-word Tamil terms the chat should use instead of English loanwords"]
+      "usefulFor": [
+        "Tamil explanation of the rules (vidhi) behind a reading",
+        "Word-for-word Tamil terms the chat should use instead of English loanwords"
+      ]
     },
     {
       "id": "TA-14",
@@ -637,7 +610,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'. The title states the content is arranged as verses (padalgal) and vakyas - i.e. the Vakya tradition.",
-      "usefulFor": ["Tamil Vakya-tradition rules in verse form", "Traditional Tamil phrasing that reads naturally to a Tamil-speaking customer"]
+      "usefulFor": [
+        "Tamil Vakya-tradition rules in verse form",
+        "Traditional Tamil phrasing that reads naturally to a Tamil-speaking customer"
+      ]
     },
     {
       "id": "TA-15",
@@ -653,7 +629,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Guru peyarchi and Sani peyarchi - the two transit events Tamil customers ask about most", "Sade Sati / ezharai sani framing in Tamil"]
+      "usefulFor": [
+        "Guru peyarchi and Sani peyarchi - the two transit events Tamil customers ask about most",
+        "Sade Sati / ezharai sani framing in Tamil"
+      ]
     },
     {
       "id": "TA-16",
@@ -669,7 +648,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Background on a distinctly Tamil predictive tradition", "Answering Tamil customers who ask about Panchapakshi by name"],
+      "usefulFor": [
+        "Background on a distinctly Tamil predictive tradition",
+        "Answering Tamil customers who ask about Panchapakshi by name"
+      ],
       "caveat": "Distinct from the Parashari system the report engine uses. If the agent mentions it, it must say it is a different tradition and not the basis of the ASTRO SIVAM chart."
     },
     {
@@ -686,7 +668,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Tamil experiential (anubhoga) reading practice", "Practical phrasing of results"]
+      "usefulFor": [
+        "Tamil experiential (anubhoga) reading practice",
+        "Practical phrasing of results"
+      ]
     },
     {
       "id": "TA-18",
@@ -702,7 +687,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Tamil Saptarishi nadi-adjacent reading conventions", "Handling Tamil customers who reference nadi readings"]
+      "usefulFor": [
+        "Tamil Saptarishi nadi-adjacent reading conventions",
+        "Handling Tamil customers who reference nadi readings"
+      ]
     },
     {
       "id": "TA-19",
@@ -718,7 +706,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Tamil nadi-school rules", "Venus (Sukra) related results - marriage, comfort, art, money"]
+      "usefulFor": [
+        "Tamil nadi-school rules",
+        "Venus (Sukra) related results - marriage, comfort, art, money"
+      ]
     },
     {
       "id": "TA-20",
@@ -734,7 +725,9 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Tamil sothida rules with commentary"]
+      "usefulFor": [
+        "Tamil sothida rules with commentary"
+      ]
     },
     {
       "id": "TA-21",
@@ -750,7 +743,9 @@
       "publisher": "சரசுவதி மகால் நூலகம் (தஞ்சாவூர்) / Saraswathi Mahal Library, Thanjavur",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam', publication date 2007, in the TamilVirtualAcademy collection.",
-      "usefulFor": ["A library-catalogued Tamil sothida text - a citable institutional source for Tamil rules"]
+      "usefulFor": [
+        "A library-catalogued Tamil sothida text - a citable institutional source for Tamil rules"
+      ]
     },
     {
       "id": "TA-22",
@@ -766,7 +761,9 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Tamil literary references to astrology - lets the agent speak in idioms a Tamil reader recognises"]
+      "usefulFor": [
+        "Tamil literary references to astrology - lets the agent speak in idioms a Tamil reader recognises"
+      ]
     },
     {
       "id": "TA-23",
@@ -782,7 +779,10 @@
       "publisher": "Koviloor Andavar Library",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam' in the koviloorandavarlibrary collection.",
-      "usefulFor": ["Tamil Agasthiya-lineage sothida texts", "Santhi (peace-offering) practice in the Tamil tradition"]
+      "usefulFor": [
+        "Tamil Agasthiya-lineage sothida texts",
+        "Santhi (peace-offering) practice in the Tamil tradition"
+      ]
     },
     {
       "id": "TA-24",
@@ -798,7 +798,10 @@
       "publisher": "ஜெயம் பதிப்பகம் (Jayam Pathipagam)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam' and creator credit 'வெளியீடு : ஜெயம் பதிப்பகம்'.",
-      "usefulFor": ["Tamil temple history (sthala puranam) of the Surya Navagraha sthalam", "Giving a Tamil customer the temple story behind a Sun-related remedy"]
+      "usefulFor": [
+        "Tamil temple history (sthala puranam) of the Surya Navagraha sthalam",
+        "Giving a Tamil customer the temple story behind a Sun-related remedy"
+      ]
     },
     {
       "id": "TA-25",
@@ -833,7 +836,9 @@
       "publisher": "Tamil Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "This link is present inside TA-25, which WAS opened, but the article itself was not opened separately. Open it before citing it directly.",
-      "usefulFor": ["Vakya tradition background"]
+      "usefulFor": [
+        "Vakya tradition background"
+      ]
     },
     {
       "id": "TA-27",
@@ -849,7 +854,9 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Catalogue API returned the identifier with language 'tam'.",
-      "usefulFor": ["Kalachakra and time-cycle concepts in Tamil"]
+      "usefulFor": [
+        "Kalachakra and time-cycle concepts in Tamil"
+      ]
     },
     {
       "id": "TA-28",
@@ -865,7 +872,9 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Returned in the TamilVirtualAcademy jothidam/sothidam search on 2026-10-09 with language 'tam'.",
-      "usefulFor": ["Nimitta (omens) in the Tamil tradition"]
+      "usefulFor": [
+        "Nimitta (omens) in the Tamil tradition"
+      ]
     },
     {
       "id": "TA-29",
@@ -881,7 +890,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Returned in the TamilVirtualAcademy jothidam/sothidam search on 2026-10-09 with language 'tam'.",
-      "usefulFor": ["Tamil rendering of the Kalidasa-attributed Jataka Chandrika", "Cross-check against EN-09 (Uttara Kalamrita, also Kalidasa-attributed)"]
+      "usefulFor": [
+        "Tamil rendering of the Kalidasa-attributed Jataka Chandrika",
+        "Cross-check against EN-09 (Uttara Kalamrita, also Kalidasa-attributed)"
+      ]
     },
     {
       "id": "TA-30",
@@ -897,9 +909,10 @@
       "publisher": "Tamil Digital Library (TamilVirtualAcademy collection)",
       "verification": "metadata-verified",
       "verificationNote": "Returned in the TamilVirtualAcademy jothidam/sothidam search on 2026-10-09 with language 'tam'.",
-      "usefulFor": ["Tamil sothida verse text"]
+      "usefulFor": [
+        "Tamil sothida verse text"
+      ]
     },
-
     {
       "id": "TP-01",
       "group": "navagraha-sthalam",
@@ -914,17 +927,74 @@
       "verification": "content-read",
       "verificationNote": "Page opened 2026-10-09. It gives the nine-temple table with deity, graha, weekday and location, states that Shiva is the presiding deity in most of them with a separate shrine for the planetary deity, that Tirunallar lies in Karaikal district of the Union Territory of Puducherry while the others lie in Thanjavur, Mayiladuthurai and Tiruvarur districts, and that the masonry structures date to the Medieval Cholas between the 7th and 11th centuries.",
       "verifiedNine": [
-        {"graha": "Surya (Sun)", "temple": "Suryanar Kovil", "place": "Suryanar Koil, near Aduthurai", "district": "Thanjavur", "day": "Sunday"},
-        {"graha": "Chandra (Moon)", "temple": "Kailasanathar Temple", "place": "Thingalur", "district": "Thanjavur", "day": "Monday"},
-        {"graha": "Angaraka (Mars)", "temple": "Vaitheeswaran Koil", "place": "Vaitheeswaran Koil", "district": "Mayiladuthurai", "day": "Tuesday"},
-        {"graha": "Budha (Mercury)", "temple": "Swetharanyeswarar Temple", "place": "Thiruvenkadu", "district": "Mayiladuthurai", "day": "Wednesday"},
-        {"graha": "Guru (Jupiter)", "temple": "Apatsahayesvarar Temple", "place": "Alangudi", "district": "Thanjavur", "day": "Thursday"},
-        {"graha": "Sukra (Venus)", "temple": "Agniswarar Temple", "place": "Kanjanur", "district": "Thanjavur", "day": "Friday"},
-        {"graha": "Sani (Saturn)", "temple": "Dharbaranyeswarar Temple", "place": "Thirunallar", "district": "Karaikal, Puducherry UT", "day": "Saturday"},
-        {"graha": "Rahu", "temple": "Naganathar Temple", "place": "Thirunageswaram", "district": "Thanjavur", "day": null},
-        {"graha": "Ketu", "temple": "Nagannathaswamy Temple", "place": "Keezhaperumpallam", "district": "Mayiladuthurai", "day": null}
+        {
+          "graha": "Surya (Sun)",
+          "temple": "Suryanar Kovil",
+          "place": "Suryanar Koil, near Aduthurai",
+          "district": "Thanjavur",
+          "day": "Sunday"
+        },
+        {
+          "graha": "Chandra (Moon)",
+          "temple": "Kailasanathar Temple",
+          "place": "Thingalur",
+          "district": "Thanjavur",
+          "day": "Monday"
+        },
+        {
+          "graha": "Angaraka (Mars)",
+          "temple": "Vaitheeswaran Koil",
+          "place": "Vaitheeswaran Koil",
+          "district": "Mayiladuthurai",
+          "day": "Tuesday"
+        },
+        {
+          "graha": "Budha (Mercury)",
+          "temple": "Swetharanyeswarar Temple",
+          "place": "Thiruvenkadu",
+          "district": "Mayiladuthurai",
+          "day": "Wednesday"
+        },
+        {
+          "graha": "Guru (Jupiter)",
+          "temple": "Apatsahayesvarar Temple",
+          "place": "Alangudi",
+          "district": "Thanjavur",
+          "day": "Thursday"
+        },
+        {
+          "graha": "Sukra (Venus)",
+          "temple": "Agniswarar Temple",
+          "place": "Kanjanur",
+          "district": "Thanjavur",
+          "day": "Friday"
+        },
+        {
+          "graha": "Sani (Saturn)",
+          "temple": "Dharbaranyeswarar Temple",
+          "place": "Thirunallar",
+          "district": "Karaikal, Puducherry UT",
+          "day": "Saturday"
+        },
+        {
+          "graha": "Rahu",
+          "temple": "Naganathar Temple",
+          "place": "Thirunageswaram",
+          "district": "Thanjavur",
+          "day": null
+        },
+        {
+          "graha": "Ketu",
+          "temple": "Nagannathaswamy Temple",
+          "place": "Keezhaperumpallam",
+          "district": "Mayiladuthurai",
+          "day": null
+        }
       ],
-      "usefulFor": ["The temple a remedy should point to, matched to the graha involved", "Correct district and weekday so the advice is practically usable"]
+      "usefulFor": [
+        "The temple a remedy should point to, matched to the graha involved",
+        "Correct district and weekday so the advice is practically usable"
+      ]
     },
     {
       "id": "TP-02",
@@ -939,7 +1009,10 @@
       "publisher": "Wikipedia",
       "verification": "content-read",
       "verificationNote": "Page opened 2026-10-09. It states the presiding deity is Suriyanar with consorts Ushadevi and Pratyusha Devi, that the temple also has separate shrines for the other eight planetary deities, that it is the only temple in Tamil Nadu with shrines for all nine, that it is the only one of the nine where Shiva is NOT the presiding deity, that Kulottunga Choladeva (1060-1118 CE) built the present structure, that it is administered by the Tamil Nadu HR&CE Department, and that Muthuswami Dikshitar composed a kriti beginning 'Suryamurthe' in Saurashtra ragam for it.",
-      "usefulFor": ["Surya remedies", "Telling a Tamil customer that all nine grahas can be worshipped at one temple - the practical single-trip option"]
+      "usefulFor": [
+        "Surya remedies",
+        "Telling a Tamil customer that all nine grahas can be worshipped at one temple - the practical single-trip option"
+      ]
     },
     {
       "id": "TP-03",
@@ -973,7 +1046,9 @@
       "publisher": "Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "Link confirmed present inside TP-01, which was opened. The individual article was not opened separately.",
-      "usefulFor": ["Chandra remedies"]
+      "usefulFor": [
+        "Chandra remedies"
+      ]
     },
     {
       "id": "TP-05",
@@ -988,7 +1063,10 @@
       "publisher": "Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "Link confirmed present inside TP-01, which was opened. The individual article was not opened separately, so do not cite it as an authority until it is.",
-      "usefulFor": ["Chevvai (Mars) remedies", "The Vaidyanatha (healer) association"]
+      "usefulFor": [
+        "Chevvai (Mars) remedies",
+        "The Vaidyanatha (healer) association"
+      ]
     },
     {
       "id": "TP-06",
@@ -1003,7 +1081,10 @@
       "publisher": "Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "Link confirmed present inside TP-01, which was opened. The individual article was not opened separately, so do not cite it as an authority until it is.",
-      "usefulFor": ["Budhan remedies", "Study, speech and intellect questions"]
+      "usefulFor": [
+        "Budhan remedies",
+        "Study, speech and intellect questions"
+      ]
     },
     {
       "id": "TP-07",
@@ -1018,7 +1099,10 @@
       "publisher": "Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "Link confirmed present inside TP-01, which was opened. The individual article was not opened separately, so do not cite it as an authority until it is.",
-      "usefulFor": ["Guru remedies", "Marriage delay, children, education and wealth questions where Jupiter is the karaka"]
+      "usefulFor": [
+        "Guru remedies",
+        "Marriage delay, children, education and wealth questions where Jupiter is the karaka"
+      ]
     },
     {
       "id": "TP-08",
@@ -1033,7 +1117,10 @@
       "publisher": "Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "Link confirmed present inside TP-01, which was opened. The individual article was not opened separately, so do not cite it as an authority until it is.",
-      "usefulFor": ["Sukra remedies", "Marriage, comfort and art related questions"]
+      "usefulFor": [
+        "Sukra remedies",
+        "Marriage, comfort and art related questions"
+      ]
     },
     {
       "id": "TP-09",
@@ -1048,7 +1135,9 @@
       "publisher": "Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "Link confirmed present inside TP-01, which was opened, but the article itself was not opened separately. Use TP-03 (the official temple site, content-read) as the primary citation for Thirunallar, and do not cite this article as an authority until it is opened.",
-      "usefulFor": ["Sani remedies - background only"]
+      "usefulFor": [
+        "Sani remedies - background only"
+      ]
     },
     {
       "id": "TP-10",
@@ -1063,7 +1152,9 @@
       "publisher": "Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "Link confirmed present inside TP-01, which was opened. The individual article was not opened separately, so do not cite it as an authority until it is.",
-      "usefulFor": ["Rahu remedies"]
+      "usefulFor": [
+        "Rahu remedies"
+      ]
     },
     {
       "id": "TP-11",
@@ -1078,7 +1169,9 @@
       "publisher": "Wikipedia",
       "verification": "linked-not-opened",
       "verificationNote": "Link confirmed present inside TP-01, which was opened. The individual article was not opened separately, so do not cite it as an authority until it is.",
-      "usefulFor": ["Ketu remedies"]
+      "usefulFor": [
+        "Ketu remedies"
+      ]
     },
     {
       "id": "TP-12",
@@ -1093,9 +1186,10 @@
       "publisher": "Government of Tamil Nadu",
       "verification": "linked-not-opened",
       "verificationNote": "Named as the administrator of the eight Tamil Nadu Navagraha temples in TP-02, which was opened. The portal itself was not opened. Also note TP-02 states Suryanar Kovil is HR&CE administered while TP-03 shows Thirunallar is under the Puducherry Department of Hindu Religious Institutions.",
-      "usefulFor": ["Official darshan and seva information before the agent suggests a specific temple visit"]
+      "usefulFor": [
+        "Official darshan and seva information before the agent suggests a specific temple visit"
+      ]
     },
-
     {
       "id": "REF-01",
       "group": "reference",
@@ -1108,7 +1202,10 @@
       "publisher": "Internet Archive",
       "verification": "content-read",
       "verificationNote": "A collection:TamilVirtualAcademy query combined with the Tamil words ஜோதிடம் / சோதிடம் returned numFound 128 on 2026-10-09. Every Tamil source above is drawn from that result set, which is why each one carries a real identifier.",
-      "usefulFor": ["The single access point for the whole Tamil corpus", "Finding further Tamil jothidam texts as the knowledge base grows"]
+      "usefulFor": [
+        "The single access point for the whole Tamil corpus",
+        "Finding further Tamil jothidam texts as the knowledge base grows"
+      ]
     },
     {
       "id": "REF-02",
@@ -1122,7 +1219,9 @@
       "publisher": "Internet Archive",
       "verification": "content-read",
       "verificationNote": "This is the endpoint used to confirm that each archive.org identifier above really exists and to read back its title, language and creator. Re-run it with the identifier list to re-verify the whole registry.",
-      "usefulFor": ["Re-verification of this registry in future maintenance passes"]
+      "usefulFor": [
+        "Re-verification of this registry in future maintenance passes"
+      ]
     },
     {
       "id": "REF-03",
@@ -1140,7 +1239,8 @@
         "Honesty guardrail: the agent must not claim a classical verse 'says Sade Sati'",
         "Explaining Sade Sati as the later transit tradition's name for a period the classics describe house by house from the Moon"
       ],
-      "caveat": "Secondary source. Do not present as verified against the primary texts."
+      "caveat": "Secondary source. Do not present as verified against the primary texts.",
+      "ownerDecision": "2026-10-09: the owner ruled \"Phaladeepika - use it\". The agent MAY state that the classical basis for the seven-and-a-half-year period is Phaladeepika Adhyaya XXVI, which gives Saturn's results house by house from the natal Moon, and that \"Sade Sati\" is the name the later transit tradition gave that period. It must still not claim the phrase \"Sade Sati\" appears in a classical verse."
     },
     {
       "id": "REF-04",
@@ -1156,5 +1256,332 @@
       "verificationNote": "Attempted 2026-10-09. WordPress returns 'this site has been archived or suspended for a violation of our Terms of Service'. The Gita Press titles it used to list (Arogya Ank code 1592, Kalyan Jyotish Tattva Ank code 1980) could NOT be verified and are therefore NOT in this registry. Logged here so nobody re-adds the dead link.",
       "usefulFor": []
     }
+  ],
+  "excludedSources": [
+    {
+      "id": "HI-01",
+      "group": "classical-hindi",
+      "title": "Brihat Parashar Hora Shastra, Vol. 1 (Hindi)",
+      "titleNative": "बृहत्पराशरहोराशास्त्र",
+      "author": "महर्षि पराशर",
+      "translator": null,
+      "language": "hi",
+      "year": null,
+      "url": "https://archive.org/details/brihat-parashar-hora-shastra-vol-1",
+      "publisher": "Internet Archive, booksbylanguage_hindi",
+      "verification": "content-read",
+      "verificationNote": "Metadata API opened 2026-10-09: language 'hin', OCR run with '-l hin', Devanagari script detected at 0.97 confidence, 448 scanned pages, djvu.txt derivative present.",
+      "usefulFor": [
+        "Hindi-language citation of BPHS rules so the Hindi answer can quote a Hindi source",
+        "Graha karakatva in Devanagari",
+        "Bhava phala"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-02",
+      "group": "classical-hindi",
+      "title": "Parasharahorashastra (Sanskrit)",
+      "titleNative": "पराशरहोराशास्त्र",
+      "author": "महर्षि पराशर",
+      "translator": "Ganesh Datta Pathak",
+      "language": "sa",
+      "year": null,
+      "url": "https://archive.org/details/brihat-parashar-hora-shastra",
+      "publisher": "Internet Archive, booksbylanguage_sanskrit",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned title in Devanagari, creator Ganesh Datta Pathak, language Sanskrit.",
+      "usefulFor": [
+        "Sanskrit shlokas that a Hindi answer can quote alongside the Hindi gloss"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-03",
+      "group": "classical-hindi",
+      "title": "Brihat Parashar Hora Shastra",
+      "titleNative": "बृहत्पराशरहोराशास्त्र",
+      "author": "महर्षि पराशर",
+      "translator": null,
+      "language": "sa",
+      "year": 1944,
+      "url": "https://archive.org/details/BrihatParasharHoraShastra",
+      "publisher": "Girdhari Lal edition (first publicly available version); also published by Khemraj Press",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned creator Sanatan Dharm, language Sanskrit. The item description states the book contains 71 chapters, that the final chapter says the original had 100 chapters and about 11,000 shlokas, and that this edition holds roughly 5,100 verses not found in modern versions.",
+      "usefulFor": [
+        "Older verse numbering when a modern edition differs",
+        "Verses dropped from current printings"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-04",
+      "group": "classical-hindi",
+      "title": "Jyotish Ratnakara",
+      "titleNative": "ज्योतिष-रत्नाकर",
+      "author": "देवकीनन्दन सिंह",
+      "translator": null,
+      "language": "hi",
+      "year": 1934,
+      "url": "https://archive.org/details/20230523_20230523_1342",
+      "publisher": "Internet Archive, booksbylanguage_hindi",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned creator देवकीनन्दन सिंह, year 1934, language Hindi.",
+      "usefulFor": [
+        "Hindi predictive compendium",
+        "Graha in house and sign results",
+        "Dasha and gochara phala in Hindi"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-05",
+      "group": "classical-hindi",
+      "title": "Phalit Rajendra",
+      "titleNative": "फलित राजेन्द्र",
+      "author": "Brajesh Pathak 'Jyotishacharya'",
+      "translator": null,
+      "language": "hi",
+      "year": 2020,
+      "url": "https://archive.org/details/phalit-rajendra",
+      "publisher": "Internet Archive, booksbylanguage_hindi",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned title, creator and year 2020, language Hindi.",
+      "usefulFor": [
+        "Modern Hindi predictive rules written for practitioners",
+        "Timing of events from dasha and bhukti"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-06",
+      "group": "remedies-hindi",
+      "title": "Durlabh Laghu Prayog evam Navagraha Mahavisheshank",
+      "titleNative": "दुर्लभ लघु प्रयोग एवं नवग्रह महाविशेषांक",
+      "author": "Ajay Uttam",
+      "translator": null,
+      "language": "hi",
+      "year": 2023,
+      "url": "https://archive.org/details/20230220_20230220_0800",
+      "publisher": "Internet Archive, booksbylanguage_hindi",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned title, creator Ajay Uttam, year 2023, language Hindi.",
+      "usefulFor": [
+        "Navagraha-specific simple remedies (laghu prayog)",
+        "Weekday observances",
+        "Charity and dana items per graha"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-07",
+      "group": "remedies-hindi",
+      "title": "Ratna Jyotish",
+      "titleNative": "रत्न ज्योतिष",
+      "author": "डॉ. नारायण दत्त श्रीमाली",
+      "translator": null,
+      "language": "hi",
+      "year": 2023,
+      "url": "https://archive.org/details/2011_20230112",
+      "publisher": "Internet Archive, booksbylanguage_hindi",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned title, creator Ajay Uttam as uploader's credit line, year 2023, language Hindi.",
+      "usefulFor": [
+        "Gemstone suitability and, importantly, the CAUTIONS and contra-indications before any gem is recommended"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-08",
+      "group": "remedies-hindi",
+      "title": "Vedic Ratna Rashi Astrology",
+      "titleNative": "वैदिक रत्न राशि ज्योतिष",
+      "author": "Ashwin",
+      "translator": null,
+      "language": "hi",
+      "year": 2018,
+      "url": "https://archive.org/details/VedicRatnaRashiAstrology",
+      "publisher": "Internet Archive",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned creator Ashwin, year 2018, language Hindi.",
+      "usefulFor": [
+        "Rashi-wise gemstone guidance",
+        "Gemstone caution list"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-09",
+      "group": "remedies-hindi",
+      "title": "Hanuman Jyotish",
+      "titleNative": "हनुमान ज्योतिष",
+      "author": "Unknown",
+      "translator": null,
+      "language": "hi",
+      "year": null,
+      "url": "https://archive.org/details/hanuman-jyotish-hindi",
+      "publisher": "Internet Archive, booksbylanguage_hindi",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned title in Devanagari and English, language Hindi.",
+      "usefulFor": [
+        "Mangal and Shani related devotional practice that is free, simple and non-fear-based (Hanuman Chalisa, Tuesday and Saturday seva)"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-10",
+      "group": "classical-hindi",
+      "title": "Prashnachudamani",
+      "titleNative": "प्रश्नचूड़ामणि",
+      "author": "विष्णुदत्त",
+      "translator": null,
+      "language": "hi",
+      "year": 1890,
+      "url": "https://archive.org/details/in.ernet.dli.2015.319916",
+      "publisher": "Digital Library of India",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned creator विष्णुदत्त, year 1890, language Hindi.",
+      "usefulFor": [
+        "Prashna shastra - answering a question raised without birth details, which is what the chat often has to do"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-11",
+      "group": "classical-hindi",
+      "title": "Brihat Samhita arthat Barahisamhita",
+      "titleNative": "बृहसंहिता अर्थात बाराहीसंहिता",
+      "author": "वराहमिहिर",
+      "translator": null,
+      "language": "hi",
+      "year": 1893,
+      "url": "https://archive.org/details/in.ernet.dli.2015.321684",
+      "publisher": "Digital Library of India",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned creator वराहमिहिर, year 1893, language Hindi.",
+      "usefulFor": [
+        "Gochara and samvatsara phala",
+        "Nimitta (omens)",
+        "General well-being and public-life indications"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-12",
+      "group": "classical-hindi",
+      "title": "Sugam Jyotish",
+      "titleNative": "सुगम ज्योतिष",
+      "author": null,
+      "translator": null,
+      "language": "hi",
+      "year": null,
+      "url": "https://archive.org/details/20210212_20210212_1718",
+      "publisher": "Internet Archive, booksbylanguage_hindi",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned title सुगम ज्योतिष, language Hindi.",
+      "usefulFor": [
+        "Plain-language Hindi explanations of terms such as dasha, bhukti, gochara, dosha - useful for the one-line term glosses the chat must give"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    },
+    {
+      "id": "HI-13",
+      "group": "classical-hindi",
+      "title": "Tarkik Jyotish (with new articles and case studies)",
+      "titleNative": "तार्किक ज्योतिष नए लेख व केस स्टडी के साथ",
+      "author": "Vipul Joshi",
+      "translator": null,
+      "language": "hi",
+      "year": 2023,
+      "url": "https://archive.org/details/vipul-sir-book-compressed",
+      "publisher": "Internet Archive, booksbylanguage_hindi",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue API returned title, creator Vipul Joshi, year 2023, language Hindi.",
+      "usefulFor": [
+        "Reasoned, non-fatalistic Hindi framing of predictions - matches the no-guarantee, no-fear guardrail"
+      ],
+      "exclusionReason": "Excluded by owner decision 2026-10-09: \"don't use any Hindi source\". Kept in excludedSources for the audit trail only. The retrieval layer reads `sources` and never `excludedSources`, so no Hindi book can reach a customer citation. Hindi answers are still produced, but every rule they state is sourced from the English classics or the Tamil corpus; only the reply language is Hindi.",
+      "retrievable": false
+    }
+  ],
+  "guardrailTransforms": {
+    "_why": "The two Tamil books read at passage level (TA-02, TA-07) were written in a register this product may not use: they name death, they name diseases, and they prescribe gold, silver images, goats and buffaloes. They are still the best Tamil remedy sources available, so the knowledge base stores the SOURCE text and the TRANSFORMED text side by side. The retrieval layer returns only the transformed text; the source text stays in the file so every citation is auditable.",
+    "dropEntirely": [
+      "மரணம் / மிருத்யு / அகால மிருத்யு (death, untimely death) as a predicted outcome",
+      "any named disease: மாலைக்கண் நோய், காதில் நோய், நேத்திர ரோகம், வைசூரி, பித்த ரோகம்",
+      "invocation of the deity of death (மிருத்யு தேவதை ஆவாகனம்)",
+      "loss of wife or children phrased as a certainty",
+      "the word தோஷம் used as a threat rather than as a neutral technical term"
+    ],
+    "rewriteTo": "a tendency, a period, and a practice - \"X lord in the 8th can put pressure on money and standing; this usually eases as the Bhukti changes; here is a simple practice\" - never \"X will die / will lose his wife / will go blind\".",
+    "expensiveRemedySubstitutes": [
+      {
+        "source": "சுவர்ண தானம் (gold dana)",
+        "substitute": "donate food or yellow items on a Thursday; support a teacher or a student",
+        "warrant": "TA-07 p.16 says \"எதாசக்தி தக்ஷணையுடன்\" - according to capacity",
+        "grahas": [
+          "Guru"
+        ]
+      },
+      {
+        "source": "11 பலம் வெள்ளி பிரதிமை (silver image)",
+        "substitute": "a small silver coin, or green moong dal and a green cloth on a Wednesday",
+        "warrant": "TA-07 p.17 \"யதாசக்தி தக்ஷணை தாம்பூலம் சகிதமாக\"",
+        "grahas": [
+          "Budha"
+        ]
+      },
+      {
+        "source": "ஆடு தானம் (goat dana)",
+        "substitute": "feed a cow or a stray animal; give black sesame or mustard oil to a worker on a Saturday",
+        "warrant": "same yathashakti clause",
+        "grahas": [
+          "Sani",
+          "Ketu"
+        ]
+      },
+      {
+        "source": "மஹிஷீதானம் (buffalo dana)",
+        "substitute": "drop entirely; offer only the free practice - Durga japa and Mrityunjaya japa",
+        "warrant": "TA-07 p.17 pairs the japa with the dana, and the japa stands alone",
+        "grahas": [
+          "Rahu"
+        ]
+      },
+      {
+        "source": "வெள்ளைப் பட்ட தானம் (silk cloth dana)",
+        "substitute": "any clean white cloth given to someone who needs it, on a Friday",
+        "warrant": "yathashakti",
+        "grahas": [
+          "Sukra"
+        ]
+      }
+    ],
+    "alwaysAllowed": [
+      "weekday observance (ஞாயிறு ... சனி)",
+      "flower, colour and grain offerings (மல்லிகை, பச்சை வஸ்திரம், எள், உளுந்து, நெல்லு, கோதுமை, பச்சரிசி)",
+      "japa: துர்க்கை ஜெபம், மஹா மிருத்யுஞ்ஜய ஜபம், ருத்ராட்ச ஜபம்",
+      "a temple visit to the Navagraha sthalam for the graha involved (TP-01, TP-03)",
+      "the Thirunallar Sambandar pathigam that the temple itself names (TP-03)"
+    ]
+  },
+  "ownerDecisions20261009": [
+    "1. Cite Tamil books at PASSAGE level wherever verifiedPassages exists (TA-02 and TA-07 today).",
+    "2. TP-03 (Thirunallar, fully read) is sufficient for launch; TP-04..TP-12 stay linked-not-opened.",
+    "3. Phaladeepika Adhyaya XXVI IS the classical anchor for Sade Sati wording.",
+    "4. No Hindi source is used. All 13 Hindi entries moved to excludedSources."
   ]
 }
