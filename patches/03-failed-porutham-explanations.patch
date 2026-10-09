@@ -1,0 +1,204 @@
+# Issue 3 - A row that did not earn full marks explains what is LACKING, not the benefit.
+# Apply from the repository root:  patch -p1 < patches/03-failed-porutham-explanations.patch
+
+diff --git a/api/astrology/engine.php b/api/astrology/engine.php
+index bc4e5d9..97b011f 100644
+--- a/api/astrology/engine.php
++++ b/api/astrology/engine.php
+@@ -2865,20 +2882,20 @@ class AstroEngine {
+ 
+         $boyH = self::calculateHoroscope($boy);
+         $girlH = self::calculateHoroscope($girl);
+ 
+         $poruthamDefs = [
+-            ['id' => 'dina', 'nameEn' => 'Dina Porutham', 'nameTa' => 'தினப் பொருத்தம்', 'nameHi' => 'दिन पोरुथम', 'pts' => 3, 'max' => 3, 'enum' => 'UTTHAMAM', 'expEn' => 'Longevity, good health and freedom from discord.', 'expTa' => 'நீண்ட ஆயுள், நல்ல ஆரோக்கியம் மற்றும் கருத்து வேறுபாடு இன்மை.', 'expHi' => 'दीर्घायु, अच्छा स्वास्थ्य एवं मतभेद रहित जीवन।', 'crucial' => false],
+-            ['id' => 'gana', 'nameEn' => 'Gana Porutham', 'nameTa' => 'கணப் பொருத்தம்', 'nameHi' => 'गण पोरुथम', 'pts' => 4, 'max' => 4, 'enum' => 'UTTHAMAM', 'expEn' => 'Harmonious temperament and mutual affection.', 'expTa' => 'இணக்கமான சுபாவமும் பரஸ்பர பாசமும்.', 'expHi' => 'सामंजस्यपूर्ण स्वभाव एवं परस्पर स्नेह।', 'crucial' => false],
+-            ['id' => 'mahendra', 'nameEn' => 'Mahendra Porutham', 'nameTa' => 'மகேந்திரப் பொருத்தம்', 'nameHi' => 'महेंद्र पोरुथम', 'pts' => 3, 'max' => 3, 'enum' => 'UTTHAMAM', 'expEn' => 'Children, lineage expansion and wealth generation.', 'expTa' => 'குழந்தைகள், வம்சவிருத்தி மற்றும் செல்வ வளர்ச்சி.', 'expHi' => 'संतान, वंश वृद्धि एवं धन लाभ।', 'crucial' => false],
+-            ['id' => 'stree_deergha', 'nameEn' => 'Stree Deergha Porutham', 'nameTa' => 'ஸ்திரீ தீர்க்கப் பொருத்தம்', 'nameHi' => 'स्त्री दीर्घ पोरुथम', 'pts' => 2, 'max' => 2, 'enum' => 'UTTHAMAM', 'expEn' => 'Long, prosperous life and all-round growth for the bride.', 'expTa' => 'மனைவிக்கு நீண்ட ஆயுளும் அனைத்துவிதமான வளர்ச்சியும்.', 'expHi' => 'वधू को दीर्घायु, सुख एवं सर्वांगीण उन्नति।', 'crucial' => false],
+-            ['id' => 'yoni', 'nameEn' => 'Yoni Porutham', 'nameTa' => 'யோனிப் பொருத்தம்', 'nameHi' => 'योनि पोरुथम', 'pts' => 4, 'max' => 4, 'enum' => 'UTTHAMAM', 'expEn' => 'Physical and biological compatibility.', 'expTa' => 'உடல் மற்றும் உயிரியல் இணக்கம்.', 'expHi' => 'शारीरिक एवं जैविक अनुकूलता।', 'crucial' => false],
+-            ['id' => 'rasi', 'nameEn' => 'Rasi Porutham', 'nameTa' => 'ராசிப் பொருத்தம்', 'nameHi' => 'राशि पोरुथम', 'pts' => 5, 'max' => 5, 'enum' => 'UTTHAMAM', 'expEn' => 'Union of families and life stability.', 'expTa' => 'குடும்பங்களின் ஒற்றுமை மற்றும் வாழ்க்கை உறுதி.', 'expHi' => 'परिवारों का मिलन एवं जीवन स्थिरता।', 'crucial' => false],
+-            ['id' => 'rasiyadhipathi', 'nameEn' => 'Rasiyadhipathi Porutham', 'nameTa' => 'ராசியாதிபதிப் பொருத்தம்', 'nameHi' => 'राशि अधिपति पोरुथम', 'pts' => 4, 'max' => 4, 'enum' => 'UTTHAMAM', 'expEn' => 'Friendly planetary lords bringing peace.', 'expTa' => 'நட்பான ராசி அதிபதிகள் அமைதியைத் தரும்.', 'expHi' => 'मैत्रीपूर्ण राशि स्वामी शांति प्रदान करते हैं।', 'crucial' => false],
+-            ['id' => 'vasiya', 'nameEn' => 'Vasiya Porutham', 'nameTa' => 'வசியப் பொருத்தம்', 'nameHi' => 'वश्य पोरुथम', 'pts' => 2, 'max' => 2, 'enum' => 'MADHYAMAM', 'expEn' => 'Mutual attraction and mental alignment.', 'expTa' => 'பரஸ்பர ஈர்ப்பும் மன ஒற்றுமையும்.', 'expHi' => 'परस्पर आकर्षण एवं मानसिक तालमेल।', 'crucial' => false],
+-            ['id' => 'rajju', 'nameEn' => 'Rajju Porutham', 'nameTa' => 'ரஜ்ஜுப் பொருத்தம்', 'nameHi' => 'रज्जु पोरुथम', 'pts' => 5, 'max' => 5, 'enum' => 'UTTHAMAM', 'expEn' => 'Aayush and lifelong marital bonding (most essential).', 'expTa' => 'ஆயுளும் வாழ்நாள் முழுவதும் திருமண பந்தமும் (மிக முக்கியமானது).', 'expHi' => 'आयुष्य एवं आजीवन दांपत्य बंधन (सर्वाधिक महत्वपूर्ण)।', 'crucial' => true],
+-            ['id' => 'vedha', 'nameEn' => 'Vedha Porutham', 'nameTa' => 'வேதைப் பொருத்தம்', 'nameHi' => 'वेध पोरुथम', 'pts' => 3, 'max' => 3, 'enum' => 'UTTHAMAM', 'expEn' => 'Free from malefic psychic affliction.', 'expTa' => 'தீய நட்சத்திர வேதை இன்மை.', 'expHi' => 'अशुभ वेध दोष से मुक्त।', 'crucial' => false]
++            ['id' => 'dina', 'nameEn' => 'Dina Porutham', 'nameTa' => 'தினப் பொருத்தம்', 'nameHi' => 'दिन पोरुथम', 'pts' => 3, 'max' => 3, 'enum' => 'UTTHAMAM', 'expEn' => 'Longevity, good health and freedom from discord.', 'expTa' => 'நீண்ட ஆயுள், நல்ல ஆரோக்கியம் மற்றும் கருத்து வேறுபாடு இன்மை.', 'expHi' => 'दीर्घायु, अच्छा स्वास्थ्य एवं मतभेद रहित जीवन।', 'lackEn' => 'The star distance does not carry full Dina strength; vitality, health support and freedom from discord are only partly assured.', 'lackTa' => 'நட்சத்திர இடைவெளியில் முழு தின பலம் இல்லை; ஆரோக்கியம், ஆயுள் ஆதரவு மற்றும் கருத்து ஒற்றுமை முழுமையாக இல்லை.', 'lackHi' => 'नक्षत्र दूरी में पूर्ण दिन बल नहीं है; स्वास्थ्य, दीर्घायु एवं मतभेद-रहितता का समर्थन अपूर्ण है।', 'crucial' => false],
++            ['id' => 'gana', 'nameEn' => 'Gana Porutham', 'nameTa' => 'கணப் பொருத்தம்', 'nameHi' => 'गण पोरुथम', 'pts' => 4, 'max' => 4, 'enum' => 'UTTHAMAM', 'expEn' => 'Harmonious temperament and mutual affection.', 'expTa' => 'இணக்கமான சுபாவமும் பரஸ்பர பாசமும்.', 'expHi' => 'सामंजस्यपूर्ण स्वभाव एवं परस्पर स्नेह।', 'lackEn' => 'The two Ganas differ, so temperamental harmony and mutual affection are not assured and need deliberate adjustment.', 'lackTa' => 'இரு கணங்கள் வேறுபடுவதால் குண ஒற்றுமையும் பாசமும் தானாக அமையாது; விட்டுக்கொடுத்தல் தேவை.', 'lackHi' => 'दोनों गण भिन्न हैं; स्वभाव-सामंजस्य एवं परस्पर स्नेह के लिए समझदारी आवश्यक है।', 'crucial' => false],
++            ['id' => 'mahendra', 'nameEn' => 'Mahendra Porutham', 'nameTa' => 'மகேந்திரப் பொருத்தம்', 'nameHi' => 'महेंद्र पोरुथम', 'pts' => 3, 'max' => 3, 'enum' => 'UTTHAMAM', 'expEn' => 'Children, lineage expansion and wealth generation.', 'expTa' => 'குழந்தைகள், வம்சவிருத்தி மற்றும் செல்வ வளர்ச்சி.', 'expHi' => 'संतान, वंश वृद्धि एवं धन लाभ।', 'lackEn' => 'The star distance gives no Mahendra support, so this blessing for children, lineage growth and wealth is absent.', 'lackTa' => 'நட்சத்திர இடைவெளியில் மகேந்திர ஆதரவு இல்லை; குழந்தை, வம்சவிருத்தி மற்றும் செல்வ வளர்ச்சி ஆசி இல்லை.', 'lackHi' => 'नक्षत्र दूरी से महेंद्र सहायता नहीं मिलती; संतान, वंश वृद्धि एवं धन लाभ का फल नहीं है।', 'crucial' => false],
++            ['id' => 'stree_deergha', 'nameEn' => 'Stree Deergha Porutham', 'nameTa' => 'ஸ்திரீ தீர்க்கப் பொருத்தம்', 'nameHi' => 'स्त्री दीर्घ पोरुथम', 'pts' => 2, 'max' => 2, 'enum' => 'UTTHAMAM', 'expEn' => 'Long, prosperous life and all-round growth for the bride.', 'expTa' => 'மனைவிக்கு நீண்ட ஆயுளும் அனைத்துவிதமான வளர்ச்சியும்.', 'expHi' => 'वधू को दीर्घायु, सुख एवं सर्वांगीण उन्नति।', 'lackEn' => 'The star distance is short, so long life and all-round growth for the bride are not strengthened.', 'lackTa' => 'நட்சத்திர இடைவெளி குறைவு; மணமகளுக்கு நீண்ட ஆயுளும் அனைத்துவித வளர்ச்சியும் வலுப்படுத்தப்படவில்லை.', 'lackHi' => 'नक्षत्र दूरी कम है; वधू की दीर्घायु एवं सर्वांगीण उन्नति को बल नहीं मिलता।', 'crucial' => false],
++            ['id' => 'yoni', 'nameEn' => 'Yoni Porutham', 'nameTa' => 'யோனிப் பொருத்தம்', 'nameHi' => 'योनि पोरुथम', 'pts' => 4, 'max' => 4, 'enum' => 'UTTHAMAM', 'expEn' => 'Physical and biological compatibility.', 'expTa' => 'உடல் மற்றும் உயிரியல் இணக்கம்.', 'expHi' => 'शारीरिक एवं जैविक अनुकूलता।', 'lackEn' => 'The two Yoni animals are not a strong match (neutral or inimical), so physical and biological harmony is weak or strained.', 'lackTa' => 'இரு யோனி விலங்குகளும் வலுவான பொருத்தம் அல்ல (நடுநிலை அல்லது பகை); உடல் மற்றும் உயிரியல் இணக்கம் பலவீனம் அல்லது வலி.', 'lackHi' => 'दोनों योनि पशु मजबूत मेल नहीं हैं (तटस्थ या शत्रु); शारीरिक एवं जैविक सामंजस्य कमज़ोर है।', 'crucial' => false],
++            ['id' => 'rasi', 'nameEn' => 'Rasi Porutham', 'nameTa' => 'ராசிப் பொருத்தம்', 'nameHi' => 'राशि पोरुथम', 'pts' => 5, 'max' => 5, 'enum' => 'UTTHAMAM', 'expEn' => 'Union of families and life stability.', 'expTa' => 'குடும்பங்களின் ஒற்றுமை மற்றும் வாழ்க்கை உறுதி.', 'expHi' => 'परिवारों का मिलन एवं जीवन स्थिरता।', 'lackEn' => 'The Moon signs are an inauspicious distance apart, so family union and life stability need conscious effort.', 'lackTa' => 'சந்திர ராசிகள் சாதகமற்ற இடைவெளியில் உள்ளன; குடும்ப ஒற்றுமையும் வாழ்க்கை உறுதியும் முயற்சியால் மட்டுமே அமையும்.', 'lackHi' => 'चंद्र राशियाँ अशुभ दूरी में हैं; पारिवारिक मिलन एवं जीवन स्थिरता के लिए प्रयास आवश्यक है।', 'crucial' => false],
++            ['id' => 'rasiyadhipathi', 'nameEn' => 'Rasiyadhipathi Porutham', 'nameTa' => 'ராசியாதிபதிப் பொருத்தம்', 'nameHi' => 'राशि अधिपति पोरुथम', 'pts' => 4, 'max' => 4, 'enum' => 'UTTHAMAM', 'expEn' => 'Friendly planetary lords bringing peace.', 'expTa' => 'நட்பான ராசி அதிபதிகள் அமைதியைத் தரும்.', 'expHi' => 'मैत्रीपूर्ण राशि स्वामी शांति प्रदान करते हैं।', 'lackEn' => 'The ruling lords are not mutual friends, so peace between the families depends on conscious understanding.', 'lackTa' => 'ராசி அதிபதிகள் பரஸ்பர நண்பர்கள் அல்ல; குடும்பங்களிடையே அமைதி புரிந்துணர்வால் மட்டுமே அமையும்.', 'lackHi' => 'राशि स्वामी परस्पर मित्र नहीं हैं; शांति हेतु समझदारी आवश्यक है।', 'crucial' => false],
++            ['id' => 'vasiya', 'nameEn' => 'Vasiya Porutham', 'nameTa' => 'வசியப் பொருத்தம்', 'nameHi' => 'वश्य पोरुथम', 'pts' => 2, 'max' => 2, 'enum' => 'MADHYAMAM', 'expEn' => 'Mutual attraction and mental alignment.', 'expTa' => 'பரஸ்பர ஈர்ப்பும் மன ஒற்றுமையும்.', 'expHi' => 'परस्पर आकर्षण एवं मानसिक तालमेल।', 'lackEn' => 'The special Vasiya pull is absent; mutual attraction and mental alignment stay at an ordinary level.', 'lackTa' => 'விசேஷ வசிய ஈர்ப்பு இல்லை; பரஸ்பர கவர்ச்சியும் மன ஒற்றுமையும் சாதாரண அளவிலேயே இருக்கும்.', 'lackHi' => 'विशेष वश्य आकर्षण नहीं है; परस्पर आकर्षण एवं मानसिक तालमेल सामान्य स्तर पर रहेगा।', 'crucial' => false],
++            ['id' => 'rajju', 'nameEn' => 'Rajju Porutham', 'nameTa' => 'ரஜ்ஜுப் பொருத்தம்', 'nameHi' => 'रज्जु पोरुथम', 'pts' => 5, 'max' => 5, 'enum' => 'UTTHAMAM', 'expEn' => 'Aayush and lifelong marital bonding (most essential).', 'expTa' => 'ஆயுளும் வாழ்நாள் முழுவதும் திருமண பந்தமும் (மிக முக்கியமானது).', 'expHi' => 'आयुष्य एवं आजीवन दांपत्य बंधन (सर्वाधिक महत्वपूर्ण)।', 'lackEn' => 'Both stars fall in the SAME Rajju group (Eka Rajju dosha), so the classical protection of lifespan and marital security is missing.', 'lackTa' => 'இரு நட்சத்திரங்களும் ஒரே ரஜ்ஜு குழுவில் உள்ளன (ஏக ரஜ்ஜு தோஷம்); ஆயுள் மற்றும் மாங்கல்ய பாதுகாப்பு இல்லை.', 'lackHi' => 'दोनों नक्षत्र एक ही रज्जु समूह में हैं (एक रज्जु दोष); आयु एवं वैवाहिक सुरक्षा का संरक्षण अनुपस्थित है।', 'crucial' => true],
++            ['id' => 'vedha', 'nameEn' => 'Vedha Porutham', 'nameTa' => 'வேதைப் பொருத்தம்', 'nameHi' => 'वेध पोरुथम', 'pts' => 3, 'max' => 3, 'enum' => 'UTTHAMAM', 'expEn' => 'Free from malefic psychic affliction.', 'expTa' => 'தீய நட்சத்திர வேதை இன்மை.', 'expHi' => 'अशुभ वेध दोष से मुक्त।', 'lackEn' => 'A Vedha (obstruction) pair is present, so friction, disputes and avoidable obstacles are indicated.', 'lackTa' => 'வேதை (தடை) ஜோடி உள்ளது; கருத்து வேறுபாடு, தகராறு மற்றும் தடைகள் ஏற்படலாம்.', 'lackHi' => 'वेध (बाधा) युग्म है; मतभेद, विवाद एवं बाधाएँ संभव हैं।', 'crucial' => false]
+         ];
+ 
+         $enumToLegacyStatus = [
+             'UTTHAMAM' => 'Uthama (Excellent)',
+             'MADHYAMAM' => 'Madhyama (Good)',
+@@ -2930,13 +2953,15 @@ class AstroEngine {
+                 'nameEn' => $pd['nameEn'],
+                 'nameHi' => $pd['nameHi'],
+                 'poruthamKey' => $pd['id'],
+                 'status2' => $pd['enum'],
+                 'pointsEarned' => $pd['pts'],
+-                'explanationEn' => $pd['expEn'],
+-                'explanationTa' => $pd['expTa'],
+-                'explanationHi' => $pd['expHi'],
++                // A row that did not earn full marks explains the shortfall
++                // instead of repeating the benefit the couple does NOT receive.
++                'explanationEn' => $pd['enum'] === 'UTTHAMAM' ? $pd['expEn'] : $pd['lackEn'],
++                'explanationTa' => $pd['enum'] === 'UTTHAMAM' ? $pd['expTa'] : $pd['lackTa'],
++                'explanationHi' => $pd['enum'] === 'UTTHAMAM' ? $pd['expHi'] : $pd['lackHi'],
+                 'isCrucial' => $pd['crucial']
+             ];
+         }
+         foreach ($poruthams as &$p) {
+             $p['statusLabel'] = $p['status'];
+diff --git a/server/astrology/matchmaking.ts b/server/astrology/matchmaking.ts
+index 2924958..80a2efd 100644
+--- a/server/astrology/matchmaking.ts
++++ b/server/astrology/matchmaking.ts
+@@ -197,20 +213,22 @@ export function calculateWeddingCompatibility(
+     pointsEarned: dinaStatus === PoruthamStatus.UTTHAMAM ? 1.0 : dinaStatus === PoruthamStatus.MADHYAMAM ? 0.5 : 0.0,
+     maxPoints: 1.0,
+     explanationTa: dinaStatus === PoruthamStatus.UTTHAMAM
+       ? 'உத்தமம்! தம்பதியரின் நீண்ட ஆயுளையும், உடல் நலனையும், நோய் நொடியற்ற வளமான வாழ்க்கையையும் அருளும்.'
+       : dinaStatus === PoruthamStatus.MADHYAMAM
+-      ? 'மத்திமம்! மிதமான நட்சத்திர தூரம். ஆரோக்கிய நல்லிணக்கம் உண்டு.'
+-      : 'பொருந்தாது! தினப் பொருத்தம் அமையவில்லை; மற்ற முதன்மைப் பொருத்தங்களின் பலம் தேவை.',
++      ? 'மத்திமம்! மிதமான நட்சத்திர தூரம்; முழு ஆரோக்கிய ஆதரவு இல்லை.'
++      : 'பொருந்தாது! நட்சத்திர இடைவெளி ஆரோக்கியத்தையும் நீண்ட ஆயுளையும் தாங்கவில்லை; மற்ற முதன்மைப் பொருத்தங்களின் பலம் தேவை.',
+     explanationEn: dinaStatus === PoruthamStatus.UTTHAMAM
+       ? 'Auspicious! Bestows vitality, health resilience, long life, and prosperity to the couple.'
+       : dinaStatus === PoruthamStatus.MADHYAMAM
+-      ? 'Moderate! Moderate star distance with acceptable mutual vitality.'
+-      : 'Incompatible! Requires strong support from other crucial Poruthams.',
++      ? 'Only a partial Dina match - the star distance supports average, not full, vitality and longevity.'
++      : 'No Dina support - the star distance carries neither full vitality and longevity nor freedom from discord, so it needs support from the other crucial Poruthams.',
+     explanationHi: dinaStatus === PoruthamStatus.UTTHAMAM
+       ? 'उत्तम! दंपत्ति के दीर्घायु, उत्तम स्वास्थ्य और समृद्धि का कारक है।'
+-      : 'मध्यम अथवा पुनर्विचार आवश्यक।',
++      : dinaStatus === PoruthamStatus.MADHYAMAM
++      ? 'आंशिक मेल - मध्यम नक्षत्र दूरी; पूर्ण स्वास्थ्य एवं दीर्घायु समर्थन नहीं।'
++      : 'दिन पोरुथम नहीं - नक्षत्र दूरी स्वास्थ्य, दीर्घायु एवं मतभेद-रहितता का बल नहीं देती।',
+     isCrucial: true
+   });
+ 
+   // 2. Gana Porutham (Temperament & Psychology)
+   const bGana = NAKSHATRA_GANA[bStar];
+@@ -263,17 +281,17 @@ export function calculateWeddingCompatibility(
+     status: mahendraStatus,
+     pointsEarned: mahendraStatus === PoruthamStatus.UTTHAMAM ? 1.0 : 0.0,
+     maxPoints: 1.0,
+     explanationTa: mahendraStatus === PoruthamStatus.UTTHAMAM
+       ? 'உத்தமம்! புத்திர பாக்கியம், வம்ச விருத்தி மற்றும் சந்ததி மேன்மையை நல்கும்.'
+-      : 'பொருந்தாது (புத்திர பாக்கியம் இருவரின் தனிப்பட்ட ஜாதகத்தில் 5-ம் பாவகம் கொண்டு அறியப்படும்).',
++      : 'பொருந்தாது! மகேந்திர ஆதரவு இல்லை; புத்திர பாக்கியம் இருவரின் தனிப்பட்ட ஜாதகத்தில் 5-ம் பாவகம் கொண்டு அறியப்படும்.',
+     explanationEn: mahendraStatus === PoruthamStatus.UTTHAMAM
+       ? 'Auspicious! Bestows blessed offspring, family lineage expansion, and prosperity.'
+-      : 'Neutral (Progeny is independently assessed via 5th house in natal charts).',
++      : 'Not supportive - the star distance gives no Mahendra strength for progeny and lineage growth (each chart is judged separately from its 5th house).',
+     explanationHi: mahendraStatus === PoruthamStatus.UTTHAMAM
+       ? 'उत्तम! संतान सुख और कुल वृद्धि के लिए अत्यंत शुभ।'
+-      : 'व्यक्तिगत कुंडली के पंचम भाव से संतान योग का विश्लेषण होगा।',
++      : 'सहायक नहीं - नक्षत्र दूरी से महेंद्र बल नहीं मिलता (संतान योग प्रत्येक कुंडली के पंचम भाव से अलग देखा जाता है)।',
+     isCrucial: false
+   });
+ 
+   // 4. Stree Deergha Porutham (Prosperity for Bride)
+   let sthreeStatus = PoruthamStatus.PORUNDHADHU;
+@@ -291,17 +309,23 @@ export function calculateWeddingCompatibility(
+     status: sthreeStatus,
+     pointsEarned: sthreeStatus === PoruthamStatus.UTTHAMAM ? 1.0 : sthreeStatus === PoruthamStatus.MADHYAMAM ? 0.5 : 0.0,
+     maxPoints: 1.0,
+     explanationTa: sthreeStatus === PoruthamStatus.UTTHAMAM
+       ? 'உத்தமம்! பெண்ணிற்கு வாழ்நாள் முழுதும் மங்கலமும், ஐஸ்வர்யமும், நல்வாழ்வும் நிலைக்கும்.'
+-      : 'மத்திமம்! மிதமான நட்சத்திர தூரம்; சுப பலன்கள் உண்டு.',
++      : sthreeStatus === PoruthamStatus.MADHYAMAM
++      ? 'மத்திமம்! மிதமான நட்சத்திர தூரம்; மணமகளுக்கு வலுவான வளர்ச்சி ஆதரவு இல்லை.'
++      : 'பொருந்தாது! நட்சத்திர இடைவெளி குறைவு; மணமகளுக்கு நீண்ட ஆயுள் மற்றும் முழு வளர்ச்சி ஆதரவு இல்லை.',
+     explanationEn: sthreeStatus === PoruthamStatus.UTTHAMAM
+       ? 'Auspicious! Safeguards prosperity, health, happiness, and marital security for the bride.'
+-      : 'Moderate star interval with positive stability.',
++      : sthreeStatus === PoruthamStatus.MADHYAMAM
++      ? 'Only a moderate star interval - long-term prosperity for the bride is weakly supported.'
++      : 'No Stree Deergha support - the short star interval gives the bride neither full longevity nor all-round growth.',
+     explanationHi: sthreeStatus === PoruthamStatus.UTTHAMAM
+       ? 'उत्तम! वधु के दीर्घ सौभाग्य और गृह समृद्धि की वृद्धि।'
+-      : 'मध्यम शुभ फल।',
++      : sthreeStatus === PoruthamStatus.MADHYAMAM
++      ? 'मध्यम दूरी - वधू की दीर्घकालिक समृद्धि को सीमित समर्थन मात्र।'
++      : 'स्त्री दीर्घ पोरुथम नहीं - कम नक्षत्र दूरी से वधू को दीर्घायु एवं सर्वांगीण विकास का बल नहीं मिलता।',
+     isCrucial: false
+   });
+ 
+   // 5. Yoni Porutham (Physical & Emotional Harmony)
+   const bYoni = NAKSHATRA_YONI[bStar];
+@@ -322,20 +346,20 @@ export function calculateWeddingCompatibility(
+     pointsEarned: yoniStatus === PoruthamStatus.UTTHAMAM ? 1.0 : yoniStatus === PoruthamStatus.MADHYAMAM ? 0.5 : 0.0,
+     maxPoints: 1.0,
+     explanationTa: yoniStatus === PoruthamStatus.UTTHAMAM
+       ? 'உத்தமம்! தம்பதியரிடையே ஆழ்ந்த அன்பும், அன்யோன்யமும், தாம்பத்திய சுகமும் செழிக்கும்.'
+       : !isYoniEnemy
+-      ? 'மத்திமம்! நட்பான சேர்க்கை; திருப்திகரமான தாம்பத்தியம்.'
++      ? 'மத்திமம்! பகை யோனி இல்லை; ஆனால் முழு உடல் மற்றும் உணர்வு இணக்கமும் இல்லை.'
+       : 'பகை யோனி! விட்டுக்கொடுத்தலும், புரிந்துணர்வும் அவசியம்.',
+     explanationEn: yoniStatus === PoruthamStatus.UTTHAMAM
+       ? 'Auspicious! Perfect emotional affinity, physical harmony, and lifelong affection.'
+       : !isYoniEnemy
+-      ? 'Compatible! Friendly animal biological affinity.'
++      ? 'Only a partial Yoni match - the animal instincts are not inimical, but the full physical and emotional affinity is absent.'
+       : 'Inimical Yoni pair! Requires patience and conscious understanding.',
+     explanationHi: yoniStatus === PoruthamStatus.UTTHAMAM
+       ? 'उत्तम! वैवाहिक जीवन में प्रेम और सामंजस्य का प्रतीक।'
+-      : 'सामान्य मित्रता एवं सामंजस्य।',
++      : 'आंशिक योनि मेल - शत्रुता नहीं, परंतु पूर्ण शारीरिक एवं भावनात्मक तालमेल भी नहीं।',
+     isCrucial: true
+   });
+ 
+   // 6. Rasi Porutham (Sign Harmony & Lineage Bliss)
+   const rasiDiff = ((gRasi - bRasi + 12) % 12) + 1;
+@@ -365,20 +389,20 @@ export function calculateWeddingCompatibility(
+     pointsEarned: rasiStatus === PoruthamStatus.UTTHAMAM ? 1.0 : rasiStatus === PoruthamStatus.MADHYAMAM ? 0.5 : 0.0,
+     maxPoints: 1.0,
+     explanationTa: rasiStatus === PoruthamStatus.UTTHAMAM
+       ? 'உத்தமம்! குடும்ப ஒற்றுமை, வம்ச மேன்மை மற்றும் சுப காரிய வெற்றிகளை அருளும்.'
+       : rasiStatus === PoruthamStatus.MADHYAMAM
+-      ? 'மத்திமம்! சுப கிரக பார்வைகளால் சிறப்பான பலன்கள் கிட்டும்.'
++      ? 'மத்திமம்! ராசி இணக்கம் மிதமானது; குடும்ப ஒற்றுமைக்கு முயற்சி தேவை.'
+       : 'சஷ்டாஷ்டகம் (6/8 ராசி வித்தியாசம்). பிற கிரக பலம் கொண்டு சமன் செய்ய வேண்டும்.',
+     explanationEn: rasiStatus === PoruthamStatus.UTTHAMAM
+       ? 'Auspicious! Strengthens family unity, financial synergy, and long-term matrimonial joy.'
+       : rasiStatus === PoruthamStatus.MADHYAMAM
+-      ? 'Moderate sign compatibility with positive mutual respect.'
++      ? 'Only moderate sign compatibility - mutual respect exists, but family unity needs conscious effort.'
+       : 'Shashtashtaka (6/8 distance); relies on mitigating benefic planetary aspects.',
+     explanationHi: rasiStatus === PoruthamStatus.UTTHAMAM
+       ? 'उत्तम! पारिवारिक सुख-शांति और कुल गौरव के लिए श्रेष्ठ।'
+-      : 'मध्यम अथवा ग्रह स्थिति के आधार पर अनुकूल।',
++      : 'राशि मेल मध्यम है; पारिवारिक एकता हेतु प्रयास आवश्यक।',
+     isCrucial: true
+   });
+ 
+   // 7. Rasiyadhipathi Porutham (Planetary Lord Friendship)
+   const bLord = RASI_INFO[bRasi].lordEn;
+@@ -404,15 +428,15 @@ export function calculateWeddingCompatibility(
+     nameHi: '7. राश्याधिपति पोरुथम (ग्रह मित्रता)',
+     status: rasiAdhipathiStatus,
+     pointsEarned: rasiAdhipathiStatus === PoruthamStatus.UTTHAMAM ? 1.0 : rasiAdhipathiStatus === PoruthamStatus.MADHYAMAM ? 0.5 : 0.0,
+     maxPoints: 1.0,
+     explanationTa: `பெண் ராசி அதிபதி: ${RASI_INFO[bRasi].lordTa}, பிள்ளை ராசி அதிபதி: ${RASI_INFO[gRasi].lordTa}. ` +
+-      (rasiAdhipathiStatus === PoruthamStatus.UTTHAMAM ? 'கிரக அதிபதிகள் நண்பர்கள்; மனமார்ந்த நட்பு தொடரும்.' : 'இருவரிடமும் கருத்து பரிமாற்றத்தில் நிதானம் தேவை.'),
++      (rasiAdhipathiStatus === PoruthamStatus.UTTHAMAM ? 'கிரக அதிபதிகள் நண்பர்கள்; மனமார்ந்த நட்பு தொடரும்.' : 'மத்திமம்! ராசி அதிபதிகள் பரஸ்பர நண்பர்கள் அல்ல; மன ஒற்றுமைக்கு முயற்சி தேவை.'),
+     explanationEn: `Bride Lord: ${bLord}, Groom Lord: ${gLord}. ` +
+-      (rasiAdhipathiStatus === PoruthamStatus.UTTHAMAM ? 'Ruling planets are mutual friends, fostering deep lifelong companionship.' : 'Neutral planetary affinity; values clear communication.'),
++      (rasiAdhipathiStatus === PoruthamStatus.UTTHAMAM ? 'Ruling planets are mutual friends, fostering deep lifelong companionship.' : 'Only neutral planetary affinity - the ruling planets are not mutual friends, so mental harmony needs conscious effort.'),
+     explanationHi: `कन्या राश्याधिपति: ${RASI_INFO[bRasi].lordHi}, वर राश्याधिपति: ${RASI_INFO[gRasi].lordHi}। ` +
+-      (rasiAdhipathiStatus === PoruthamStatus.UTTHAMAM ? 'ग्रह स्वामी मित्र हैं, जिससे सौहार्द बना रहेगा।' : 'परस्पर सामंजस्य का प्रयास करें।'),
++      (rasiAdhipathiStatus === PoruthamStatus.UTTHAMAM ? 'ग्रह स्वामी मित्र हैं, जिससे सौहार्द बना रहेगा।' : 'राशि स्वामी परस्पर मित्र नहीं हैं; मानसिक सामंजस्य हेतु प्रयास आवश्यक।'),
+     isCrucial: false
+   });
+ 
+   // 8. Vasiya Porutham (Mutual Attraction & Magnetic Bond)
+   const vasiyaPairs: Record<number, number[]> = {

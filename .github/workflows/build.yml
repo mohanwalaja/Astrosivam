@@ -1,0 +1,87 @@
+name: Build & Package Production dist.zip
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Setup PHP 8.1 + Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+          ini-values: memory_limit=512M
+
+      - name: Install PHP dependencies
+        run: |
+          if [ -f composer.json ]; then
+            if [ -f composer.lock ]; then
+              composer install --no-dev --optimize-autoloader || echo "Composer install completed with warnings"
+            else
+              composer update --no-dev --optimize-autoloader || echo "Composer update completed with warnings"
+            fi
+          fi
+
+      # Install Node dependencies with fallback to npm install
+      - name: Install Node dependencies
+        run: |
+          npm ci || npm install
+
+      - name: Build production app & generate dist.zip with api/
+        run: |
+          npm run build:zip
+          ls -lh dist.zip dist/
+
+      - name: Verify dist.zip content
+        run: |
+          python3 -c "import zipfile; z = zipfile.ZipFile('dist.zip'); names = z.namelist(); assert 'index.html' in names, 'Missing index.html'; assert any(n.startswith('api/') for n in names), 'Missing api/ folder'; print(f'dist.zip verified successfully! Total files: {len(names)}')"
+
+      - name: Upload dist.zip as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: astrosivam-dist
+          path: dist.zip
+          retention-days: 30
+          overwrite: true
+
+      - name: Publish / Update Latest Release Asset
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: latest
+          name: ASTRO SIVAM Production Build (Latest)
+          body: |
+            Automated production build including:
+            - Full optimized React frontend (`dist/`)
+            - Complete cPanel PHP backend (`/api/`) with Vedic astrology engine
+            - BigRock cPanel Deployment Guide (`BIGROCK_CPANEL_DEPLOYMENT_GUIDE.md`)
+            
+            **Download `dist.zip` below and upload to your cPanel `public_html/`.**
+          files: |
+            dist.zip
+          draft: false
+          prerelease: false
+

@@ -1,0 +1,100 @@
+# Issue 1 - Rajju: the five groups repeat every NINE Nakshatras (Siro/Kanda/Udhara/Uru/Pada), not every five.
+# Apply from the repository root:  patch -p1 < patches/01-rajju-five-group-table.patch
+
+diff --git a/api/astrology/engine.php b/api/astrology/engine.php
+index bc4e5d9..97b011f 100644
+--- a/api/astrology/engine.php
++++ b/api/astrology/engine.php
+@@ -1162,13 +1162,30 @@ class AstroEngine {
+         'horse'=>['dog'],'elephant'=>['lion'],'goat'=>['monkey'],'serpent'=>['mongoose'],
+         'dog'=>['horse','deer','monkey'],'cat'=>['monkey'],'rat'=>['buffalo'],'cow'=>['dog'],
+         'buffalo'=>['tiger'],'tiger'=>['elephant'],'deer'=>['dog'],'monkey'=>['dog','cat'],
+         'mongoose'=>[],'lion'=>['elephant'],
+     ];
+-    // Keep the five-group Rajju mapping in the same Nakshatra order as the
+-    // TypeScript matchmaking engine (0=Siro, 1=Kanda, 2=Udhara, 3=Uru, 4=Pada).
+-    private static $RAJJU_GROUP = [4,3,2,1,0,0,1,2,3,4,3,2,1,0,0,1,2,3,4,3,2,1,0,0,1,2,4];
++    // The five-group Rajju mapping in the same Nakshatra order as the
++    // TypeScript matchmaking engine (0=Siro, 1=Kanda, 2=Udhara, 3=Uru, 4=Pada):
++    //
++    //   Siro   (head):  Mrigashirsha, Chitra, Dhanishta (Avittam)
++    //   Kanda  (neck):  Rohini, Ardra (Thiruvadhirai), Hasta, Swati, Shravana (Thiruvonam), Shatabhisha (Sathayam)
++    //   Udhara (navel): Krittika (Karthigai), Punarvasu (Punarpoosam), Uttara Phalguni (Uthiram), Vishakha (Visakam), Uttara Ashadha (Uthiradam), Purva Bhadrapada (Poorattathi)
++    //   Uru    (thigh): Bharani, Pushya (Poosam), Purva Phalguni (Pooram), Anuradha (Anusham), Purva Ashadha (Pooradam), Uttara Bhadrapada (Uthirattathi)
++    //   Pada   (foot):  Ashwini, Ashlesha (Ayilyam), Magha (Magam), Jyeshtha (Kettai), Mula (Moolam), Revati (Revathi)
++    //
++    // The five groups repeat identically over each nine-Nakshatra arc, so the
++    // table is the nine-value pattern (4,3,2,1,0,1,2,3,4) three times. Rajju
++    // MATCHES when the two stars are in DIFFERENT groups. The former table
++    // rotated 4,3,2,1,0 every five stars, shifting Ardra..Ashlesha,
++    // Swati..Jyeshtha and Shatabhisha..Uttara Bhadrapada by one group and
++    // wrongly failing e.g. bride Avittam (Siro) + groom Swati (Kanda).
++    private static $RAJJU_GROUP = [
++        4, 3, 2, 1, 0, 1, 2, 3, 4,
++        4, 3, 2, 1, 0, 1, 2, 3, 4,
++        4, 3, 2, 1, 0, 1, 2, 3, 4,
++    ];
+     private static $VASYA_GROUP = [0,0,1,2,1,3,1,4,1,0,2,2];
+     private static $VEDHA_PAIR = [17,16,15,14,22,21,20,19,18,26,25,24,23,null,3,2,1,0,8,7,6,5,4,12,11,10,9];
+ 
+     private static function planetFriendship($p1, $p2) {
+         $friends = [
+diff --git a/server/astrology/matchmaking.ts b/server/astrology/matchmaking.ts
+index 2924958..80a2efd 100644
+--- a/server/astrology/matchmaking.ts
++++ b/server/astrology/matchmaking.ts
+@@ -20,14 +20,30 @@ const NAKSHATRA_GANA = [
+   2, 1, 1, 0, 2, 0, 2, 0, 2,
+   2, 1, 1, 0, 2, 2, 1, 1, 0
+ ];
+ 
+ // Rajju: 0=Siro (Head), 1=Kanda (Neck), 2=Udhara (Stomach), 3=Uru (Thigh), 4=Pada (Foot)
++//
++// The classical Tamil five-group split (Thirumana Porutham), in the engine's
++// Nakshatra order:
++//   Siro   (head):  Mrigashirsha, Chitra, Dhanishta
++//   Kanda  (neck):  Rohini, Ardra, Hasta, Swati, Shravana, Shatabhisha
++//   Udhara (navel): Krittika, Punarvasu, Uttara Phalguni, Vishakha, Uttara Ashadha, Purva Bhadrapada
++//   Uru    (thigh): Bharani, Pushya, Purva Phalguni, Anuradha, Purva Ashadha, Uttara Bhadrapada
++//   Pada   (foot):  Ashwini, Ashlesha, Magha, Jyeshtha, Mula, Revati
++//
++// The five groups repeat identically over each nine-Nakshatra arc, so the
++// table is (4,3,2,1,0,1,2,3,4) three times. Rajju MATCHES when the bride and
++// the groom fall in DIFFERENT groups and fails only when both fall in the SAME
++// group. The former table rotated 4,3,2,1,0 every five stars, which shifted
++// Ardra/Punarvasu/Pushya/Ashlesha, Swati/Vishakha/Anuradha/Jyeshtha and
++// Shatabhisha/Purva Bhadrapada/Uttara Bhadrapada by one group and wrongly
++// failed pairs such as Dhanishta (Siro) + Swati (Kanda).
+ const NAKSHATRA_RAJJU = [
+-  4, 3, 2, 1, 0, 0, 1, 2, 3,
+-  4, 3, 2, 1, 0, 0, 1, 2, 3,
+-  4, 3, 2, 1, 0, 0, 1, 2, 4
++  4, 3, 2, 1, 0, 1, 2, 3, 4,
++  4, 3, 2, 1, 0, 1, 2, 3, 4,
++  4, 3, 2, 1, 0, 1, 2, 3, 4
+ ];
+ 
+ const RAJJU_NAMES_TA = ['சிரோ ரஜ்ஜு (தலை)', 'கண்ட ரஜ்ஜு (கழுத்து)', 'உதர ரஜ்ஜு (வயிறு)', 'ஊரு ரஜ்ஜு (தொடை)', 'பாத ரஜ்ஜு (பாதம்)'];
+ const RAJJU_NAMES_EN = ['Siro Rajju (Head)', 'Kanda Rajju (Neck)', 'Udhara Rajju (Stomach)', 'Uru Rajju (Thigh)', 'Pada Rajju (Foot)'];
+ const RAJJU_NAMES_HI = ['शिरो रज्जु (सिर)', 'कंठ रज्जु (गला)', 'उदर रज्जु (नाभि)', 'उरु रज्जु (जंघा)', 'पाद रज्जु (पैर)'];
+@@ -433,17 +457,17 @@ export function calculateWeddingCompatibility(
+     status: vasiyaStatus,
+     pointsEarned: isVasiya ? 1.0 : 0.5,
+     maxPoints: 1.0,
+     explanationTa: isVasiya
+       ? 'உத்தமம்! தம்பதியரிடையே பிரியாத காதலும், ஒருவரை ஒருவர் கவரும் வசிய ஈர்ப்பும் உண்டாகும்.'
+-      : 'மத்திமம்! இயல்பான அன்பு மற்றும் பரஸ்பர மரியாதை உண்டு.',
++      : 'மத்திமம்! இயல்பான அன்பு மட்டுமே; சிறப்பு வசிய ஈர்ப்பு இல்லை.',
+     explanationEn: isVasiya
+       ? 'Auspicious! Special magnetic bond, continuous adoration, and endearing mutual attraction.'
+-      : 'Standard affectionate companionship.',
++      : 'Only ordinary affection - the special Vasiya (mutual attraction) pull is absent.',
+     explanationHi: isVasiya
+       ? 'उत्तम! परस्पर प्रगाढ़ प्रेम और आकर्षण का सूचक।'
+-      : 'सामान्य आदर एवं स्नेह।',
++      : 'सामान्य स्नेह मात्र - विशेष वश्य आकर्षण नहीं।',
+     isCrucial: false
+   });
+ 
+   // 9. Rajju Porutham (Marital Longevity - MOST CRITICAL)
+   const bRajju = NAKSHATRA_RAJJU[bStar];

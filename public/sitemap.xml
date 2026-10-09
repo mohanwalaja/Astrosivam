@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Homepage -->
+  <url>
+    <loc>https://astrosivam.com/</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/?lang=hi" />
+  </url>
+
+  <!-- Main Services Catalogue -->
+  <url>
+    <loc>https://astrosivam.com/services</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/services" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/services?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/services?lang=hi" />
+  </url>
+
+  <!-- Birth Jathagam (Horoscope) Service -->
+  <url>
+    <loc>https://astrosivam.com/birth-jathagam</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/birth-jathagam" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/birth-jathagam?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/birth-jathagam?lang=hi" />
+  </url>
+
+  <!-- Marriage Compatibility (10 Poruthams) Service -->
+  <url>
+    <loc>https://astrosivam.com/marriage-compatibility</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/marriage-compatibility" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/marriage-compatibility?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/marriage-compatibility?lang=hi" />
+  </url>
+
+  <!-- Baby Naming (Nakshatra Letters) Service -->
+  <url>
+    <loc>https://astrosivam.com/baby-naming</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/baby-naming" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/baby-naming?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/baby-naming?lang=hi" />
+  </url>
+
+  <!-- Subha Muhurtham Finder (18 auspicious ceremonies) -->
+  <url>
+    <loc>https://astrosivam.com/muhurtham</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/muhurtham" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/muhurtham?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/muhurtham?lang=hi" />
+  </url>
+
+  <!-- How It Works / Methodology -->
+  <url>
+    <loc>https://astrosivam.com/how-it-works</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/how-it-works" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/how-it-works?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/how-it-works?lang=hi" />
+  </url>
+
+  <!-- About Us -->
+  <url>
+    <loc>https://astrosivam.com/about</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/about" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/about?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/about?lang=hi" />
+  </url>
+
+  <!-- Contact Astrologers -->
+  <url>
+    <loc>https://astrosivam.com/contact</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/contact" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/contact?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/contact?lang=hi" />
+  </url>
+
+  <!-- Astrology Scholars Team -->
+  <url>
+    <loc>https://astrosivam.com/team</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://astrosivam.com/team" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://astrosivam.com/team?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://astrosivam.com/team?lang=hi" />
+  </url>
+
+  <!-- Client Authentication -->
+  <url>
+    <loc>https://astrosivam.com/login</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://astrosivam.com/register</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Legal & Compliance Policies -->
+  <url>
+    <loc>https://astrosivam.com/privacy-policy</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://astrosivam.com/terms</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://astrosivam.com/refund-policy</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://astrosivam.com/payment-policy</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>

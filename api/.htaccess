@@ -1,0 +1,127 @@
+# Prevent directory indexing
+Options -Indexes
+
+# Security: Block direct web access to sensitive files (SQL, ENV, LOGS, LOCKS, INI, TMP, JSON)
+<FilesMatch "\.(sql|env|log|lock|ini|conf|bak|sh|md|git|key|txt|map|cjs)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Block composer manifest and lock files directly
+<FilesMatch "^(composer\.(json|lock)|installed\.json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Block direct web access to vendor folder
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^vendor(/.*)?$ - [F,L]
+</IfModule>
+
+# Block direct access to internal include files
+<FilesMatch "^(config|db)\.php$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# ---------------------------------------------------------------------------
+# PHP REQUEST LIMITS (only applied when PHP runs as an Apache module).
+#
+# The admin panel POSTs browser-rendered, high-resolution PDFs (~2 MB each) to
+# this API. With PHP's stock limits the request body is silently discarded once
+# it exceeds post_max_size, and the customer then receives the low-quality
+# server-rendered PDF instead of the preview-quality one.
+#
+# When PHP runs as CGI / FastCGI / FPM / LSPHP (the usual cPanel setup) these
+# blocks are skipped and the identical values are applied by api/.user.ini.
+# ---------------------------------------------------------------------------
+<IfModule mod_php.c>
+    php_value memory_limit 512M
+    php_value post_max_size 128M
+    php_value upload_max_filesize 64M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>
+<IfModule mod_php7.c>
+    php_value memory_limit 512M
+    php_value post_max_size 128M
+    php_value upload_max_filesize 64M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>
+<IfModule mod_php8.c>
+    php_value memory_limit 512M
+    php_value post_max_size 128M
+    php_value upload_max_filesize 64M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>
+
+RewriteEngine On
+RewriteBase /api/
+
+# Ensure Authorization headers are passed through to PHP FastCGI/cPanel/LiteSpeed
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+SetEnvIf X-Authorization "(.*)" HTTP_AUTHORIZATION=$1
+SetEnvIf X-Auth-Token "(.*)" HTTP_X_AUTH_TOKEN=$1
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteRule .* - [E=HTTP_X_AUTH_TOKEN:%{HTTP:X-Auth-Token}]
+
+# SECURITY: Do NOT set Access-Control-Allow-Origin here with a wildcard.
+# config.php now echoes only the site's own origins (with credentials enabled),
+# so the wildcard header here would conflict/override that protection.
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Authorization, X-Auth-Token, X-Requested-With"
+</IfModule>
+
+# Handle direct PHP endpoints
+RewriteRule ^login\.php$ auth/index.php [L,QSA]
+RewriteRule ^register\.php$ auth/index.php?action=register [L,QSA]
+RewriteRule ^services\.php$ services/index.php [L,QSA]
+RewriteRule ^admin\.php$ admin/index.php [L,QSA]
+
+# Route module subpaths
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^auth/(.*)$ auth/index.php [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^services/(.*)$ services/index.php [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^admin/(.*)$ admin/index.php [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^astrology/(.*)$ astrology/index.php [L,QSA]
+
+# Payment provider webhooks (Razorpay / PayPal) — dedicated router. Provider
+# events must reach this handler even though it is not a "module" folder.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^payment/(.*)$ payment_webhook.php [L,QSA]
+
+# Fallback for any other API route: answer JSON 404 instead of executing a
+# script. (This used to rewrite to index.php, which was a font-test page.)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ 404.php [L,QSA]

@@ -1,0 +1,14 @@
+{
+  "name": "astrosivam/astrology-app",
+  "description": "ASTRO SIVAM - Vedic Astrology Platform & Backend",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.0",
+    "mpdf/mpdf": "^8.2"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "allow-plugins": {}
+  }
+}

@@ -1,0 +1,39 @@
+# Issue 2 - A partial score (e.g. Yoni 2/4) is Mathimam, never Uttamam; "matched" counts Mathimam.
+# Apply from the repository root:  patch -p1 < patches/02-partial-score-mathimam-label.patch
+
+diff --git a/api/astrology/engine.php b/api/astrology/engine.php
+index bc4e5d9..97b011f 100644
+--- a/api/astrology/engine.php
++++ b/api/astrology/engine.php
+@@ -2903,11 +2920,15 @@ class AstroEngine {
+         $totalScore = 0; $maxScore = 0; $anyCrucialFailed = false;
+         foreach ($poruthamDefs as &$pd) {
+             $r = $realResults[$pd['id']];
+             $pd['pts'] = $r['pts'];
+             $pd['max'] = $r['max'];
+-            $pd['enum'] = $r['pass'] ? 'UTTHAMAM' : ($r['pts'] > 0 ? 'MADHYAMAM' : 'PORUNDHADHU');
++            // Full marks are "Uthamam"; a genuine partial score (for example
++            // Yoni 2/4 for a neutral animal pair) is "Mathimam", never
++            // "Uthamam" - the old pass/fail flag labelled every >=-half row as
++            // excellent and hid the shortfall. A zero row is Porundhadhu.
++            $pd['enum'] = $r['pts'] >= $r['max'] ? 'UTTHAMAM' : ($r['pts'] > 0 ? 'MADHYAMAM' : 'PORUNDHADHU');
+             $pd['crucial'] = !empty($pd['crucial']) || !empty($r['crucial']);
+             if ($pd['crucial'] && !$r['pass']) { $anyCrucialFailed = true; }
+             $totalScore += $r['pts'];
+             $maxScore += $r['max'];
+         }
+@@ -2916,11 +2937,13 @@ class AstroEngine {
+ 
+         // --- NOW build $poruthams from the already-updated real $poruthamDefs ---
+         $poruthams = [];
+         $totalPoruthamsMatched = 0;
+         foreach ($poruthamDefs as $pd) {
+-            if ($pd['enum'] === 'UTTHAMAM') { $totalPoruthamsMatched++; }
++            // "Matched" counts everything that is not a failed row, exactly like
++            // the TypeScript engine's matchedCount (Uthamam + Mathimam).
++            if ($pd['enum'] !== 'PORUNDHADHU') { $totalPoruthamsMatched++; }
+             $poruthams[] = [
+                 'name' => $pd['nameEn'],
+                 'nameTa' => $pd['nameTa'],
+                 'points' => $pd['pts'],
+                 'maxPoints' => $pd['max'],

@@ -1,0 +1,14 @@
+# ASTRO SIVAM - transient staging area for preview-rendered PDFs.
+# Nothing in here may ever be reachable over HTTP: these are customer reports
+# and tax invoices waiting to be attached to an email.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
+
+Options -Indexes -ExecCGI
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8
+RemoveType .php

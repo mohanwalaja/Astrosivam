@@ -1,0 +1,7 @@
+# Runtime staging area: staged PDFs are transient and must never be committed.
+*
+!.htaccess
+!.gitignore
+!family_docs/
+family_docs/*
+!family_docs/.htaccess

@@ -1,0 +1,109 @@
+# Issue 6 - The Mars (Kuja) box no longer repeats the Rajju/Vedha verdict a third time.
+# Apply from the repository root:  patch -p1 < patches/06-kuja-box-no-repeated-rajju.patch
+
+diff --git a/api/astrology/engine.php b/api/astrology/engine.php
+index bc4e5d9..97b011f 100644
+--- a/api/astrology/engine.php
++++ b/api/astrology/engine.php
+@@ -3082,18 +3107,17 @@ class AstroEngine {
+         $failedHi = implode(' और ', array_filter([$rajjuOk ? null : 'रज्जु', $vedhaOk ? null : 'वेध']));
+         $verdictLabel = $anyCrucialFailed ? "Not Recommended - {$failedEn} mismatch" : ($scorePercent >= 70 ? 'Highly Recommended (உத்தம பொருத்தம்)' : ($scorePercent >= 50 ? 'Acceptable with Remedies (மத்திம பொருத்தம்)' : 'Not Recommended (பொருந்தாது)'));
+ 
+         // Kuja remedies concern Kuja alone; they do not remove a failed
+         // Rajju/Vedha check or amount to approval of the overall marriage.
++        // The failed hard stop itself is stated ONCE, by the overall verdict
++        // below: the Kuja box printed that same Rajju/Vedha sentence on top of
++        // the score-banner verdict and the final verdict banner, so one failure
++        // was repeated three times on the same page.
+         $sevvayDosham['recommendationEn'] .= ' This guidance concerns Kuja Dosha alone, not the overall marriage recommendation.';
+         $sevvayDosham['recommendationTa'] .= ' இது செவ்வாய் தோஷம் குறித்த வழிகாட்டல் மட்டுமே; முழுத் திருமணப் பொருத்தத்தின் பரிந்துரை அல்ல.';
+         $sevvayDosham['recommendationHi'] .= ' यह केवल मंगल दोष का मार्गदर्शन है, समग्र विवाह अनुशंसा नहीं।';
+-        if ($anyCrucialFailed) {
+-            $sevvayDosham['recommendationEn'] .= " The {$failedEn} mismatch remains; the overall match is not recommended without detailed astrological assessment.";
+-            $sevvayDosham['recommendationTa'] .= " {$failedTa} பொருத்தமின்மை நீங்கவில்லை; விரிவான ஜாதக ஆய்வின்றி திருமணம் பரிந்துரைக்கப்படவில்லை.";
+-            $sevvayDosham['recommendationHi'] .= " {$failedHi} की बाधा बनी हुई है; विस्तृत ज्योतिषीय समीक्षा के बिना विवाह अनुशंसित नहीं है।";
+-        }
+ 
+         if ($anyCrucialFailed) {
+             $overallVerdictEn = "Not Recommended - {$failedEn} mismatch. Requires detailed astrological assessment.";
+             $overallVerdictTa = "{$failedTa} பொருத்தமின்மை உள்ளது. விரிவான ஜாதக ஆய்வின்றி திருமணம் பரிந்துரைக்கப்படவில்லை.";
+             $overallVerdictHi = "{$failedHi} की बाधा है। विस्तृत ज्योतिषीय समीक्षा के बिना विवाह अनुशंसित नहीं है।";
+diff --git a/server/astrology/matchmaking.ts b/server/astrology/matchmaking.ts
+index 2924958..80a2efd 100644
+--- a/server/astrology/matchmaking.ts
++++ b/server/astrology/matchmaking.ts
+@@ -603,55 +627,54 @@ export function calculateWeddingCompatibility(
+   const matchedCount = poruthams.filter(p => p.status === PoruthamStatus.UTTHAMAM || p.status === PoruthamStatus.MADHYAMAM).length;
+   const rajjuOk = !isSameRajju;
+   const vedhaOk = !isVedhaAfflicted;
+   // Rajju and Vedha are the two hard-stop rules used by the PHP report path;
+   // keep the live Node verdict from promoting a high numeric score over either.
++  //
++  // The failed hard stop is stated ONCE, by the overall verdict below. It is
++  // deliberately not appended to sevvayDosham.recommendation* any more: the
++  // Kuja box printed that sentence on top of the verdict line and the final
++  // verdict banner, so a single Rajju failure appeared three times in the same
++  // part of the report.
+   const criticalPoruthamsOk = rajjuOk && vedhaOk;
+-  if (!criticalPoruthamsOk) {
+-    const failedEn = [!rajjuOk && 'Rajju', !vedhaOk && 'Vedha'].filter(Boolean).join(' and ');
+-    const failedTa = [!rajjuOk && 'ரஜ்ஜு', !vedhaOk && 'வேதை'].filter(Boolean).join(' மற்றும் ');
+-    const failedHi = [!rajjuOk && 'रज्जु', !vedhaOk && 'वेध'].filter(Boolean).join(' और ');
+-    sevvayAnalysis.recommendationEn += ` This does not remove the ${failedEn} mismatch; the overall match requires detailed astrological assessment and is not recommended on this basis.`;
+-    sevvayAnalysis.recommendationTa += ` இது ${failedTa} பொருத்தமின்மையை நீக்காது; முழுப் பொருத்தத்திற்கு விரிவான ஜாதக ஆய்வு தேவை, இதன் அடிப்படையில் திருமணம் பரிந்துரைக்கப்படவில்லை.`;
+-    sevvayAnalysis.recommendationHi += ` इससे ${failedHi} की बाधा दूर नहीं होती; समग्र मिलान की विस्तृत ज्योतिषीय समीक्षा आवश्यक है और इस आधार पर विवाह अनुशंसित नहीं है।`;
+-  }
+ 
+   let verdictStatus = PoruthamStatus.PORUNDHADHU;
+   if (totalPoints >= 7.0 && criticalPoruthamsOk && isBalanced) {
+     verdictStatus = PoruthamStatus.UTTHAMAM;
+   } else if (totalPoints >= 5.0 && criticalPoruthamsOk) {
+     verdictStatus = PoruthamStatus.MADHYAMAM;
+   }
+ 
++  // Both failed hard stops are named, not just the first one: the classical
++  // Vedha obstruction pairs also share a Rajju group, so a single pair can
++  // genuinely fail both, and the report must say so.
++  const failedCriticalEn = [!rajjuOk && 'Rajju', !vedhaOk && 'Vedha'].filter(Boolean).join(' and ');
++  const failedCriticalTa = [!rajjuOk && 'ரஜ்ஜு', !vedhaOk && 'வேதை'].filter(Boolean).join(' மற்றும் ');
++  const failedCriticalHi = [!rajjuOk && 'रज्जु', !vedhaOk && 'वेध'].filter(Boolean).join(' और ');
++
+   const verdictTa = verdictStatus === PoruthamStatus.UTTHAMAM
+     ? `மிக உத்தமமான பொருத்தம்! 10-ல் ${matchedCount} பொருத்தங்களும், முக்கிய ரஜ்ஜு/வேதைப் பொருத்தமும் மற்றும் செவ்வாய் சாம்யமும் மிகச் சிறப்பாக அமைந்துள்ளன. திருமணம் செய்ய மிகவும் உத்தமம்.`
+     : verdictStatus === PoruthamStatus.MADHYAMAM
+     ? `மத்திமமான பொருத்தம்! 10-ல் ${matchedCount} பொருத்தங்கள் பொருந்துகின்றன. ரஜ்ஜு மற்றும் வேதைப் பொருத்தங்கள் உள்ளன. பெரியோர்களின் ஆசியுடன் திருமணம் செய்யலாம்.`
+-    : !rajjuOk
+-    ? 'ரஜ்ஜு தோஷம் உள்ளது. விரிவான ஜாதக பரிசீலனை தேவைப்படுகிறது.'
+-    : !vedhaOk
+-    ? 'வேதைத் தடை உள்ளது. விரிவான ஜாதக பரிசீலனை தேவைப்படுகிறது.'
++    : !criticalPoruthamsOk
++    ? `${failedCriticalTa} பொருத்தமின்மை உள்ளது. விரிவான ஜாதக பரிசீலனை தேவைப்படுகிறது.`
+     : `குறைந்த பொருத்தங்கள் (10-ல் ${matchedCount}). திருமணத்திற்கு பரிந்துரைக்கப்படவில்லை.`;
+ 
+   const verdictEn = verdictStatus === PoruthamStatus.UTTHAMAM
+     ? `Highly Auspicious Match! ${matchedCount}/10 Poruthams matched with clear Rajju and Vedha checks and balanced Kuja Dosha. Highly recommended for marriage.`
+     : verdictStatus === PoruthamStatus.MADHYAMAM
+     ? `Moderate Match! ${matchedCount}/10 Poruthams matched with clear Rajju and Vedha checks. Favorable with familial blessings and standard remedies.`
+-    : !rajjuOk
+-    ? 'Critical Rajju mismatch. Requires detailed astrological assessment.'
+-    : !vedhaOk
+-    ? 'Critical Vedha obstruction. Requires detailed astrological assessment.'
++    : !criticalPoruthamsOk
++    ? `Critical ${failedCriticalEn} mismatch. Requires detailed astrological assessment.`
+     : `Low compatibility (${matchedCount}/10 Poruthams). Not recommended without mitigating factors.`;
+ 
+   const verdictHi = verdictStatus === PoruthamStatus.UTTHAMAM
+     ? `अत्यंत शुभ मिलान! 10 में से ${matchedCount} गुण/पोरुथम मिले हैं तथा रज्जु, वेध और मंगल दोष संतुलित हैं। विवाह हेतु सर्वथा उपयुक्त।`
+     : verdictStatus === PoruthamStatus.MADHYAMAM
+     ? `मध्यम मिलान! 10 में से ${matchedCount} गुण मिले हैं तथा रज्जु और वेध की बाधा नहीं है। विवाह हेतु विचारणीय।`
+-    : !rajjuOk
+-    ? 'रज्जु दोष है। विस्तृत ज्योतिषीय मूल्यांकन आवश्यक है।'
+-    : !vedhaOk
+-    ? 'वेध बाधा है। विस्तृत ज्योतिषीय मूल्यांकन आवश्यक है।'
++    : !criticalPoruthamsOk
++    ? `${failedCriticalHi} दोष है। विस्तृत ज्योतिषीय मूल्यांकन आवश्यक है।`
+     : `अनुकूलता कम है (${matchedCount}/10)।`;
+ 
+   return {
+     brideName: brideChart.devoteeName,
+     brideDob: brideChart.dob,

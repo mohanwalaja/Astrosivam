@@ -1,0 +1,1975 @@
+{
+ "version": 1,
+ "generatedBy": "AstroEngine::calculateHoroscope (api/astrology/engine.php) run over the birthCharts of node-php-parity-corpus.json",
+ "note": "Navamsa (D9) placements of the PHP engine for every parity birth chart. tests/jathagam-navamsa-page1.test.ts checks the Node engine against these values, and tests/jathagam-navamsa-page1.test.php checks the live PHP engine against them. totalDegrees is the 2-decimal sidereal longitude.",
+ "charts": {
+  "birth-0101": {
+   "lagnaNavamsaRasi": 7,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 0.1
+    },
+    "ketu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 31.75
+    },
+    "mars": {
+     "navamsaRasi": 4,
+     "totalDegrees": 51.28
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 169.16
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 196.83
+    },
+    "rahu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 211.75
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 95.74
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.83
+    },
+    "venus": {
+     "navamsaRasi": 1,
+     "totalDegrees": 123.32
+    }
+   }
+  },
+  "birth-0102": {
+   "lagnaNavamsaRasi": 11,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.2
+    },
+    "ketu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 208.41
+    },
+    "mars": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.55
+    },
+    "mercury": {
+     "navamsaRasi": 2,
+     "totalDegrees": 324.13
+    },
+    "moon": {
+     "navamsaRasi": 4,
+     "totalDegrees": 51.57
+    },
+    "rahu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 28.41
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 214.44
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 316.17
+    },
+    "venus": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.39
+    }
+   }
+  },
+  "birth-0103": {
+   "lagnaNavamsaRasi": 2,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 8,
+     "totalDegrees": 143.97
+    },
+    "ketu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 64.08
+    },
+    "mars": {
+     "navamsaRasi": 3,
+     "totalDegrees": 48.37
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 102.26
+    },
+    "moon": {
+     "navamsaRasi": 8,
+     "totalDegrees": 304.34
+    },
+    "rahu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 244.08
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 290.88
+    },
+    "sun": {
+     "navamsaRasi": 12,
+     "totalDegrees": 117.74
+    },
+    "venus": {
+     "navamsaRasi": 5,
+     "totalDegrees": 134.57
+    }
+   }
+  },
+  "birth-0104": {
+   "lagnaNavamsaRasi": 10,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 1.39
+    },
+    "ketu": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.2
+    },
+    "mars": {
+     "navamsaRasi": 8,
+     "totalDegrees": 303.94
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 247.7
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 196.85
+    },
+    "rahu": {
+     "navamsaRasi": 7,
+     "totalDegrees": 101.2
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 16.55
+    },
+    "sun": {
+     "navamsaRasi": 5,
+     "totalDegrees": 256.29
+    },
+    "venus": {
+     "navamsaRasi": 6,
+     "totalDegrees": 217.45
+    }
+   }
+  },
+  "birth-0105": {
+   "lagnaNavamsaRasi": 5,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 227.64
+    },
+    "ketu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 132.38
+    },
+    "mars": {
+     "navamsaRasi": 5,
+     "totalDegrees": 56.24
+    },
+    "mercury": {
+     "navamsaRasi": 1,
+     "totalDegrees": 162.46
+    },
+    "moon": {
+     "navamsaRasi": 1,
+     "totalDegrees": 121.05
+    },
+    "rahu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 312.38
+    },
+    "saturn": {
+     "navamsaRasi": 3,
+     "totalDegrees": 126.92
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.62
+    },
+    "venus": {
+     "navamsaRasi": 10,
+     "totalDegrees": 112.64
+    }
+   }
+  },
+  "birth-0106": {
+   "lagnaNavamsaRasi": 10,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 10,
+     "totalDegrees": 110.84
+    },
+    "ketu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.77
+    },
+    "mars": {
+     "navamsaRasi": 7,
+     "totalDegrees": 342.42
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 289.01
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 77.48
+    },
+    "rahu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 167.77
+    },
+    "saturn": {
+     "navamsaRasi": 7,
+     "totalDegrees": 220.69
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 315.47
+    },
+    "venus": {
+     "navamsaRasi": 8,
+     "totalDegrees": 345.3
+    }
+   }
+  },
+  "birth-0107": {
+   "lagnaNavamsaRasi": 10,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.57
+    },
+    "ketu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 243.5
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.87
+    },
+    "mercury": {
+     "navamsaRasi": 11,
+     "totalDegrees": 73.45
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 73.59
+    },
+    "rahu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 63.5
+    },
+    "saturn": {
+     "navamsaRasi": 11,
+     "totalDegrees": 274.63
+    },
+    "sun": {
+     "navamsaRasi": 4,
+     "totalDegrees": 92.84
+    },
+    "venus": {
+     "navamsaRasi": 4,
+     "totalDegrees": 50.22
+    }
+   }
+  },
+  "birth-0108": {
+   "lagnaNavamsaRasi": 1,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 2,
+     "totalDegrees": 85.61
+    },
+    "ketu": {
+     "navamsaRasi": 6,
+     "totalDegrees": 137.35
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.23
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 262.2
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 196.84
+    },
+    "rahu": {
+     "navamsaRasi": 12,
+     "totalDegrees": 317.35
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 332.7
+    },
+    "sun": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.94
+    },
+    "venus": {
+     "navamsaRasi": 9,
+     "totalDegrees": 269.3
+    }
+   }
+  },
+  "birth-0201": {
+   "lagnaNavamsaRasi": 3,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 0.12
+    },
+    "ketu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 31.76
+    },
+    "mars": {
+     "navamsaRasi": 4,
+     "totalDegrees": 51.13
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 168.84
+    },
+    "moon": {
+     "navamsaRasi": 10,
+     "totalDegrees": 192.77
+    },
+    "rahu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 211.76
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 95.71
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.56
+    },
+    "venus": {
+     "navamsaRasi": 2,
+     "totalDegrees": 123.41
+    }
+   }
+  },
+  "birth-0202": {
+   "lagnaNavamsaRasi": 8,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.14
+    },
+    "ketu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 208.42
+    },
+    "mars": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.35
+    },
+    "mercury": {
+     "navamsaRasi": 2,
+     "totalDegrees": 323.61
+    },
+    "moon": {
+     "navamsaRasi": 3,
+     "totalDegrees": 48.23
+    },
+    "rahu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 28.42
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 214.43
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 315.9
+    },
+    "venus": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.27
+    }
+   }
+  },
+  "birth-0203": {
+   "lagnaNavamsaRasi": 12,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 8,
+     "totalDegrees": 143.92
+    },
+    "ketu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 64.09
+    },
+    "mars": {
+     "navamsaRasi": 3,
+     "totalDegrees": 48.2
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 102.23
+    },
+    "moon": {
+     "navamsaRasi": 7,
+     "totalDegrees": 301.13
+    },
+    "rahu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 244.09
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 290.9
+    },
+    "sun": {
+     "navamsaRasi": 12,
+     "totalDegrees": 117.48
+    },
+    "venus": {
+     "navamsaRasi": 5,
+     "totalDegrees": 134.24
+    }
+   }
+  },
+  "birth-0204": {
+   "lagnaNavamsaRasi": 5,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 1.38
+    },
+    "ketu": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.22
+    },
+    "mars": {
+     "navamsaRasi": 8,
+     "totalDegrees": 303.7
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 247.21
+    },
+    "moon": {
+     "navamsaRasi": 10,
+     "totalDegrees": 193.08
+    },
+    "rahu": {
+     "navamsaRasi": 7,
+     "totalDegrees": 101.22
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 16.55
+    },
+    "sun": {
+     "navamsaRasi": 5,
+     "totalDegrees": 255.98
+    },
+    "venus": {
+     "navamsaRasi": 6,
+     "totalDegrees": 217.07
+    }
+   }
+  },
+  "birth-0205": {
+   "lagnaNavamsaRasi": 3,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 227.62
+    },
+    "ketu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 132.39
+    },
+    "mars": {
+     "navamsaRasi": 5,
+     "totalDegrees": 56.09
+    },
+    "mercury": {
+     "navamsaRasi": 1,
+     "totalDegrees": 162.05
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 117.61
+    },
+    "rahu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 312.39
+    },
+    "saturn": {
+     "navamsaRasi": 3,
+     "totalDegrees": 126.89
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.36
+    },
+    "venus": {
+     "navamsaRasi": 10,
+     "totalDegrees": 112.63
+    }
+   }
+  },
+  "birth-0206": {
+   "lagnaNavamsaRasi": 8,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 10,
+     "totalDegrees": 110.87
+    },
+    "ketu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.79
+    },
+    "mars": {
+     "navamsaRasi": 7,
+     "totalDegrees": 342.21
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 288.7
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 74.14
+    },
+    "rahu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 167.79
+    },
+    "saturn": {
+     "navamsaRasi": 7,
+     "totalDegrees": 220.68
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 315.19
+    },
+    "venus": {
+     "navamsaRasi": 8,
+     "totalDegrees": 344.97
+    }
+   }
+  },
+  "birth-0207": {
+   "lagnaNavamsaRasi": 12,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.61
+    },
+    "ketu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 243.51
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.73
+    },
+    "mercury": {
+     "navamsaRasi": 10,
+     "totalDegrees": 73.29
+    },
+    "moon": {
+     "navamsaRasi": 10,
+     "totalDegrees": 70.19
+    },
+    "rahu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 63.51
+    },
+    "saturn": {
+     "navamsaRasi": 11,
+     "totalDegrees": 274.65
+    },
+    "sun": {
+     "navamsaRasi": 4,
+     "totalDegrees": 92.59
+    },
+    "venus": {
+     "navamsaRasi": 4,
+     "totalDegrees": 50.05
+    }
+   }
+  },
+  "birth-0208": {
+   "lagnaNavamsaRasi": 9,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 2,
+     "totalDegrees": 85.65
+    },
+    "ketu": {
+     "navamsaRasi": 6,
+     "totalDegrees": 137.36
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.01
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 261.74
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 193.48
+    },
+    "rahu": {
+     "navamsaRasi": 12,
+     "totalDegrees": 317.36
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 332.68
+    },
+    "sun": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.66
+    },
+    "venus": {
+     "navamsaRasi": 9,
+     "totalDegrees": 268.95
+    }
+   }
+  },
+  "birth-0301": {
+   "lagnaNavamsaRasi": 7,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 0.08
+    },
+    "ketu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 31.74
+    },
+    "mars": {
+     "navamsaRasi": 4,
+     "totalDegrees": 51.37
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 169.36
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 199.34
+    },
+    "rahu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 211.74
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 95.76
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 143
+    },
+    "venus": {
+     "navamsaRasi": 1,
+     "totalDegrees": 123.26
+    }
+   }
+  },
+  "birth-0302": {
+   "lagnaNavamsaRasi": 3,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.25
+    },
+    "ketu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 208.39
+    },
+    "mars": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.72
+    },
+    "mercury": {
+     "navamsaRasi": 2,
+     "totalDegrees": 324.56
+    },
+    "moon": {
+     "navamsaRasi": 5,
+     "totalDegrees": 54.41
+    },
+    "rahu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 28.39
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 214.44
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 316.4
+    },
+    "venus": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.5
+    }
+   }
+  },
+  "birth-0303": {
+   "lagnaNavamsaRasi": 5,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 8,
+     "totalDegrees": 144.02
+    },
+    "ketu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 64.07
+    },
+    "mars": {
+     "navamsaRasi": 3,
+     "totalDegrees": 48.52
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 102.29
+    },
+    "moon": {
+     "navamsaRasi": 9,
+     "totalDegrees": 306.98
+    },
+    "rahu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 244.07
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 290.87
+    },
+    "sun": {
+     "navamsaRasi": 12,
+     "totalDegrees": 117.95
+    },
+    "venus": {
+     "navamsaRasi": 5,
+     "totalDegrees": 134.85
+    }
+   }
+  },
+  "birth-0304": {
+   "lagnaNavamsaRasi": 3,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 1.4
+    },
+    "ketu": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.19
+    },
+    "mars": {
+     "navamsaRasi": 8,
+     "totalDegrees": 304.12
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 248.05
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 199.61
+    },
+    "rahu": {
+     "navamsaRasi": 7,
+     "totalDegrees": 101.19
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 16.54
+    },
+    "sun": {
+     "navamsaRasi": 5,
+     "totalDegrees": 256.53
+    },
+    "venus": {
+     "navamsaRasi": 6,
+     "totalDegrees": 217.73
+    }
+   }
+  },
+  "birth-0305": {
+   "lagnaNavamsaRasi": 9,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 227.66
+    },
+    "ketu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 132.37
+    },
+    "mars": {
+     "navamsaRasi": 5,
+     "totalDegrees": 56.35
+    },
+    "mercury": {
+     "navamsaRasi": 1,
+     "totalDegrees": 162.76
+    },
+    "moon": {
+     "navamsaRasi": 2,
+     "totalDegrees": 123.56
+    },
+    "rahu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 312.37
+    },
+    "saturn": {
+     "navamsaRasi": 3,
+     "totalDegrees": 126.94
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.81
+    },
+    "venus": {
+     "navamsaRasi": 10,
+     "totalDegrees": 112.65
+    }
+   }
+  },
+  "birth-0306": {
+   "lagnaNavamsaRasi": 2,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 10,
+     "totalDegrees": 110.82
+    },
+    "ketu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.76
+    },
+    "mars": {
+     "navamsaRasi": 7,
+     "totalDegrees": 342.59
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 289.28
+    },
+    "moon": {
+     "navamsaRasi": 1,
+     "totalDegrees": 80.29
+    },
+    "rahu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 167.76
+    },
+    "saturn": {
+     "navamsaRasi": 7,
+     "totalDegrees": 220.7
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 315.7
+    },
+    "venus": {
+     "navamsaRasi": 8,
+     "totalDegrees": 345.58
+    }
+   }
+  },
+  "birth-0307": {
+   "lagnaNavamsaRasi": 8,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.55
+    },
+    "ketu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 243.49
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.96
+    },
+    "mercury": {
+     "navamsaRasi": 11,
+     "totalDegrees": 73.57
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 76.07
+    },
+    "rahu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 63.49
+    },
+    "saturn": {
+     "navamsaRasi": 11,
+     "totalDegrees": 274.62
+    },
+    "sun": {
+     "navamsaRasi": 4,
+     "totalDegrees": 93.01
+    },
+    "venus": {
+     "navamsaRasi": 4,
+     "totalDegrees": 50.35
+    }
+   }
+  },
+  "birth-0308": {
+   "lagnaNavamsaRasi": 9,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 2,
+     "totalDegrees": 85.58
+    },
+    "ketu": {
+     "navamsaRasi": 6,
+     "totalDegrees": 137.33
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.4
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 262.54
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 199.42
+    },
+    "rahu": {
+     "navamsaRasi": 12,
+     "totalDegrees": 317.33
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 332.72
+    },
+    "sun": {
+     "navamsaRasi": 9,
+     "totalDegrees": 268.17
+    },
+    "venus": {
+     "navamsaRasi": 9,
+     "totalDegrees": 269.58
+    }
+   }
+  },
+  "birth-0401": {
+   "lagnaNavamsaRasi": 4,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 0.06
+    },
+    "ketu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 31.73
+    },
+    "mars": {
+     "navamsaRasi": 4,
+     "totalDegrees": 51.48
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 169.59
+    },
+    "moon": {
+     "navamsaRasi": 1,
+     "totalDegrees": 202.29
+    },
+    "rahu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 211.73
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 95.78
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 143.2
+    },
+    "venus": {
+     "navamsaRasi": 1,
+     "totalDegrees": 123.19
+    }
+   }
+  },
+  "birth-0402": {
+   "lagnaNavamsaRasi": 2,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.29
+    },
+    "ketu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 208.38
+    },
+    "mars": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.88
+    },
+    "mercury": {
+     "navamsaRasi": 2,
+     "totalDegrees": 324.96
+    },
+    "moon": {
+     "navamsaRasi": 6,
+     "totalDegrees": 57.01
+    },
+    "rahu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 28.38
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 214.44
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 316.61
+    },
+    "venus": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.59
+    }
+   }
+  },
+  "birth-0403": {
+   "lagnaNavamsaRasi": 1,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 8,
+     "totalDegrees": 144.05
+    },
+    "ketu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 64.06
+    },
+    "mars": {
+     "navamsaRasi": 3,
+     "totalDegrees": 48.63
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 102.31
+    },
+    "moon": {
+     "navamsaRasi": 9,
+     "totalDegrees": 309.04
+    },
+    "rahu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 244.06
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 290.85
+    },
+    "sun": {
+     "navamsaRasi": 12,
+     "totalDegrees": 118.12
+    },
+    "venus": {
+     "navamsaRasi": 5,
+     "totalDegrees": 135.06
+    }
+   }
+  },
+  "birth-0404": {
+   "lagnaNavamsaRasi": 11,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 1.41
+    },
+    "ketu": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.18
+    },
+    "mars": {
+     "navamsaRasi": 8,
+     "totalDegrees": 304.27
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 248.36
+    },
+    "moon": {
+     "navamsaRasi": 1,
+     "totalDegrees": 201.97
+    },
+    "rahu": {
+     "navamsaRasi": 7,
+     "totalDegrees": 101.18
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 16.54
+    },
+    "sun": {
+     "navamsaRasi": 6,
+     "totalDegrees": 256.73
+    },
+    "venus": {
+     "navamsaRasi": 6,
+     "totalDegrees": 217.96
+    }
+   }
+  },
+  "birth-0405": {
+   "lagnaNavamsaRasi": 4,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 227.68
+    },
+    "ketu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 132.36
+    },
+    "mars": {
+     "navamsaRasi": 5,
+     "totalDegrees": 56.46
+    },
+    "mercury": {
+     "navamsaRasi": 1,
+     "totalDegrees": 163.05
+    },
+    "moon": {
+     "navamsaRasi": 2,
+     "totalDegrees": 126.04
+    },
+    "rahu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 312.36
+    },
+    "saturn": {
+     "navamsaRasi": 3,
+     "totalDegrees": 126.97
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 143
+    },
+    "venus": {
+     "navamsaRasi": 10,
+     "totalDegrees": 112.66
+    }
+   }
+  },
+  "birth-0406": {
+   "lagnaNavamsaRasi": 2,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 10,
+     "totalDegrees": 110.79
+    },
+    "ketu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.75
+    },
+    "mars": {
+     "navamsaRasi": 7,
+     "totalDegrees": 342.75
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 289.52
+    },
+    "moon": {
+     "navamsaRasi": 1,
+     "totalDegrees": 82.84
+    },
+    "rahu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 167.75
+    },
+    "saturn": {
+     "navamsaRasi": 7,
+     "totalDegrees": 220.7
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 315.91
+    },
+    "venus": {
+     "navamsaRasi": 8,
+     "totalDegrees": 345.84
+    }
+   }
+  },
+  "birth-0407": {
+   "lagnaNavamsaRasi": 8,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.52
+    },
+    "ketu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 243.48
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 348.07
+    },
+    "mercury": {
+     "navamsaRasi": 11,
+     "totalDegrees": 73.7
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 78.84
+    },
+    "rahu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 63.48
+    },
+    "saturn": {
+     "navamsaRasi": 11,
+     "totalDegrees": 274.6
+    },
+    "sun": {
+     "navamsaRasi": 4,
+     "totalDegrees": 93.21
+    },
+    "venus": {
+     "navamsaRasi": 4,
+     "totalDegrees": 50.49
+    }
+   }
+  },
+  "birth-0408": {
+   "lagnaNavamsaRasi": 6,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 2,
+     "totalDegrees": 85.56
+    },
+    "ketu": {
+     "navamsaRasi": 6,
+     "totalDegrees": 137.32
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.56
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 262.88
+    },
+    "moon": {
+     "navamsaRasi": 1,
+     "totalDegrees": 201.89
+    },
+    "rahu": {
+     "navamsaRasi": 12,
+     "totalDegrees": 317.32
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 332.74
+    },
+    "sun": {
+     "navamsaRasi": 9,
+     "totalDegrees": 268.38
+    },
+    "venus": {
+     "navamsaRasi": 9,
+     "totalDegrees": 269.84
+    }
+   }
+  },
+  "birth-0501": {
+   "lagnaNavamsaRasi": 3,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 0.11
+    },
+    "ketu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 31.76
+    },
+    "mars": {
+     "navamsaRasi": 4,
+     "totalDegrees": 51.17
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 168.94
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 193.97
+    },
+    "rahu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 211.76
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 95.72
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.64
+    },
+    "venus": {
+     "navamsaRasi": 2,
+     "totalDegrees": 123.38
+    }
+   }
+  },
+  "birth-0502": {
+   "lagnaNavamsaRasi": 1,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.15
+    },
+    "ketu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 208.42
+    },
+    "mars": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.38
+    },
+    "mercury": {
+     "navamsaRasi": 2,
+     "totalDegrees": 323.69
+    },
+    "moon": {
+     "navamsaRasi": 3,
+     "totalDegrees": 48.75
+    },
+    "rahu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 28.42
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 214.43
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 315.94
+    },
+    "venus": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.29
+    }
+   }
+  },
+  "birth-0503": {
+   "lagnaNavamsaRasi": 11,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 8,
+     "totalDegrees": 143.94
+    },
+    "ketu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 64.09
+    },
+    "mars": {
+     "navamsaRasi": 3,
+     "totalDegrees": 48.25
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 102.24
+    },
+    "moon": {
+     "navamsaRasi": 7,
+     "totalDegrees": 302.12
+    },
+    "rahu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 244.09
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 290.9
+    },
+    "sun": {
+     "navamsaRasi": 12,
+     "totalDegrees": 117.56
+    },
+    "venus": {
+     "navamsaRasi": 5,
+     "totalDegrees": 134.34
+    }
+   }
+  },
+  "birth-0504": {
+   "lagnaNavamsaRasi": 4,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 1.38
+    },
+    "ketu": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.21
+    },
+    "mars": {
+     "navamsaRasi": 8,
+     "totalDegrees": 303.75
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 247.32
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 193.94
+    },
+    "rahu": {
+     "navamsaRasi": 7,
+     "totalDegrees": 101.21
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 16.55
+    },
+    "sun": {
+     "navamsaRasi": 5,
+     "totalDegrees": 256.05
+    },
+    "venus": {
+     "navamsaRasi": 6,
+     "totalDegrees": 217.16
+    }
+   }
+  },
+  "birth-0505": {
+   "lagnaNavamsaRasi": 3,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 227.63
+    },
+    "ketu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 132.39
+    },
+    "mars": {
+     "navamsaRasi": 5,
+     "totalDegrees": 56.14
+    },
+    "mercury": {
+     "navamsaRasi": 1,
+     "totalDegrees": 162.18
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 118.67
+    },
+    "rahu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 312.39
+    },
+    "saturn": {
+     "navamsaRasi": 3,
+     "totalDegrees": 126.9
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.44
+    },
+    "venus": {
+     "navamsaRasi": 10,
+     "totalDegrees": 112.64
+    }
+   }
+  },
+  "birth-0506": {
+   "lagnaNavamsaRasi": 1,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 10,
+     "totalDegrees": 110.87
+    },
+    "ketu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.78
+    },
+    "mars": {
+     "navamsaRasi": 7,
+     "totalDegrees": 342.24
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 288.75
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 74.65
+    },
+    "rahu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 167.78
+    },
+    "saturn": {
+     "navamsaRasi": 7,
+     "totalDegrees": 220.69
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 315.24
+    },
+    "venus": {
+     "navamsaRasi": 8,
+     "totalDegrees": 345.02
+    }
+   }
+  },
+  "birth-0507": {
+   "lagnaNavamsaRasi": 11,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.6
+    },
+    "ketu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 243.51
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.77
+    },
+    "mercury": {
+     "navamsaRasi": 11,
+     "totalDegrees": 73.34
+    },
+    "moon": {
+     "navamsaRasi": 10,
+     "totalDegrees": 71.13
+    },
+    "rahu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 63.51
+    },
+    "saturn": {
+     "navamsaRasi": 11,
+     "totalDegrees": 274.64
+    },
+    "sun": {
+     "navamsaRasi": 4,
+     "totalDegrees": 92.66
+    },
+    "venus": {
+     "navamsaRasi": 4,
+     "totalDegrees": 50.1
+    }
+   }
+  },
+  "birth-0508": {
+   "lagnaNavamsaRasi": 4,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 2,
+     "totalDegrees": 85.65
+    },
+    "ketu": {
+     "navamsaRasi": 6,
+     "totalDegrees": 137.36
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.04
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 261.81
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 193.98
+    },
+    "rahu": {
+     "navamsaRasi": 12,
+     "totalDegrees": 317.36
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 332.69
+    },
+    "sun": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.7
+    },
+    "venus": {
+     "navamsaRasi": 9,
+     "totalDegrees": 269
+    }
+   }
+  },
+  "birth-0601": {
+   "lagnaNavamsaRasi": 2,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 0.09
+    },
+    "ketu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 31.74
+    },
+    "mars": {
+     "navamsaRasi": 4,
+     "totalDegrees": 51.33
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 169.27
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 198.15
+    },
+    "rahu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 211.74
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 95.75
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.92
+    },
+    "venus": {
+     "navamsaRasi": 1,
+     "totalDegrees": 123.29
+    }
+   }
+  },
+  "birth-0602": {
+   "lagnaNavamsaRasi": 8,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.22
+    },
+    "ketu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 208.4
+    },
+    "mars": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.63
+    },
+    "mercury": {
+     "navamsaRasi": 2,
+     "totalDegrees": 324.32
+    },
+    "moon": {
+     "navamsaRasi": 4,
+     "totalDegrees": 52.86
+    },
+    "rahu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 28.4
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 214.44
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 316.27
+    },
+    "venus": {
+     "navamsaRasi": 11,
+     "totalDegrees": 355.44
+    }
+   }
+  },
+  "birth-0603": {
+   "lagnaNavamsaRasi": 11,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 8,
+     "totalDegrees": 143.99
+    },
+    "ketu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 64.07
+    },
+    "mars": {
+     "navamsaRasi": 3,
+     "totalDegrees": 48.44
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 102.27
+    },
+    "moon": {
+     "navamsaRasi": 8,
+     "totalDegrees": 305.57
+    },
+    "rahu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 244.07
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 290.88
+    },
+    "sun": {
+     "navamsaRasi": 12,
+     "totalDegrees": 117.84
+    },
+    "venus": {
+     "navamsaRasi": 5,
+     "totalDegrees": 134.7
+    }
+   }
+  },
+  "birth-0604": {
+   "lagnaNavamsaRasi": 6,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 1,
+     "totalDegrees": 1.39
+    },
+    "ketu": {
+     "navamsaRasi": 1,
+     "totalDegrees": 281.19
+    },
+    "mars": {
+     "navamsaRasi": 8,
+     "totalDegrees": 304.01
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 247.84
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 197.97
+    },
+    "rahu": {
+     "navamsaRasi": 7,
+     "totalDegrees": 101.19
+    },
+    "saturn": {
+     "navamsaRasi": 5,
+     "totalDegrees": 16.55
+    },
+    "sun": {
+     "navamsaRasi": 5,
+     "totalDegrees": 256.39
+    },
+    "venus": {
+     "navamsaRasi": 6,
+     "totalDegrees": 217.56
+    }
+   }
+  },
+  "birth-0605": {
+   "lagnaNavamsaRasi": 2,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 227.65
+    },
+    "ketu": {
+     "navamsaRasi": 4,
+     "totalDegrees": 132.37
+    },
+    "mars": {
+     "navamsaRasi": 5,
+     "totalDegrees": 56.3
+    },
+    "mercury": {
+     "navamsaRasi": 1,
+     "totalDegrees": 162.62
+    },
+    "moon": {
+     "navamsaRasi": 1,
+     "totalDegrees": 122.36
+    },
+    "rahu": {
+     "navamsaRasi": 10,
+     "totalDegrees": 312.37
+    },
+    "saturn": {
+     "navamsaRasi": 3,
+     "totalDegrees": 126.93
+    },
+    "sun": {
+     "navamsaRasi": 7,
+     "totalDegrees": 142.72
+    },
+    "venus": {
+     "navamsaRasi": 10,
+     "totalDegrees": 112.65
+    }
+   }
+  },
+  "birth-0606": {
+   "lagnaNavamsaRasi": 7,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 10,
+     "totalDegrees": 110.83
+    },
+    "ketu": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.77
+    },
+    "mars": {
+     "navamsaRasi": 7,
+     "totalDegrees": 342.5
+    },
+    "mercury": {
+     "navamsaRasi": 3,
+     "totalDegrees": 289.14
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 78.76
+    },
+    "rahu": {
+     "navamsaRasi": 3,
+     "totalDegrees": 167.77
+    },
+    "saturn": {
+     "navamsaRasi": 7,
+     "totalDegrees": 220.69
+    },
+    "sun": {
+     "navamsaRasi": 11,
+     "totalDegrees": 315.57
+    },
+    "venus": {
+     "navamsaRasi": 8,
+     "totalDegrees": 345.43
+    }
+   }
+  },
+  "birth-0607": {
+   "lagnaNavamsaRasi": 8,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.56
+    },
+    "ketu": {
+     "navamsaRasi": 2,
+     "totalDegrees": 243.49
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 347.92
+    },
+    "mercury": {
+     "navamsaRasi": 11,
+     "totalDegrees": 73.52
+    },
+    "moon": {
+     "navamsaRasi": 11,
+     "totalDegrees": 74.97
+    },
+    "rahu": {
+     "navamsaRasi": 8,
+     "totalDegrees": 63.49
+    },
+    "saturn": {
+     "navamsaRasi": 11,
+     "totalDegrees": 274.62
+    },
+    "sun": {
+     "navamsaRasi": 4,
+     "totalDegrees": 92.93
+    },
+    "venus": {
+     "navamsaRasi": 4,
+     "totalDegrees": 50.29
+    }
+   }
+  },
+  "birth-0608": {
+   "lagnaNavamsaRasi": 9,
+   "planets": {
+    "jupiter": {
+     "navamsaRasi": 2,
+     "totalDegrees": 85.6
+    },
+    "ketu": {
+     "navamsaRasi": 6,
+     "totalDegrees": 137.34
+    },
+    "mars": {
+     "navamsaRasi": 9,
+     "totalDegrees": 267.3
+    },
+    "mercury": {
+     "navamsaRasi": 7,
+     "totalDegrees": 262.34
+    },
+    "moon": {
+     "navamsaRasi": 12,
+     "totalDegrees": 197.94
+    },
+    "rahu": {
+     "navamsaRasi": 12,
+     "totalDegrees": 317.34
+    },
+    "saturn": {
+     "navamsaRasi": 4,
+     "totalDegrees": 332.71
+    },
+    "sun": {
+     "navamsaRasi": 9,
+     "totalDegrees": 268.04
+    },
+    "venus": {
+     "navamsaRasi": 9,
+     "totalDegrees": 269.42
+    }
+   }
+  }
+ }
+}

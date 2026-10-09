@@ -1,0 +1,1205 @@
+# ============================================================================
+# ASTRO SIVAM — Namakaran (baby naming) page-2 MEANING GLOSSARY
+# ----------------------------------------------------------------------------
+# One row = one English meaning of the name bank, with its Tamil and Hindi
+# text exactly as it must print on page 2 of the Vedic Namakaran report.
+#
+# COLUMNS (tab separated, exactly 3):
+#   1. english   The English meaning as written in data/namakaran_name_bank.tsv
+#   2. tamil     Tamil meaning printed in the Tamil (தமிழ்) report
+#   3. hindi     Hindi meaning printed in the Hindi (हिन्दी) report
+#
+# Written in natural Tamil / Hindi — never word-by-word machine output.
+# The Tamil column was freshly written for every row (2026-10 pass); Hindi is
+# unchanged from the glossary review.
+# Rebuild the TypeScript + PHP glossaries with:
+#     node scripts/build_namakaran_glossary.mjs
+# The build fails if any meaning of the name bank is missing here.
+# ============================================================================
+A beautiful eyed girl	அழகிய விழியாள்	सुंदर नेत्रों वाली लड़की
+A beautiful moon	அழகிய நிலவு	सुंदर चंद्रमा
+A beautiful young man	அழகிய இளைஞன்	सुंदर युवक
+A beloved son	அன்புக்குரிய மகன்	प्रिय पुत्र
+A bird, a heroine	பறவை, கதாநாயகி	पक्षी, नायिका
+A blink of the eye	கண்ணிமைப் பொழுது	पलक झपकना
+A boat, young girl	படகு, இளம் பெண்	नाव, युवा कन्या
+a bright and radiant	ஒளிரும் பிரகாசம்	तेजस्वी और चमकदार
+a bright light	பிரகாசமான ஒளி	तेज प्रकाश
+a bright ray of light	ஒளிரும் ஒளிக்கதிர்	प्रकाश की तेज किरण
+a budding leaf, verse	மொட்டிலை, பாசுரம்	नई कोंपल, पद्य
+A celebrated hero	புகழ்பெற்ற வீரர்	प्रसिद्ध वीर
+A celebrated heroine	புகழ்பெற்ற வீராங்கனை	प्रसिद्ध नायिका
+a celestial beauty	தெய்வீக அழகி	अप्सरा जैसी सुंदरता
+A celestial bird	தெய்வப் பறவை	दिव्य पक्षी
+a celestial nymph	தெய்வ மங்கை	अप्सरा
+a celestial star	தெய்வ நட்சத்திரம்	दिव्य तारा
+a chariot of the divine	இறைவனின் தேர்	दिव्य रथ
+A charming sage	கவர்ச்சியான முனிவர்	आकर्षक ऋषि
+A collection, zodiac	தொகுப்பு, ராசி	संग्रह, राशि
+A cowherd maiden	இடையர் பெண்	ग्वालिन
+a crown prince	யுவராஜன்	युवराज
+a curious soul	ஆர்வமுள்ள ஆன்மா	जिज्ञासु आत्मा
+A daughter, cheerful	மகள், மகிழ்ச்சியான	प्रसन्न पुत्री
+A daughter, joyful	மகள், ஆனந்தமான	आनंदमयी पुत्री
+a dear friend	அன்பு நண்பர்	प्रिय मित्र
+A deer, graceful	மான், அழகிய	हिरण, सुंदर
+a delicate creeper	மென்மையான கொடி	नाज़ुक लता
+A descendant of Raghu	ரகு குல வழித்தோன்றல்	रघुकुल के वंशज
+a devoted gopi	பக்தி கொண்ட கோபிகை	भक्त गोपी
+a devotee of krishna	கிருஷ்ண பக்தர்	कृष्ण भक्त
+a disciplined ascetic	ஒழுக்கமுள்ள துறவி	अनुशासित संन्यासी
+A divine chariot	தெய்வத் தேர்	दिव्य रथ
+A divine light	தெய்வ ஒளி	दिव्य प्रकाश
+a fairy queen	தேவதை அரசி	परी रानी
+a fairy, angel	தேவதை, தேவமங்கை	परी, देवदूत
+a famous tamil name	புகழ்பெற்ற தமிழ்ப் பெயர்	प्रसिद्ध तमिल नाम
+a female ascetic	பெண் துறவி	महिला संन्यासिनी
+a fine paintbrush	நுட்பமான தூரிகை	अच्छी चित्रकारी की तूलिका
+a fine writing	நேர்த்தியான எழுத்து	सुंदर लेखन
+A flourishing grove	செழிப்பான சோலை	हरा-भरा उपवन
+a flower	மலர்	फूल
+a flower creeper	மலர்க் கொடி	फूलों की लता
+a flower petal	மலர் இதழ்	फूल की पंखुड़ी
+a flowering creeper	பூக்கும் கொடி	फूलों वाली लता
+a flowing river	ஓடும் ஆறு	बहती नदी
+a fragrant flower	மணமுள்ள மலர்	सुगंधित फूल
+a friend	நண்பர்	मित्र
+a friend of all	அனைவரின் நண்பர்	सबका मित्र
+A friendly girl	நட்பான பெண்	मिलनसार लड़की
+A friendly leader	நட்பான தலைவர்	मिलनसार नेता
+a friendly soul	நட்பான ஆன்மா	मित्रवत आत्मा
+A gardener, fragrant	தோட்டக்காரர், மணமுள்ள	माली, सुगंधित
+a garland of victory	வெற்றி மாலை	विजय की माला
+a garland, toran	மாலை, தோரணம்	माला, तोरण
+a gift of god	இறைவனின் பரிசு	ईश्वर का उपहार
+a glimpse, sparkle	பார்வை, மின்னல்	झलक, चमक
+A goddess of nectar	அமிர்தத்தின் தேவி	अमृत की देवी
+A goddess of wisdom	ஞானத்தின் தேவி	ज्ञान की देवी
+a graceful girl	நளினமான பெண்	सुंदर लड़की
+A graceful swan	நளினமான அன்னம்	सुंदर हंस
+a great lord	பெரும் இறைவன்	महान भगवान
+a great sage	பெரும் முனிவர்	महान ऋषि
+A handsome prince	அழகிய இளவரசன்	सुंदर राजकुमार
+A handsome youth	அழகிய வாலிபன்	सुंदर युवक
+a hundred-eyed goddess	நூறு கண்கள் கொண்ட தேவி	सौ नेत्रों वाली देवी
+A joyful daughter	மகிழ்ச்சியான மகள்	आनंदित पुत्री
+a king	அரசன்	राजा
+a king of beauty	அழகின் அரசன்	सौंदर्य का राजा
+a king of yoga	யோகத்தின் அரசன்	योग का राजा
+a king, lord shiva	அரசன், சிவபெருமான்	राजा, भगवान शिव
+a leader	தலைவர்	नेता
+a learned poet	கற்றறிந்த கவிஞர்	विद्वान कवि
+A learned priest	கற்ற அர்ச்சகர்	विद्वान पुरोहित
+a line, a streak	கோடு, வரி	रेखा, लकीर
+a literary scholar	இலக்கிய அறிஞர்	साहित्य विद्वान
+A little cuckoo	சிறு குயில்	नन्ही कोयल
+a little darling	சின்னஞ்சிறு செல்லம்	नन्हा दुलारा
+a little daughter	சிறு மகள்	नन्ही बेटी
+A little goddess	சிறு தேவதை	छोटी देवी
+A little part	சிறு பகுதி	छोटा अंश
+a living soul	உயிருள்ள ஆன்மா	जीवंत आत्मा
+a lotus flower	தாமரை மலர்	कमल का फूल
+A lotus pond	தாமரைக் குளம்	कमल का तालाब
+A lotus-eyed beauty	தாமரைக் கண்ணழகி	कमलनयनी सुंदरी
+A lovable woman	அன்புக்குரிய பெண்	प्रिय स्त्री
+a lovely girl	இனிய பெண்	सुंदर लड़की
+a loving woman	பாசமுள்ள பெண்	प्रेमपूर्ण स्त्री
+a melodious flute	இனிமையான புல்லாங்குழல்	मधुर बांसुरी
+A melodious night	இனிய இரவு	मधुर रात
+A misty shower	பனி மழை	फुहार
+A monsoon melody	பருவ மழை இசை	सावन की धुन
+a mother, creator	தாய், படைப்பாளி	माता, सृजनकर्ता
+A name associated with the ancient Tamil dynasty	பண்டைய தமிழ் அரச வம்சத்தின் பெயர்	प्राचीन तमिल राजवंश से जुड़ा नाम
+A name of Goddess Andal	ஆண்டாள் தேவியின் பெயர்	देवी आंडाल का नाम
+a noble king	மேன்மையான அரசன்	श्रेष्ठ राजा
+a noble princess	மேன்மையான இளவரசி	श्रेष्ठ राजकुमारी
+a noble soul	மேன்மையான ஆன்மா	श्रेष्ठ आत्मा
+a painting, art	ஓவியம், கலை	चित्रकला, कला
+A part of the Sun	சூரியனின் ஒரு பகுதி	सूर्य का एक अंश
+a peaceful and calm	அமைதியான, நிம்மதியான	शांत और स्थिर
+a peaceful king	அமைதியான அரசன்	शांत राजा
+a peaceful night	அமைதியான இரவு	शांत रात
+a peaceful prince	அமைதியான இளவரசன்	शांत राजकुमार
+A pleasant eastern melody	கிழக்கின் இனிய இசை	सुखद पूर्वी धुन
+a poem	கவிதை	कविता
+a poet, learned man	கவிஞர், அறிஞர்	कवि, विद्वान
+A precious crown jewel	விலைமதிப்பற்ற முடி ரத்தினம்	अनमोल मुकुट रत्न
+a precious gem	அரிய ரத்தினம்	अनमोल रत्न
+a precious gem, fish	அரிய மணி, மீன்	अनमोल रत्न, मछली
+A prince	இளவரசன்	राजकुमार
+A princess	இளவரசி	राजकुमारी
+a queen	அரசி	रानी
+a queen of beauty	அழகின் அரசி	सौंदर्य की रानी
+a queen of dawn	விடியலின் அரசி	प्रभात की रानी
+a ray of light	ஒளிக்கதிர்	प्रकाश की किरण
+a ray of the sun	சூரியக் கதிர்	सूर्य की किरण
+a respectful salutation	மரியாதையான வணக்கம்	सम्मानपूर्ण नमन
+A revered Jain saint	போற்றத்தக்க சமணத் துறவி	पूज्य जैन संत
+A revered saint	போற்றத்தக்க ஞானி	पूज्य संत
+A rising prince	எழுச்சி பெறும் இளவரசன்	उभरता राजकुमार
+A royal queen	அரச குலத்து அரசி	राजसी रानी
+a ruling lord	ஆளும் இறைவன்	शासन करने वाले स्वामी
+A sacred hill	புனித மலை	पवित्र पहाड़ी
+A sacred musical instrument; melody	புனித இசைக்கருவி; மெட்டு	पवित्र वाद्य, मधुर धुन
+a sacred offering	புனித காணிக்கை	पवित्र अर्पण
+a sacred ring	புனித மோதிரம்	पवित्र अंगूठी
+a sacred river	புனித நதி	पवित्र नदी
+A sacred thread	புனிதப் பூணூல்	पवित्र जनेऊ
+a sacred wish	புனித விருப்பம்	पवित्र इच्छा
+A sage, a seer	முனிவர், ஞானி	ऋषि, द्रष्टा
+a sage, ascetic	முனிவர், துறவி	ऋषि, संन्यासी
+a sage-like girl	முனிவர் போன்ற பெண்	ऋषि जैसी लड़की
+a sage-like woman	முனிவர் போன்ற மங்கை	ऋषि जैसी स्त्री
+a season	பருவம்	ऋतु
+a serene night	அமைதியான இரவு	शांत रात्रि
+a shy, modest woman	வெட்கமும் அடக்கமும் கொண்ட பெண்	संकोची, विनम्र स्त्री
+a small dot, drop	சிறு புள்ளி, துளி	छोटी बिंदी, बूंद
+A small star	சிறு நட்சத்திரம்	छोटा तारा
+A snake goddess	நாக தேவதை	नाग देवी
+a soft twinkle	மெல்லிய மின்னல்	मृदु चमक
+a son, joyful	மகன், மகிழ்ச்சியான	खुश पुत्र
+a soul, spirit	ஆன்மா, உயிர்	आत्मा, जीव
+a spiritual soul	ஆன்மீக உள்ளம்	आध्यात्मिक आत्मा
+A spotless beauty	குறையற்ற அழகி	निर्मल सुंदरी
+a star	நட்சத்திரம்	तारा
+a star of the zodiac	ராசி நட்சத்திரம்	राशिचक्र का नक्षत्र
+A star, protector	நட்சத்திரம், பாதுகாவலர்	तारा, रक्षक
+a stream of water	நீரோடை	जलधारा
+a stream, graceful	ஓடை, அழகிய	धारा, गरिमामय
+A stringed instrument	யாழ்	तंतु वाद्य
+A swan	அன்னம்	हंस
+a sweet heart	இனிய இதயம்	मधुर हृदय
+A Tamil name	ஒரு தமிழ்ப் பெயர்	तमिल नाम
+A tender new leaf	மென்மையான தளிர்	कोमल नई पत्ती
+A treasure	அரிய செல்வம்	खजाना
+A valiant warrior	வீரமுள்ள போர்வீரன்	वीर योद्धा
+A victorious festival	வெற்றித் திருநாள்	विजय उत्सव
+A victorious prince	வெற்றி இளவரசன்	विजयी राजकुमार
+A victorious protector	வெற்றி பாதுகாவலர்	विजयी रक्षक
+a white chrysanthemum	வெள்ளை செவ்வந்தி	सफेद गुलदाउदी
+A wise girl	ஞானமிக்க பெண்	बुद्धिमान लड़की
+A wise part	ஞானப் பகுதி	बुद्धि का अंश
+A wise young woman	ஞானமிக்க இளம் பெண்	बुद्धिमान युवती
+a wish, desire	விருப்பம், ஆசை	इच्छा, अभिलाषा
+a wished-for child	விரும்பிய குழந்தை	मनचाहा बच्चा
+A yellow-clad goddess	மஞ்சள் ஆடை தேவி	पीतांबरा देवी
+A yogi, ascetic	யோகி, துறவி	योगी, तपस्वी
+a young girl	இளம் பெண்	युवा लड़की
+a young king	இளம் அரசன்	युवा राजा
+A young moon	இளம் நிலவு	नया चंद्रमा
+a young prince	இளம் இளவரசன்	युवा राजकुमार
+a young princess	இளம் இளவரசி	युवा राजकुमारी
+a young woman	இளம் மங்கை	युवती
+a youthful prince	வாலிப இளவரசன்	युवा राजकुमार
+a youthful warrior	வாலிப போர்வீரன்	युवा योद्धा
+Absorbed in the divine	இறைநிலையில் லயித்தவர்	ईश्वर में लीन
+Accomplished	நிறைவு பெற்றவர்	सिद्ध
+Accomplished one	சித்தி பெற்றவர்	सिद्ध पुरुष
+Achieved, successful	சாதித்தவர், வெற்றியாளர்	सिद्ध, सफल
+affectionate	பாசமுள்ள	स्नेही
+Aim, goal	இலக்கு, குறிக்கோள்	लक्ष्य, उद्देश्य
+alive, conscious	உயிர்ப்புள்ள, விழிப்புள்ள	जीवंत, जागरूक
+altar of the vedas	வேத பீடம்	वेदों की वेदी
+An ancient king	பண்டைய அரசன்	प्राचीन राजा
+An ancient poet	பண்டைய கவிஞர்	प्राचीन कवि
+an ancient sage	பண்டைய முனிவர்	प्राचीन ऋषि
+an anklet	சிலம்பு	पायल
+An auspicious star	மங்கள நட்சத்திரம்	शुभ तारा
+an enchantress	மயக்கும் மங்கை	मोहिनी
+An era, age	யுகம், காலம்	युग, काल
+An era, united	யுகம், ஒன்றிணைந்த	युग, एकजुट
+an offering	காணிக்கை	अर्पण
+An offering of devotion	பக்தியின் காணிக்கை	भक्ति का अर्पण
+an offering to god	இறைவனுக்கான காணிக்கை	ईश्वर को अर्पण
+Ancestor of Lord Rama	ராமபிரானின் மூதாதையர்	भगवान राम के पूर्वज
+Ancient Chola king	பண்டைய சோழ மன்னன்	प्राचीन चोल राजा
+Ancient city name	பண்டைய நகரின் பெயர்	प्राचीन नगर का नाम
+Ancient Pandya king	பண்டைய பாண்டிய மன்னன்	प्राचीन पांड्य राजा
+Ancient Tamil scholar	பண்டைய தமிழ் அறிஞர்	प्राचीन तमिल विद्वान
+anklet	கொலுசு	पायल
+Arjuna	அர்ஜுனன்	अर्जुन
+Arjuna, son of Pritha	பிருதையின் மகன் அர்ஜுனன்	अर्जुन, पृथा के पुत्र
+Armlet, ornament	தோள்வளை, அணிகலன்	बाजूबंद, आभूषण
+Art of the Sun	சூரியனின் கலை	सूर्य की कला
+Artistic and prosperous	கலையும் செழிப்பும் கொண்ட	कलात्मक और समृद्ध
+Artistic goddess	கலை தேவதை	कलात्मक देवी
+attracted, charmed	கவரப்பட்ட, மயங்கிய	मोहित, आकर्षित
+attracted, charming	கவரப்பட்ட, கவர்ச்சியான	आकर्षित, मनमोहक
+Attraction, charm	கவர்ச்சி, மயக்கம்	आकर्षण, मोह
+Auspicious	மங்களமான	शुभ
+Auspicious crest	மங்கள சிகரம்	शुभ शिखर
+Auspicious dedication	மங்கள அர்ப்பணம்	शुभ समर्पण
+Auspicious mark	மங்கள அடையாளம்	शुभ चिह्न
+auspicious omen	மங்கள சகுனம்	शुभ संकेत
+Auspicious woman	மங்களமான பெண்	शुभ स्त्री
+Auspicious, devoted	மங்களமான, பக்தியுள்ள	शुभ और भक्त
+Auspicious, Lord Shiva	மங்களமான சிவபெருமான்	शुभ, भगवान शिव
+Authority, command	அதிகாரம், ஆணை	अधिकार, आदेश
+Awakening, awareness	விழிப்பு, உணர்வு	जागृति, चेतना
+Banner, symbol	கொடி, அடையாளம்	ध्वजा, प्रतीक
+beautiful	அழகான	सुंदर
+beautiful and charming	அழகும் கவர்ச்சியும் கொண்ட	सुंदर और आकर्षक
+Beautiful and kind	அழகும் கருணையும் கொண்ட	सुंदर और दयालु
+Beautiful art	அழகிய கலை	सुंदर कला
+Beautiful consort of Durai	துரையின் அழகிய துணைவி	दुरै की सुंदर पत्नी
+Beautiful crescent	அழகிய பிறை	सुंदर अर्धचंद्र
+Beautiful divine sight	அழகிய தெய்வக் காட்சி	सुंदर दिव्य दृष्टि
+Beautiful flower	அழகிய மலர்	सुंदर फूल
+Beautiful Goddess	அழகிய தேவி	सुंदर देवी
+Beautiful like a gem	ரத்தினம் போன்ற அழகு	रत्न जैसी सुंदर
+Beautiful picture	அழகிய ஓவியம்	सुंदर चित्र
+Beautiful swan	அழகிய அன்னம்	सुंदर हंस
+Beautiful tresses	அழகிய கூந்தல்	सुंदर केश
+Beautiful vision	அழகிய பார்வை	सुंदर दृष्टि
+beautiful woman	அழகிய பெண்	सुंदर स्त्री
+Beautiful, auspicious	அழகும் மங்களமும் கொண்ட	सुंदर और शुभ
+Beautiful, good nature	அழகும் நல்ல குணமும் கொண்ட	सुंदर और सुस्वभावी
+Beautiful, graceful	அழகும் நளினமும் கொண்ட	सुंदर और गरिमामय
+Beautiful, handsome	அழகிய, கம்பீரமான	सुंदर, आकर्षक
+Beautiful-eyed	அழகிய கண்ணாள்	सुंदर नेत्रों वाला
+beautifully written	அழகாக எழுதப்பட்ட	सुंदरता से लिखा हुआ
+beauty and form	அழகும் வடிவமும்	सौंदर्य और रूप
+beauty and grace	அழகும் அருளும்	सौंदर्य और गरिमा
+beauty, charm	அழகு, கவர்ச்சி	सौंदर्य, आकर्षण
+beloved	அன்புக்குரியவர்	प्रिय
+Beloved goddess	அன்புக்குரிய தேவி	प्रिय देवी
+beloved of lord murugan	முருகப்பெருமானின் அன்புக்குரியவள்	भगवान मुरुगन के प्रिय
+beloved of lord shiva	சிவபெருமானின் அன்புக்குரியவள்	भगवान शिव के प्रिय
+beloved of lord vishnu	விஷ்ணுபெருமானின் அன்புக்குரியவள்	भगवान विष्णु के प्रिय
+Beloved of Shiva	சிவனின் அன்புக்குரியவள்	शिव को प्रिय
+beloved of the goddess	தேவியின் அன்புக்குரியவள்	देवी के प्रिय
+Beloved of the Tulsi	துளசியின் அன்புக்குரியவள்	तुलसी को प्रिय
+Beloved of the village	ஊரின் அன்புக்குரியவள்	गाँव की प्रिय
+beloved, darling	அன்புக்குரியவர், செல்லம்	प्रिय, दुलारा
+bestower of boons	வரம் அருள்பவர்	वरदान देने वाला
+bestower of courage	துணிவு அளிப்பவர்	साहस देने वाला
+bestower of joy	மகிழ்ச்சி அளிப்பவர்	आनंद देने वाला
+Bhima, the mighty	வலிமைமிக்க பீமன்	भीम, महाबली
+Blessed by Goddess Durga	துர்கை அருளியவர்	देवी दुर्गा से आशीर्वादित
+Blessed by Lord Vishnu	விஷ்ணு அருளியவர்	भगवान विष्णु से आशीर्वादित
+blessed by the guru	குருவின் அருள் பெற்றவர்	गुरु से आशीर्वाद प्राप्त
+Blessed speech	அருள் பெற்ற சொல்	आशीर्वादित वाणी
+blessed, divine	அருள் பெற்ற, தெய்வீக	धन्य, दिव्य
+Blessing of grace	அருளின் ஆசி	कृपा का आशीर्वाद
+Bliss of compassion	கருணையின் பேரின்பம்	करुणा का आनंद
+Blossoming jasmine	மலரும் மல்லிகை	खिलती चमेली
+Blue, the moon	நீலம், நிலவு	नीला, चंद्रमा
+Blue-throated goddess	நீலகண்ட தேவி	नीलकंठी देवी
+Born of the divine	இறைவனிடம் பிறந்தவர்	ईश्वर से जन्मा
+born of the ocean	கடலில் பிறந்தவர்	समुद्र से जन्मी
+boundless	எல்லையற்ற	असीम
+brave and steadfast	துணிவும் உறுதியும் கொண்ட	वीर और दृढ़
+Brave as the Sun	சூரியன் போன்ற துணிவுள்ள	सूर्य जैसा वीर
+brave in battle	போரில் துணிவுள்ள	युद्ध में वीर
+Brave jewel	துணிவுள்ள ரத்தினம்	वीर रत्न
+Brave Lakshmi	துணிவுள்ள லட்சுமி	वीर लक्ष्मी
+Brave Pandiya king	துணிவுள்ள பாண்டிய மன்னன்	वीर पांड्य राजा
+brave warrior	துணிவுள்ள போர்வீரன்	वीर योद्धा
+brave, heroic	துணிவுள்ள, வீரமுள்ள	वीर और साहसी
+Bright and charming	ஒளிரும் கவர்ச்சி	उज्ज्वल और आकर्षक
+Bright and clear	ஒளிரும் தெளிவு	उज्ज्वल और स्वच्छ
+Bright and fair	ஒளிரும் அழகு	उज्ज्वल और सुंदर
+Bright and lovely	ஒளிரும் இனிமை	उज्ज्वल और मनोहर
+bright and luminous	ஒளிரும் பிரகாசமுள்ள	उज्ज्वल और प्रकाशमान
+bright and new	ஒளிரும் புத்தொளி	उज्ज्वल और नया
+Bright and radiant	ஒளிரும் பிரகாசம்	उज्ज्वल और तेजस्वी
+bright and shining	ஒளிரும் மின்னல்	उज्ज्वल और चमकदार
+Bright and vital	ஒளிரும் உயிர்ப்புள்ள	उज्ज्वल और जीवंत
+bright light	ஒளிரும் வெளிச்சம்	तेज प्रकाश
+bright red glow	ஒளிரும் செந்தழல்	उज्ज्वल लाल आभा
+Bright, shining	ஒளிரும், மின்னும்	उज्ज्वल और चमकदार
+brightness, vitality	ஒளி, உயிர்ப்பு	चमक, जीवनशक्ति
+Budding blossom	மொட்டு மலர்	खिलती कली
+calm and peaceful	அமைதியும் நிம்மதியும்	शांत और शांतिपूर्ण
+Camphor, pure	கற்பூரம், தூய்மை	कपूर, पवित्र
+capable, excellent	திறமையுள்ள, சிறப்பான	सक्षम, उत्कृष्ट
+celestial	தெய்வீகமான	दिव्य
+Celestial maiden	தேவ மங்கை	स्वर्ग की कन्या
+Celestial musician	தேவ கந்தர்வன்	दिव्य संगीतकार
+charming	கவர்ச்சியான	आकर्षक
+charming and dear	கவர்ச்சியும் அன்பும் கொண்ட	आकर्षक और प्रिय
+charming king	கவர்ச்சியான அரசன்	आकर्षक राजा
+charming prince	கவர்ச்சியான இளவரசன்	आकर्षक राजकुमार
+Charming woman	கவர்ச்சியான பெண்	आकर्षक स्त्री
+charming, beautiful	கவர்ச்சியான, அழகிய	आकर्षक और सुंदर
+Charming, Lord Krishna	கவர்ச்சியான கிருஷ்ணன்	आकर्षक, भगवान कृष्ण
+Charming, playful	கவர்ச்சியான, விளையாட்டுத்தனமான	आकर्षक और चंचल
+Cheerful and happy	மகிழ்ச்சியும் ஆனந்தமும்	प्रसन्न और खुश
+Cheerful, friendly	மகிழ்ச்சியான, நட்பான	प्रसन्न और मिलनसार
+Chief, leader	தலைமை, தலைவர்	मुखिया, नेता
+chief, respected one	தலைவர், மதிப்புக்குரியவர்	मुखिया, सम्मानित व्यक्ति
+Chola king	சோழ மன்னன்	चोल राजा
+Clever and skilled	சாமர்த்தியமும் திறமையும் கொண்ட	चतुर और कुशल
+Clever and wise	சாமர்த்தியமும் ஞானமும் கொண்ட	चतुर और बुद्धिमान
+cloud, holy river	மேகம், புனித நதி	बादल, पवित्र नदी
+cloud-like, graceful	மேகம் போன்ற நளினம்	बादल जैसा, गरिमामय
+Coloured, delighted	நிறமுள்ள, மகிழ்ந்த	रंगीन, प्रसन्न
+companion in battle	போரில் துணைவர்	युद्ध का साथी
+compassion, mercy	கருணை, இரக்கம்	करुणा, दया
+compassionate giver	கருணை வழங்குபவர்	करुणामय दाता
+Complete joy	நிறை மகிழ்ச்சி	पूर्ण आनंद
+complete, whole	முழுமையான, நிறைவான	पूर्ण, संपूर्ण
+Conqueror of Indra	இந்திரனை வென்றவர்	इंद्र को जीतने वाला
+Conqueror of the gods	தேவர்களை வென்றவர்	देवताओं को जीतने वाला
+Conscious, intelligent spirit	உணர்வும் அறிவும் கொண்ட ஆன்மா	चेतन, बुद्धिमान आत्मा
+consciousness, inner power	உணர்வு, உள் ஆற்றல்	चेतना, आंतरिक शक्ति
+Consciousness; living spirit	உணர்வு; உயிர்ப்புள்ள ஆன்மா	चेतना, जीवित आत्मा
+consort of indra	இந்திரனின் துணைவி	इंद्र की पत्नी
+consort of lord krishna	கிருஷ்ணனின் துணைவி	भगवान कृष्ण की पत्नी
+consort of lord shiva	சிவபெருமானின் துணைவி	भगवान शिव की पत्नी
+Contentment, joy	திருப்தி, மகிழ்ச்சி	संतोष, आनंद
+Courageous	துணிவுள்ள	साहसी
+creation, composition	படைப்பு, இயற்றல்	सृजन, रचना
+creator, sustainer	படைப்பவர், காப்பவர்	सृष्टिकर्ता, पालनकर्ता
+Crest jewel; one of great brilliance	சிகர ரத்தினம்; மிகுந்த ஒளி கொண்டவர்	शिखर रत्न, अत्यंत तेजस्वी
+Crest, Lord Shiva	சிகரம், சிவபெருமான்	शिखर, भगवान शिव
+Cuckoo's call	குயிலின் குரல்	कोयल की कूक
+Dark as a cloud, Krishna	மேகம் போன்ற கருநிற கிருஷ்ணன்	बादल जैसे श्याम, कृष्ण
+daughter	மகள்	पुत्री
+Daughter of Daksha	தட்சனின் மகள்	दक्ष की पुत्री
+Daughter of the snows	பனிமலையின் மகள்	हिमालय की पुत्री
+Dawn, ending of night	விடியல், இரவின் முடிவு	भोर, रात का अंत
+dawn, morning	விடியல், காலை	प्रभात, सुबह
+Dear to Lakshmi	லட்சுமிக்கு அன்பானவர்	लक्ष्मी को प्रिय
+Dear to the gods	தேவர்களுக்கு அன்பானவர்	देवताओं को प्रिय
+Dedicated offering	அர்ப்பணிப்பான காணிக்கை	समर्पित अर्पण
+Dedicated, offered	அர்ப்பணிக்கப்பட்ட	समर्पित, अर्पित
+Deep blue, sapphire	அடர் நீலம், நீலமணி	गहरा नीला, नीलम
+Deep reflection	ஆழ்ந்த சிந்தனை	गहन चिंतन
+deep satisfaction	ஆழ்ந்த திருப்தி	गहरी संतुष्टि
+Desired, superior	விரும்பத்தக்க, சிறந்த	वांछित, श्रेष्ठ
+destiny, fate	விதி, ஊழ்	भाग्य, नियति
+destroyer of evil	தீமையை அழிப்பவர்	बुराई का नाश करने वाला
+devoted and pure	பக்தியும் தூய்மையும் கொண்ட	भक्त और पवित्र
+Devoted brother	பக்தியுள்ள சகோதரன்	भक्त भाई
+devoted practice	பக்தியுடன் பயிற்சி	समर्पित साधना
+devoted princess	பக்தியுள்ள இளவரசி	भक्त राजकुमारी
+Devoted to Goddess Durga	துர்கை மீது பக்தி கொண்டவர்	देवी दुर्गा के भक्त
+Devoted to Lord Rama	ராமபிரான் அன்பர்	भगवान राम के भक्त
+devoted worship	பக்தியுடன் வழிபாடு	भक्तिपूर्ण पूजा
+Devoted, soft	பக்தியுள்ள, மென்மையான	भक्त और कोमल
+devotional song	பக்திப் பாடல்	भक्ति गीत
+Devout meditation	ஆழ்ந்த தியானம்	भक्तिपूर्ण ध्यान
+Devout princess	தியான நெறியுள்ள இளவரசி	भक्त राजकुमारी
+Diamond, radiant	வைரம், ஒளிரும்	हीरा, तेजस्वी
+Dimple, cheerful	கன்னக்குழி, மகிழ்ச்சியான	गाल का गड्ढा, प्रसन्न
+Direction, guidance	திசை, வழிகாட்டல்	दिशा, मार्गदर्शन
+Distinguished	சிறப்பு பெற்றவர்	प्रतिष्ठित
+Divine	தெய்வீகமான	दिव्य
+divine blessing	தெய்வ ஆசி	दिव्य आशीर्वाद
+divine chariot	தெய்வத் தேர்	दिव्य रथ
+Divine consciousness	தெய்வ உணர்வு	दिव्य चेतना
+Divine form	தெய்வ வடிவம்	दिव्य रूप
+divine form of lord shiva	சிவனின் தெய்வ வடிவம்	भगवान शिव का दिव्य रूप
+Divine gem	தெய்வ ரத்தினம்	दिव्य रत्न
+divine gift	தெய்வ பரிசு	दिव्य उपहार
+Divine glow	தெய்வ ஒளிர்வு	दिव्य आभा
+divine grace	தெய்வ அருள்	दिव्य कृपा
+Divine illusion	தெய்வ மாயை	दिव्य माया
+Divine king	தெய்வ அரசன்	दिव्य राजा
+divine light	தெய்வ ஒளி	दिव्य प्रकाश
+Divine maiden	தெய்வக் கன்னி	दिव्य कन्या
+Divine melody	தெய்வ இசை	दिव्य धुन
+Divine part	தெய்வப் பகுதி	दिव्य अंश
+divine play	தெய்வ லீலை	दिव्य लीला
+divine power	தெய்வ சக்தி	दिव्य शक्ति
+divine prince	தெய்வ இளவரசன்	दिव्य राजकुमार
+divine queen	தெய்வ அரசி	दिव्य रानी
+Divine radiance	தெய்வப் பிரகாசம்	दिव्य आभा
+divine realization	தெய்வ அனுபவம்	दिव्य अनुभूति
+divine sight	தெய்வக் காட்சி	दिव्य दृष्टि
+Divine speech	தெய்வ மொழி	दिव्य वाणी
+divine teacher	தெய்வ குரு	दिव्य गुरु
+divine writing, star	தெய்வ எழுத்து, நட்சத்திரம்	दिव्य लेखन, तारा
+Divine, heavenly	தெய்வீகமான, வானுலக	दिव्य, स्वर्गीय
+Divine, of the gods	தெய்வீகமான, தேவர்களின்	दिव्य, देवताओं का
+Doctrine, principle	கோட்பாடு, தத்துவம்	सिद्धांत, नियम
+Draupadi	திரௌபதி	द्रौपदी
+early morning breeze	அதிகாலைத் தென்றல்	प्रातःकालीन हवा
+Efficient and able	திறமையும் ஆற்றலும்	कुशल और समर्थ
+Eloquent and learned	சொல்வளமும் கல்வியும் கொண்ட	वाक्पटु और विद्वान
+Embodiment of righteousness	நீதியின் வடிவம்	धर्म का स्वरूप
+enchantress, devoted wife	மயக்கும் மங்கை, பதிவிரதை	मोहिनी, समर्पित पत्नी
+endowed with virtues	நற்பண்புகள் நிறைந்தவர்	सद्गुणों से युक्त
+Energy and strength	ஆற்றலும் வலிமையும்	ऊर्जा और शक्ति
+Entertaining, charming	மகிழ்வூட்டும், கவர்ச்சியான	मनोरंजक, आकर्षक
+enthusiasm	ஆர்வம்	उत्साह
+eternal bliss	நித்திய பேரின்பம்	शाश्वत आनंद
+Eternal prosperity	நித்திய செழிப்பு	शाश्वत समृद्धि
+eternal, constant	நித்தியமான, நிலையான	शाश्वत, स्थिर
+Evening twilight	மாலை அந்தி	संध्याकाल
+excellence	சிறப்பு	उत्कृष्टता
+Eyes like the kayal fish	கயல் மீன் போன்ற கண்கள்	कयल मछली जैसे नेत्र
+eyes, a guide	கண்கள், வழிகாட்டி	आँखें, मार्गदर्शक
+faith, trust	நம்பிக்கை, விசுவாசம்	विश्वास, भरोसा
+fame and glory	புகழும் பெருமையும்	यश और गौरव
+Fame and grace	புகழும் அருளும்	यश और कृपा
+Fame and honour	புகழும் மரியாதையும்	यश और सम्मान
+fame and success	புகழும் வெற்றியும்	यश और सफलता
+Fame, honour and good reputation	புகழ், மரியாதை, நற்பெயர்	यश, सम्मान और सुनाम
+Famous and prosperous	புகழும் செழிப்பும் கொண்ட	प्रसिद्ध और समृद्ध
+Famous and successful	புகழும் வெற்றியும் கொண்ட	प्रसिद्ध और सफल
+fearless	அச்சமற்ற	निडर
+Feather, beautiful	இறகு, அழகிய	पंख, सुंदर
+Feet of the Lord	இறைவனின் திருவடி	भगवान के चरण
+Fine handwriting	நேர்த்தியான கையெழுத்து	सुंदर हस्तलेख
+fine writing	நுட்பமான எழுத்து	सुंदर लेखन
+Fish-eyed beauty	மீன்கண்ணழகி	मीननयनी सुंदरी
+Flame, crest	தழல், சிகரம்	ज्योति, शिखर
+Flower	பூ	फूल
+flower garden	மலர்த் தோட்டம்	फूलों का बगीचा
+Flower of penance	தவத்தின் மலர்	तपस्या का फूल
+flower-like eyes	மலர் போன்ற கண்கள்	फूल जैसी आँखें
+focused and attentive	கவனமும் ஒருமுகமும் கொண்ட	एकाग्र और सजग
+Focused, united	ஒருமுகப்பட்ட, ஒன்றிணைந்த	एकाग्र, एकजुट
+Fond of the divine	இறையன்பு கொண்டவர்	भगवान से प्रेम करने वाला
+Fortunate, blessed	அதிர்ஷ்டமும் அருளும் பெற்ற	भाग्यशाली और धन्य
+fragrance	நறுமணம்	सुगंध
+fragrance, musk	நறுமணம், கஸ்தூரி	सुगंध, कस्तूरी
+Fragrant	மணமுள்ள	सुगंधित
+Fragrant flower	மணமிக்க மலர்	सुगंधित फूल
+Fragrant, pleasing	மணமுள்ள, இனிமையான	सुगंधित और मनभावन
+Freedom, liberty	சுதந்திரம், விடுதலை	स्वतंत्रता, मुक्ति
+fresh and new	புதிய புத்துணர்வு	नया और ताज़ा
+Fresh and prosperous	புத்துணர்வும் செழிப்பும் கொண்ட	ताज़ा और समृद्ध
+Fresh butter, Krishna	வெண்ணெய் விரும்பும் கிருஷ்ணன்	ताज़ा मक्खन, कृष्ण
+friend	நண்பர்	मित्र
+friend and companion	நண்பரும் துணையும்	मित्र और साथी
+friend of all	அனைவரின் நண்பர்	सबका मित्र
+friendship	நட்பு	मित्रता
+From the heart	இதயத்திலிருந்து	हृदय से
+Full of art	கலை நிறைந்தவர்	कला से भरपूर
+full of beauty	அழகு நிறைந்த	सौंदर्य से भरपूर
+Full of clouds	மேகம் நிறைந்த	बादलों से भरा
+Full of compassion	கருணை நிறைந்த	करुणा से भरपूर
+full of consciousness	உணர்வு நிறைந்த	चैतन्य से भरपूर
+full of fame	புகழ் நிறைந்த	यश से भरपूर
+full of glory	பெருமை நிறைந்த	गौरव से भरपूर
+Full of joy	மகிழ்ச்சி நிறைந்த	आनंद से भरपूर
+full of life	உயிர்ப்பு நிறைந்த	जीवन और उत्साह से भरपूर
+Full of light	ஒளி நிறைந்த	प्रकाश से भरपूर
+Full of love	அன்பு நிறைந்த	प्रेम से भरपूर
+full of radiance	ஒளிர்வு நிறைந்த	तेज से भरपूर
+full of sacred knowledge	ஞானம் நிறைந்த	पवित्र ज्ञान से भरपूर
+full of virtue	நற்பண்பு நிறைந்த	सद्गुणों से भरपूर
+full of virtues	நற்பண்புகள் நிறைந்த	सद्गुणों से भरपूर
+full of vitality	உயிர்ச்சக்தி நிறைந்த	जीवनशक्ति से भरपूर
+Furrow, pure	வரப்பு, தூய்மையான	हल रेखा, पवित्र
+Garland of victory	வெற்றியின் மாலை	विजय की माला
+gentle and calm	மென்மையும் அமைதியும்	कोमल और शांत
+gentle and graceful	மென்மையும் நளினமும்	कोमल और गरिमामय
+Gentle and handsome	மென்மையும் அழகும் கொண்ட	कोमल और सुंदर
+Gentle and sweet	மென்மையும் இனிமையும்	कोमल और मधुर
+gentle breeze	மெல்லிய தென்றல்	मंद हवा
+Gentle creeper	இளங்கொடி	कोमल लता
+Gentle, soft-spoken	மென்மையான, இன்சொல்	कोमल, मृदुभाषी
+giver of boons	வரம் வழங்குபவர்	वरदान देने वाला
+Glory and success	பெருமையும் வெற்றியும்	गौरव और सफलता
+God, divine	இறைவன், தெய்வீக	ईश्वर, दिव्य
+god, divine one	இறைவன், தெய்வப் பொருள்	ईश्वर, दिव्य व्यक्ति
+god, the supreme lord	இறைவன், பரம்பொருள்	ईश्वर, परम भगवान
+Goddess	தேவி	देवी
+Goddess Durai, protector	துரை தேவி, காப்பவள்	दुरै अम्मन, रक्षक देवी
+goddess durga	துர்கை தேவி	देवी दुर्गा
+Goddess Durga's waistband	துர்கை தேவியின் ஒட்டியாணம்	दुर्गा देवी का करधनी
+goddess lakshmi	லட்சுமி தேவி	देवी लक्ष्मी
+goddess of arts	கலைகளின் தேவி	कला की देवी
+goddess of fortune	அதிர்ஷ்டத்தின் தேவி	सौभाग्य की देवी
+Goddess of gold	பொன்னின் தேவி	स्वर्ण की देवी
+Goddess of kings	அரசர்களின் தேவி	राजाओं की देवी
+Goddess of Kollur	கொல்லூர் தேவி	कोल्लूर की देवी
+Goddess of Madurai	மதுரை தேவி	मदुरै की देवी
+Goddess of Om	ஓம் தேவி	ओम की देवी
+Goddess of radiance	ஒளியின் தேவி	आभा की देवी
+Goddess of royal fortune	அரச செல்வத்தின் தேவி	राजकीय सौभाग्य की देवी
+Goddess of sacred wisdom	புனித ஞானத்தின் தேவி	पवित्र ज्ञान की देवी
+Goddess of the earth	பூமித் தேவி	पृथ्वी की देवी
+Goddess of the fish eyes	மீன்கண் தேவி	मीननयनी देवी
+Goddess of the fort	கோட்டைத் தேவி	किले की देवी
+Goddess of the Lingam	லிங்கத் தேவி	लिंग की देवी
+Goddess of the mountains	மலைகளின் தேவி	पर्वतों की देवी
+Goddess of the ocean	கடலின் தேவி	समुद्र की देवी
+Goddess of the varga sound	வர்க்க ஒலியின் தேவி	वर्ग ध्वनि की देवी
+Goddess of the waters	நீரின் தேவி	जल की देवी
+goddess of the world	உலகின் தேவி	विश्व की देवी
+goddess of victory	வெற்றியின் தேவி	विजय की देवी
+goddess of wealth	செல்வத்தின் தேவி	धन की देवी
+goddess of yoga	யோகத்தின் தேவி	योग की देवी
+goddess parvati	பார்வதி தேவி	देवी पार्वती
+Goddess Renuka	ரேணுகை தேவி	देवी रेणुका
+goddess saraswati	சரஸ்வதி தேவி	देवी सरस्वती
+Goddess with loving eyes	அன்பு விழிகளுடன் தேவி	स्नेहिल नेत्रों वाली देवी
+gold, precious	பொன், விலைமதிப்பற்ற	सोना, अनमोल
+golden	பொன்னிறமான	स्वर्णिम
+golden and beautiful	பொன்னிற அழகு	स्वर्णिम और सुंदर
+golden creeper	பொன்னிறக் கொடி	स्वर्णिम लता
+golden flower	பொன்னிற மலர்	स्वर्णिम पुष्प
+Golden garland	பொன் மாலை	स्वर्णिम माला
+golden king	பொன்னிற அரசன்	स्वर्णिम राजा
+Golden lady	பொன்னிற மங்கை	स्वर्णिम महिला
+Golden moon	பொன்னிற நிலவு	स्वर्णिम चंद्रमा
+Golden one	பொன்னிறமானவர்	स्वर्णिम
+Golden prosperity	பொன்னிறச் செழிப்பு	स्वर्णिम समृद्धि
+Golden woman	பொன்னிறப் பெண்	स्वर्णिम स्त्री
+Golden, Goddess Lakshmi	பொன்னிற லட்சுமி தேவி	स्वर्णिम, देवी लक्ष्मी
+golden, radiant	பொன்னிறம், ஒளிரும்	स्वर्णिम और तेजस्वी
+Golden, wealth	பொன், செல்வம்	स्वर्णिम, धन
+Golden, youthful	பொன்னிறம், இளமை	स्वर्णिम, युवा
+Golden-bodied	பொன்னிற மேனியாள்	स्वर्णिम देह वाला
+Golden-eyed	பொன்னிறக் கண்ணாள்	स्वर्णिम नेत्रों वाला
+Good deed, noble act	நல்ல செயல், உயர்ந்த பணி	सत्कर्म, श्रेष्ठ कार्य
+Good fame, auspicious	நல்ல புகழ், மங்களமான	सुयश और शुभता
+Good friend	நல்ல நண்பர்	अच्छा मित्र
+Good taste, refined	நல்ல சுவை, நுட்பமான	सुंदर रुचि, परिष्कृत
+Good writing, eloquent	நல்ல எழுத்து, சொல்வளமிக்க	सुलेख, वाक्पटु
+Good-natured, calm	நல்ல குணமும் அமைதியும்	सज्जन और शांत
+grace and favour	அருளும் ஆதரவும்	कृपा और अनुग्रह
+Grace of God	இறையருள்	ईश्वर की कृपा
+Grace, kindness	அருள், கருணை	कृपा, दया
+graceful	நளினமான	गरिमामय
+graceful and charming	நளினமும் கவர்ச்சியும்	सुंदर और आकर्षक
+Graceful and handsome	நளினமும் அழகும் கொண்ட	गरिमामय और सुंदर
+graceful and lovely	நளினமும் இனிமையும்	सुंदर और मनोहर
+Graceful as art	கலை போன்ற நளினம்	कला जैसी सुंदर
+graceful expression	நளினமான வெளிப்பாடு	गरिमामय अभिव्यक्ति
+Graceful friend	நளினமான நண்பர்	सुंदर मित्र
+Graceful goddess	நளினமான தேவி	गरिमामयी देवी
+Graceful lady	நளினமான மங்கை	गरिमामयी महिला
+Graceful mother	நளினமான தாய்	गरिमामयी माता
+Graceful prince	நளினமான இளவரசன்	गरिमामय राजकुमार
+Graceful prosperity	நளினமான செழிப்பு	सुंदर समृद्धि
+Graceful speech	நளினமான பேச்சு	गरिमामय वाणी
+Graceful Tamil girl	நளினமான தமிழ்ப் பெண்	सुंदर तमिल कन्या
+Graceful village goddess	நளினமான கிராம தேவதை	सुंदर ग्राम देवी
+Graceful, charming and playful	நளினமும் கவர்ச்சியும் விளையாட்டும் கொண்ட	गरिमामय, आकर्षक और चंचल
+Graceful-eyed	நளின விழியாள்	सुंदर नेत्रों वाला
+Gracious	அருளுள்ள	कृपालु
+granted by the guru	குருவால் அருளப்பட்ட	गुरु द्वारा प्रदत्त
+Great earth	பெரும் பூமி	विशाल पृथ्वी
+Great sage	பேரறிஞர்	महान ऋषि
+great, blessed	பெரிய, அருள்பெற்ற	महान, धन्य
+Great, saintly poet	தெய்வப் புலவர்	महान संत कवि
+Green, fresh	பசுமை, புத்துணர்வு	हरा, ताज़ा
+Growing, ascending	வளரும், உயரும்	बढ़ता, ऊँचा उठता
+Handsome	கம்பீரமான	सुंदर
+handsome and charming	அழகும் கவர்ச்சியும் கொண்ட	सुंदर और मनमोहक
+handsome and graceful	அழகும் நளினமும் கொண்ட	सुंदर और गरिमामय
+Handsome and virtuous	அழகும் நற்பண்பும் கொண்ட	सुंदर और सद्गुणी
+Handsome as the moon	நிலவு போன்ற அழகன்	चंद्रमा जैसा सुंदर
+happiness	மகிழ்ச்சி	खुशी
+Happiness, joy	மகிழ்ச்சி, ஆனந்தம்	खुशी, आनंद
+Henna, fragrance	மருதாணி, நறுமணம்	मेहंदी, सुगंध
+hidden lord	மறைந்த இறைவன்	गुप्त भगवान
+Highly noble	மிக மேன்மையான	अत्यंत श्रेष्ठ
+Human, kind-hearted	மனிதர், கருணையுள்ள	मानव, दयालु
+humility and modesty	பணிவும் அடக்கமும்	विनम्रता और शालीनता
+Illumination	ஒளியூட்டல்	प्रकाश
+Imagination	கற்பனை	कल्पना
+immortal	அழியாத	अमर
+Immortal, divine	அழியாத, தெய்வீக	अमर, दिव्य
+imperishable	அழிவற்ற	अविनाशी
+Inner virtue	உள்ளத்தின் நற்பண்பு	आंतरिक सद्गुण
+intelligence, wisdom	நுண்ணறிவு, ஞானம்	बुद्धिमत्ता, ज्ञान
+intelligent and wise	அறிவும் ஞானமும் கொண்ட	बुद्धिमान और ज्ञानी
+jasmine flower	மல்லிகை மலர்	चमेली का फूल
+Jewel	நகை	रत्न
+Jewel of grace	அருளின் நகை	कृपा का रत्न
+Jewel of penance	தவத்தின் நகை	तपस्या का रत्न
+joy and delight	மகிழ்ச்சியும் ஆனந்தமும்	हर्ष और आनंद
+Joy, delight	ஆனந்தம், மகிழ்ச்சி	आनंद, प्रसन्नता
+Joyful and blissful	மகிழ்ச்சியும் பேரின்பமும்	आनंदित और आनंदमय
+Joyful, pleased	மகிழ்ச்சியான, திருப்தியான	आनंदित, प्रसन्न
+Karthikeyan (Murugan); one born in Karthikai	கார்த்திகேயன் (முருகன்); கார்த்திகையில் பிறந்தவர்	कार्तिकेय (मुरुगन), कार्तिका नक्षत्र में जन्मे
+kind and generous	கருணையும் தாராளமும் கொண்ட	दयालु और उदार
+kind, benevolent	கருணையுள்ள, நலம் விரும்பும்	दयालु और परोपकारी
+King of flowers	மலர்களின் அரசன்	फूलों का राजा
+King of glory	பெருமையின் அரசன்	गौरव का राजा
+King of gold	பொன்னின் அரசன்	स्वर्ण का राजा
+king of kings	அரசர்களின் அரசன்	राजाओं का राजा
+King of love	அன்பின் அரசன்	प्रेम का राजा
+King of men	மனிதர்களின் அரசன்	मनुष्यों का राजा
+King of music	இசையின் அரசன்	संगीत का राजा
+King of serpents	நாகங்களின் அரசன்	सर्पों का राजा
+King of swans	அன்னங்களின் அரசன்	हंसों का राजा
+King of Tamil	தமிழின் அரசன்	तमिल का राजा
+King of the ages	யுகங்களின் அரசன்	युगों का राजा
+King of the clouds	மேகங்களின் அரசன்	बादलों का राजा
+king of the earth	பூமியின் அரசன்	पृथ्वी का राजा
+King of the forest	காட்டின் அரசன்	वन का राजा
+king of the gods	தேவர்களின் அரசன்	देवताओं का राजा
+king of the three realms	மூவுலகின் அரசன்	तीनों लोकों का राजा
+King of writing	எழுத்தின் அரசன்	लेखन का राजा
+King, ruler	அரசன், ஆட்சியாளர்	राजा, शासक
+Knowledge	அறிவு	ज्ञान
+knowledge, learning	அறிவு, கல்வி	ज्ञान, विद्या
+knowledgeable	அறிவு நிறைந்தவர்	ज्ञानवान
+Kohl, eyeliner	கண்மை, மை	काजल, अंजन
+krishna's childhood home	கிருஷ்ணர் வளர்ந்த இல்லம்	कृष्ण के बाल्यकाल का घर
+Lamp of light	ஒளியின் விளக்கு	प्रकाश का दीपक
+Lamp of the Sun	சூரியனின் விளக்கு	सूर्य का दीपक
+Lamp, bright light	விளக்கு, பிரகாசமான ஒளி	दीपक, तेज प्रकाश
+Lava, son of Rama	ராமனின் மகன் லவன்	लव, भगवान राम के पुत्र
+leader of the world	உலகின் தலைவர்	विश्व के नेता
+leader, guide	தலைவர், வழிகாட்டி	नेता, मार्गदर्शक
+learned	கற்றறிந்தவர்	विद्वान
+learned woman	கல்வி மிக்க பெண்	विदुषी
+Learned, wise	கல்வியுள்ள, ஞானமுள்ள	विद्वान, बुद्धिमान
+liberated soul	விடுதலை பெற்ற ஆன்மா	मुक्त आत्मा
+liberation	விடுதலை	मोक्ष
+liberation, salvation	விடுதலை, முக்தி	मोक्ष, मुक्ति
+life	உயிர்	जीवन
+life and joy	உயிரும் மகிழ்ச்சியும்	जीवन और आनंद
+life and vitality	உயிரும் உயிர்ப்பும்	जीवन और जीवंतता
+Light of Lord Shiva	சிவபெருமானின் ஒளி	भगवान शिव का प्रकाश
+Light of Om	ஓம் ஒளி	ओम का प्रकाश
+Light of the guru	குருவின் ஒளி	गुरु का प्रकाश
+light of the sun	சூரிய ஒளி	सूर्य का प्रकाश
+Light of the Vedas	வேதங்களின் ஒளி	वेदों का प्रकाश
+Light, lamp	ஒளி, விளக்கு	प्रकाश, दीपक
+light, radiance	ஒளி, பிரகாசம்	प्रकाश, आभा
+Lightning, bright	மின்னல், ஒளிரும்	बिजली, उज्ज्वल
+Lightning, first light	மின்னல், முதல் ஒளி	बिजली, प्रथम प्रकाश
+Like a goddess	தேவி போன்றவள்	देवी जैसी
+Limitless	வரம்பற்ற	असीम
+Lineage, family	வம்சம், குடும்பம்	वंश, परिवार
+Lion, brave	சிங்கம், துணிவுள்ள	सिंह, वीर
+Literature and learning	இலக்கியமும் கல்வியும்	साहित्य और शिक्षा
+Literature, poetry	இலக்கியம், கவிதை	साहित्य, काव्य
+Little child	சிறு குழந்தை	नन्हा बच्चा
+Little darling	செல்லமுள்ள குழந்தை	प्यारी नन्ही
+Little goddess	குட்டித் தேவதை	छोटी देवी
+Living goddess of fortune	வாழும் அதிர்ஷ்ட தேவி	जीवित सौभाग्य देवी
+Long-lived	நீண்ட ஆயுள்	दीर्घायु
+Lord Ayyappa	ஐயப்பன்	भगवान अयप्पा
+Lord Ganesha	கணேசப் பெருமான்	भगवान गणेश
+lord krishna	கிருஷ்ணன்	भगवान कृष्ण
+lord krishna's son	கிருஷ்ணனின் மகன்	भगवान कृष्ण के पुत्र
+lord murugan	முருகப்பெருமான்	भगवान मुरुगन
+lord murugan's spear	முருகப்பெருமானின் வேல்	भगवान मुरुगन का भाला
+Lord Murugan, bejewelled	அணிகலன்கள் சூடிய முருகன்	आभूषणों से सुशोभित मुरुगन
+lord murugan, powerful	வலிமைமிக்க முருகன்	शक्तिशाली भगवान मुरुगन
+lord murugan, radiant	ஒளிரும் முருகன்	तेजस्वी भगवान मुरुगन
+Lord Narayana	நாராயணன்	भगवान नारायण
+Lord Nataraja	நடராஜர்	भगवान नटराज
+Lord of ascetics	துறவிகளின் இறைவன்	संन्यासियों के स्वामी
+Lord of desire	ஆசையின் இறைவன்	कामनाओं के स्वामी
+Lord of diamonds	வைரங்களின் இறைவன்	हीरों के स्वामी
+Lord of flowers	மலர்களின் இறைவன்	फूलों के स्वामी
+Lord of glory	பெருமையின் இறைவன்	गौरव के स्वामी
+Lord of gold	பொன்னின் இறைவன்	स्वर्ण के स्वामी
+Lord of gold, winter	பொன்னின் இறைவன், குளிர்காலம்	स्वर्ण के स्वामी, शीतकाल
+Lord of kings	அரசர்களின் இறைவன்	राजाओं के स्वामी
+Lord of law, master	நீதியின் இறைவன், ஆசான்	धर्म के स्वामी, गुरु
+Lord of liberation	விடுதலையின் இறைவன்	मोक्ष के स्वामी
+Lord of Lord Shiva	சிவபெருமானின் இறைவன்	भगवान शिव के स्वामी
+Lord of medicine	மருத்துவத்தின் இறைவன்	औषधि के स्वामी
+Lord of men	மனிதர்களின் இறைவன்	मनुष्यों के स्वामी
+Lord of obstacles	தடைகளை நீக்கும் இறைவன்	विघ्नों के स्वामी
+Lord of Om	ஓம் இறைவன்	ओम के स्वामी
+Lord of Rama	ராமனின் இறைவன்	राम के स्वामी
+Lord of righteousness	நீதியின் இறைவன்	धर्म के स्वामी
+Lord of serpents	நாகங்களின் இறைவன்	सर्पों के स्वामी
+Lord of the accomplished	சித்தர்களின் இறைவன்	सिद्ध पुरुषों के स्वामी
+Lord of the age	யுகத்தின் இறைவன்	युग के स्वामी
+Lord of the celestials	தேவர்களின் இறைவன்	देवताओं के स्वामी
+lord of the clouds	மேகங்களின் இறைவன்	बादलों के स्वामी
+lord of the cosmic dance	அண்ட நடனத்தின் இறைவன்	ब्रह्मांडीय नृत्य के स्वामी
+Lord of the cowherds	இடையர்களின் இறைவன்	ग्वालों के स्वामी
+Lord of the day	பகலின் இறைவன்	दिन के स्वामी
+Lord of the day, Sun	பகலின் இறைவன், சூரியன்	दिन के स्वामी, सूर्य
+Lord of the divine	தெய்வங்களின் இறைவன்	देवताओं के स्वामी
+lord of the earth	பூமியின் இறைவன்	पृथ्वी के स्वामी
+Lord of the family	குடும்பத்தின் இறைவன்	परिवार के स्वामी
+Lord of the field	வயலின் இறைவன்	क्षेत्र के स्वामी
+lord of the fort	கோட்டையின் இறைவன்	दुर्ग के स्वामी
+Lord of the full moon	முழு நிலவின் இறைவன்	पूर्णिमा के चंद्रमा के स्वामी
+Lord of the gods	தேவாதி தேவன்	देवताओं के स्वामी
+Lord of the groves	சோலைகளின் இறைவன்	वन उपवन के स्वामी
+Lord of the Himalayas	இமயமலையின் இறைவன்	हिमालय के स्वामी
+Lord of the Lingam	லிங்கத்தின் இறைவன்	लिंग के स्वामी
+Lord of the mind	மனத்தின் இறைவன்	मन के स्वामी
+lord of the moon	நிலவின் இறைவன்	चंद्रमा के स्वामी
+Lord of the night	இரவின் இறைவன்	रात्रि के स्वामी
+Lord of the Om	பிரணவத்தின் இறைவன்	ओम के स्वामी
+Lord of the sacred fire	புனித அக்னியின் இறைவன்	पवित्र अग्नि के स्वामी
+Lord of the serpent hill	நாகமலையின் இறைவன்	सर्प पर्वत के स्वामी
+Lord of the sight	காட்சியின் இறைவன்	दृष्टि के स्वामी
+Lord of the snow	பனியின் இறைவன்	हिम के स्वामी
+Lord of the thousand forms	ஆயிரம் வடிவங்களின் இறைவன்	सहस्र रूपों के स्वामी
+lord of the universe	அண்டத்தின் இறைவன்	ब्रह्मांड के स्वामी
+Lord of the varga sound	வர்க்க ஒலியின் இறைவன்	वर्ग ध्वनि के स्वामी
+Lord of the Vedas	வேதங்களின் இறைவன்	वेदों के स्वामी
+Lord of the waters	நீரின் இறைவன்	जल के स्वामी
+lord of the world	உலகின் இறைவன்	विश्व के स्वामी
+lord of the worlds	உலகங்களின் இறைவன்	लोकों के स्वामी
+Lord of the Yadavas	யாதவர்களின் இறைவன்	यादवों के स्वामी
+Lord of truth	உண்மையின் இறைவன்	सत्य के स्वामी
+Lord of Uma	உமையின் இறைவன்	उमा के स्वामी
+Lord of Venkata hills	வேங்கட மலையின் இறைவன்	वेंकट पर्वत के स्वामी
+Lord of Venkata, an aspect of Vishnu	வேங்கடவன், விஷ்ணுவின் ஒரு வடிவம்	वेंकटेश, विष्णु का एक रूप
+Lord of victory	வெற்றியின் இறைவன்	विजय के स्वामी
+Lord of virtue	நற்பண்பின் இறைவன்	सद्गुण के स्वामी
+lord of wealth	செல்வத்தின் இறைவன்	धन के स्वामी
+Lord of wishes	விருப்பங்களை நிறைவேற்றும் இறைவன்	इच्छाओं के स्वामी
+lord of yoga	யோகத்தின் இறைவன்	योग के स्वामी
+lord rama	ராமபிரான்	भगवान राम
+lord rama and krishna	ராமபிரானும் கிருஷ்ணனும்	राम और कृष्ण
+lord rama of the bridge	சேதுவின் ராமபிரான்	सेतु के भगवान राम
+Lord Rama of the Tulsi	துளசி ராமபிரான்	तुलसी वाले भगवान राम
+Lord Rama, delightful	இனிய ராமபிரான்	आनंददायक भगवान राम
+Lord Rama, wielder of the bow	வில்லேந்திய ராமபிரான்	धनुर्धर भगवान राम
+lord shiva	சிவபெருமான்	भगवान शिव
+Lord Shiva of Kanchi	காஞ்சி சிவபெருமான்	कांची के भगवान शिव
+Lord Shiva of Madurai	மதுரை சிவபெருமான்	मदुरै के भगवान शिव
+lord shiva, beautiful	அழகிய சிவபெருமான்	सुंदर भगवान शिव
+Lord Shiva, blue-throated	நீலகண்ட சிவபெருமான்	नीलकंठ भगवान शिव
+lord shiva, delightful	இனிய சிவபெருமான்	आनंदमय भगवान शिव
+lord shiva, ever auspicious	என்றும் மங்களமான சிவபெருமான்	सदा मंगलमय भगवान शिव
+Lord Shiva, ever good	என்றும் நன்மையான சிவபெருமான்	सदा कल्याणकारी भगवान शिव
+Lord Shiva, mountain	மலை போன்ற சிவபெருமான்	भगवान शिव, पर्वत
+lord vishnu	விஷ்ணுபெருமான்	भगवान विष्णु
+Lord Vishnu and Shiva	விஷ்ணுவும் சிவனும்	विष्णु और शिव
+lord vishnu with lakshmi	லட்சுமியுடன் விஷ்ணு	लक्ष्मी सहित भगवान विष्णु
+lord vishnu's axe-bearer	விஷ்ணுவின் கோடரி ஏந்தியவர்	भगवान विष्णु के फरसेधारी
+Lord Vishnu, Indra	விஷ்ணு, இந்திரன்	विष्णु, इंद्र
+lord vishnu, lotus-eyed	தாமரைக் கண்ணன் விஷ்ணு	कमलनयन भगवान विष्णु
+Lord Vithoba	வித்தோபா	भगवान विठोबा
+Lord who upholds the earth	பூமியைத் தாங்குபவர்	पृथ्वी को धारण करने वाले
+lotus	தாமரை	कमल
+lotus abode	தாமரை இல்லம்	कमल का निवास
+Lotus creeper	தாமரைக் கொடி	कमल की लता
+lotus flower	தாமரைப் பூ	कमल का फूल
+lotus-eyed woman	தாமரைக் கண்ணி	कमलनयनी स्त्री
+Lovable and charming	அன்பும் கவர்ச்சியும் கொண்ட	प्रिय और आकर्षक
+love and affection	அன்பும் பாசமும்	प्रेम और स्नेह
+Love of talent	திறமையின் மீது அன்பு	प्रतिभा से प्रेम
+Loved and charming	அன்புக்குரிய, கவர்ச்சியான	प्रिय और आकर्षक
+Lovely haired	அழகிய கூந்தலாள்	सुंदर केशों वाली
+Lovely parting of hair	அழகிய வகிட்டு	सुंदर माँग
+Lovely woman	அழகிய மங்கை	मनोहर स्त्री
+loving and affectionate	பாசமும் அன்பும் கொண்ட	प्रेमपूर्ण और स्नेही
+Mahabharata princess	மகாபாரத இளவரசி	महाभारत की राजकुमारी
+Mark of Lord Shiva	சிவபெருமானின் அடையாளம்	भगवान शिव का चिह्न
+master of the arts	கலைகளின் ஆசான்	कलाओं के आचार्य
+master of the bridge	சேதுவின் தலைவர்	सेतु के स्वामी
+master of writing	எழுத்தின் ஆசான்	लेखन के आचार्य
+meaningful, purposeful	பொருளுள்ள, நோக்கமுள்ள	अर्थपूर्ण, उद्देश्यपूर्ण
+measured, limited	அளவான, எல்லையுள்ள	मापा हुआ, सीमित
+meeting of three rivers	முக்கூடல்	तीन नदियों का संगम
+Melodic, patient	இனிய இசை, பொறுமையுள்ள	मधुर, धैर्यवान
+Melodious bird	இன்குரல் பறவை	मधुर स्वर वाला पक्षी
+Melodious goddess	இன்குரல் தேவி	मधुर स्वर वाली देवी
+messenger of the clouds	மேகங்களின் தூதன்	बादलों का दूत
+Mighty and strong	வலிமையும் ஆற்றலும் கொண்ட	महाबली और बलवान
+mighty tamil scholar	வலிமைமிக்க தமிழ் அறிஞர்	महान तमिल विद्वान
+modest and graceful	அடக்கமும் நளினமும் கொண்ட	विनम्र और गरिमामय
+modest and humble	அடக்கமும் பணிவும் கொண்ட	विनम्र और नम्र
+Modest, graceful	அடக்கமான, நளினமான	विनम्र और गरिमामय
+modesty	அடக்கம்	विनम्रता
+modesty, lord ganesha	அடக்கம், கணேசப் பெருமான்	विनम्रता, भगवान गणेश
+Moon-adorned Lord Shiva	சந்திரன் சூடிய சிவபெருமான்	चंद्रमा धारण करने वाले भगवान शिव
+Moonbeam	நிலவுக் கதிர்	चंद्रकिरण
+moonlight	நிலவொளி	चांदनी
+moonlight, radiant	நிலவொளி, ஒளிரும்	तेजस्वी चांदनी
+Moral, righteous	நீதியுள்ள, நேர்மையான	नैतिक, धर्मात्मा
+Mother of Krishna	கிருஷ்ணனின் தாய்	कृष्ण की माता
+mother of lord krishna	கிருஷ்ணனின் தாய்	भगवान कृष्ण की माता
+Mother of Lord Parasurama	பரசுராமனின் தாய்	भगवान परशुराम की माता
+Mother of the gods	தேவர்களின் தாய்	देवताओं की माता
+mother of the world	உலகின் தாய்	विश्व की माता
+Much praised	மிகப் போற்றப்பட்ட	बहुप्रशंसित
+music, melody	இசை, மெட்டு	संगीत, धुन
+Musk, fragrance	கஸ்தூரி, நறுமணம்	कस्तूरी, सुगंध
+Natural, effortless	இயற்கையான, எளிதான	स्वाभाविक और सहज
+Nectar of the gods	தேவர்களின் அமிர்தம்	देवताओं का अमृत
+Nectar of victory	வெற்றியின் அமிர்தம்	विजय का अमृत
+Nectar, ambrosia	அமிர்தம், தேவாமிர்தம்	अमृत, सुधा
+Nectar, divine calm	அமிர்தம், தெய்வ அமைதி	अमृत, दिव्य शांति
+Nectar, sweetness	அமிர்தம், இனிமை	अमृत, मधुरता
+New and fresh	புதுமையும் புத்துணர்வும்	नया और ताज़ा
+new and unique	புதியதும் தனித்துவமானதும்	नया और अद्वितीय
+New, ever fresh	புதியது, என்றும் புத்துணர்வானது	नया, सदा ताज़ा
+new, fresh	புதிய, புத்துணர்வான	नया, ताज़ा
+new, young	புதிய, இளமையான	नया, युवा
+night	இரவு	रात
+night, lord shiva	இரவு, சிவபெருமான்	रात, भगवान शिव
+Nightingale, songbird	இரவுப் பாடல் பறவை	कोयल, गाने वाला पक्षी
+noble and gentle	மேன்மையும் மென்மையும் கொண்ட	श्रेष्ठ और विनम्र
+Noble and honourable	மேன்மையும் கௌரவமும் கொண்ட	श्रेष्ठ और सम्मानित
+Noble woman	மேன்மையான பெண்	श्रेष्ठ स्त्री
+Noted, distinguished	புகழ்பெற்ற, சிறப்பான	प्रसिद्ध और प्रतिष्ठित
+Ocean	கடல்	महासागर
+ocean, river	கடல், ஆறு	समुद्र, नदी
+Of ancient wisdom	பண்டைய ஞானம் கொண்ட	प्राचीन ज्ञान का
+Of noble conduct	மேன்மையான நடத்தை கொண்ட	श्रेष्ठ आचरण वाला
+Of the mind	மனதின்	मन का
+Of the sky, celestial	வானின், தெய்வீக	आकाश की, दिव्य
+One who brings joy	மகிழ்ச்சி தருபவர்	आनंद देने वाला
+One who brings joy and contentment	மகிழ்ச்சியும் திருப்தியும் தருபவர்	आनंद और संतोष देने वाली
+One who brings light and awakening	ஒளியும் விழிப்புணர்வும் தருபவர்	प्रकाश और जागृति लाने वाला
+One who gives life	உயிர் அளிப்பவர்	जीवन देने वाला
+One who grows fame	புகழை வளர்ப்பவர்	यश बढ़ाने वाला
+One who has attained	அடைந்தவர்	प्राप्त करने वाला
+One who is initiated	தீட்சை பெற்றவர்	दीक्षित
+One who is red, dear	சிவந்த நிறத்தவர், அன்பானவர்	लाल, प्रिय
+One who is united	ஒன்றிணைந்தவர்	एकजुट व्यक्ति
+one who wears the tulsi	துளசி அணிபவர்	तुलसी धारण करने वाला
+One with auspicious signs	மங்கள அடையாளங்கள் கொண்டவர்	शुभ लक्षणों वाला
+One with good conduct	நல்ல நடத்தை கொண்டவர்	सदाचारी
+One, supreme	ஒரே பரம்பொருள்	एक, सर्वोच्च
+our chief	எங்கள் தலைவர்	हमारे मुखिया
+painting, art	சித்திரம், கலை	चित्रकला, कला
+Pandya king	பாண்டிய மன்னன்	पांड्य राजा
+Part of divine light	தெய்வ ஒளியின் பகுதி	दिव्य प्रकाश का अंश
+Part of glory	பெருமையின் பகுதி	गौरव का अंश
+part of lord shiva	சிவபெருமானின் பகுதி	भगवान शिव का अंश
+Part of love	அன்பின் பகுதி	प्रेम का अंश
+Part of sacred knowledge	புனித ஞானத்தின் பகுதி	पवित्र ज्ञान का अंश
+part of the divine	இறைவனின் பகுதி	दिव्य अंश
+part of the divine light	தெய்வப் பேரொளியின் பகுதி	दिव्य प्रकाश का अंश
+part of the sacred knowledge	புனித அறிவின் பகுதி	पवित्र ज्ञान का अंश
+part of the sun	சூரியனின் பகுதி	सूर्य का अंश
+patience and courage	பொறுமையும் துணிவும்	धैर्य और साहस
+peace	அமைதி	शांति
+peace and calm	சாந்தியும் அமைதியும்	शांति और स्थिरता
+Peace, tranquillity	அமைதி, சாந்தம்	शांति, सुकून
+Peaceful	அமைதியான	शांत
+peaceful and calm	அமைதியும் சாந்தமும்	शांत और स्थिर
+Peaceful prince	சாந்தமான இளவரசன்	शांत राजकुमार
+Peacock	மயில்	मोर
+Pearl of virtue	நற்பண்பின் முத்து	सद्गुण का मोती
+Penance, devotion	தவம், பக்தி	तपस्या, भक्ति
+Perfected	பூரணம் பெற்றவர்	सिद्ध
+Perfection, attainment	நிறைவு, அடைதல்	पूर्णता, प्राप्ति
+playful and graceful	விளையாட்டும் நளினமும் கொண்ட	चंचल और गरिमामय
+Playful and radiant	விளையாட்டும் ஒளியும் கொண்ட	चंचल और तेजस्वी
+Playful goddess	விளையாட்டுத்தனமான தேவி	चंचल देवी
+Playful prince	விளையாட்டுத்தனமான இளவரசன்	चंचल राजकुमार
+playful, divine drama	விளையாட்டான தெய்வ நாடகம்	चंचल दिव्य लीला
+Pleasant and beautiful	இனிமையும் அழகும் கொண்ட	सुखद और सुंदर
+Pleasant and charming	இனிமையும் கவர்ச்சியும் கொண்ட	सुखद और आकर्षक
+pleasant and lovely	இனிமையான, அழகிய	मनोहर और सुंदर
+Pleasant smile	இனிய புன்னகை	मधुर मुस्कान
+Pleasing and kind	இனிமையும் கருணையும்	प्रिय और दयालु
+Poet, learned man	புலவர், அறிஞர்	कवि, विद्वान
+poetry	கவித்துவம்	काव्य
+Poetry; a graceful literary creation	கவிதை; அழகிய இலக்கியப் படைப்பு	काव्य, सुंदर साहित्यिक रचना
+Pomegranate flower	மாதுளை மலர்	अनार का फूल
+Power of Lord Shiva	சிவபெருமானின் சக்தி	भगवान शिव की शक्ति
+prayer	பிரார்த்தனை	प्रार्थना
+precious gem	விலைமதிப்பற்ற ரத்தினம்	अनमोल रत्न
+Precious jewel	அரிய நகை	अनमोल रत्न
+Pride and glory	பெருமையும் மகிமையும்	गर्व और गौरव
+Prince of Lord Vishnu	விஷ்ணுவின் இளவரசன்	भगवान विष्णु के राजकुमार
+Princess, young girl	இளவரசி, இளம் பெண்	राजकुमारी, युवा कन्या
+progress and growth	முன்னேற்றமும் வளர்ச்சியும்	प्रगति और विकास
+prosperity and grace	செழிப்பும் அருளும்	समृद्धि और कृपा
+prosperity and growth	செழிப்பும் வளர்ச்சியும்	समृद्धि और विकास
+prosperity giver	செழிப்பை வழங்குபவர்	समृद्धि देने वाला
+prosperity, splendour	செழிப்பு, வைபவம்	समृद्धि, वैभव
+prosperity, wealth	செழிப்பு, செல்வம்	समृद्धि, धन
+Prosperous and learned	செழிப்பும் கல்வியும் கொண்ட	समृद्ध और विद्वान
+Prosperous and rich	செழிப்பும் செல்வமும் கொண்ட	समृद्ध और धनी
+Prosperous prince	செழிப்பான இளவரசன்	समृद्ध राजकुमार
+Prosperous queen	செழிப்பான அரசி	समृद्ध रानी
+Prosperous young man	செழிப்பான இளைஞன்	समृद्ध युवक
+Prosperous, alive	செழிப்பான, உயிர்ப்புள்ள	समृद्ध और जीवंत
+Protected by Lord Vishnu	விஷ்ணுவால் காக்கப்பட்டவர்	भगवान विष्णु द्वारा रक्षित
+protector of the earth	பூமியின் காப்பாளர்	पृथ्वी के रक्षक
+protector of the world	உலகின் காப்பாளர்	विश्व के रक्षक
+Protector, king	காப்பாளர், அரசன்	रक्षक, राजा
+pure and clear	தூய்மையும் தெளிவும்	शुद्ध और निर्मल
+pure and sacred	தூய்மையும் புனிதமும்	पवित्र और शुद्ध
+pure and virtuous	தூய்மையும் நற்பண்பும் கொண்ட	शुद्ध और सद्गुणी
+Pure and wise	தூய்மையும் ஞானமும் கொண்ட	पवित्र और बुद्धिमान
+Pure and wise mind	தூய ஞான மனம்	पवित्र और बुद्धिमान मन
+Pure in mind	மனத்தூய்மை	मन से पवित्र
+pure, truthful	தூய்மையான, உண்மையான	शुद्ध, सत्यवादी
+queen of love	அன்பின் அரசி	प्रेम की रानी
+queen of music	இசையின் அரசி	संगीत की रानी
+queen of prosperity	செழிப்பின் அரசி	समृद्धि की रानी
+Queen of stars	நட்சத்திரங்களின் அரசி	तारों की रानी
+queen of tamil	தமிழின் அரசி	तमिल की रानी
+quiet and calm	அமைதியான, சாந்தமான	शांत और स्थिर
+Radiance, beauty	ஒளிர்வு, அழகு	आभा, सौंदर्य
+radiance, brilliance	ஒளிர்வு, பிரகாசம்	आभा, चमक
+radiance, glow	ஒளிர்வு, சுடர்	आभा, चमक
+radiance, light	ஒளிர்வு, வெளிச்சம்	आभा, प्रकाश
+radiant	ஒளிரும்	तेजस्वी
+radiant and beautiful	ஒளிர்வும் அழகும் கொண்ட	तेजस्वी और सुंदर
+radiant and lovely	ஒளிர்வும் இனிமையும் கொண்ட	तेजस्वी और मनोहर
+radiant and splendid	ஒளிர்வும் சிறப்பும் கொண்ட	तेजस्वी और शानदार
+Radiant goddess	ஒளிரும் தேவி	तेजस्वी देवी
+Radiant king	ஒளிரும் அரசன்	तेजस्वी राजा
+Radiant like the moon	நிலவு போன்ற ஒளிர்வு	चंद्रमा जैसी तेजस्वी
+Radiant red	ஒளிரும் செம்மை	तेजस्वी लाल
+Radiant smile	ஒளிரும் புன்னகை	तेजस्वी मुस्कान
+Radiant star	ஒளிரும் நட்சத்திரம்	तेजस्वी तारा
+Radiant sun	ஒளிரும் சூரியன்	तेजस्वी सूर्य
+Radiant, the sun	ஒளிர்வான சூரியன்	तेजस्वी, सूर्य
+rain cloud	மழை மேகம்	वर्षा का बादल
+rain, monsoon	மழை, பருவ மழை	वर्षा, मानसून
+ray of light	ஒளிவீச்சு	प्रकाश की किरण
+Ray of the Sun	சூரிய ஒளிக்கதிர்	सूर्य की किरण
+Red hibiscus flower	செம்பருத்தி மலர்	लाल गुड़हल का फूल
+red lotus	செந்தாமரை	लाल कमल
+red, radiant	சிவந்த, ஒளிரும்	लाल, तेजस्वी
+red, radiant lakshmi	சிவந்த ஒளிரும் லட்சுமி	लाल तेजस्वी लक्ष्मी
+Resolute and wise	உறுதியும் ஞானமும் கொண்ட	दृढ़ और बुद्धिमान
+Respected lady	மதிப்புக்குரிய மங்கை	सम्मानित महिला
+Restless bird	அமைதியற்ற பறவை	चंचल पक्षी
+rich in beauty	அழகில் செழித்த	सौंदर्य से समृद्ध
+righteous and cheerful	நீதியும் மகிழ்ச்சியும் கொண்ட	धर्मी और प्रसन्न
+righteous chief	நீதியுள்ள தலைவர்	धर्मनिष्ठ मुखिया
+Risen, awakened	எழுச்சி பெற்ற, விழித்த	उगा हुआ, जागृत
+river water, pure	தூய நதி நீர்	शुद्ध नदी जल
+Rose flower	ரோஜா மலர்	गुलाब का फूल
+Row of lamps	விளக்கு வரிசை	दीपों की पंक्ति
+sacred basil	துளசி	पवित्र तुलसी
+sacred basil plant	துளசிச் செடி	पवित्र तुलसी का पौधा
+sacred bridge	புனித பாலம்	पवित्र सेतु
+Sacred grass	தர்ப்பைப் புல்	पवित्र दर्भ घास
+sacred hill	புனிதக் குன்று	पवित्र पर्वत
+sacred hill of wisdom	ஞான மலை	ज्ञान का पवित्र पर्वत
+sacred initiation	புனித தீட்சை	पवित्र दीक्षा
+sacred knowledge	புனித ஞானம்	पवित्र ज्ञान
+Sacred knowledge; altar of the Vedas	புனித ஞானம்; வேத பீடம்	पवित्र ज्ञान, वेदों की वेदी
+sacred mount kailash	புனித கைலாயமலை	पवित्र कैलाश पर्वत
+Sacred pilgrimage	புனித யாத்திரை	पवित्र तीर्थयात्रा
+sacred river	புண்ணிய நதி	पवित्र नदी
+sacred tradition	புனித மரபு	पवित्र परंपरा
+Sacred water	புனித நீர்	पवित्र जल
+sacred writing	புனித எழுத்து	पवित्र लेखन
+salutation, worship	வணக்கம், வழிபாடு	नमन, पूजा
+Sandalwood	சந்தனம்	चंदन
+Saviour goddess	காப்பாற்றும் தேவி	रक्षक देवी
+Screw-pine flower	தாழம்பூ	केवड़ा फूल
+Servant of Goddess Kali	காளி தேவியின் தொண்டர்	काली देवी के सेवक
+Sharp-eyed like a spear	வேல் போன்ற கூர்விழியாள்	भाले जैसी तीक्ष्ण दृष्टि
+sharp-witted	கூரிய அறிவுள்ள	तीक्ष्ण बुद्धि वाला
+sharp-witted girl	கூரிய அறிவுள்ள பெண்	तीक्ष्ण बुद्धि वाली लड़की
+Signal, sacred hint	சைகை, புனிதக் குறிப்பு	संकेत, पवित्र संकेत
+simple and innocent	எளிமையும் கற்பும் கொண்ட	सरल और भोला
+Singer, graceful	பாடகர், நளினமான	गायक, सुंदर
+Sita, consort of Rama	ராமனின் துணைவி சீதை	सीता, राम की पत्नी
+Sita, daughter of Janaka	ஜனகனின் மகள் சீதை	सीता, जनक की पुत्री
+skill and reasoning	திறமையும் பகுத்தறிவும்	कौशल और तर्क
+skill and talent	திறமையும் ஆற்றலும்	कौशल और प्रतिभा
+skill, excellence	திறமை, சிறப்பு	कौशल, उत्कृष्टता
+Skilled and brave	திறமையும் துணிவும்	कुशल और वीर
+skilled and clever	திறமையும் சாமர்த்தியமும் கொண்ட	कुशल और चतुर
+skilled and dexterous	திறமையும் கைத்திறமையும் கொண்ட	कुशल और निपुण
+skilled and expert	திறமையும் நிபுணத்துவமும் கொண்ட	कुशल और विशेषज्ञ
+Skilled and talented	திறமையும் மேதைமையும் கொண்ட	कुशल और प्रतिभाशाली
+Skilled musician	திறமையான இசைக்கலைஞர்	कुशल संगीतकार
+Skilled, able	திறமையுள்ள, ஆற்றலுள்ள	कुशल, समर्थ
+Skilled, clever	திறமையுள்ள, சாமர்த்தியமுள்ள	कुशल, चतुर
+Sky-like, divine	வானம் போன்ற, தெய்வீக	आकाश जैसा, दिव्य
+Slender and beautiful	மெல்லிய அழகு	सुडौल और सुंदर
+small creeper	சிறு கொடி	छोटी लता
+small script	சிறு எழுத்து	लघु लिपि
+Small, precious part	சிறிய, அரிய பகுதி	छोटा अनमोल अंश
+Smiling, cheerful	புன்னகையுடன், மகிழ்ச்சியான	मुस्कुराता, प्रसन्न
+Snow, winter	பனி, குளிர்காலம்	हिम, शीतकाल
+Snow-covered mountains	பனி மூடிய மலைகள்	बर्फ से ढके पर्वत
+soft humming	மெல்லிய முணுமுணுப்பு	मंद गुनगुनाहट
+soft humming, song	மெல்லிய முணுமுணுப்பு, பாடல்	मंद गुनगुनाहट, गीत
+Soft, gentle	மென்மையான, அமைதியான	कोमल, सौम्य
+Softly humming	மெல்ல முணுமுணுக்கும்	धीरे-धीरे गुनगुनाती
+son of lord rama	ராமபிரானின் மகன்	भगवान राम के पुत्र
+Song of the lute	யாழின் பாடல்	वीणा का गीत
+Songbird, nightingale	பாடல் பறவை, இரவுப் பாடல்	गाने वाला पक्षी, कोयल
+soul	ஆன்மா	आत्मा
+spear of lord murugan	முருகப்பெருமானின் வேல்	भगवान मुरुगन का भाला
+Spear of victory	வெற்றி வேல்	विजय का भाला
+Special, distinct	சிறப்பான, தனித்துவமான	विशेष, अलग
+spiritual and divine	ஆன்மீகமும் தெய்வீகமும்	आध्यात्मिक और दिव्य
+Spring prince	வசந்த இளவரசன்	वसंत राजकुमार
+spring season	வசந்த காலம்	वसंत ऋतु
+spring, cheerful	வசந்தம், மகிழ்ச்சி	वसंत, प्रसन्नता
+star	விண்மீன்	तारा
+Star, morning star	விண்மீன், விடிவெள்ளி	तारा, भोर का तारा
+star, tara	நட்சத்திரம், தாரை	तारा, तारा
+Steady and brave	உறுதியும் துணிவும்	दृढ़ और वीर
+stream, grace	ஓடை, அருள்	धारा, कृपा
+success and fame	வெற்றியும் புகழும்	सफलता और यश
+Sun and moon	சூரியனும் சந்திரனும்	सूर्य और चंद्रमा
+Sun god	சூரிய தேவன்	सूर्य देव
+Sun prince	சூரிய இளவரசன்	सूर्य राजकुमार
+Sun princess	சூரிய இளவரசி	सूर्य राजकुमारी
+sun's beloved	சூரியனின் அன்புக்குரியவர்	सूर्य के प्रिय
+Sun, radiant	சூரியன், ஒளிரும்	सूर्य, तेजस्वी
+Sun-like brightness	சூரியன் போன்ற ஒளி	सूर्य जैसी चमक
+Sun-like Lord Vishnu	சூரியன் போன்ற விஷ்ணு	सूर्य के समान भगवान विष्णु
+sunlight	பகல் வெளிச்சம்	सूर्यप्रकाश
+Superiority, a wish	மேன்மை, ஒரு விருப்பம்	श्रेष्ठता, इच्छा
+Supreme Lord	பரம்பொருள்	सर्वोच्च ईश्वर
+Surrendered to God	இறைவனிடம் சரணடைந்தவர்	ईश्वर को समर्पित
+sweet and pleasant	இனிமையும் மகிழ்வும் கொண்ட	मधुर और सुखद
+Sweet and tender	இனிமையும் மென்மையும் கொண்ட	मधुर और कोमल
+sweet fragrance	இனிய நறுமணம்	मधुर सुगंध
+Sweet smile	இனிய புன்னகை	मधुर मुस्कान
+Sweet speaker	இன்சொல் பேசுபவர்	मधुर वक्ता
+sweet tamil	இனிய தமிழ்	मधुर तमिल
+sweet tamil maiden	இனிய தமிழ் மங்கை	मधुर तमिल कन्या
+Sweet words	இனிய சொற்கள்	मधुर वचन
+sweet-natured	இனிய குணமுள்ள	मधुर स्वभाव वाला
+Sweet-spoken	இன்சொல்	मधुरभाषी
+sweet-voiced	இனிய குரலுள்ள	मधुर आवाज वाला
+Swing, delight	ஊஞ்சல், மகிழ்ச்சி	झूला, आनंद
+Tamil chieftain, leader	தமிழ்க் குறுநிலத் தலைவர்	तमिल सरदार, नेता
+tamil goddess name	தமிழ் தேவியின் பெயர்	तमिल देवी का नाम
+Tamil warrior, courage	தமிழ் போர்வீரன், துணிவு	तमिल योद्धा, साहस
+The ancient lute	பண்டைய யாழ்	प्राचीन वीणा
+The ancient Tamil king	பண்டைய தமிழ் அரசன்	प्राचीन तमिल राजा
+The auspicious Shiva	மங்கள சிவபெருமான்	मंगलमय भगवान शिव
+The best, a bull	சிறந்தது, எருது	श्रेष्ठ, वृषभ
+The best, celebrated	சிறந்தவர், புகழ்பெற்றவர்	श्रेष्ठ, प्रसिद्ध
+The bow of Lord Rama	ராமபிரானின் வில்	भगवान राम का धनुष
+The charioteer of love	அன்பின் தேரோட்டி	प्रेम के सारथी
+the compassionate lord	கருணையுள்ள இறைவன்	करुणामय भगवान
+The compassionate one	கருணையாளர்	करुणामय
+the conclusion of the vedas	வேதங்களின் முடிவு	वेदों का निष्कर्ष
+the cuckoo bird	குயில் பறவை	कोयल पक्षी
+the dawn	விடியல்	प्रभात
+The delightful moon	இனிய நிலவு	आनंददायक चंद्रमा
+The devoted disciple	பக்தியுள்ள சீடர்	भक्त शिष्य
+the earth	பூமி	पृथ्वी
+The earth, a stream	பூமி, ஓடை	पृथ्वी, धारा
+the earth, speech	பூமி, பேச்சு	पृथ्वी और वाणी
+the earth, wealth	பூமி, செல்வம்	पृथ्वी और धन
+The east	கிழக்கு	पूर्व
+The eye, Lord Vishnu	கண், விஷ்ணுபெருமான்	नेत्र, भगवान विष्णु
+the eyes	கண்கள்	आँखें
+The fierce goddess	உக்கிர தேவி	उग्र देवी
+The fierce Lord	உக்கிர இறைவன்	उग्र ईश्वर
+the fierce lord shiva	உக்கிர சிவபெருமான்	उग्र भगवान शिव
+the first	முதன்மையானவர்	प्रथम
+the first, primordial	முதல், ஆதி	प्रथम, आदिम
+the fourth pandava	நான்காவது பாண்டவன்	चौथा पांडव
+the full moon	முழு நிலவு	पूर्णिमा का चंद्रमा
+the full moon night	பௌர்ணமி இரவு	पूर्णिमा की रात
+the future	எதிர்காலம்	भविष्य
+the goddess	அம்மை	देवी
+The Goddess mother	தாய் தேவி	माता देवी
+The great emperor	பெரும் பேரரசர்	महान सम्राट
+The great leader	பெரும் தலைவர்	महान नेता
+The great Lord	பேரிறைவன்	महान ईश्वर
+the great lord shiva	பெரும் சிவபெருமான்	महान भगवान शिव
+The great Tamil grammarian	தமிழ் இலக்கண மேதை	महान तमिल व्याकरणाचार्य
+The horizon	தொடுவானம்	क्षितिज
+The living soul	உயிர்ப்புள்ள ஆன்மா	जीवित आत्मा
+the lotus	பங்கயம்	कमल
+The lotus flower	தாமரை மலர்	कमल का फूल
+the moon	நிலவு	चंद्रमा
+the moon, snow	நிலவு, பனி	चंद्रमा और हिम
+The nectar of immortality	அமரத்துவ அமிர்தம்	अमरत्व का अमृत
+The nectar of life	வாழ்வின் அமிர்தம்	जीवन का अमृत
+The noble bull	மேன்மையான எருது	श्रेष्ठ वृषभ
+the noblest one	மிக மேன்மையானவர்	सर्वश्रेष्ठ व्यक्ति
+the north star	வடமீன்	ध्रुव तारा
+the ocean	பெருங்கடல்	समुद्र
+The only daughter	ஒரே மகள்	एकमात्र पुत्री
+The painter	ஓவியர்	चित्रकार
+the pole star	துருவ நட்சத்திரம்	ध्रुव तारा
+the preserver god	காக்கும் இறைவன்	पालनकर्ता भगवान
+the righteous king	நீதியுள்ள அரசன்	धर्मात्मा राजा
+the rising sun	உதய சூரியன்	उगता हुआ सूर्य
+the sacred basil	புனித துளசி	पवित्र तुलसी
+the sacred om	புனித ஓம்	पवित्र ॐ
+the sacred scriptures	புனித நூல்கள்	पवित्र शास्त्र
+the sacred syllable	புனித அட்சரம்	पवित्र अक्षर
+The sacred syllable Om	புனித ஓம் அட்சரம்	पवित्र ओम अक्षर
+The spotless goddess	குறையற்ற தேவி	निर्मल देवी
+The spotless Lord	குறையற்ற இறைவன்	निर्मल ईश्वर
+the sun	சூரியன்	सूर्य
+the sun god	ஞாயிறு தேவன்	सूर्य देव
+The Sun, bright	சூரியன், பிரகாசமான	सूर्य, उज्ज्वल
+The Sun, gentle breeze	சூரியன், மெல்லிய தென்றல்	सूर्य, मंद समीर
+the sun, lord shiva	சூரியன், சிவபெருமான்	सूर्य और भगवान शिव
+the three realms	மூவுலகம்	तीन लोक
+the three worlds	மூன்று உலகங்கள்	तीन लोक
+the universe	அண்டம்	ब्रह्मांड
+The victorious one	வெற்றியாளர்	विजयी
+The vow-keeper	விரதம் காப்பவர்	व्रतधारी
+the whole, complete	முழுமையானது, நிறைவானது	संपूर्ण और पूर्ण
+the world	உலகம்	संसार
+The world, worldly wise	உலகம், உலக அறிவு	संसार, लोकव्यवहार में कुशल
+The Yamuna river	யமுனை நதி	यमुना नदी
+three mighty kings	மூன்று வலிமைமிக்க அரசர்கள்	तीन शक्तिशाली राजा
+Thrush bird, melodious	இன்குரல் பாடல் பறவை	कोयल पक्षी, मधुर स्वर
+Treasure of virtue	நற்பண்பின் பொக்கிஷம்	सद्गुण का खजाना
+Truly handsome	உண்மையிலேயே அழகான	सचमुच सुंदर
+trust	நம்பிக்கை	विश्वास
+truth	உண்மை	सत्य
+truthful	உண்மையான	सत्यवादी
+Ultimate wisdom; the conclusion of the Vedas	பரம ஞானம்; வேதங்களின் முடிவு	वेदों का सार, परम ज्ञान
+Unconquered, victorious	வெல்லப்படாத, வெற்றியாளர்	अजेय, विजयी
+union, meeting	இணைப்பு, சந்திப்பு	मिलन, भेंट
+unique and matchless	தனித்துவமான, ஒப்பற்ற	अद्वितीय और बेजोड़
+Unique, non-dual	தனித்துவமான, அத்வைத	अद्वितीय, अद्वैत
+United, capable	ஒன்றிணைந்த, திறமையுள்ள	एकजुट, समर्थ
+United, suited	ஒன்றிணைந்த, பொருத்தமான	एकजुट, उपयुक्त
+unity and harmony	ஒற்றுமையும் இணக்கமும்	एकता और सामंजस्य
+Vallikkanavan's consort	வள்ளிக்கணவனின் துணைவி	वल्ली, मुरुगन की पत्नी
+Valour	வீரம்	वीरता
+valour and bravery	வீரமும் துணிவும்	शौर्य और वीरता
+vast, great	பரந்த, பெரிய	विशाल, महान
+Very auspicious	மிக மங்களமான	अत्यंत शुभ
+Very bright	மிக ஒளிரும்	अत्यंत उज्ज्वल
+Very dear	மிக அன்பான	अत्यंत प्रिय
+Very dear one	மிக அன்புக்குரியவர்	अत्यंत प्रियजन
+Very pleasing, charming	மிக இனிமையான, கவர்ச்சியான	अत्यंत मनभावन और आकर्षक
+victorious	வெற்றி பெற்ற	विजयी
+victorious king	வெற்றி அரசன்	विजयी राजा
+victorious prince	வெற்றியுள்ள இளவரசன்	विजयी राजकुमार
+victorious protector	வெற்றி காப்பாளர்	विजयी रक्षक
+victory	வெற்றி	विजय
+Virtuous beauty	நற்பண்புள்ள அழகி	सद्गुणी सुंदरी
+Virtuous Lord Shiva	நற்பண்புள்ள சிவபெருமான்	सद्गुणी भगवान शिव
+wealth and prosperity	செல்வமும் செழிப்பும்	धन और समृद्धि
+wealth and virtue	செல்வமும் நல்லொழுக்கமும்	धन और सद्गुण
+wealth of learning	கல்விச் செல்வம்	विद्या का धन
+Wealthy	செல்வந்தர்	धनवान
+Well-born, noble	நல்ல குலத்தில் பிறந்த, மேன்மையான	कुलीन और श्रेष्ठ
+Well-mannered	நல்ல பண்புள்ள	शिष्ट
+Well-wisher	நலம் விரும்பி	शुभचिंतक
+White moon	வெள்ளை நிலவு	सफेद चंद्रमा
+wide-eyed goddess	அகன்ற விழி தேவி	विशाल नेत्रों वाली देवी
+Wife of Lord Kartikeya	கார்த்திகேயனின் துணைவி	कार्तिकेय की पत्नी
+wind, breeze	காற்று, தென்றல்	हवा, समीर
+Winter season	குளிர்காலம்	शीत ऋतु
+wisdom and courage	ஞானமும் துணிவும்	ज्ञान और साहस
+wisdom and discernment	ஞானமும் பகுத்தறிவும்	बुद्धि और विवेक
+Wisdom, discernment	ஞானம், பகுத்தறிவு	बुद्धि, विवेक
+wisdom, knowledge	ஞானம், அறிவு	बुद्धि, ज्ञान
+wise and intelligent	ஞானமும் அறிவும் கொண்ட	ज्ञानी और बुद्धिमान
+wise and noble	ஞானமும் மேன்மையும் கொண்ட	ज्ञानी और श्रेष्ठ
+wise and virtuous	ஞானமும் நற்பண்பும் கொண்ட	ज्ञानी और सद्गुणी
+Wise king	ஞானமிக்க அரசன்	ज्ञानी राजा
+wise sage (unisex)	ஞானமிக்க முனிவர் (இருபாலருக்கும்)	ज्ञानी ऋषि (उभयलिंगी)
+Wise sage woman	ஞானமிக்க பெண் முனிவர்	ज्ञानी ऋषिका
+Wise, intelligent woman	ஞானமும் அறிவும் கொண்ட பெண்	ज्ञानी और बुद्धिमान स्त्री
+wish, desire	ஆசை, விருப்பம்	इच्छा, अभिलाषा
+wish-fulfilling	விருப்பங்களை நிறைவேற்றும்	इच्छाएँ पूरी करने वाला
+wished-for child	வேண்டிய குழந்தை	मनचाहा बच्चा
+Witness, evidence	சாட்சி, ஆதாரம்	साक्षी, प्रमाण
+Worldly, wise	உலகறிவுள்ள, ஞானமுள்ள	सांसारिक ज्ञान और विवेक
+worship, prayer	வழிபாடு, பிரார்த்தனை	पूजा, प्रार्थना
+Worthy of worship	வழிபடத் தகுந்த	पूजा के योग्य
+writer, author	எழுத்தாளர், ஆசிரியர்	लेखक, रचनाकार
+written, inscribed	எழுதப்பட்ட, பொறிக்கப்பட்ட	लिखित, अंकित
+Yellow silk garment	மஞ்சள் பட்டு ஆடை	पीला रेशमी वस्त्र
+young and fresh	இளமையும் புத்துணர்வும்	युवा और ताज़ा
+Young and youthful	இளமையான, வாலிபமான	युवा और जोशीला
+Young maiden	இளம் மங்கை	युवा कन्या
+Young, tender	இளமையான, மென்மையான	युवा, कोमल
+Youthful	இளமையான	युवा
+youthful and bright	இளமையும் ஒளியும் கொண்ட	युवा और तेजस्वी
+Youthful and graceful	இளமையும் நளினமும் கொண்ட	युवा और गरिमामय
+Youthful prosperity	இளமைச் செழிப்பு	युवा समृद्धि
+
+Radiant, son of the Sun	ஒளிமிக்க, சூரியனின் மகன்	तेजस्वी, सूर्य के पुत्र
+Part of the sacred river Reva	புனித ரேவா நதியின் பகுதி	पवित्र रेवा नदी का अंश
+Interesting and pleasing	சுவாரசியமும் இனிமையும்	रोचक और मनभावन
+The radiant Sun	ஒளிமிக்க சூரியன்	तेजस्वी सूर्य

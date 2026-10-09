@@ -1,0 +1,1709 @@
+# ============================================================================
+# ASTRO SIVAM — Namakaran (baby naming) NAME BANK
+# ----------------------------------------------------------------------------
+# One row = one name suggestion shown on page 2 of the Vedic Namakaran report.
+#
+# COLUMNS (tab separated, exactly 5):
+#   1. akshara   The birth-star pada letter (Tamil) this name belongs to,
+#                exactly as it appears in server/astrology/babynames.ts.
+#   2. gender    M = boy, F = girl
+#   3. style     S = South Indian style, N = North Indian style
+#   4. name      Name in Roman script (this is what the report prints)
+#   5. meaning   Short meaning (keep under ~30 characters)
+#
+# The report shows, for every pada of the baby's birth star, up to 15 South
+# Indian names on the left and up to 15 North Indian names on the right, for
+# the baby's own gender. Add rows to extend a list; the page adapts.
+#
+# Rebuild the generated TypeScript + PHP banks with:
+#     node scripts/build_namakaran_bank.mjs
+# ============================================================================
+## சு  (Chu / Su)
+## சே  (Che / Se , Se / Say)
+## சோ  (Cho / So , So / Soh)
+## லா  (La)
+## லீ  (Lee / Li)
+## லூ  (Loo / Lu)
+## லே  (Le / Lay)
+## லோ  (Lo / Low)
+## அ  (A)
+## இ  (I / Ee)
+## உ  (U / Oo)
+## எ  (E / Ae)
+## ஒ  (O)
+## வா  (Vaa)
+## வீ  (Vee / Vi)
+## வு  (Vu / Woo)
+## வே  (Ve / Way)
+## வோ  (Vo / Woh)
+## கா  (Kaa , Gaa)
+## கீ  (Kee / Ki , Khee / Khi , Gee / Gi)
+## கு  (Ku / Koo)
+## க  (Gha / Kha)
+## ங  (Inga / Nga)
+## ச  (Cha / Chha)
+## கே  (Ke / Kay , Khe / Khay , Ge / Gay)
+## கோ  (Ko / Koh , Kho / Khoh , Go / Goh)
+## ஹா  (Haa)
+## ஹீ  (Hee / Hi)
+## ஹு  (Hu / Hoo)
+## ஹே  (He / Hay)
+## ஹோ  (Ho / Hoh)
+## டா  (Daa , Taa , Tha / Dha , Dhaa / Dha)
+## டீ  (Dee / Di , Tee / Ti)
+## டூ  (Doo / Du , Too / Tu)
+## டே  (De / Day , Te / Tay)
+## டோ  (Do / Doh , To / Toh)
+## மா  (Maa)
+## மீ  (Mee / Mi)
+## மூ  (Moo / Mu)
+## மே  (Me / May)
+## மோ  (Mo / Moh)
+## பா  (Paa , Baa , Phaa / Pha)
+## பீ  (Pee / Pi , Bee / Bi)
+## பூ  (Poo / Pu , Bhoo / Bu)
+## ஷா  (Sha)
+## ணா  (Na / Nna)
+## பே  (Pe / Pay , Bhe / Bay)
+## போ  (Po / Poh , Bho / Boh)
+## ரா  (Raa)
+## ரீ  (Ree / Ri)
+## ரூ  (Roo / Ru)
+## ரே  (Re / Ray)
+## ரோ  (Ro / Roh)
+## தா  (Thaa / Ta , Dhaa , Daa)
+## தீ  (Thee / Ti , Dee / Di)
+## தூ  (Thoo / Tu , Doo / Du)
+## தே  (They / Te , De / Day)
+## தோ  (Tho / Toh , Do / Doh)
+## நா  (Naa)
+## நீ  (Nee / Ni)
+## நூ  (Noo / Nu)
+## நே  (Ne / Nay)
+## நோ  (No / Noh)
+## யா  (Yaa)
+## யீ  (Yee / Yi)
+## யூ  (Yoo / Yu)
+## யே  (Ye / Yay)
+## யோ  (Yo / Yoh)
+## ஜா  (Jaa)
+## ஜீ  (Jee / Ji)
+## கூ  (Khoo / Khu , Goo / Gu)
+## சா  (Saa , Chaa)
+## சீ  (See / Si , Chee / Chi)
+## சூ  (Soo / Su)
+## த  (Tha / Ttha)
+## ஜ  (Jha / Za)
+## ஞ  (Nya / Tra)
+
+## சு
+சு	M	S	Sudhan	Wealth and virtue
+சு	M	S	Suresh	Lord of the celestials
+சு	M	S	Sutharsan	Handsome and virtuous
+சு	M	S	Suganthan	Fragrant, pleasing
+சு	M	S	Sundaram	Beautiful, auspicious
+சு	M	S	Subramanian	Fond of the divine
+சு	M	S	Suriyan	The Sun god
+சு	M	S	Sureshkumar	Lord of the celestials
+சு	M	S	Sukkinan	Noble and gentle
+சு	M	S	Sudharshan	Beautiful vision
+சு	M	N	Sumer	Very bright
+சு	M	N	Sunil	Deep blue, sapphire
+சு	M	N	Sudhir	Resolute and wise
+சு	M	N	Sumit	Good friend
+சு	M	N	Sushant	Calm and peaceful
+சு	M	N	Suyash	Success and fame
+சு	M	N	Suhas	Pleasant smile
+சு	M	N	Sukrit	Wise and virtuous
+சு	M	N	Suryansh	Part of the Sun
+சு	M	N	Sumedh	Wise and intelligent
+சு	F	S	Suganya	Sweet-natured
+சு	F	S	Sudha	Nectar, divine calm
+சு	F	S	Sumathi	Pure and wise mind
+சு	F	S	Sundari	Beautiful woman
+சு	F	S	Sujatha	Well-born, noble
+சு	F	S	Sukirtha	Good fame, auspicious
+சு	F	S	Supriya	Very dear
+சு	F	S	Sunitha	One with good conduct
+சு	F	S	Suvetha	Bright and fair
+சு	F	S	Subiksha	Prosperity and grace
+சு	F	S	Suthanthira	Freedom, liberty
+சு	F	N	Suman	Good-natured, calm
+சு	F	N	Sunita	Well-mannered
+சு	F	N	Sushma	Beautiful, good nature
+சு	F	N	Surbhi	Fragrance
+சு	F	N	Suhani	Pleasant and beautiful
+சு	F	N	Sukriti	Good deed, noble act
+சு	F	N	Sudiksha	Auspicious dedication
+சு	F	N	Sumedha	Wise, intelligent woman
+சு	F	N	Suryanshi	Ray of the Sun
+சு	M	N	Shubh	Auspicious
+சு	F	N	Sulekha	Good writing, eloquent
+சு	F	N	Sunanda	Very pleasing, charming
+
+## சே
+சே	M	S	Senthil	Lord Murugan, radiant
+சே	M	S	Selvan	Prosperous young man
+சே	M	S	Selvam	Wealth and prosperity
+சே	M	S	Sekaran	Lord Shiva
+சே	M	S	Sethupathi	Master of the bridge
+சே	M	S	Senthilvelan	Spear of Lord Murugan
+சே	M	S	Selvakumar	Prosperous prince
+சே	M	S	Sekar	Auspicious crest
+சே	M	S	Senthamilan	Sweet Tamil
+சே	M	S	Sedhuraman	Lord Rama of the bridge
+சே	M	N	Sekhar	Crest, Lord Shiva
+சே	M	N	Seshnath	Lord of serpents
+சே	M	N	Seshadri	Lord of the serpent hill
+சே	M	N	Setu	Sacred bridge
+சே	F	S	Seetha	Furrow, pure
+சே	F	S	Selvi	Respected lady
+சே	F	S	Selvarani	Prosperous queen
+சே	F	S	Seethalakshmi	Goddess Lakshmi
+சே	F	S	Senthamarai	Red lotus
+சே	F	S	Selvarasi	Queen of prosperity
+சே	F	S	Sembaruthi	Red hibiscus flower
+சே	F	N	Sejal	River water, pure
+சே	F	N	Seerat	Inner virtue
+சே	F	N	Sehaj	Natural, effortless
+சே	F	N	Seemanti	Lovely parting of hair
+சே	M	N	Chetan	Alive, conscious
+சே	F	N	Sevanti	A white chrysanthemum
+
+## சோ
+சோ	M	S	Somasundaram	Lord Shiva, beautiful
+சோ	M	S	Chozhan	Ancient Chola king
+சோ	M	S	Somanathan	Lord of the moon
+சோ	M	S	Chokkalingam	Lord of the thousand forms
+சோ	M	S	Somasundar	Handsome as the moon
+சோ	M	S	Solaippan	Lord of the groves
+சோ	M	S	Chozharasan	Chola king
+சோ	M	N	Somesh	Lord of the moon
+சோ	M	N	Sohan	Pleasant and charming
+சோ	M	N	Somnath	Lord of the moon
+சோ	M	N	Soham	Divine realization
+சோ	M	N	Sohit	Handsome and virtuous
+சோ	M	N	Someshwar	Lord of the moon
+சோ	F	S	Sobana	Radiant and beautiful
+சோ	F	S	Sobanambika	Goddess of radiance
+சோ	F	S	Sornambika	Goddess of gold
+சோ	F	S	Sokkammal	Graceful lady
+சோ	F	S	Sobana Devi	Radiant goddess
+சோ	F	N	Sonal	Golden
+சோ	F	N	Sonali	Golden and beautiful
+சோ	F	N	Somya	Gentle and calm
+சோ	F	N	Sohana	Pleasant and lovely
+சோ	F	N	Sonam	Fortunate, blessed
+
+## லா
+லா	M	S	Lavanyan	Graceful and handsome
+லா	M	S	Lakshmanan	Auspicious, devoted
+லா	M	S	Lalithan	Graceful and charming
+லா	M	S	Lakshminarayanan	Lord Vishnu with Lakshmi
+லா	M	S	Lakshan	Auspicious mark
+லா	M	S	Lakshmana	Devoted brother
+லா	M	N	Lakshay	Aim, goal
+லா	M	N	Lalit	Graceful and charming
+லா	M	N	Laxman	Auspicious
+லா	M	N	Laxmikant	Lord Vishnu
+லா	M	N	Lavesh	Small, precious part
+லா	M	N	Lav	Lava, son of Rama
+லா	F	S	Lavanya	Beauty and grace
+லா	F	S	Lakshmi	Goddess of wealth
+லா	F	S	Lalitha	Playful and graceful
+லா	F	S	Lakshana	Distinguished
+லா	F	S	Lakshmipriya	Dear to Lakshmi
+லா	F	S	Lalithambal	Graceful goddess
+லா	F	S	Lavanyasri	Graceful prosperity
+லா	F	S	Lathika	A delicate creeper
+லா	F	N	Laxmi	Goddess of fortune
+லா	F	N	Latika	Small creeper
+லா	F	N	Lalita	Charming, playful
+லா	F	N	Lakshita	Noted, distinguished
+லா	F	N	Lavisha	Loved and charming
+லா	F	N	Lajja	Modesty
+லா	F	N	Lavina	Beauty, charm
+
+## லீ
+லீ	M	S	Lingesan	Lord Shiva
+லீ	M	S	Lingeswaran	Lord of the Lingam
+லீ	M	S	Lingappan	Lord Shiva
+லீ	M	S	Lingarajan	Lord Shiva
+லீ	M	S	Leelavarman	Playful prince
+லீ	M	S	Leelakumaran	Graceful prince
+லீ	M	N	Leeladhar	Lord Vishnu
+லீ	M	N	Likhit	Written, inscribed
+லீ	M	N	Likhil	Learned
+லீ	F	S	Leelavathi	Playful goddess
+லீ	F	S	Leelambal	Graceful mother
+லீ	F	S	Lingeswari	Goddess of the Lingam
+லீ	F	S	Lipisha	Sacred writing
+லீ	F	S	Leelamani	Jewel of grace
+லீ	F	S	Leelavani	Graceful speech
+லீ	F	N	Lipika	Small script
+லீ	F	N	Lipi	Sacred writing
+லீ	F	N	Leela	Divine play
+லீ	F	N	Lila	Playful, divine drama
+லீ	F	N	Lilavati	Graceful and charming
+லீ	M	N	Liyansh	A little part
+
+## லூ
+லூ	M	S	Luhit	Bright red glow
+லூ	M	S	Luhith	Radiant red
+லூ	M	N	Luv	Son of Lord Rama
+லூ	M	N	Luvan	Handsome
+லூ	M	N	Luvansh	Part of love
+லூ	F	S	Lubna	Sweet fragrance
+லூ	F	S	Lukshana	Auspicious mark
+லூ	F	S	Lushika	Radiant
+லூ	F	N	Lunita	Bright and lovely
+லூ	F	N	Luvni	Beloved
+
+## லே
+லே	M	S	Lekan	Master of writing
+லே	M	S	Lekesh	Master of the arts
+லே	M	S	Leelakarthik	Playful and radiant
+லே	M	N	Lekhan	Writer, author
+லே	M	N	Lekhraj	King of writing
+லே	F	S	Lekha	Divine writing, star
+லே	F	S	Lekhashree	Wealth of learning
+லே	F	S	Lena	Bright, shining
+லே	F	N	Lekhita	Beautifully written
+லே	F	N	Lekhna	Fine writing
+லே	F	N	Leena	Devoted, soft
+
+## லோ
+லோ	M	S	Loganathan	Protector of the world
+லோ	M	S	Loganayagan	Leader of the world
+லோ	M	S	Lokesh	Lord of the world
+லோ	M	S	Lokeshwaran	Lord of the worlds
+லோ	M	S	Logan	Worldly, wise
+லோ	M	N	Loknath	Lord of the world
+லோ	M	N	Lopamudra	Wise sage (unisex)
+லோ	F	S	Lopamudra	Wise sage woman
+லோ	F	S	Lohitha	Red, radiant Lakshmi
+லோ	F	S	Logeshwari	Goddess of the world
+லோ	F	S	Lojini	Modest, graceful
+லோ	F	N	Lokeshi	Goddess of the world
+லோ	F	N	Lokshana	Distinguished
+லோ	F	N	Lona	Bright light
+லோ	M	N	Lochan	The eye, Lord Vishnu
+
+## அ
+அ	M	S	Arul	Divine grace
+அ	M	S	Anandhan	Joyful and blissful
+அ	M	S	Aravindhan	The lotus
+அ	M	S	Arun	The rising Sun
+அ	M	S	Azhagan	Handsome and charming
+அ	M	S	Anbu	Love and affection
+அ	M	S	Aadhavan	The Sun
+அ	M	S	Amudhan	The nectar of life
+அ	M	S	Arivazhagan	Wise king
+அ	M	S	Anbarasan	King of love
+அ	M	S	Arulmozhi	Blessed speech
+அ	M	N	Aarav	Peaceful and calm
+அ	M	N	Aditya	The Sun god
+அ	M	N	Ansh	Part of the divine
+அ	M	N	Arnav	The ocean
+அ	M	N	Abhay	Fearless
+அ	M	N	Akhil	Complete, whole
+அ	M	N	Anirudh	Boundless
+அ	M	N	Aryan	Noble and honourable
+அ	M	N	Advait	Unique, non-dual
+அ	M	N	Akshay	Immortal
+அ	M	N	Arjun	Bright and shining
+அ	M	N	Amit	Limitless
+அ	F	S	Anjali	An offering of devotion
+அ	F	S	Aarthi	Divine light
+அ	F	S	Abinaya	Graceful expression
+அ	F	S	Amudha	Nectar, sweetness
+அ	F	S	Anitha	Grace and favour
+அ	F	S	Aruna	The dawn
+அ	F	S	Aadhira	Lightning, first light
+அ	F	S	Anbarasi	Queen of love
+அ	F	S	Agalya	A spotless beauty
+அ	F	S	Anusiya	Kind and generous
+அ	F	S	Amirthavalli	A goddess of nectar
+அ	F	N	Aanya	Grace and favour
+அ	F	N	Aaradhya	Worthy of worship
+அ	F	N	Aditi	Mother of the gods
+அ	F	N	Ananya	Unique and matchless
+அ	F	N	Akshara	Imperishable
+அ	F	N	Anika	Graceful
+அ	F	N	Aadya	The first, primordial
+அ	F	N	Avni	The earth
+அ	F	N	Anushka	Radiant
+அ	F	N	Amrita	The nectar of immortality
+அ	F	N	Aisha	Prosperous, alive
+
+## இ
+இ	M	S	Ilango	A youthful prince
+இ	M	S	Ilamaran	A youthful warrior
+இ	M	S	Ilavarasan	A young prince
+இ	M	S	Iniyan	Sweet-natured
+இ	M	S	Ilakkiyan	A literary scholar
+இ	M	S	Isaiarasu	King of music
+இ	M	S	Ilayarasan	A young king
+இ	M	S	Iravan	A valiant warrior
+இ	M	N	Ishaan	The Sun, Lord Shiva
+இ	M	N	Ishwar	God, the supreme Lord
+இ	M	N	Indrajit	Conqueror of Indra
+இ	M	N	Ikshvaku	Ancestor of Lord Rama
+இ	M	N	Inderjit	Conqueror of the gods
+இ	M	N	Indubhushan	Moon-adorned Lord Shiva
+இ	F	S	Iniya	Sweet and pleasant
+இ	F	S	Ilakkiya	Literature, poetry
+இ	F	S	Ilamathi	A young moon
+இ	F	S	Inbavalli	A lovable woman
+இ	F	S	Isaiyarasi	Queen of music
+இ	F	S	Inbakodi	Sweet and tender
+இ	F	S	Inbavathi	Full of love
+இ	F	N	Isha	Consort of Lord Shiva
+இ	F	N	Ishita	Superiority, a wish
+இ	F	N	Ira	The earth
+இ	F	N	Indira	Goddess Lakshmi
+இ	F	N	Indu	The moon
+இ	F	N	Ipsita	A wished-for child
+இ	F	N	Ishani	Goddess Parvati
+இ	F	N	Ila	The earth, speech
+இ	M	N	Ivaan	Radiant, the sun
+
+## உ
+உ	M	S	Udhayan	The rising Sun
+உ	M	S	Uthaman	The noblest one
+உ	M	S	Ulaganathan	Protector of the world
+உ	M	S	Udhayakumar	A rising prince
+உ	M	S	Umapathy	A ruling lord
+உ	M	S	Uthayakumaran	A rising prince
+உ	M	S	Ulagan	The world, worldly wise
+உ	M	N	Uday	The dawn
+உ	M	N	Utkarsh	Excellence
+உ	M	N	Ujjwal	Bright and radiant
+உ	M	N	Umang	Enthusiasm
+உ	M	N	Udit	Risen, awakened
+உ	M	N	Umesh	Lord of Uma
+உ	M	N	Utpal	The lotus
+உ	M	N	Ullas	Joy and delight
+உ	F	S	Uma	Goddess Parvati
+உ	F	S	Usha	The dawn
+உ	F	S	Udhaya	The dawn
+உ	F	S	Usharani	A queen of dawn
+உ	F	S	Umamaheswari	Consort of Lord Shiva
+உ	F	S	Uthra	Highly noble
+உ	F	S	Ulagammal	Mother of the world
+உ	F	N	Upasana	Devoted worship
+உ	F	N	Urvashi	A celestial nymph
+உ	F	N	Urmila	Enchantress, devoted wife
+உ	F	N	Urvi	The earth
+உ	F	N	Ujjwala	Bright and luminous
+உ	F	N	Unnati	Progress and growth
+உ	F	N	Uttara	The north star
+உ	F	N	Upasna	Devout meditation
+
+## எ
+எ	M	S	Ezhilarasan	A king of beauty
+எ	M	S	Elango	A prince
+எ	M	S	Elangovan	A handsome prince
+எ	M	S	Ezhilan	A beautiful young man
+எ	M	S	Eesan	Lord Shiva
+எ	M	S	Ethirajan	A noble king
+எ	M	S	Ekambaram	Lord Shiva of Kanchi
+எ	M	S	Ezhilmaran	A handsome youth
+எ	M	N	Eklavya	The devoted disciple
+எ	M	N	Ekansh	The whole, complete
+எ	M	N	Eshan	Lord Shiva
+எ	M	N	Eknath	A revered saint
+எ	M	N	Ekagra	Focused and attentive
+எ	M	N	Ekam	One, supreme
+எ	F	S	Ezhil	Beauty and grace
+எ	F	S	Ezhilarasi	A queen of beauty
+எ	F	S	Eeswari	Goddess Parvati
+எ	F	S	Elavarasi	A young princess
+எ	F	S	Ezhilnila	A beautiful moon
+எ	F	S	Elakkiya	Literature and learning
+எ	F	N	Esha	Consort of Lord Shiva
+எ	F	N	Ekta	Unity and harmony
+எ	F	N	Eshita	Desired, superior
+எ	F	N	Eesha	The goddess
+எ	F	N	Ekaja	The only daughter
+
+## ஒ
+ஒ	M	S	Oviyan	The painter
+ஒ	M	N	Om	The sacred syllable
+ஒ	M	N	Omkar	The sacred Om
+ஒ	M	N	Ojas	Brightness, vitality
+ஒ	M	N	Omprakash	Light of Om
+ஒ	M	N	Omkarnath	Lord of the Om
+ஒ	M	N	Ojasvin	Full of vitality
+ஒ	F	S	Oviya	Graceful as art
+ஒ	F	S	Oviammal	Artistic goddess
+ஒ	F	N	Ojaswini	Full of vitality
+ஒ	F	N	Oorja	Energy and strength
+ஒ	F	N	Ojasvi	Bright and vital
+ஒ	F	N	Oshi	A lovely girl
+ஒ	M	N	Omesh	Lord of Om
+ஒ	F	N	Omkari	Goddess of Om
+
+## வா
+வா	M	S	Vasanthan	Spring season
+வா	M	S	Valavan	Clever and skilled
+வா	M	S	Vaanavan	Sky-like, divine
+வா	M	S	Varadhan	Giver of boons
+வா	M	S	Vaithianathan	Lord of medicine
+வா	M	S	Vasanthakumar	Spring prince
+வா	M	S	Vallavan	Skilled and brave
+வா	M	N	Varun	Lord of the waters
+வா	M	N	Vansh	Lineage, family
+வா	M	N	Vardhaan	Prosperity giver
+வா	M	N	Vaibhav	Prosperity, splendour
+வா	M	N	Vatsal	Affectionate
+வா	M	N	Varad	Bestower of boons
+வா	F	S	Vaishnavi	Goddess Lakshmi
+வா	F	S	Vasanthi	Spring, cheerful
+வா	F	S	Valli	Vallikkanavan's consort
+வா	F	S	Vasundhari	Goddess of the earth
+வா	F	S	Vaanathi	Of the sky, celestial
+வா	F	N	Vani	Goddess Saraswati
+வா	F	N	Vaishali	Ancient city name
+வா	F	N	Vandana	Salutation, worship
+வா	F	N	Varsha	Rain, monsoon
+வா	F	N	Varuna	Goddess of the waters
+வா	F	N	Vaidehi	Sita, consort of Rama
+வா	M	S	Vasudevan	Lord Krishna
+வா	M	S	Varadharajan	Lord Vishnu
+வா	M	S	Vallinayagam	Lord Murugan
+வா	M	N	Vasudev	Lord Krishna
+வா	F	S	Vaijayanthi	Garland of victory
+வா	F	S	Valarmathi	Radiant like the moon
+வா	F	N	Vasumathi	The earth, wealth
+வா	F	N	Vatsala	Loving and affectionate
+
+## வீ
+வீ	M	S	Veeramani	Brave jewel
+வீ	M	S	Veeran	Brave warrior
+வீ	M	S	Vignesh	Lord Ganesha
+வீ	M	S	Vigneshwaran	Lord of obstacles
+வீ	M	S	Vijayan	Victorious
+வீ	M	S	Veerapandian	Brave Pandiya king
+வீ	M	S	Vidhya	Knowledge
+வீ	M	N	Vihaan	Dawn, morning
+வீ	M	N	Vivaan	Full of life
+வீ	M	N	Vikram	Valour
+வீ	M	N	Vijay	Victory
+வீ	M	N	Vishesh	Special, distinct
+வீ	M	N	Vinay	Modesty, Lord Ganesha
+வீ	M	N	Vishwas	Faith, trust
+வீ	F	S	Vidhya	Knowledge, learning
+வீ	F	S	Vijayalakshmi	Goddess of victory
+வீ	F	S	Vishnupriya	Beloved of Lord Vishnu
+வீ	F	S	Veeralakshmi	Brave Lakshmi
+வீ	F	S	Visalakshi	Wide-eyed goddess
+வீ	F	N	Vidhi	Destiny, fate
+வீ	F	N	Vidya	Wisdom, knowledge
+வீ	F	N	Vibha	Bright light
+வீ	F	N	Vira	Brave, heroic
+வீ	F	N	Vishakha	A star of the zodiac
+வீ	M	S	Viswanathan	Lord of the universe
+வீ	M	S	Vijayakumar	Victorious prince
+வீ	M	N	Vinayak	Lord Ganesha
+வீ	M	N	Vishal	Vast, great
+வீ	M	N	Vivek	Wisdom, discernment
+வீ	F	N	Vidushi	Learned woman
+வீ	F	N	Vineeta	Modest and humble
+வீ	M	N	Vishnu	The preserver god
+வீ	F	N	Vidhatri	Creator, sustainer
+
+## வு
+வு	M	S	Vuthaman	A noble soul
+
+## வே
+வே	M	S	Venkatesan	Lord of Venkata hills
+வே	M	S	Velmurugan	Lord Murugan's spear
+வே	M	S	Vetrivel	Spear of victory
+வே	M	S	Velan	Lord Murugan
+வே	M	S	Vedhagiri	Sacred hill of wisdom
+வே	M	S	Vedhanayagam	Lord of the Vedas
+வே	M	N	Vedant	The conclusion of the Vedas
+வே	M	N	Vedansh	Part of the sacred knowledge
+வே	M	N	Vedprakash	Light of the Vedas
+வே	M	N	Vedh	Sacred knowledge
+வே	F	S	Velvizhi	Sharp-eyed like a spear
+வே	F	S	Vedhavalli	A goddess of wisdom
+வே	F	S	Vethika	A wise girl
+வே	F	S	Vedhalakshmi	Goddess of sacred wisdom
+வே	F	S	Vedhavathi	Full of sacred knowledge
+வே	F	N	Vedika	Altar of the Vedas
+வே	F	N	Vedha	Sacred knowledge
+வே	F	N	Vedanshi	Part of sacred knowledge
+வே	F	N	Veda	The sacred scriptures
+வே	F	S	Venmathi	Moonlight, radiant
+வே	F	S	Vennila	White moon
+வே	F	N	Vedavati	A noble princess
+
+## கா
+கா	M	S	Karthikeyan	Lord Murugan
+கா	M	S	Kaarthik	Bestower of courage
+கா	M	S	Kavin	Beautiful, handsome
+கா	M	S	Kalyanasundaram	Lord Shiva, ever auspicious
+கா	M	S	Kamalakannan	Lord Vishnu, lotus-eyed
+கா	M	S	Kathiravan	The Sun
+கா	M	S	Kalaiselvan	Artistic and prosperous
+கா	M	S	Kalaivanan	Full of art
+கா	M	S	Karthikraja	Radiant king
+கா	M	N	Kartik	Bestower of courage
+கா	M	N	Kaushal	Skill, excellence
+கா	M	N	Kaustubh	Divine gem
+கா	M	N	Kanishk	An ancient king
+கா	M	N	Kailash	Sacred Mount Kailash
+கா	M	N	Karan	Skilled, clever
+கா	M	N	Kalpesh	Lord of wishes
+கா	M	N	Kamesh	Lord of desire
+கா	F	S	Kavitha	A poem
+கா	F	S	Kalaiselvi	Goddess of arts
+கா	F	S	Kalyani	Auspicious woman
+கா	F	S	Kanimozhi	Sweet words
+கா	F	S	Kayalvizhi	Fish-eyed beauty
+கா	F	S	Kasthuri	Fragrance, musk
+கா	F	S	Karpagam	Wish-fulfilling
+கா	F	S	Kalaimagal	Goddess of arts
+கா	F	S	Kalaivani	Goddess of arts
+கா	F	N	Kavya	Poetry
+கா	F	N	Kanishka	Golden, youthful
+கா	F	N	Kalpana	Imagination
+கா	F	N	Kashish	Attraction, charm
+கா	F	N	Kajal	Kohl, eyeliner
+கா	F	N	Kamini	Lovely woman
+
+## கீ
+கீ	F	N	Kirti	Fame and honour
+கீ	M	S	Keerthan	Devotional song
+கீ	M	S	Keerthivasan	Famous and prosperous
+கீ	M	S	Kirubakaran	Blessing of grace
+கீ	M	S	Kiruthik	Bestower of courage
+கீ	M	S	Kiran	Ray of light
+கீ	M	S	Kishore	Young and youthful
+கீ	M	N	Kirtan	Devotional song
+கீ	M	N	Kishor	Youthful
+கீ	M	N	Kiyansh	Part of glory
+கீ	M	N	Kirtivardhan	One who grows fame
+கீ	M	N	Kian	Grace of God
+கீ	F	S	Kirthika	A star of the zodiac
+கீ	F	S	Keerthana	Devotional song
+கீ	F	S	Kiruthiga	Bestower of courage
+கீ	F	S	Kiran	Ray of light
+கீ	F	N	Kishori	Young maiden
+கீ	F	N	Kinnari	Celestial musician
+கீ	F	N	Kiara	Bright and clear
+கீ	F	N	Kritika	A star of the zodiac
+
+## கு
+கு	M	S	Kumaran	Lord Murugan
+கு	M	S	Kumaravelan	Lord Murugan's spear
+கு	M	S	Kumaresan	Lord Murugan
+கு	M	S	Kugan	Lord Murugan
+கு	M	S	Gunanithi	Treasure of virtue
+கு	M	S	Gunasekaran	Virtuous Lord Shiva
+கு	M	S	Gurusamy	Divine teacher
+கு	M	S	Gurunathan	Divine teacher
+கு	M	S	Kumanan	Wise and noble
+கு	M	N	Kunal	Lotus
+கு	M	N	Kush	Son of Lord Rama
+கு	M	N	Kushagra	Sacred grass
+கு	M	N	Gulshan	Flower garden
+கு	M	N	Gulab	Rose flower
+கு	M	N	Gunwant	Full of virtue
+கு	M	N	Gurudutt	Granted by the guru
+கு	F	S	Kumari	Princess, young girl
+கு	F	S	Kumudha	Lotus flower
+கு	F	S	Gunavathy	Full of virtue
+கு	F	S	Gunasundari	Virtuous beauty
+கு	F	S	Kunjamma	Little darling
+கு	F	S	Kumudhavalli	Lotus creeper
+கு	F	N	Kumud	Lotus
+கு	F	N	Gunjan	Soft humming
+கு	F	N	Gulnaar	Pomegranate flower
+கு	F	N	Kuhu	Cuckoo's call
+கு	F	N	Kumudini	A lotus pond
+கு	F	N	Kushi	Happiness
+கு	F	N	Khushi	Happiness
+
+## க
+க	M	S	Kannan	Lord Krishna
+க	M	S	Kabilan	Poet, learned man
+க	M	S	Kandan	Lord Murugan
+க	M	S	Kanagaraj	King of the forest
+க	M	S	Kalidasan	Servant of Goddess Kali
+க	M	S	Kalimuthu	Pearl of virtue
+க	M	S	Kanmani	Precious gem
+க	M	S	Karpooram	Camphor, pure
+க	M	N	Kabir	Great, saintly poet
+க	M	N	Kamal	Lotus
+க	M	N	Kapil	An ancient sage
+க	M	N	Ghanashyam	Dark as a cloud, Krishna
+க	M	N	Khanjan	Restless bird
+க	M	N	Ghanendra	Lord of the clouds
+க	F	S	Kamala	Lotus flower
+க	F	S	Kamakshi	Goddess with loving eyes
+க	F	S	Karpagam	Wish-fulfilling
+க	F	S	Kalaivani	Goddess of arts
+க	F	S	Kanmani	Precious gem
+க	F	S	Kalaichelvi	Goddess of arts
+க	F	N	Kanika	Golden
+க	F	N	Kasturi	Musk, fragrance
+க	F	N	Kajri	A monsoon melody
+க	F	N	Kamini	Lovely woman
+க	F	N	Kalyani	Auspicious woman
+
+## ங
+ங	M	S	Nganesan	Lord of the varga sound
+ங	M	N	Nagesh	Lord of serpents
+ங	F	S	Nganeswari	Goddess of the varga sound
+ங	F	N	Nagina	Jewel
+
+## ச
+ச	M	S	Shanmugam	Lord Murugan
+ச	M	S	Chandran	The Moon
+ச	M	S	Sankar	Lord Shiva
+ச	M	S	Sathish	Lord of virtue
+ச	M	S	Saravanan	Lord Murugan
+ச	M	S	Chandrasekar	Lord of the moon
+ச	M	S	Sathyaseelan	Of noble conduct
+ச	M	S	Shanthakumar	Peaceful prince
+ச	M	N	Chandan	Sandalwood
+ச	M	N	Charan	Feet of the Lord
+ச	M	N	Chaitanya	Divine consciousness
+ச	M	N	Chandresh	Lord of the moon
+ச	M	N	Chatur	Clever and wise
+ச	F	S	Chandra	Moonlight
+ச	F	S	Chandrika	Moonlight, radiant
+ச	F	S	Saranya	Surrendered to God
+ச	F	S	Savitha	The Sun, bright
+ச	F	S	Sangeetha	Music, melody
+ச	F	S	Chandrakala	Moonbeam
+ச	F	S	Santhiya	Peace and calm
+ச	F	N	Charu	Beautiful, graceful
+ச	F	N	Charvi	Beautiful woman
+ச	F	N	Chhavi	Radiance, beauty
+ச	F	N	Chandni	Moonlight
+ச	F	N	Chameli	Jasmine flower
+
+## கே
+கே	M	N	Keshav	Lord Krishna
+கே	M	S	Kesavan	Lord Vishnu
+கே	M	S	Kesari	Lion, brave
+கே	M	S	Kesavaraj	Lord Vishnu
+கே	M	S	Ketharan	Lord of the field
+கே	M	S	Kesavakumar	Prince of Lord Vishnu
+கே	M	N	Ketan	Banner, symbol
+கே	M	N	Keyur	Armlet, ornament
+கே	M	N	Keshavnath	Lord Krishna
+கே	F	S	Kethaki	Screw-pine flower
+கே	F	S	Keshavi	Goddess Lakshmi
+கே	F	S	Kethana	Graceful
+கே	F	S	Kesini	Lovely haired
+கே	F	N	Ketaki	Screw-pine flower
+கே	F	N	Keya	A fragrant flower
+கே	F	N	Keshni	Beautiful tresses
+கே	F	N	Kesika	Graceful
+கே	M	N	Kedar	Lord Shiva, mountain
+கே	F	S	Kayalvizhi	Eyes like the kayal fish
+
+## கோ
+கோ	M	S	Kothandaraman	Lord Rama, wielder of the bow
+கோ	M	S	Kothandapani	Lord Rama
+கோ	M	S	Kovalan	A celebrated hero
+கோ	M	S	Kovendhan	King, ruler
+கோ	M	S	Kozhandai	Little child
+கோ	M	S	Komalan	Gentle and handsome
+கோ	M	N	Gopal	Lord Krishna
+கோ	M	N	Govind	Lord Krishna
+கோ	M	N	Gokul	Krishna's childhood home
+கோ	M	N	Kovid	Learned, wise
+கோ	M	N	Gopesh	Lord of the cowherds
+கோ	M	N	Komal	Soft, gentle
+கோ	F	S	Kothai	A name of Goddess Andal
+கோ	F	S	Kokila	The cuckoo bird
+கோ	F	S	Komalavalli	Gentle creeper
+கோ	F	S	Kovai	A Tamil name
+கோ	F	S	Kogila	Melodious bird
+கோ	F	N	Gopika	A cowherd maiden
+கோ	F	N	Komali	Gentle and sweet
+கோ	F	N	Koyal	The cuckoo bird
+
+## ஹா
+ஹா	M	S	Hariharan	Lord Vishnu and Shiva
+ஹா	M	S	Harish	Lord Vishnu
+ஹா	M	S	Harikrishnan	Lord Krishna
+ஹா	M	S	Hariprasad	Blessed by Lord Vishnu
+ஹா	M	S	Hanumanthan	Devoted to Lord Rama
+ஹா	M	S	Harivarman	Protected by Lord Vishnu
+ஹா	M	N	Harsh	Happiness, joy
+ஹா	M	N	Harshit	One who brings joy
+ஹா	M	N	Hardik	From the heart
+ஹா	M	N	Harendra	Lord Vishnu, Indra
+ஹா	M	N	Hansraj	King of swans
+ஹா	M	N	Harshad	Bestower of joy
+ஹா	F	S	Harini	A deer, graceful
+ஹா	F	S	Haritha	Green, fresh
+ஹா	F	S	Hasini	Smiling, cheerful
+ஹா	F	S	Harshitha	Full of joy
+ஹா	F	S	Hareni	Graceful
+ஹா	F	N	Harshita	Full of joy
+ஹா	F	N	Hansika	Beautiful swan
+ஹா	F	N	Harshada	Bestower of joy
+ஹா	F	N	Hansa	A swan
+ஹா	F	N	Hastalekha	Fine handwriting
+
+## ஹீ
+ஹீ	M	S	Hiranmayan	Golden, radiant
+ஹீ	M	S	Hitesh	Well-wisher
+ஹீ	M	S	Himesh	Lord of the snow
+ஹீ	M	N	Himanshu	The moon, snow
+ஹீ	M	N	Hiten	Well-wisher
+ஹீ	M	N	Hitansh	Well-wisher
+ஹீ	M	N	Hiresh	Lord of diamonds
+ஹீ	F	S	Hima	Snow, winter
+ஹீ	F	S	Hiranmayi	Golden woman
+ஹீ	F	N	Himani	Snow-covered mountains
+ஹீ	F	N	Hiral	Diamond, radiant
+ஹீ	F	N	Hina	Henna, fragrance
+ஹீ	M	S	Himavan	Lord of the Himalayas
+ஹீ	F	S	Himaja	Daughter of the snows
+ஹீ	F	S	Hiranya	Golden, wealth
+
+## ஹு
+ஹு	M	N	Hukum	Authority, command
+ஹு	M	N	Hunar	Skill and talent
+ஹு	M	N	Hulash	Joy and delight
+ஹு	F	N	Huma	A celestial bird
+ஹு	F	N	Hunarpreet	Love of talent
+
+## ஹே
+ஹே	M	S	Hemanthan	Lord of gold
+ஹே	M	S	Hemachandran	Golden moon
+ஹே	M	S	Heman	Golden one
+ஹே	M	N	Hemanth	Lord of gold, winter
+ஹே	M	N	Hemant	Winter season
+ஹே	M	N	Hemraj	Golden king
+ஹே	F	S	Hema	Golden, Goddess Lakshmi
+ஹே	F	S	Hemalatha	Golden creeper
+ஹே	F	S	Hemavathi	Golden, radiant
+ஹே	F	S	Hemasri	Golden prosperity
+ஹே	F	S	Hema Malini	Golden garland
+ஹே	F	N	Hetal	Cheerful, friendly
+ஹே	F	N	Hemlata	Golden creeper
+ஹே	F	N	Hemangi	Golden-bodied
+ஹே	F	N	Hemakshi	Golden-eyed
+
+## ஹோ
+ஹோ	M	S	Hovindan	Lord Vishnu
+ஹோ	M	N	Hosh	Joy, delight
+ஹோ	F	S	Homa	A sacred offering
+ஹோ	F	N	Hoshi	Radiant star
+
+## டா
+டா	M	S	Dhanasekaran	Lord of wealth
+டா	M	S	Dakshan	Skilled, able
+டா	M	S	Dayalan	The compassionate one
+டா	M	S	Dharman	Embodiment of righteousness
+டா	M	N	Daksh	Capable, excellent
+டா	M	N	Darsh	Divine sight
+டா	M	N	Dhanraj	Lord of wealth
+டா	M	N	Daivik	Divine
+டா	F	S	Damayanthi	Noble woman
+டா	F	S	Dayamayi	Full of compassion
+டா	F	N	Damini	Lightning, bright
+டா	F	N	Darshana	Divine sight
+டா	F	N	Dakshita	Skilled and talented
+டா	M	N	Dharmesh	Lord of righteousness
+டா	F	S	Datchayani	Daughter of Daksha
+டா	F	S	Daya	Compassion, mercy
+
+## டீ
+டீ	M	S	Dinesh	Lord of the day, Sun
+டீ	M	S	Dineshkumar	Lord of the day
+டீ	M	S	Divakaran	The Sun
+டீ	M	S	Deepak	Lamp of light
+டீ	M	S	Dileepan	Protector, king
+டீ	M	N	Divyansh	Part of the divine light
+டீ	M	N	Dilip	Protector of the world
+டீ	M	N	Divit	Immortal, divine
+டீ	M	N	Dinkar	The Sun
+டீ	F	S	Divya	Divine, heavenly
+டீ	F	S	Divyadharshini	Beautiful divine sight
+டீ	F	S	Deepa	Light, lamp
+டீ	F	S	Divyabharathi	Divine speech
+டீ	F	S	Deepthi	Light, radiance
+டீ	F	S	Dilsha	Radiant smile
+டீ	F	N	Divyanshi	Part of the divine light
+டீ	F	N	Diksha	Sacred initiation
+டீ	F	N	Divisha	Divine blessing
+டீ	F	N	Dipti	Illumination
+டீ	F	N	Deepali	Row of lamps
+டீ	F	N	Divija	Born of the divine
+டீ	F	N	Disha	Direction, guidance
+டீ	F	N	Divyanka	Divine glow
+டீ	F	N	Dikshita	One who is initiated
+டீ	F	N	Dimpal	Dimple, cheerful
+டீ	F	S	Divyashree	Divine radiance
+
+## டூ
+டூ	M	S	Durai	Chief, leader
+டூ	M	S	Duraisamy	Our chief
+டூ	M	S	Duraiswamy	Our chief
+டூ	M	S	Dushyanthan	Destroyer of evil
+டூ	M	S	Durgaprasad	Blessed by Goddess Durga
+டூ	M	N	Dushyant	Destroyer of evil
+டூ	M	N	Durajan	Lord of the age
+டூ	F	S	Durgadevi	Goddess Durga
+டூ	F	S	Duraimozhi	Sweet speaker
+டூ	F	N	Durga	Goddess Durga
+டூ	F	N	Durgawati	Devoted to Goddess Durga
+டூ	M	S	Duraipandian	Tamil chieftain, leader
+டூ	M	N	Durgesh	Lord of the fort
+டூ	F	S	Durgambal	Goddess Durga
+டூ	F	S	Duraiammal	Goddess Durai, protector
+டூ	F	N	Dulari	Very dear one
+டூ	F	N	Durgeshwari	Goddess of the fort
+டூ	F	S	Durgai	Goddess Durga
+டூ	F	S	Duraisundari	Beautiful consort of Durai
+டூ	F	N	Dushala	Mahabharata princess
+
+## டே
+டே	M	S	Devanathan	Lord of the gods
+டே	M	N	Devansh	Part of the divine
+டே	F	S	Devaki	Mother of Lord Krishna
+டே	F	S	Devanayaki	Divine queen
+டே	M	S	Devanesan	Lord Shiva
+டே	M	S	Devan	God, divine one
+டே	M	S	Devendran	King of the gods
+டே	M	S	Devakumar	Divine prince
+டே	M	S	Devarajan	King of the gods
+டே	M	S	Dayanandhan	Bliss of compassion
+டே	M	N	Devendra	King of the gods
+டே	M	N	Devang	Divine part
+டே	M	N	Teyjas	Radiance, brilliance
+டே	M	N	Devrath	A divine chariot
+டே	F	S	Devi	Goddess
+டே	F	S	Devika	A little goddess
+டே	F	S	Devarathi	Divine chariot
+டே	F	S	Devayani	Divine maiden
+டே	F	N	Devina	Beloved goddess
+டே	F	N	Devangi	Like a goddess
+டே	F	N	Tejaswini	Full of radiance
+டே	F	N	Devanshi	Divine, of the gods
+டே	F	S	Devasena	Wife of Lord Kartikeya
+டே	F	S	Devapriya	Dear to the gods
+டே	F	S	Devadharshini	Divine sight
+டே	F	N	Devya	Little goddess
+டே	F	N	Devyani	Celestial maiden
+
+## டோ
+டோ	M	S	Dolan	Fragrant
+டோ	M	S	Doraisamy	Our chief
+டோ	F	S	Dorathy	Divine gift
+டோ	F	N	Dorika	Divine gift
+டோ	M	N	Dola	Swing, delight
+டோ	F	N	Doyel	Songbird, nightingale
+டோ	F	S	Dolly	Beloved, darling
+டோ	F	N	Doel	Nightingale, songbird
+டோ	F	N	Dola	Swing, delight
+
+## மா
+மா	M	S	Maaran	Brave warrior
+மா	M	S	Madhavan	Lord Krishna
+மா	M	S	Mahendran	King of kings
+மா	M	S	Manikandan	Lord Ayyappa
+மா	M	S	Manivannan	Precious jewel
+மா	M	S	Magesh	Lord of the divine
+மா	M	S	Mahadevan	The great Lord
+மா	M	S	Manoharan	Beautiful and charming
+மா	M	S	Marudhachalam	A sacred hill
+மா	M	N	Madhav	Lord Krishna
+மா	M	N	Manav	Human, kind-hearted
+மா	M	N	Mahir	Skilled and expert
+மா	M	N	Mahesh	The great Lord Shiva
+மா	M	N	Manish	Lord of the mind
+மா	M	N	Mangal	Auspicious
+மா	M	N	Mayank	The moon
+மா	F	S	Malar	Flower
+மா	F	S	Malarvizhi	Graceful-eyed
+மா	F	S	Mahalakshmi	Goddess of fortune
+மா	F	S	Malathi	Fragrant flower
+மா	F	S	Malavika	A princess
+மா	F	S	Manimekalai	A celebrated heroine
+மா	F	S	Malarvili	Beautiful flower
+மா	F	S	Mangalam	Auspicious
+மா	F	N	Mahi	The earth
+மா	F	N	Maya	Divine illusion
+மா	F	N	Mahika	Great earth
+மா	F	N	Malini	A gardener, fragrant
+மா	F	N	Manisha	Wish, desire
+மா	F	N	Mansi	Of the mind
+மா	F	N	Malti	Jasmine flower
+மா	F	N	Mannat	A sacred wish
+மா	M	S	Manimaran	Lord Murugan, bejewelled
+மா	M	S	Maran	Brave and steadfast
+மா	M	S	Mahalingam	The great Lord Shiva
+மா	M	N	Manan	Deep reflection
+மா	M	N	Mayur	Peacock
+மா	M	N	Mahipal	Protector of the earth
+மா	M	N	Manvendra	Lord of men
+
+## மீ
+மீ	M	S	Meenakshisundaram	Lord Shiva of Madurai
+மீ	M	N	Mihir	The Sun, gentle breeze
+மீ	M	N	Mitesh	Friend of all
+மீ	M	N	Mitul	Measured, limited
+மீ	M	N	Milan	Union, meeting
+மீ	F	S	Meenakshi	Goddess of Madurai
+மீ	F	S	Meena	A precious gem, fish
+மீ	F	S	Meenambal	Goddess of the fish eyes
+மீ	F	S	Meena Sundari	Beautiful like a gem
+மீ	F	S	Meerabai	Devoted princess
+மீ	F	N	Meera	Devout princess
+மீ	F	N	Misha	Sweet smile
+மீ	F	N	Minal	Precious gem
+மீ	F	N	Mitali	Friendship
+மீ	F	N	Mitanshi	A friendly soul
+மீ	M	S	Meeran	Chief, respected one
+
+## மூ
+மூ	M	S	Moorthy	Divine form
+மூ	M	S	Moovendan	Three mighty kings
+மூ	M	S	Moovarasan	King of the three realms
+மூ	M	S	Mookan	Feather, beautiful
+மூ	M	N	Mukesh	Lord of liberation
+மூ	M	N	Mukund	Lord Krishna
+மூ	M	N	Mukul	Budding blossom
+மூ	M	N	Muneesh	Great sage
+மூ	F	S	Mookambika	Goddess of Kollur
+மூ	F	S	Mookambal	The Goddess mother
+மூ	F	N	Mukta	Liberated soul
+மூ	F	N	Mukti	Liberation
+மூ	F	N	Mukulika	Blossoming jasmine
+மூ	F	S	Mookambigai	Goddess of Kollur
+மூ	F	S	Mudhumathi	Of ancient wisdom
+மூ	F	N	Mudrika	A sacred ring
+
+## மே
+மே	M	S	Meiyappan	Lord Ayyappa
+மே	M	S	Meikandan	Lord Murugan
+மே	M	S	Meiyalagan	Truly handsome
+மே	M	S	Meghanathan	Lord of the clouds
+மே	M	S	Megharajan	King of the clouds
+மே	M	S	Meyyappan	Lord Ayyappa
+மே	M	N	Mehul	Rain cloud
+மே	M	N	Mayank	The moon
+மே	M	N	Medhansh	A wise part
+மே	F	S	Meghala	Goddess Parvati
+மே	F	S	Meghana	Cloud-like, graceful
+மே	F	S	Meghavathi	Full of clouds
+மே	F	N	Meghna	Cloud, holy river
+மே	F	N	Medha	Intelligence, wisdom
+மே	F	N	Mekhala	Goddess Durga's waistband
+மே	M	N	Meghdoot	Messenger of the clouds
+மே	F	N	Mehar	Grace, kindness
+மே	F	N	Menka	A celestial beauty
+
+## மோ
+மோ	M	S	Mohan	Charming, Lord Krishna
+மோ	M	S	Mohanraj	Charming king
+மோ	M	S	Mohandoss	A devotee of Krishna
+மோ	M	S	Mohankumar	Charming prince
+மோ	M	S	Mohanasundaram	Beautiful and charming
+மோ	M	N	Mohit	Attracted, charming
+மோ	M	N	Mohak	Charming
+மோ	M	N	Mohnish	A charming sage
+மோ	F	S	Mohana	Charming, beautiful
+மோ	F	S	Mohanapriya	Charming and dear
+மோ	F	S	Mohini	An enchantress
+மோ	F	N	Mohita	Attracted, charmed
+மோ	F	N	Mohisha	Charming woman
+மோ	F	N	Moksha	Liberation, salvation
+
+## பா
+பா	M	S	Pandian	Ancient Pandya king
+பா	M	S	Parthiban	Arjuna, son of Pritha
+பா	M	S	Palanisamy	Lord Murugan
+பா	M	S	Pandurangan	Lord Vithoba
+பா	M	S	Pandidurai	Righteous chief
+பா	M	S	Palanivel	Lord Murugan's spear
+பா	M	S	Parasuraman	Lord Vishnu's axe-bearer
+பா	M	S	Pandiarajan	Pandya king
+பா	M	S	Palavesam	Auspicious
+பா	M	N	Parth	Arjuna
+பா	M	N	Pankaj	Lotus
+பா	M	N	Paresh	Supreme Lord
+பா	M	N	Pavan	Wind, breeze
+பா	M	N	Paritosh	Deep satisfaction
+பா	F	S	Padmavathi	Goddess Lakshmi
+பா	F	S	Parvathi	Goddess Parvati
+பா	F	S	Pavithra	Pure and sacred
+பா	F	S	Padmini	Lotus-eyed woman
+பா	F	S	Panchali	Draupadi
+பா	F	S	Pavai	A graceful girl
+பா	F	S	Padmalaya	Lotus abode
+பா	F	N	Pallavi	A budding leaf, verse
+பா	F	N	Pari	A fairy, angel
+பா	F	N	Parul	A flower
+பா	F	N	Pankhudi	A flower petal
+பா	F	N	Paridhi	The horizon
+பா	F	N	Palak	Graceful and lovely
+பா	F	N	Bhavika	Cheerful and happy
+பா	M	N	Bhavesh	Lord of the world
+பா	F	N	Bhavisha	The future
+பா	M	N	Pranav	The sacred syllable Om
+பா	M	N	Prakash	Light, radiance
+பா	M	N	Prashant	Calm and peaceful
+பா	F	N	Prachi	The east
+
+## பீ
+பீ	M	S	Peethambaran	Lord Krishna
+பீ	M	S	Peethambaram	Yellow silk garment
+பீ	M	S	Bheeman	Bhima, the mighty
+பீ	M	S	Peeyush	Nectar of the gods
+பீ	M	N	Bheem	Mighty and strong
+பீ	M	N	Piyush	Nectar, ambrosia
+பீ	M	N	Bhishma	The vow-keeper
+பீ	M	N	Bittu	A little darling
+பீ	F	S	Peethambari	A yellow-clad goddess
+பீ	F	S	Beena	A stringed instrument
+பீ	F	S	Beena Devi	Melodious goddess
+பீ	F	N	Pihu	A little cuckoo
+பீ	F	N	Piya	Beloved
+பீ	F	N	Bindiya	A small dot, drop
+
+## பூ
+பூ	F	N	Pooja	Worship, prayer
+பூ	M	S	Poovarasan	King of flowers
+பூ	M	S	Bhoopalan	King of the earth
+பூ	M	S	Bhoominathan	Lord of the earth
+பூ	M	S	Poornachandran	The full moon
+பூ	M	S	Poornananthan	Complete joy
+பூ	M	S	Poongundran	Lord of flowers
+பூ	M	N	Bhuvan	The world
+பூ	M	N	Bhupendra	King of the earth
+பூ	M	N	Bhupesh	Lord of the earth
+பூ	M	N	Poornachandra	The full moon
+பூ	M	N	Bhunesh	Lord of the world
+பூ	F	S	Poonguzhali	A flower creeper
+பூ	F	S	Poonkodi	A flowering creeper
+பூ	F	S	Poornima	The full moon night
+பூ	F	S	Poovizhi	Flower-like eyes
+பூ	F	S	Bhuvaneswari	Goddess of the world
+பூ	F	S	Poongothai	A fragrant flower
+பூ	F	N	Poonam	The full moon
+பூ	F	N	Bhumika	The earth
+பூ	F	N	Bhuvana	The world
+பூ	F	N	Poorvi	A pleasant eastern melody
+
+## ஷா
+ஷா	M	S	Shanmugam	Lord Murugan
+ஷா	M	S	Shankar	Lord Shiva
+ஷா	M	S	Shanthakumar	A peaceful prince
+ஷா	M	S	Shanmugaraj	Lord Murugan
+ஷா	M	S	Shanmuganathan	Lord Murugan
+ஷா	M	S	Sharvendran	A great Lord
+ஷா	M	N	Shaan	Pride and glory
+ஷா	M	N	Shashank	The moon
+ஷா	M	N	Shantanu	A peaceful king
+ஷா	M	N	Shaurya	Valour and bravery
+ஷா	M	N	Shakti	Divine power
+ஷா	F	S	Shanthi	Peace
+ஷா	F	S	Shakunthala	A bird, a heroine
+ஷா	F	S	Sharmila	A shy, modest woman
+ஷா	F	S	Shalini	Modest and graceful
+ஷா	F	S	Shanmugapriya	Beloved of Lord Murugan
+ஷா	F	N	Shatakshi	A hundred-eyed goddess
+ஷா	F	N	Shagun	Auspicious omen
+ஷா	F	N	Shashi	The moon
+ஷா	F	N	Shaila	Goddess of the mountains
+ஷா	F	N	Sharda	Goddess Saraswati
+ஷா	F	N	Shanta	Peaceful and calm
+ஷா	F	N	Shachi	Consort of Indra
+
+## ணா
+ணா	M	S	Nandhivarman	A noble king
+ணா	F	S	Nandhini	A joyful daughter
+
+## பே
+பே	M	S	Pethan	Beloved of the village
+பே	M	N	Bhairav	Lord Shiva
+பே	M	N	Bheru	A friend
+பே	F	S	Pechiammal	Graceful village goddess
+பே	F	S	Pechi	A friendly girl
+
+## போ
+போ	M	N	Bholenath	Lord Shiva
+போ	M	N	Bholesh	Lord Shiva
+போ	F	S	Ponni	A sacred river
+போ	F	N	Bholi	Simple and innocent
+
+## ரா
+ரா	M	S	Raman	Lord Rama, delightful
+ரா	M	S	Rajan	A king, Lord Shiva
+ரா	M	S	Raghavan	A descendant of Raghu
+ரா	M	S	Ravichandran	Sun and moon
+ரா	M	S	Ramakrishnan	Lord Rama and Krishna
+ரா	M	S	Rajendran	King of kings
+ரா	M	S	Ramachandran	The delightful moon
+ரா	M	S	Rajarajan	The great emperor
+ரா	M	S	Raam	Lord Rama
+ரா	M	N	Raj	A king
+ரா	M	N	Rahul	Efficient and able
+ரா	M	N	Rajesh	Lord of kings
+ரா	M	N	Ramesh	Lord of Rama
+ரா	M	N	Raghav	Lord Rama
+ரா	M	N	Ranveer	Brave in battle
+ரா	M	N	Rakesh	Lord of the full moon
+ரா	M	N	Ravi	The Sun
+ரா	F	S	Rajalakshmi	Goddess of royal fortune
+ரா	F	S	Rajeshwari	Goddess of kings
+ரா	F	S	Ramya	Beautiful and charming
+ரா	F	S	Rathi	The charioteer of love
+ரா	F	S	Ranjani	A melodious night
+ரா	F	S	Rani	A queen
+ரா	F	S	Radhika	A devoted gopi
+ரா	F	S	Rajathi	A royal queen
+ரா	F	N	Rashi	A collection, zodiac
+ரா	F	N	Ranjana	Entertaining, charming
+ரா	F	N	Rakhi	A sacred thread
+ரா	F	N	Rashmi	A ray of light
+ரா	F	N	Rachana	Creation, composition
+
+## ரீ
+ரீ	F	N	Riya	Singer, graceful
+ரீ	M	S	Rithik	Prosperous and learned
+ரீ	M	S	Rithish	Lord of truth
+ரீ	M	S	Rishikesan	Lord Vishnu
+ரீ	M	S	Rishi	A sage, a seer
+ரீ	M	S	Rishabhan	The noble bull
+ரீ	M	S	Rithwikan	An ancient sage
+ரீ	M	N	Rishabh	The best, a bull
+ரீ	M	N	Rishikesh	Lord Vishnu
+ரீ	M	N	Ritvik	A learned priest
+ரீ	M	N	Ridhaan	Pleasing and kind
+ரீ	M	N	Ritul	A season
+ரீ	F	S	Rithika	A stream of water
+ரீ	F	S	Rithanya	Righteous and cheerful
+ரீ	F	S	Rishitha	A sage-like woman
+ரீ	F	S	Rithikaa	A stream, graceful
+ரீ	F	N	Riddhi	Prosperity and growth
+ரீ	F	N	Ritika	A stream of water
+ரீ	F	N	Ridhima	Beautiful and kind
+ரீ	F	N	Rishika	A sage-like girl
+ரீ	F	N	Ritu	A season
+ரீ	M	N	Ritesh	Lord of truth
+ரீ	M	N	Rishit	The best, celebrated
+
+## ரூ
+ரூ	M	S	Rudhran	The fierce Lord Shiva
+ரூ	M	S	Rudhramoorthy	Divine form of Lord Shiva
+ரூ	M	S	Rupan	Handsome and graceful
+ரூ	M	S	Rukesh	Lord of the moon
+ரூ	M	N	Rupesh	Rich in beauty
+ரூ	M	N	Rudra	The fierce Lord
+ரூ	M	N	Ruhaan	A spiritual soul
+ரூ	M	N	Rudransh	Part of Lord Shiva
+ரூ	F	S	Rukmini	Consort of Lord Krishna
+ரூ	F	S	Rudhra	The fierce goddess
+ரூ	F	S	Rupa	Beauty and form
+ரூ	F	S	Rupavathi	Full of beauty
+ரூ	F	N	Ruhi	A soul, spirit
+ரூ	F	N	Rupali	Beautiful woman
+ரூ	F	N	Ruhani	Spiritual and divine
+
+## ரே
+ரே	M	S	Rethinavel	Lord Murugan's spear
+ரே	M	S	Rethik	Full of love
+ரே	M	S	Renjith	Coloured, delighted
+ரே	M	S	Revanth	Radiant, son of the Sun
+ரே	M	N	Reyansh	A part of the Sun
+ரே	M	N	Revansh	Part of the sacred river Reva
+ரே	F	S	Revathi	A star of the zodiac
+ரே	F	S	Renuka	Mother of Lord Parasurama
+ரே	F	S	Renugadevi	Goddess Renuka
+ரே	F	S	Rethika	A flowing river
+ரே	F	N	Rekha	A line, a streak
+ரே	F	N	Reet	Sacred tradition
+ரே	F	N	Reva	A sacred river
+
+## ரோ
+ரோ	M	S	Rohith	Radiant and splendid
+ரோ	M	S	Roshan	A bright light
+ரோ	M	S	Rohinthan	Lord of the moon
+ரோ	M	N	Rohan	Growing, ascending
+ரோ	M	N	Rochak	Interesting and pleasing
+ரோ	M	N	Ronak	A bright light
+ரோ	M	N	Ronit	Bright and charming
+ரோ	M	N	Romil	Lovable and charming
+ரோ	F	S	Rohini	An auspicious star
+ரோ	F	S	Roshini	A bright ray of light
+ரோ	F	S	Roshni	Radiance, light
+ரோ	F	N	Ronika	A bright light
+ரோ	F	N	Roshika	Radiant and lovely
+ரோ	F	N	Rohita	One who is red, dear
+
+## தா
+தா	M	S	Tharun	Youthful and bright
+தா	M	S	Thangaraj	King of gold
+தா	M	S	Thangavel	Lord Murugan
+தா	M	S	Thamizharasan	King of Tamil
+தா	M	S	Dhanasekaran	Lord of wealth
+தா	M	S	Dharanidharan	Lord who upholds the earth
+தா	M	S	Thavamani	Jewel of penance
+தா	M	S	Thamodaran	Lord Krishna
+தா	M	S	Thayumanavan	The compassionate Lord
+தா	M	N	Tapan	The radiant Sun
+தா	M	N	Dhanush	The bow of Lord Rama
+தா	F	S	Thamarai	Lotus flower
+தா	F	S	Thangam	Gold, precious
+தா	F	S	Thangamalar	Golden flower
+தா	F	S	Tharani	The earth
+தா	F	S	Thara	Star, Tara
+தா	F	S	Dhanalakshmi	Goddess of wealth
+தா	F	S	Dharani	The earth
+தா	F	N	Tarini	Saviour goddess
+தா	F	N	Dhara	The earth, a stream
+தா	F	N	Dhanya	Great, blessed
+தா	F	N	Dhanvi	Wealthy
+தா	F	N	Tanvi	Slender and beautiful
+தா	F	S	Dharshini	Lord of the sight
+
+## தீ
+தீ	M	N	Dheeraj	Patience and courage
+தீ	M	S	Theerthan	Devoted and pure
+தீ	M	S	Theeban	Bright and shining
+தீ	M	S	Theekshan	Sharp-witted
+தீ	M	S	Theerthagiri	Sacred hill
+தீ	M	S	Dheenadayalan	Compassionate giver
+தீ	M	N	Dhiraj	Steady and brave
+தீ	M	N	Dheeman	Intelligent and wise
+தீ	M	N	Dhir	Courageous
+தீ	F	S	Theertha	Sacred water
+தீ	F	S	Theekshana	Sharp-witted girl
+தீ	F	S	Dheekshika	Sacred initiation
+தீ	F	N	Divyanshi	Part of divine light
+தீ	M	N	Theerth	Sacred pilgrimage
+தீ	F	N	Dhriti	Patience and courage
+தீ	F	N	Dheera	Wisdom and courage
+தீ	F	N	Dhiya	A divine light
+தீ	F	S	Thilagavathi	Goddess Lakshmi
+
+## தூ
+தூ	M	S	Thulasiraman	Lord Rama of the Tulsi
+தூ	M	S	Thulasidharan	One who wears the Tulsi
+தூ	M	S	Thooran	A learned poet
+தூ	M	S	Thuyavan	Pure and clear
+தூ	M	S	Thulasi	Sacred basil
+தூ	M	N	Dushyant	Destroyer of evil
+தூ	M	N	Durgesh	Lord of the fort
+தூ	F	S	Thulasi	Sacred basil plant
+தூ	F	S	Thulir	A tender new leaf
+தூ	F	S	Thulasi Priya	Beloved of the Tulsi
+தூ	F	N	Durga	Goddess Durga
+தூ	F	N	Duhita	Daughter
+தூ	F	N	Dushyanta	A noble king
+தூ	M	N	Dhruv	The pole star
+தூ	F	N	Tulika	A fine paintbrush
+
+## தே
+தே	M	S	Thendralan	Gentle breeze
+தே	M	N	Tejas	Radiance, brilliance
+தே	F	S	Thenmozhi	Sweet-spoken
+தே	F	S	Thendral	Gentle breeze
+தே	F	N	Tejaswi	Full of radiance
+தே	M	S	Thevan	God, divine one
+தே	M	S	Thevakumar	Divine prince
+தே	M	S	Thevaraj	Divine king
+தே	M	S	Thevaguru	Divine teacher
+தே	M	S	Dhayalan	The compassionate Lord
+தே	M	N	Tej	Radiance, light
+தே	M	N	Teyjas	Full of light
+தே	M	N	Dev	God, divine
+தே	F	S	Thejaswini	Full of radiance
+தே	F	S	Devagi	Mother of Krishna
+தே	F	S	Deivanayaki	Divine queen
+தே	F	N	Tejaswini	Full of radiance
+தே	F	N	Tesha	A star
+தே	F	N	Devna	Divine blessing
+தே	F	N	Tejal	Radiance, glow
+
+## தோ
+தோ	M	S	Tholkappiyan	Ancient Tamil scholar
+தோ	M	S	Thooyavan	Pure and sacred
+தோ	M	S	Tholkappiyar	The great Tamil grammarian
+தோ	M	S	Tholan	An ancient poet
+தோ	M	S	Thozhan	Friend and companion
+தோ	M	N	Dorian	Beloved
+தோ	F	S	Thooyamathi	Pure and wise
+தோ	F	S	Thozhi	Friend
+தோ	F	N	Dorita	A gift of God
+தோ	F	N	Toral	A garland, toran
+
+## நா
+நா	M	S	Naveen	Bright and new
+நா	M	S	Nandakumar	Lord Krishna's son
+நா	M	S	Natarajan	Lord of the cosmic dance
+நா	M	S	Nagarajan	King of serpents
+நா	M	S	Nallasivam	The auspicious Shiva
+நா	M	S	Naganathan	Lord of serpents
+நா	M	S	Naavalan	Eloquent and learned
+நா	M	S	Nambirajan	Lord Vishnu
+நா	M	N	Nakul	The fourth Pandava
+நா	M	N	Naksh	A star
+நா	M	N	Naman	A respectful salutation
+நா	M	N	Nandan	A son, joyful
+நா	M	N	Naren	Lord Narayana
+நா	M	N	Naresh	King of men
+நா	F	S	Nandhini	A daughter, joyful
+நா	F	S	Nalini	A lotus flower
+நா	F	S	Narmadha	A sacred river
+நா	F	S	Nandhitha	Joyful, pleased
+நா	F	S	Nagavalli	A snake goddess
+நா	F	S	Nalayini	A lotus-eyed beauty
+நா	F	N	Nandini	A daughter, cheerful
+நா	F	N	Naina	The eyes
+நா	F	N	Nandita	Cheerful and happy
+நா	F	N	Nayanika	Eyes, a guide
+நா	F	N	Namrata	Humility and modesty
+நா	F	N	Navya	New, young
+நா	F	N	Navika	A boat, young girl
+நா	M	S	Narendran	King of men
+நா	M	S	Navaneethan	Fresh butter, Krishna
+நா	M	S	Nachiappan	Lord Nataraja
+நா	M	N	Navin	New, fresh
+நா	M	N	Naithik	Moral, righteous
+நா	F	S	Nappinnai	Consort of Lord Krishna
+நா	F	S	Nangai	Respected lady
+நா	F	N	Namita	Modest and humble
+நா	F	N	Nandika	A little daughter
+
+## நீ
+நீ	M	S	Nithyanandhan	Eternal bliss
+நீ	M	S	Nithilan	Full of virtue
+நீ	M	S	Niranjan	The spotless Lord
+நீ	M	S	Nivethan	An offering to God
+நீ	M	S	Nithish	Lord of the night
+நீ	M	S	Neelakandan	Lord Shiva, blue-throated
+நீ	M	N	Nikhil	Complete, whole
+நீ	M	N	Nitesh	Lord of law, master
+நீ	M	N	Nipun	Skilled and dexterous
+நீ	M	N	Nirav	Quiet and calm
+நீ	M	N	Nihal	Rain cloud
+நீ	M	N	Niraj	The lotus flower
+நீ	F	S	Nithya	Eternal, constant
+நீ	F	S	Nivedha	An offering
+நீ	F	S	Niranjani	The spotless goddess
+நீ	F	S	Nila	Blue, the moon
+நீ	F	S	Neelambal	Blue-throated goddess
+நீ	F	S	Nithila	Beautiful
+நீ	F	N	Nisha	Night
+நீ	F	N	Nidhi	A treasure
+நீ	F	N	Niharika	A misty shower
+நீ	F	N	Niyati	Destiny, fate
+நீ	F	N	Nivedita	Dedicated, offered
+நீ	F	N	Nikita	Unconquered, victorious
+நீ	M	N	Nishant	Dawn, ending of night
+நீ	M	N	Nishith	Night, Lord Shiva
+நீ	F	S	Nithyashree	Eternal prosperity
+நீ	F	S	Nivedhitha	Dedicated offering
+நீ	F	N	Nimisha	A blink of the eye
+
+## நூ
+நூ	M	S	Nuthan	Fresh and new
+நூ	M	N	Nutan	New and unique
+நூ	M	N	Nupur	Anklet
+நூ	F	S	Nuthana	New and fresh
+நூ	F	S	Nuthana Sri	Fresh and prosperous
+நூ	F	N	Nutan	New, fresh
+நூ	F	N	Nupur	An anklet
+நூ	F	N	Nuha	A wise young woman
+நூ	M	S	Noothan	New, fresh
+நூ	F	S	Noothana	New, ever fresh
+
+## நே
+நே	M	S	Nedunchezhiyan	The ancient Tamil king
+நே	M	S	Nethaji	The great leader
+நே	M	S	Nesan	A dear friend
+நே	M	S	Nesamani	A friendly leader
+நே	M	S	Nedumanan	Wise and noble
+நே	M	N	Nayan	The eyes
+நே	M	N	Neminath	A revered Jain saint
+நே	M	N	Netesh	A leader
+நே	F	S	Nethra	The eyes
+நே	F	S	Nethira	A beautiful eyed girl
+நே	F	S	Nesari	Graceful friend
+நே	F	N	Neha	Love and affection
+நே	F	N	Nehal	A lovely girl
+நே	F	N	Netra	The eyes
+
+## நோ
+நோ	M	N	Nohit	Much praised
+நோ	F	N	Norika	Graceful
+
+## யா
+யா	M	S	Yathavan	Lord Krishna
+யா	M	S	Yaazh	The ancient lute
+யா	M	S	Yalavan	Skilled musician
+யா	M	N	Yash	Fame and glory
+யா	M	N	Yashwant	Full of glory
+யா	M	N	Yashraj	King of glory
+யா	M	N	Yatin	A sage, ascetic
+யா	M	N	Yadvendra	Lord of the Yadavas
+யா	F	S	Yaazhini	Song of the lute
+யா	F	S	Yamini	A serene night
+யா	F	S	Yashodha	Mother of Lord Krishna
+யா	F	S	Yamuna	A sacred river
+யா	F	N	Yashvi	Fame and success
+யா	F	N	Yashika	Famous and successful
+யா	F	N	Yashaswini	Full of fame
+யா	F	N	Yami	The Yamuna river
+யா	M	N	Yateendra	Lord of ascetics
+யா	F	N	Yashoda	Mother of Lord Krishna
+
+## யீ
+யீ	M	S	Yeeshwaran	Lord of glory
+யீ	M	N	Yihan	A friendly soul
+
+## யூ
+யூ	M	S	Yuvan	Youthful and bright
+யூ	M	S	Yugan	An era, united
+யூ	M	S	Yugendran	King of the ages
+யூ	M	S	Yuthishthiran	The righteous king
+யூ	M	N	Yuvraj	A crown prince
+யூ	M	N	Yug	An era, age
+யூ	M	N	Yudhvir	Brave in battle
+யூ	M	N	Yudhishthir	The righteous king
+யூ	F	S	Yuvasri	Youthful prosperity
+யூ	F	S	Yuvathi	A young woman
+யூ	F	N	Yukti	Skill and reasoning
+யூ	F	N	Yukta	United, capable
+யூ	F	N	Yuvika	A young girl
+யூ	F	S	Yuvanika	Youthful and graceful
+யூ	F	S	Yuktha	United, suited
+
+## யே
+யே	F	N	Yesha	Fame and grace
+யே	F	N	Yeshika	Full of fame
+யே	M	S	Yegappan	A famous Tamil name
+யே	M	S	Yegnesh	Lord of the sacred fire
+யே	M	N	Yeyash	Glory and success
+யே	F	N	Yeshaswini	Full of fame
+யே	F	N	Yeshita	Achieved, successful
+யே	F	S	Yegammai	Tamil goddess name
+
+## யோ
+யோ	M	S	Yogendran	Lord of yoga
+யோ	M	S	Yogarasan	A king of yoga
+யோ	M	S	Yogi	A yogi, ascetic
+யோ	M	N	Yogesh	Lord of yoga
+யோ	M	N	Yogendra	Lord of yoga
+யோ	F	S	Yogalakshmi	Goddess of yoga
+யோ	F	S	Yogitha	One who is united
+யோ	F	S	Yogini	A female ascetic
+யோ	F	N	Yogita	Focused, united
+யோ	F	N	Yogeswari	Goddess of yoga
+யோ	M	S	Yogeshwaran	Lord of yoga
+
+## ஜா
+ஜா	M	S	Jagan	The world
+ஜா	M	S	Jagannathan	Lord of the world
+ஜா	M	S	Jayakumar	A victorious prince
+ஜா	M	S	Jayapalan	A victorious protector
+ஜா	M	S	Jagadheesan	Lord of the universe
+ஜா	M	S	Jambulingam	Lord Shiva
+ஜா	M	S	Jayanthan	The victorious one
+ஜா	M	N	Jagdish	Lord of the world
+ஜா	M	N	Jai	Victory
+ஜா	M	N	Jayant	Victorious
+ஜா	M	N	Jagat	The universe
+ஜா	M	N	Jairaj	Victorious king
+ஜா	M	N	Jatin	A disciplined ascetic
+ஜா	F	S	Janaki	Sita, daughter of Janaka
+ஜா	F	S	Jayanthi	A victorious festival
+ஜா	F	S	Jaya	Victory
+ஜா	F	S	Janani	A mother, creator
+ஜா	F	S	Jayalakshmi	Goddess of victory
+ஜா	F	S	Jayasudha	Nectar of victory
+ஜா	F	N	Janhvi	A sacred river
+ஜா	F	N	Jagruti	Awakening, awareness
+ஜா	F	N	Jayshree	Goddess of victory
+
+## ஜீ
+ஜீ	M	S	Jeevan	Life
+ஜீ	M	S	Jeevananthan	Life and joy
+ஜீ	M	S	Jeevagan	The living soul
+ஜீ	M	S	Jeevithan	Full of life
+ஜீ	M	N	Jitendra	Lord of victory
+ஜீ	M	N	Jitesh	Lord of victory
+ஜீ	M	N	Jignesh	A curious soul
+ஜீ	M	N	Jishnu	Lord Vishnu
+ஜீ	M	N	Jivin	Full of life
+ஜீ	F	S	Jeevitha	Life and vitality
+ஜீ	F	S	Jeevalakshmi	Living goddess of fortune
+ஜீ	F	S	Jeevanya	Full of life
+ஜீ	F	N	Jiya	A sweet heart
+ஜீ	F	N	Jinal	A precious gem
+ஜீ	F	N	Jivika	Full of life
+
+## கூ
+கூ	M	S	Guhan	Lord Murugan
+கூ	M	S	Gunasekaran	Virtuous Lord Shiva
+கூ	M	S	Gurunathan	Divine teacher
+கூ	M	S	Gunalan	Full of virtue
+கூ	M	S	Guruprasad	Blessed by the guru
+கூ	M	N	Gurdeep	Light of the guru
+கூ	M	N	Gurudutt	Granted by the guru
+கூ	M	N	Gunwant	Full of virtue
+கூ	M	N	Guptesh	Hidden Lord
+கூ	F	S	Kuzhali	A melodious flute
+கூ	F	S	Kuzhalini	Sweet-voiced
+கூ	F	S	Gunavathy	Full of virtue
+கூ	F	N	Gunjita	Softly humming
+கூ	F	N	Gulika	A celestial star
+கூ	F	N	Guneet	Full of virtue
+கூ	M	N	Gulshan	Flower garden
+கூ	M	N	Gunvant	Full of virtues
+கூ	F	S	Kuyili	Tamil warrior, courage
+கூ	F	N	Gunjan	Soft humming, song
+கூ	F	N	Gunita	Endowed with virtues
+
+## சா
+சா	M	S	Sakthivel	Lord Murugan, powerful
+சா	M	S	Santhosh	Contentment, joy
+சா	M	S	Sampath	Prosperity, wealth
+சா	M	S	Sathyan	Truthful
+சா	M	S	Sakthi	Divine power
+சா	M	S	Sadhasivam	Lord Shiva, ever good
+சா	M	S	Sanjeevan	One who gives life
+சா	M	S	Santhanakrishnan	Lord Krishna
+சா	M	S	Sankaran	Lord Shiva
+சா	M	S	Sarangan	Lord Vishnu
+சா	M	N	Saarthak	Meaningful, purposeful
+சா	M	N	Sachin	Pure, truthful
+சா	M	N	Sagar	Ocean
+சா	M	N	Sahil	Leader, guide
+சா	M	N	Samar	Companion in battle
+சா	M	N	Sanjay	Victorious
+சா	M	N	Satvik	Pure and virtuous
+சா	M	N	Sanket	Signal, sacred hint
+சா	M	N	Sarthak	Accomplished
+சா	F	S	Santhi	Peace, tranquillity
+சா	F	S	Sandhya	Evening twilight
+சா	F	S	Sangeetha	Music, melody
+சா	F	S	Savitha	The Sun
+சா	F	S	Sasirekha	Beautiful crescent
+சா	F	S	Santhiya	Peaceful
+சா	F	S	Sathya	Truth
+சா	F	S	Sakthipriya	Beloved of the goddess
+சா	F	S	Samundeeswari	Goddess of the ocean
+சா	F	N	Sanjana	Gentle, soft-spoken
+சா	F	N	Saanvi	Goddess Lakshmi
+சா	F	N	Sakshi	Witness, evidence
+சா	F	N	Sanya	Distinguished
+சா	F	N	Sarika	Thrush bird, melodious
+சா	F	N	Sadhana	Devoted practice
+சா	F	N	Sanika	Gracious
+சா	F	N	Saumya	Gentle and graceful
+சா	F	N	Sahana	Melodic, patient
+சா	F	N	Sameera	Early morning breeze
+
+## சீ
+சீ	M	N	Chirag	Lamp, bright light
+சீ	M	S	Sivakumar	Lord Shiva
+சீ	M	S	Sivanesan	Lord Shiva
+சீ	M	S	Sivaraman	Lord Shiva, delightful
+சீ	M	S	Sivaguru	Lord Shiva
+சீ	M	S	Siddharth	One who has attained
+சீ	M	S	Chidambaram	Lord Nataraja
+சீ	M	S	Chinmayan	Full of consciousness
+சீ	M	S	Sivaprakash	Light of Lord Shiva
+சீ	M	S	Sitharthan	Accomplished one
+சீ	M	S	Sivakumaran	Beloved of Shiva
+சீ	M	N	Shivam	Auspicious, Lord Shiva
+சீ	M	N	Shivansh	Part of Lord Shiva
+சீ	M	N	Chiranjeev	Long-lived
+சீ	M	N	Shivendra	Lord of Lord Shiva
+சீ	M	N	Siddhant	Doctrine, principle
+சீ	M	N	Sidhak	Perfected
+சீ	M	N	Shivank	Mark of Lord Shiva
+சீ	F	S	Sivagami	Consort of Lord Shiva
+சீ	F	S	Sivaranjani	Divine melody
+சீ	F	S	Sindhu	Ocean, river
+சீ	F	S	Sithara	Star, morning star
+சீ	F	S	Chitra	Painting, art
+சீ	F	S	Sivasakthi	Power of Lord Shiva
+சீ	F	S	Sindhuja	Born of the ocean
+சீ	F	S	Sivapriya	Beloved of Lord Shiva
+சீ	F	S	Sitharani	Queen of stars
+சீ	F	S	Chinmayi	Full of consciousness
+சீ	F	N	Shivani	Consort of Lord Shiva
+சீ	F	N	Siddhi	Perfection, attainment
+சீ	F	N	Shikha	Flame, crest
+சீ	F	N	Shivi	Kind, benevolent
+சீ	F	N	Siya	Blessed, divine
+சீ	F	N	Shivangi	Beautiful Goddess
+சீ	F	N	Chitrangana	Beautiful art
+சீ	F	N	Shivpriya	Beloved of Lord Shiva
+சீ	M	N	Siddhesh	Lord of the accomplished
+சீ	F	N	Chitralekha	Beautiful picture
+
+## சூ
+சூ	M	S	Surya	The Sun
+சூ	M	S	Sooryanarayanan	Sun-like Lord Vishnu
+சூ	M	S	Suryakumar	Sun prince
+சூ	M	S	Suryaprakash	Light of the Sun
+சூ	M	S	Sooriyan	The Sun god
+சூ	M	S	Suryadevan	Sun god
+சூ	M	N	Sooraj	Radiant sun
+சூ	M	N	Suryansh	Part of the Sun
+சூ	M	N	Suryakant	Sun's beloved
+சூ	M	N	Suryaveer	Brave as the Sun
+சூ	M	N	Suryadeep	Lamp of the Sun
+சூ	F	S	Soorya	Sun, radiant
+சூ	F	S	Suryakala	Art of the Sun
+சூ	F	S	Suryavathi	Sun-like brightness
+சூ	F	S	Sooriyakumari	Sun princess
+சூ	F	S	Suryaprabha	Sunlight
+சூ	F	N	Suryanshi	Ray of the Sun
+சூ	F	N	Suhani	Pleasant and lovely
+சூ	F	N	Sunaina	Beautiful-eyed
+சூ	F	N	Suruchi	Good taste, refined
+சூ	F	N	Sushri	Very auspicious
+சூ	F	N	Suchita	Pure in mind
+
+## த
+த	M	S	Thamizhselvan	Mighty Tamil scholar
+த	M	S	Thandapani	Lord Shiva
+த	M	S	Thambidurai	Lord of the family
+த	M	S	Thangaraju	Golden king
+த	M	S	Thavam	Penance, devotion
+த	M	N	Thaman	Beloved
+த	M	N	Thakur	A leader
+த	F	S	Thamizhselvi	Graceful Tamil girl
+த	F	S	Thamizharasi	Queen of Tamil
+த	F	S	Thangammal	Golden lady
+த	F	S	Thavamalar	Flower of penance
+த	F	N	Thara	Star
+த	F	N	Thakshvi	A graceful swan
+த	M	N	Tanmay	Absorbed in the divine
+த	M	N	Tarak	A star, protector
+த	M	N	Tanish	Lord of the night
+த	M	N	Tanuj	A beloved son
+த	F	N	Tanishka	A small star
+த	F	N	Tanya	A fairy queen
+த	F	S	Thamizhini	Sweet Tamil maiden
+த	F	N	Taruna	Young, tender
+
+## ஜ
+ஜ	F	N	Jhalak	A glimpse, sparkle
+ஜ	F	N	Jhilmil	A soft twinkle
+
+## ஞ
+ஞ	M	N	Trailokya	The three worlds
+ஞ	M	N	Trilok	The three realms
+ஞ	M	N	Trishank	A noble king
+ஞ	F	S	Trisha	A wish, desire
+ஞ	F	N	Triveni	Meeting of three rivers

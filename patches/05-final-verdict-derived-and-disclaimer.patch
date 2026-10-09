@@ -1,0 +1,94 @@
+# Issue 5 - Final verdict derived from the corrected result and consistent with the page-2 disclaimer.
+# Apply from the repository root:  patch -p1 < patches/05-final-verdict-derived-and-disclaimer.patch
+
+diff --git a/api/astrology/pdf_mpdf_reports.php b/api/astrology/pdf_mpdf_reports.php
+index fac5d7e..7d4e0b8 100644
+--- a/api/astrology/pdf_mpdf_reports.php
++++ b/api/astrology/pdf_mpdf_reports.php
+@@ -2133,14 +2133,19 @@ HTML;
+                     : 'N/A');
+         }
+         $verdict = self::e($verdictText);
+ 
+         $finalVerdictLabel = $isTa ? 'இறுதி முடிவு' : ($isHi ? 'अंतिम निर्णय' : 'FINAL VERDICT');
++        // The verdict text is derived from $isMatchingGood (the same
++        // verdictStatus the score banner and the final-verdict colour use),
++        // never hardcoded. The negative wording also carries the page-2
++        // "astrological guidance only" qualification, so page 1 cannot read as
++        // a categorical judgement against the disclaimer on page 2.
+         $finalVerdictText = $isMatchingGood === true
+             ? ($isTa ? 'இந்தப் பொருத்தம் நல்லது. நல்வாழ்த்துகள்!' : ($isHi ? 'यह मिलान अच्छा है। शुभकामनाएँ!' : 'The matching is good. All the best!'))
+             : ($isMatchingGood === false
+-                ? ($isTa ? 'இந்தப் பொருத்தம் நல்லதல்ல.' : ($isHi ? 'यह मिलान अच्छा नहीं है।' : 'The matching is not good.'))
++                ? ($isTa ? 'இந்தப் பொருத்தம் நல்லதல்ல. இது ஜோதிட வழிகாட்டல் மட்டுமே; இறுதி முடிவு விரிவான ஜாதக ஆய்வின் அடிப்படையில் எடுக்கப்பட வேண்டும்.' : ($isHi ? 'यह मिलान अच्छा नहीं है। यह केवल ज्योतिषीय मार्गदर्शन है; अंतिम निर्णय विस्तृत कुंडली समीक्षा के बाद लें।' : 'The matching is not good. This is astrological guidance only; the final decision should follow a detailed horoscope review.'))
+                 : 'N/A');
+         $finalVerdictClass = $isMatchingGood === null ? 'final-verdict-unavailable' : ($isMatchingGood ? 'final-verdict-good' : 'final-verdict-not-good');
+         $finalVerdictColor = $isMatchingGood === null ? '#475569' : ($isMatchingGood ? '#166534' : '#991b1b');
+         $finalVerdictBackground = $isMatchingGood === null ? '#f1f5f9' : ($isMatchingGood ? '#ecfdf5' : '#fef2f2');
+         $finalVerdictBorder = $isMatchingGood === null ? '#cbd5e1' : ($isMatchingGood ? '#86efac' : '#fca5a5');
+diff --git a/server/astrology/pdfGenerator.ts b/server/astrology/pdfGenerator.ts
+index 8f27b55..86b8953 100644
+--- a/server/astrology/pdfGenerator.ts
++++ b/server/astrology/pdfGenerator.ts
+@@ -1325,13 +1325,19 @@ export function generateWeddingMatchPdf(result: WeddingMatchResult, lang: AppLan
+   const isModerate = verdictStatus === PoruthamStatus.MADHYAMAM;
+   const isMatchingGood: boolean | null = !verdictKnown ? null : isGood || isModerate;
+   const verdictBadgeText = !verdictKnown
+     ? 'N/A'
+     : isGood ? 'UTTHAMAM (HIGHLY AUSPICIOUS)' : isModerate ? 'MADHYAMAM (FAVOURABLE)' : 'NOT RECOMMENDED';
++  // Derived from the same verdictStatus the score banner uses (never
++  // hardcoded). The negative wording also carries the page-2 "astrological
++  // guidance only" qualification, so page 1 cannot read as a categorical
++  // judgement against the disclaimer on page 2.
+   const finalVerdictText = isMatchingGood === null
+     ? 'N/A'
+-    : isMatchingGood ? 'The matching is good. All the best!' : 'The matching is not good.';
++    : isMatchingGood
++    ? 'The matching is good. All the best!'
++    : 'The matching is not good. This is astrological guidance only; the final decision should follow a detailed horoscope review.';
+   const rajjuStatusText = typeof matchResultAny.rajjuMatch !== 'boolean'
+     ? 'N/A'
+     : matchResultAny.rajjuMatch ? 'Auspicious Match' : 'Afflicted';
+   const brideRasiNumber = finiteNumericValue(matchResultAny.brideRasi);
+   const groomRasiNumber = finiteNumericValue(matchResultAny.groomRasi);
+diff --git a/src/components/common/OrderReportModal.tsx b/src/components/common/OrderReportModal.tsx
+index 4f4d67c..7befa88 100644
+--- a/src/components/common/OrderReportModal.tsx
++++ b/src/components/common/OrderReportModal.tsx
+@@ -931,11 +931,11 @@ export const OrderReportModal: React.FC<OrderReportModalProps> = ({ order, onClo
+                     const isGood = verdictStatus === 'UTTHAMAM' || verdictStatus === 'MADHYAMAM';
+                     const verdictText = !verdictKnown
+                       ? 'N/A'
+                       : isGood
+                       ? (isTa ? 'இந்தப் பொருத்தம் நல்லது. நல்வாழ்த்துகள்!' : isHi ? 'यह मिलान अच्छा है। शुभकामनाएँ!' : 'The matching is good. All the best!')
+-                      : (isTa ? 'இந்தப் பொருத்தம் நல்லதல்ல.' : isHi ? 'यह मिलान अच्छा नहीं है।' : 'The matching is not good.');
++                      : (isTa ? 'இந்தப் பொருத்தம் நல்லதல்ல. இது ஜோதிட வழிகாட்டல் மட்டுமே; இறுதி முடிவு விரிவான ஜாதக ஆய்வின் அடிப்படையில் எடுக்கப்பட வேண்டும்.' : isHi ? 'यह मिलान अच्छा नहीं है। यह केवल ज्योतिषीय मार्गदर्शन है; अंतिम निर्णय विस्तृत कुंडली समीक्षा के बाद लें।' : 'The matching is not good. This is astrological guidance only; the final decision should follow a detailed horoscope review.');
+                     const verdictTitle = isTa ? 'இறுதி முடிவு' : isHi ? 'अंतिम निर्णय' : 'FINAL VERDICT';
+ 
+                     return (
+                       <div
+                         className={`p-4 sm:p-5 rounded-2xl border text-center space-y-1 shadow-sm transition-all ${
+diff --git a/src/services/weddingHtmlBuilder.ts b/src/services/weddingHtmlBuilder.ts
+index 0035c8c..5aa88cd 100644
+--- a/src/services/weddingHtmlBuilder.ts
++++ b/src/services/weddingHtmlBuilder.ts
+@@ -168,15 +168,18 @@ export function buildWeddingMatchHtml(
+   // only Porundhadhu is a negative final verdict.
+   const isMatchingGood = isGood || isModerate;
+   const notAvailableLabel = isTa ? 'கிடைக்கவில்லை (N/A)' : isHi ? 'उपलब्ध नहीं (N/A)' : 'N/A';
+ 
+   const finalVerdictLabel = isTa ? 'இறுதி முடிவு' : isHi ? 'अंतिम निर्णय' : 'FINAL VERDICT';
++  // Derived from verdictStatus above (never hardcoded). The negative wording
++  // also carries the page-2 "astrological guidance only" qualification, so
++  // page 1 cannot read as a categorical judgement against the disclaimer.
+   const finalVerdictText = !verdictKnown
+     ? notAvailableLabel
+     : isMatchingGood
+     ? (isTa ? 'இந்தப் பொருத்தம் நல்லது. நல்வாழ்த்துகள்!' : isHi ? 'यह मिलान अच्छा है। शुभकामनाएँ!' : 'The matching is good. All the best!')
+-    : (isTa ? 'இந்தப் பொருத்தம் நல்லதல்ல.' : isHi ? 'यह मिलान अच्छा नहीं है।' : 'The matching is not good.');
++    : (isTa ? 'இந்தப் பொருத்தம் நல்லதல்ல. இது ஜோதிட வழிகாட்டல் மட்டுமே; இறுதி முடிவு விரிவான ஜாதக ஆய்வின் அடிப்படையில் எடுக்கப்பட வேண்டும்.' : isHi ? 'यह मिलान अच्छा नहीं है। यह केवल ज्योतिषीय मार्गदर्शन है; अंतिम निर्णय विस्तृत कुंडली समीक्षा के बाद लें।' : 'The matching is not good. This is astrological guidance only; the final decision should follow a detailed horoscope review.');
+   const finalVerdictClass = !verdictKnown
+     ? 'final-verdict-unavailable'
+     : isMatchingGood ? 'final-verdict-good' : 'final-verdict-not-good';
+ 
+   const verdictBadgeText = !verdictKnown

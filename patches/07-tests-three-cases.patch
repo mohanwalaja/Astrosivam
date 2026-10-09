@@ -1,0 +1,379 @@
+# Tests - three new cases incl. bride Avittam + groom Swathi, plus the 27-star Rajju table invariant.
+# Apply from the repository root:  patch -p1 < patches/07-tests-three-cases.patch
+
+diff --git a/tests/porutham-reference.test.ts b/tests/porutham-reference.test.ts
+index b72bf26..545c2ad 100644
+--- a/tests/porutham-reference.test.ts
++++ b/tests/porutham-reference.test.ts
+@@ -31,14 +31,23 @@ const GANA: number[] = [
+   RAKSHASA, MANUSHYA, MANUSHYA, DEVA, RAKSHASA, RAKSHASA, MANUSHYA, MANUSHYA, DEVA
+ ];
+ 
+ // Rajju: 0 = Siro (head), 1 = Kanda (neck), 2 = Udhara (stomach),
+ // 3 = Uru (thigh), 4 = Pada (foot).
++//
++// Classical Tamil grouping, written out independently of the engine:
++//   Siro   : Mrigashirsha, Chitra, Dhanishta
++//   Kanda  : Rohini, Ardra, Hasta, Swati, Shravana, Shatabhisha
++//   Udhara : Krittika, Punarvasu, Uttara Phalguni, Vishakha, Uttara Ashadha, Purva Bhadrapada
++//   Uru    : Bharani, Pushya, Purva Phalguni, Anuradha, Purva Ashadha, Uttara Bhadrapada
++//   Pada   : Ashwini, Ashlesha, Magha, Jyeshtha, Mula, Revati
++// The five groups repeat every nine Nakshatras, so this is the nine-value
++// pattern (4,3,2,1,0,1,2,3,4) three times.
+ const RAJJU: number[] = [
+-  4, 3, 2, 1, 0, 0, 1, 2, 3,
+-  4, 3, 2, 1, 0, 0, 1, 2, 3,
+-  4, 3, 2, 1, 0, 0, 1, 2, 4
++  4, 3, 2, 1, 0, 1, 2, 3, 4,
++  4, 3, 2, 1, 0, 1, 2, 3, 4,
++  4, 3, 2, 1, 0, 1, 2, 3, 4
+ ];
+ 
+ // Yoni animals, numbered 0-13 as listed by the classical texts.
+ const YONI: number[] = [
+   0, 1, 2, 3, 3, 4, 5, 2, 5,
+@@ -171,10 +180,22 @@ for (const [groupName, first, second] of [
+   assert.match(match.overallVerdictEn, /Rajju/);
+ }
+ check('different Rajju (Pada + Uru)', { nakshatra: 0 }, { nakshatra: 1 }, {
+   rajju: PoruthamStatus.UTTHAMAM
+ });
++
++// Bride Avittam/Dhanishta (22, Siro Rajju) + groom Swati (14, Kanda Rajju):
++// DIFFERENT groups, so Rajju must pass 5/5. This is the exact public sample
++// couple, and the old table wrongly put both stars in the same group.
++const avittamSwati = check('bride Avittam (Dhanishta) + groom Swati', { nakshatra: 22 }, { nakshatra: 14 }, {
++  rajju: PoruthamStatus.UTTHAMAM
++});
++assert.equal(RAJJU[22], RAJJU[4], 'Dhanishta sits in the Siro Rajju group with Mrigashirsha');
++assert.equal(RAJJU[14], RAJJU[3], 'Swati sits in the Kanda Rajju group with Rohini');
++assert.equal(avittamSwati.rajjuMatch, true, 'Avittam + Swati must pass Rajju');
++assert.equal(avittamSwati.poruthams.find(entry => entry.id === 'rajju')?.pointsEarned, 1.0);
++assert.equal(avittamSwati.poruthams.find(entry => entry.id === 'rajju')?.maxPoints, 1.0);
+ console.log('  [PASS] Rajju Porutham: all five classical Rajju groups flag identical groups');
+ 
+ // ---------------------------------------------------------------------------
+ // 2. Vedha Porutham - the classical obstruction pairs
+ // ---------------------------------------------------------------------------
+@@ -183,18 +204,15 @@ for (const [brideStar, groomStar] of [[0, 17], [1, 16], [2, 15], [3, 14], [9, 26
+   const match = check(`Vedha ${brideStar}/${groomStar}`, { nakshatra: brideStar }, { nakshatra: groomStar }, {
+     vedhai: PoruthamStatus.PORUNDHADHU
+   });
+   assert.equal(match.vedhaMatch, false, `Vedha ${brideStar}/${groomStar} must fail the Vedha check`);
+   assert.equal(match.verdictStatus, PoruthamStatus.PORUNDHADHU, 'Vedha must block a positive verdict');
+-  // 9 (Magha) and 26 (Revati) are both Pada Rajju after the Revati fix, so
+-  // the pair is hard-stopped by Rajju as well as Vedha. The verdict correctly
+-  // surfaces the Rajju hard-stop first.
+-  if (brideStar === 9 && groomStar === 26) {
+-    assert.match(match.overallVerdictEn, /Rajju/);
+-  } else {
+-    assert.match(match.overallVerdictEn, /Vedha/);
+-  }
++  // Every classical Vedha pair also shares a Rajju group (the groups repeat
++  // every nine Nakshatras), so these pairs are hard-stopped by Rajju as well
++  // as Vedha and the verdict must name both failed crucial Poruthams.
++  assert.match(match.overallVerdictEn, /Rajju and Vedha/);
++  assert.equal(match.rajjuMatch, false, `Vedha ${brideStar}/${groomStar} shares a Rajju group`);
+ }
+ check('no Vedha (Ashwini + Bharani)', { nakshatra: 0 }, { nakshatra: 1 }, {
+   vedhai: PoruthamStatus.UTTHAMAM
+ });
+ console.log('  [PASS] Vedha Porutham: eight classical obstruction pairs are detected');
+diff --git a/tests/sample-engine-meaning.test.php b/tests/sample-engine-meaning.test.php
+index 48727b3..42ad808 100644
+--- a/tests/sample-engine-meaning.test.php
++++ b/tests/sample-engine-meaning.test.php
+@@ -30,20 +30,30 @@ checkSampleEngineMeaning(abs($first['antardashas'][0]['months'] - 32.4) < 0.001,
+ foreach (array_slice($chart['dashaPeriods'], 1) as $period) {
+     checkSampleEngineMeaning($period['periodKind'] === 'FULL_MAHADASHA' && $period['fullStartDate'] === $period['startDate'], 'Subsequent spans are full Mahadashas');
+ }
+ 
+ $match = AstroEngine::calculateMatchmaking(['bride' => $bride, 'groom' => $groom]);
+-checkSampleEngineMeaning($match['rajjuMatch'] === false && $match['vedhaMatch'] === true, 'Public wedding sample fails Rajju only, not Vedha');
++// The sample couple is groom Swati (Kanda Rajju) + bride Avittam/Dhanishta
++// (Siro Rajju): DIFFERENT groups, so Rajju is a full 5/5 pass. The old table
++// put both stars in the Siro group and produced 19/35 with 6/10.
++checkSampleEngineMeaning($match['rajjuMatch'] === true && $match['vedhaMatch'] === true, 'The Avittam/Swati sample couple passes both Rajju and Vedha');
++$rajju = array_values(array_filter($match['poruthams'], static fn($row) => $row['id'] === 'rajju'))[0];
++checkSampleEngineMeaning($rajju['pointsEarned'] === 5 && $rajju['maxPoints'] === 5 && $rajju['status'] === 'UTTHAMAM', 'Rajju is a full 5/5 Uttamam row for the sample couple');
+ $vedha = array_values(array_filter($match['poruthams'], static fn($row) => $row['id'] === 'vedha'))[0];
+ checkSampleEngineMeaning($vedha['pointsEarned'] === 3 && $vedha['maxPoints'] === 3 && $vedha['status'] === 'UTTHAMAM', 'Vedha remains a passed 3/3 row');
+-checkSampleEngineMeaning($match['verdictStatus'] === 'PORUNDHADHU', 'Rajju remains a classical hard stop');
+-checkSampleEngineMeaning(strpos($match['verdict'], 'Rajju') !== false && strpos($match['verdict'], 'Vedha') === false, 'Legacy verdict names only the actual failed check');
+-foreach (['En' => 'Rajju', 'Ta' => 'ரஜ்ஜு', 'Hi' => 'रज्जु'] as $lang => $failedName) {
+-    checkSampleEngineMeaning(strpos($match['overallVerdict' . $lang], $failedName) !== false, "{$lang} overall verdict identifies Rajju");
+-    checkSampleEngineMeaning(strpos($match['sevvayDosham']['recommendation' . $lang], $failedName) !== false, "{$lang} Kuja guidance acknowledges the remaining Rajju mismatch");
++$yoni = array_values(array_filter($match['poruthams'], static fn($row) => $row['id'] === 'yoni'))[0];
++checkSampleEngineMeaning($yoni['pointsEarned'] === 2 && $yoni['maxPoints'] === 4 && $yoni['status'] === 'MADHYAMAM', 'A partial 2/4 Yoni row is labelled Mathimam, not Uttamam');
++checkSampleEngineMeaning($match['verdictStatus'] === 'MADHYAMAM' && (float) $match['score'] === 24.0 && $match['maxScore'] === 35 && $match['totalPoruthamsMatched'] === 7,
++    'The sample couple scores 24/35 with 7/10 Poruthams and a recalculated Madhyama verdict');
++checkSampleEngineMeaning(strpos($match['verdict'], 'Acceptable with Remedies') !== false, 'Legacy verdict is derived from the corrected 68.6% score, not from the old Rajju failure');
++foreach (['En', 'Ta', 'Hi'] as $lang) {
++    $recommendation = (string) $match['sevvayDosham']['recommendation' . $lang];
++    checkSampleEngineMeaning(strpos($recommendation, 'mismatch remains') === false && strpos($recommendation, 'பொருத்தமின்மை நீங்கவில்லை') === false,
++        "{$lang} Kuja guidance no longer repeats the crucial-mismatch sentence a third time");
+ }
+-checkSampleEngineMeaning(strpos($match['sevvayDosham']['recommendationEn'], 'match may proceed') === false, 'Mild Kuja remedies do not approve an overall blocked marriage');
++checkSampleEngineMeaning(strpos($match['sevvayDosham']['recommendationEn'], 'Kuja Dosha alone') !== false, 'Kuja guidance is still scoped to Kuja Dosha alone');
++checkSampleEngineMeaning(strpos($match['sevvayDosham']['recommendationEn'], 'match may proceed') === false, 'Mild Kuja remedies do not by themselves approve a marriage');
+ checkSampleEngineMeaning($match['doshaSummary'] === $match['sevvayDosham']['recommendationEn'], 'Dosha summary uses the assessed facts, not an invented balanced-planetary-harmonies claim');
+ 
+ $balancedBlocked = AstroEngine::calculateMatchmaking(['bride' => array_merge($groom, ['gender' => 'F']), 'groom' => $groom]);
+ checkSampleEngineMeaning($balancedBlocked['sevvayDosham']['isBalanced'] === true && $balancedBlocked['verdictStatus'] === 'PORUNDHADHU', 'Balanced Kuja does not remove a Rajju hard stop');
+ checkSampleEngineMeaning(strpos($balancedBlocked['sevvayDosham']['recommendationEn'], 'not the overall marriage recommendation') !== false, 'Balanced Kuja recommendation is explicitly scoped');
+diff --git a/tests/sample-engine-meaning.test.ts b/tests/sample-engine-meaning.test.ts
+index 0608286..dfd4ea5 100644
+--- a/tests/sample-engine-meaning.test.ts
++++ b/tests/sample-engine-meaning.test.ts
+@@ -44,35 +44,50 @@ console.log('[PASS] Public Rahu sample distinguishes birth balance from full pre
+ 
+ const marriage = calculateWeddingCompatibility(
+   { name: 'Priya Devi', ...BIRTH, dob: '1998-06-15', tob: '06:30', gender: 'F' },
+   { name: 'Karthik Raman', ...BIRTH, gender: 'M' }
+ );
+-assert.equal(marriage.rajjuMatch, false);
++// The sample couple is groom Swati (Kanda Rajju) + bride Avittam/Dhanishta
++// (Siro Rajju): DIFFERENT Rajju groups, so Rajju passes 5/5 and the verdict is
++// recalculated from the corrected score. The old table put both stars in the
++// Siro group, which failed the crucial gate and forced "not good".
++assert.equal(marriage.rajjuMatch, true);
+ assert.equal(marriage.vedhaMatch, true);
++assert.equal(marriage.poruthams.find(row => row.id === 'rajju')?.status, PoruthamStatus.UTTHAMAM);
++assert.equal(marriage.poruthams.find(row => row.id === 'rajju')?.pointsEarned, 1.0);
++assert.equal(marriage.poruthams.find(row => row.id === 'rajju')?.maxPoints, 1.0);
++// Partial Yoni (2/4 in the PHP weighting) is Mathimam, never Uttamam.
++assert.equal(marriage.poruthams.find(row => row.id === 'yoni')?.status, PoruthamStatus.MADHYAMAM);
+ assert.equal(marriage.poruthams.find(row => row.id === 'vedhai')?.status, PoruthamStatus.UTTHAMAM);
+-assert.equal(marriage.verdictStatus, PoruthamStatus.PORUNDHADHU);
+-assert.match(marriage.overallVerdictEn, /Rajju/);
+-assert.doesNotMatch(marriage.overallVerdictEn, /Vedha/);
++assert.equal(marriage.verdictStatus, PoruthamStatus.MADHYAMAM);
++assert.match(marriage.overallVerdictEn, /Moderate Match/);
++assert.doesNotMatch(marriage.overallVerdictEn, /Critical/);
++assert.equal(marriage.totalScore, 7.5);
++assert.equal(marriage.totalPoruthamsMatched, 8);
+ assert.equal(marriage.sevvayDosham.brideDoshamSeverityEn, 'Mild Sevvay Dosha');
+ assert.equal(marriage.sevvayDosham.groomDoshamSeverityEn, 'Dosha Nivrutti applies');
+-for (const [language, failedName] of [['En', 'Rajju'], ['Ta', 'ரஜ்ஜு'], ['Hi', 'रज्जु']] as const) {
++// Kuja guidance is scoped to Kuja alone and no longer repeats the crucial
++// mismatch sentence a third time (the verdict already states it once).
++assert.match(marriage.sevvayDosham.recommendationEn, /Kuja Dosha alone/);
++for (const language of ['En', 'Ta', 'Hi'] as const) {
+   const recommendation = marriage.sevvayDosham[`recommendation${language}`];
+-  assert(recommendation.includes(failedName), `${language} Kuja guidance acknowledges the surviving Rajju hard stop`);
++  assert.doesNotMatch(recommendation, /mismatch remains|பொருத்தமின்மை நீங்கவில்லை/,
++    `${language} Kuja guidance must not repeat the Rajju/Vedha mismatch`);
+ }
+-assert.match(marriage.sevvayDosham.recommendationEn, /Kuja Dosha alone/);
+-assert.match(marriage.sevvayDosham.recommendationEn, /not recommended/);
+ 
+-// A balanced Kuja result is still not marriage approval when Rajju fails.
++// A balanced Kuja result is still not marriage approval when Rajju fails:
++// both people here share the same Swati star, which is the SAME Rajju group.
+ const balancedButBlocked = calculateWeddingCompatibility(
+   { name: 'Bride', ...BIRTH, gender: 'F' }, { name: 'Groom', ...BIRTH, gender: 'M' }
+ );
+ assert.equal(balancedButBlocked.sevvayDosham.isBrideHasDosham, balancedButBlocked.sevvayDosham.isGroomHasDosham);
+ assert.equal(balancedButBlocked.rajjuMatch, false);
+ assert.equal(balancedButBlocked.verdictStatus, PoruthamStatus.PORUNDHADHU);
++assert.match(balancedButBlocked.overallVerdictEn, /Critical Rajju mismatch/);
+ assert.match(balancedButBlocked.sevvayDosham.recommendationEn, /not an overall marriage recommendation/);
+-assert.match(balancedButBlocked.sevvayDosham.recommendationEn, /Rajju mismatch/);
+-console.log('[PASS] Public marriage sample names only its failed check and scopes Kuja guidance');
++assert.doesNotMatch(balancedButBlocked.sevvayDosham.recommendationEn, /mismatch remains/);
++console.log('[PASS] Public marriage sample passes Avittam/Swati Rajju and scopes Kuja guidance');
+ 
+ const baby = calculateBabyNamingDetails({ babyName: 'Aarav', ...BIRTH, gender: 'M' });
+ assert.equal(baby.primaryPadaInfo.letterEn, 'Re / Ray');
+ assert.equal(baby.babyName, 'Aarav', 'Preserve the caller-supplied name, even when its initial differs');
+ assert.equal(baby.nameProvenance.suppliedName, 'Aarav');
+diff --git a/tests/wedding-matching-report.test.php b/tests/wedding-matching-report.test.php
+index 4b58ec3..067561f 100644
+--- a/tests/wedding-matching-report.test.php
++++ b/tests/wedding-matching-report.test.php
+@@ -106,16 +106,61 @@ foreach ([4, 7, 10, 13, 16, 19, 22, 25] as $favorableCount) {
+ $samePadaRajju = $poruthamsForStars(9, 0); // Magha and Ashwini: Pada Rajju.
+ checkWeddingVerdict(
+     $samePadaRajju['rajju']['pass'] === false,
+     'Different Nakshatras in the same Rajju group still fail Rajju Porutham'
+ );
+-$differentRajju = $poruthamsForStars(8, 0); // Ashlesha and Ashwini: different Rajju groups.
++// Ashlesha (8) and Ashwini (0) are BOTH Pada Rajju in the classical grouping,
++// so the two stars here are Ardra (5, Kanda) and Ashwini (0, Pada).
++$differentRajju = $poruthamsForStars(5, 0);
+ checkWeddingVerdict(
+     $differentRajju['rajju']['pass'] === true,
+     'PHP Rajju groups match the TypeScript Nakshatra mapping'
+ );
+ 
++// ---------------------------------------------------------------------------
++// CASE 1 (reported bug): bride Avittam/Dhanishta (22, Siro Rajju) + groom
++// Swathi (14, Kanda Rajju) are in DIFFERENT Rajju groups, so Rajju must be a
++// full 5/5 Uttamam pass. The old table rotated 4,3,2,1,0 every five stars and
++// put both stars in group 0, which failed the crucial gate and produced
++// 19/35 with 6/10 instead of the correct 24/35 with 7/10.
++// ---------------------------------------------------------------------------
++$avittamSwati = $poruthamsForStars(14, 22); // groom Swathi 14, bride Avittam 22
++checkWeddingVerdict(
++    $avittamSwati['rajju']['pass'] === true && $avittamSwati['rajju']['pts'] === 5 && $avittamSwati['rajju']['max'] === 5,
++    'CASE 1: bride Avittam (Siro) + groom Swathi (Kanda) earn Rajju Uttamam 5/5'
++);
++$rohiniSwati = $poruthamsForStars(14, 3); // both Kanda Rajju
++checkWeddingVerdict(
++    $rohiniSwati['rajju']['pass'] === false,
++    'CASE 1 control: two stars of the SAME Rajju group still fail Rajju'
++);
++
++// The invariant the reported bug broke: the five classical groups each own SIX
++// specific Nakshatras and repeat every nine stars. The old table was rotated
++// 4,3,2,1,0 five stars at a time and then hand-patched at Revati, so members of
++// one classical group carried different indexes. This walks the whole table.
++$rajjuProperty = new ReflectionProperty(AstroEngine::class, 'RAJJU_GROUP');
++$rajjuProperty->setAccessible(true);
++$rajjuTable = $rajjuProperty->getValue();
++$classicalRajjuGroups = [
++    'Siro (head)'    => [4, 13, 22],             // Mrigashirsha, Chitra, Dhanishta (Avittam)
++    'Kanda (neck)'   => [3, 5, 12, 14, 21, 23],  // Rohini, Ardra, Hasta, Swati, Shravana, Shatabhisha
++    'Udhara (navel)' => [2, 6, 11, 15, 20, 24],  // Krittika, Punarvasu, Uttara Phalguni, Vishakha, Uttara Ashadha, Purva Bhadrapada
++    'Uru (thigh)'    => [1, 7, 10, 16, 19, 25],  // Bharani, Pushya, Purva Phalguni, Anuradha, Purva Ashadha, Uttara Bhadrapada
++    'Pada (foot)'    => [0, 8, 9, 17, 18, 26],   // Ashwini, Ashlesha, Magha, Jyeshtha, Mula, Revati
++];
++checkWeddingVerdict(count($rajjuTable) === 27, 'The Rajju table covers all 27 Nakshatras');
++$expectedIndex = 0;
++foreach ($classicalRajjuGroups as $groupName => $memberStars) {
++    $indexes = array_unique(array_map(static fn($star) => $rajjuTable[$star], $memberStars));
++    checkWeddingVerdict(
++        $indexes === [$expectedIndex],
++        "Every classical {$groupName} Rajju Nakshatra shares group index {$expectedIndex}"
++    );
++    $expectedIndex++;
++}
++
+ $sameBirth = [
+     'name' => 'Same Star Test',
+     'dob' => '1990-01-01',
+     'tob' => '12:00',
+     'birthPlace' => 'Chennai, India',
+@@ -135,10 +180,44 @@ checkWeddingVerdict(
+ );
+ checkWeddingVerdict(
+     $sameBirthMatch['bridePlace'] === 'Chennai, India' && $sameBirthMatch['groomPlace'] === 'Chennai, India',
+     'The PHP matchmaking report appends each birth country once and never duplicates it'
+ );
++
++// The fixed public sample couple IS the reported case: groom born 01 Jan 2000,
++// 02:00, Chennai (Swati) and bride born 15 Jun 1998, 06:30, Chennai (Avittam).
++$sampleCouple = AstroEngine::calculateMatchmaking([
++    'bride' => array_merge($sameBirth, ['name' => 'Priya Devi', 'dob' => '1998-06-15', 'tob' => '06:30', 'gender' => 'F']),
++    'groom' => array_merge($sameBirth, ['name' => 'Karthik Raman', 'dob' => '2000-01-01', 'tob' => '02:00', 'gender' => 'M'])
++]);
++$sampleRajju = array_values(array_filter($sampleCouple['poruthams'], static fn($p) => ($p['id'] ?? '') === 'rajju'))[0] ?? [];
++checkWeddingVerdict(
++    $sampleCouple['groomNakshatraNameEn'] === 'Swati' && $sampleCouple['brideNakshatraNameEn'] === 'Dhanishta',
++    'CASE 1: the sample couple really is groom Swati + bride Avittam (Dhanishta)'
++);
++checkWeddingVerdict(
++    $sampleCouple['rajjuMatch'] === true && ($sampleRajju['status'] ?? '') === 'UTTHAMAM' &&
++    ($sampleRajju['pointsEarned'] ?? null) == 5 && ($sampleRajju['maxPoints'] ?? null) == 5,
++    'CASE 1: the sample couple is reported as Rajju Uttamam 5/5, not a Rajju failure'
++);
++checkWeddingVerdict(
++    (float) $sampleCouple['score'] === 24.0 && $sampleCouple['maxScore'] === 35,
++    'CASE 1: the sample couple scores 24/35 (not 19/35)'
++);
++checkWeddingVerdict(
++    $sampleCouple['totalPoruthamsMatched'] === 7,
++    'CASE 1: the sample couple matches 7/10 Poruthams (not 6/10)'
++);
++checkWeddingVerdict(
++    $sampleCouple['verdictStatus'] === 'MADHYAMAM',
++    'CASE 1: the final verdict is recalculated from the corrected result (Madhyamam), not carried over as Not Recommended'
++);
++$sampleTaHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'ta', 'order_number' => 'ORD-CASE1'], $sampleCouple);
++checkWeddingVerdict(
++    strpos($sampleTaHtml, 'final-verdict-good') !== false && strpos($sampleTaHtml, 'இந்தப் பொருத்தம் நல்லது') !== false,
++    'CASE 1: the Tamil final verdict follows the corrected result instead of the hardcoded not-good wording'
++);
+ $earnedPointSum = array_sum(array_column($sameBirthMatch['poruthams'], 'pointsEarned'));
+ $maximumPointSum = array_sum(array_column($sameBirthMatch['poruthams'], 'maxPoints'));
+ checkWeddingVerdict(
+     count($sameBirthMatch['poruthams']) === 10 && $maximumPointSum === $sameBirthMatch['maxScore'] && $maximumPointSum === 35,
+     'PHP reports ten weighted Poruthams with a denominator equal to the sum of their actual maxima (35)'
+@@ -235,10 +314,62 @@ checkWeddingVerdict(
+     strpos($goodHtml, 'class="panel final-verdict-good"') !== false &&
+     strpos($goodHtml, 'The matching is good. All the best!') !== false,
+     'A moderate/favourable matching report ends with a green positive verdict'
+ );
+ 
++// ---------------------------------------------------------------------------
++// CASE 2: a partial score must be labelled Mathimam (MADHYAMAM), never
++// "Uttamam". Yoni 2/4 (a neutral animal pair) used to be promoted to
++// UTTHAMAM because the label followed the pass/fail flag instead of the marks.
++// ---------------------------------------------------------------------------
++$yoniPartialResult = $baseResult;
++$yoniPartialResult['verdictStatus'] = 'MADHYAMAM';
++$yoniPartialResult['poruthams'] = [[
++    'id' => 'yoni', 'nameEn' => 'Yoni Porutham', 'nameTa' => 'யோனிப் பொருத்தம்', 'nameHi' => 'योनि पोरुथम',
++    'pointsEarned' => 2, 'maxPoints' => 4, 'status' => 'MADHYAMAM',
++    'explanationEn' => 'Only a partial Yoni match.', 'explanationTa' => 'ஆंशिक யோனி மேல்.', 'explanationHi' => 'आंशिक योनि मेल।',
++]];
++$yoniPartialHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'en'], $yoniPartialResult);
++checkWeddingVerdict(
++    strpos($yoniPartialHtml, 'MADHYAMAM') !== false && strpos($yoniPartialHtml, '2 / 4') !== false,
++    'CASE 2: a 2/4 Yoni row is labelled Mathimam (MADHYAMAM), not Uttamam'
++);
++
++// The label comes from the engine's own scoring rule, not from the row above:
++// Swati + Dhanishta are a neutral (neither friendly nor inimical) animal pair
++// worth 2 of 4 marks, and that row must be reported as MADHYAMAM.
++$yoniTwoOfFour = $poruthamsForStars(14, 22); // groom Swati + bride Dhanishta
++checkWeddingVerdict(
++    $yoniTwoOfFour['yoni']['pts'] === 2 && $yoniTwoOfFour['yoni']['max'] === 4,
++    'CASE 2: the engine reports the neutral Yoni pair as a genuine 2/4 partial score'
++);
++$sampleYoniRow = array_values(array_filter($sampleCouple['poruthams'], static fn($p) => ($p['id'] ?? '') === 'yoni'))[0] ?? [];
++checkWeddingVerdict(
++    ($sampleYoniRow['status'] ?? '') === 'MADHYAMAM' && ($sampleYoniRow['pointsEarned'] ?? null) == 2 && ($sampleYoniRow['maxPoints'] ?? null) == 4,
++    'CASE 2: the live 2/4 Yoni row carries the Mathimam (MADHYAMAM) label, never Uttamam'
++);
++
++// ---------------------------------------------------------------------------
++// CASE 3: a genuine zero must print "0 / 4", never a bare "/ 4".
++// ---------------------------------------------------------------------------
++$zeroRowResult = $baseResult;
++$zeroRowResult['verdictStatus'] = 'PORUNDHADHU';
++$zeroRowResult['poruthams'] = [[
++    'id' => 'gana', 'nameEn' => 'Gana Porutham', 'nameTa' => 'கணப் பொருத்தம்', 'nameHi' => 'गण पोरुथम',
++    'points' => 0, 'pointsEarned' => 0, 'maxPoints' => 4, 'status' => 'PORUNDHADHU',
++    'explanationEn' => 'The two Ganas differ.', 'explanationTa' => 'கணங்கள் வேறுபடுகின்றன.', 'explanationHi' => 'दोनों गण भिन्न हैं।',
++]];
++$zeroRowHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'en'], $zeroRowResult);
++checkWeddingVerdict(
++    strpos($zeroRowHtml, '0 / 4') !== false,
++    'CASE 3: a zero point row renders 0 / 4 instead of a blank numerator'
++);
++checkWeddingVerdict(
++    preg_match('/<td[^>]*>\s*\/\s*4\s*<\/td>/', $zeroRowHtml) !== 1,
++    'CASE 3: the report never prints a bare "/ 4" with an empty numerator'
++);
++
+ $badResult = $baseResult;
+ $badResult['verdictStatus'] = 'PORUNDHADHU';
+ $badResult['percentage'] = 35;
+ $badResult['overallVerdictEn'] = 'Not Recommended - Porutham does not meet the recommended standard';
+ $badHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'en'], $badResult);
+@@ -246,10 +377,14 @@ checkWeddingVerdict(
+     strpos($badHtml, 'class="panel final-verdict-not-good"') !== false &&
+     strpos($badHtml, 'The matching is not good.') !== false &&
+     strpos($badHtml, 'color:#991b1b') !== false,
+     'An incompatible matching report ends with a red, clearly labeled verdict'
+ );
++checkWeddingVerdict(
++    strpos($badHtml, 'astrological guidance only') !== false,
++    'The negative final verdict agrees with the page-2 disclaimer that this is guidance only'
++);
+ 
+ $missingScoreHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'en'], ['poruthams' => []]);
+ checkWeddingVerdict(
+     strpos($missingScoreHtml, 'N/A / N/A') !== false && strpos($missingScoreHtml, '/ 36') === false,
+     'The PHP report displays N/A instead of inventing zero points or a 36-point denominator'

@@ -1,0 +1,28 @@
+# Issue 4 - A true zero prints "0 / 4" (?? semantics, legacy `points` key accepted).
+# Apply from the repository root:  patch -p1 < patches/04-zero-score-rendering.patch
+
+diff --git a/src/services/weddingHtmlBuilder.ts b/src/services/weddingHtmlBuilder.ts
+index 0035c8c..5aa88cd 100644
+--- a/src/services/weddingHtmlBuilder.ts
++++ b/src/services/weddingHtmlBuilder.ts
+@@ -273,12 +276,18 @@ export function buildWeddingMatchHtml(
+       : p.status === PoruthamStatus.UTTHAMAM
+       ? (isTa ? 'உத்தமம்' : isHi ? 'उत्तम' : 'Utthamam')
+       : p.status === PoruthamStatus.MADHYAMAM
+       ? (isTa ? 'மத்திமம்' : isHi ? 'मध्यम' : 'Madhyamam')
+       : (isTa ? 'பொருந்தாது' : isHi ? 'अशुभ' : 'Incompatible');
+-    const earnedPoints = Number(p.pointsEarned);
+-    const maximumPoints = Number(p.maxPoints);
++    // `??` (not `||`) so a genuine ZERO earned score still prints "0 / 4":
++    // `0 || fallback` would blank the numerator and leave a bare "/ 4".
++    // The legacy `points` key is accepted because the PHP engine and old saved
++    // orders carry both spellings; every other renderer already does this.
++    const rawEarned: unknown = p.pointsEarned ?? (p as any).points;
++    const rawMaximum: unknown = p.maxPoints;
++    const earnedPoints = rawEarned === undefined || rawEarned === null || rawEarned === '' ? Number.NaN : Number(rawEarned);
++    const maximumPoints = rawMaximum === undefined || rawMaximum === null || rawMaximum === '' ? Number.NaN : Number(rawMaximum);
+     const pPoints = Number.isFinite(earnedPoints) && earnedPoints >= 0 && Number.isFinite(maximumPoints) && maximumPoints > 0
+       ? `${Number(earnedPoints.toFixed(1))} / ${Number(maximumPoints.toFixed(1))}`
+       : 'N/A / N/A';
+ 
+     return `

@@ -1,0 +1,108 @@
+name: Test Suite
+
+# Regression gate for every change: the Node suites (payments, delivery, auth,
+# rate limiting, source-text guards) and the PHP suites that exercise the
+# cPanel API. The release workflow (build.yml) is intentionally separate so a
+# failing test blocks review without breaking the published dist.zip.
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    name: Node test suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Try npm ci with automatic npm install fallback to ensure resilient CI runs
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Type check
+        run: npm run lint
+
+      - name: Run test suites
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+
+  php:
+    name: PHP test suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.1
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: gd, mbstring, intl
+          ini-values: memory_limit=512M
+          tools: composer
+
+      - name: Install mPDF for real three-language PDF checks
+        run: |
+          if [ -f composer.lock ]; then
+            composer install --no-interaction --prefer-dist --no-progress
+          else
+            composer update --no-interaction --prefer-dist --no-progress
+          fi
+
+      - name: Lint every PHP file
+        run: |
+          find api tests -name '*.php' -not -path '*/vendor/*' -print0 \
+            | xargs -0 -n1 -P4 php -l
+
+      - name: Run PHP test suites
+        env:
+          ASTRO_REQUIRE_MPDF_TESTS: '1'
+        run: npm run test:php
+
+  parity:
+    name: Node <-> PHP engine parity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup PHP 8.1
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      # Try npm ci with automatic npm install fallback to ensure resilient CI runs
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Node engine over the parity corpus
+        run: npm run parity:node
+
+      - name: PHP engine over the parity corpus
+        run: npm run parity:php
+
+      - name: Diff the two engines (fails on any disagreement)
+        run: npm run parity:compare
+
+      - name: Both engines against the committed contract
+        run: |
+          npx tsx tests/node-php-parity.test.ts && php tests/node-php-parity.test.php
+          npx tsx tests/jathagam-summary-parity.test.ts && php tests/jathagam-summary-parity.test.php

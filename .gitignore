@@ -1,0 +1,46 @@
+node_modules/
+vendor/
+build/
+coverage/
+playwright-report/
+test-results/
+
+# Preview screenshot written at the repo root by the Muhurtham PDF browser test
+muhurtham_preview_p2_month.png
+.DS_Store
+*.log
+.env*
+!.env.example
+dist/
+dist.zip
+public/dist.zip
+public/dist_and_api.zip
+public_html/
+public_html_combined.zip
+
+# Runtime account, order, and personal-data store (never commit)
+data/database.json
+
+# Locally generated HMAC signing key for bearer tokens (never commit)
+data/app_secret_key.txt
+api/astrology/tmp/app_secret_key.txt
+data/family_docs/
+
+# Python bytecode cache from the scripts/ asset builders
+__pycache__/
+*.pyc
+
+# Locally generated report previews / verification harness output (repository root)
+/tmp/
+
+# PHP runtime directory: the HMAC signing key (api/config.php) and the mPDF font
+# cache live here and are never committed. Only the Apache guard that denies all
+# HTTP access to the directory is tracked — the runtime gate depends on it
+# (tests/full-suite.test.ts) and the deploy scripts copy it to the server.
+api/astrology/tmp/*
+!api/astrology/tmp/.htaccess
+
+# Node↔PHP parity: regenerable engine output (the committed contract is
+# tests/fixtures/node-php-parity-expected.json).
+tests/fixtures/parity-node.json
+tests/fixtures/parity-php.json
