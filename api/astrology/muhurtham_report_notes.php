@@ -1,5 +1,5 @@
 <?php
-/** Shared explanatory copy for browser, Node and PHP Muhurtham reports. */
+/** Shared explanatory copy for browser and PHP Muhurtham reports. */
 class MuhurthamReportNotes {
     public static function build(array $result, array $event, string $lang = 'en'): array {
         static $translations = null;

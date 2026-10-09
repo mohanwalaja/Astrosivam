@@ -7,10 +7,10 @@ import { buildWeddingMatchHtml } from '../src/services/weddingHtmlBuilder.js';
 import { buildBabyNamingHtml } from '../src/services/babyNamingHtmlBuilder.js';
 import { VedicNamingCertificate } from '../src/components/common/VedicNamingCertificate.js';
 import { getGunam } from '../src/services/gunamData.js';
-import { calculatePrecisionHoroscope, RASI_INFO } from '../server/astrology/astronomy.js';
-import { ALL_NAKSHATRA_LETTERS, calculateBabyNamingDetails } from '../server/astrology/babynames.js';
-import { calculateWeddingCompatibility } from '../server/astrology/matchmaking.js';
-import { Graha, HoroscopeResult, Rasi, WeddingMatchResult } from '../server/astrology/types.js';
+import { calculatePrecisionHoroscope, RASI_INFO } from '../src/lib/astrology/astronomy.js';
+import { ALL_NAKSHATRA_LETTERS, calculateBabyNamingDetails } from '../src/lib/astrology/babynames.js';
+import { calculateWeddingCompatibility } from '../src/lib/astrology/matchmaking.js';
+import { Graha, HoroscopeResult, Rasi, WeddingMatchResult } from '../src/lib/astrology/types.js';
 
 const validBirth = {
   name: 'Integrity Test',

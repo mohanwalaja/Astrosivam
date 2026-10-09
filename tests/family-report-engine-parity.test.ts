@@ -11,7 +11,7 @@
  *
  * Two engine facts made that rejection permanent:
  *
- *  1. The staleness check required `result.bhavas`, but only the Node engine
+ *  1. The staleness check required `result.bhavas`, but only the TypeScript engine
  *     emits that table. Production runs the PHP API
  *     (`AstroEngine::calculateHoroscope()`), which records the twelve houses on
  *     every `planetPositions` entry instead — so EVERY rescued member was
@@ -28,8 +28,8 @@
  * recalculation.
  */
 import assert from 'node:assert/strict';
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy.js';
-import { calculateBabyNamingDetails } from '../server/astrology/babynames.js';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy.js';
+import { calculateBabyNamingDetails } from '../src/lib/astrology/babynames.js';
 import {
   buildOrderReportHtml,
   canonicalCalculationPayload,
@@ -70,7 +70,7 @@ assert.equal(resultNeedsRecalculation(makeOrder(payload, nodeChart), nodeChart),
 // --- 1. The PHP engine's chart shape must be accepted ----------------------
 // The PHP result carries every field the report renders, but no `bhavas`
 // table (the houses live on each planetPosition). Deleting exactly those
-// Node-only keys reproduces a production PHP chart.
+// TypeScript-engine keys reproduces a production PHP chart.
 const phpShapedChart: any = { ...nodeChart };
 for (const nodeOnly of ['bhavas', 'navamsaPositions', 'currentDasha', 'saniStatus', 'lagnaRasiNameHi', 'janmaNakshatraHi']) {
   delete phpShapedChart[nodeOnly];
@@ -78,7 +78,7 @@ for (const nodeOnly of ['bhavas', 'navamsaPositions', 'currentDasha', 'saniStatu
 assert.equal(
   resultNeedsRecalculation(makeOrder(payload, phpShapedChart), phpShapedChart),
   false,
-  'a chart that differs from the Node chart only by the Node-only bhavas table must be current'
+  'a chart that differs from the TypeScript chart only by the TypeScript-engine bhavas table must be current'
 );
 assert.ok(
   buildOrderReportHtml(makeOrder(payload, phpShapedChart), mergeOrderPayloadIntoResult(makeOrder(payload, phpShapedChart), phpShapedChart), 'en').length > 1000,
@@ -241,10 +241,23 @@ assert.equal(
 );
 
 // --- 6. The whole family calculation phase resolves 4/4 -------------------
-// One member renders from the Node-era cache, one from a PHP chart, one from a
-// legacy saved birth time and one has no cache at all (recalculated from the
-// saved payload through the same dispatcher the API uses).
-const { computeOrderReportResult } = await import('../server/astrology/orderReportResult.js');
+// One member renders from a TypeScript-era cache, one from a PHP chart, one
+// from a legacy saved birth time and one has no cache at all. Fresh TypeScript
+// charts stand in for the shared-host PHP calculation endpoint in this unit test.
+const recalculateBirthChart = (member: any) => {
+  const input = canonicalCalculationPayload(member.inputPayload);
+  return calculatePrecisionHoroscope(
+    input.name || member.userName,
+    input.dob,
+    input.tob,
+    input.birthPlace,
+    input.latitude,
+    input.longitude,
+    input.timezoneOffsetHours,
+    input.country,
+    input.gender
+  );
+};
 const members = [
   makeOrder(payload, nodeChart, 'BIRTH_JATHAGAM', 'Family Member 1'),
   makeOrder(payload, phpShapedChart, 'BIRTH_JATHAGAM', 'Family Member 2'),
@@ -254,13 +267,7 @@ const members = [
 for (const member of members) {
   const needsRecalculation = !member.calculatedResult || resultNeedsRecalculation(member, member.calculatedResult);
   const recalculated = needsRecalculation
-    ? computeOrderReportResult({
-        serviceType: member.serviceType,
-        // Mirrors resolveCalculatedResult(): the API receives the canonical
-        // wall clock, never a legacy '6:30 PM' string the engines reject.
-        inputPayload: canonicalCalculationPayload(member.inputPayload),
-        userName: member.userName
-      } as any)
+    ? recalculateBirthChart(member)
     : member.calculatedResult;
   assert.ok(recalculated, `${member.userName} must resolve a chart (no skip)`);
   assert.equal(

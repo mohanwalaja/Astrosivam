@@ -1,5 +1,8 @@
 # Free Beta — Exactly 1 Free Report Per IP Address
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 ## The rule
 
 During the **Free Beta**, every customer gets **exactly ONE free astrology report**,

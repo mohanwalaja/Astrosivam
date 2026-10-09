@@ -1,5 +1,5 @@
 import { test, expect, type Frame, type Page } from '@playwright/test';
-import { calculatePrecisionHoroscope } from '../../server/astrology/astronomy';
+import { calculatePrecisionHoroscope } from '../../src/lib/astrology/astronomy';
 import { buildJathagamHtml, buildJathagamLifeCards } from '../../src/services/jathagamHtmlBuilder';
 
 // Use the real bundled Latin/Indic faces, without depending on the fonts CDN.

@@ -4,7 +4,7 @@ import {
   getTimezoneOffsetAtInstant,
   resolveLocalDateTimeInTimeZone
 } from '../src/lib/timezone.js';
-import { calculatePrecisionHoroscope, calculatePrecisionPanchangam } from '../server/astrology/astronomy.js';
+import { calculatePrecisionHoroscope, calculatePrecisionPanchangam } from '../src/lib/astrology/astronomy.js';
 import { findNakshatraFromBirthDetails } from '../src/lib/muhurtham/scanner.js';
 
 const newYork = getTimeZoneIdForCoordinates(40.7128, -74.006);

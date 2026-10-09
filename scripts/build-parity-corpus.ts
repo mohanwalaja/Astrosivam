@@ -26,7 +26,7 @@
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy.js';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(here, '..');

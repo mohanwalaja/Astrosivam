@@ -8,7 +8,7 @@
  * The Tamil and Hindi text printed under every name on page 2 of the Vedic
  * Namakaran report, keyed by the English meaning of the name bank. The same
  * hash is written into api/astrology/namakaran_meanings.php so the live
- * preview, the Node PDF and the official mPDF report can be proven to show an
+ * preview, the browser preview and the official mPDF report can be proven to show an
  * identical meaning for every name.
  */
 

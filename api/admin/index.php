@@ -23,7 +23,7 @@ $admin = requireAdmin($pdo);
 /**
  * Admin actions that generate PDFs, send customer email or call a provider API
  * are rate-limited per administrator, so a valid admin token cannot be used as
- * a bulk-mail or provider-quota weapon (mirrors the Node ADMIN_ACTION_LIMITS).
+ * a bulk-mail or provider-quota weapon.
  */
 function astro_admin_action_limit($pdo, $admin, $action) {
     $limits = array(

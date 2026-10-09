@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import {
   calculateVimshottariDashaTimeline,
   NAKSHATRA_LORDS
-} from '../server/astrology/astronomy.js';
-import { Graha } from '../server/astrology/types.js';
+} from '../src/lib/astrology/astronomy.js';
+import { Graha } from '../src/lib/astrology/types.js';
 
 /**
  * Vimshottari Dasha timeline validation.

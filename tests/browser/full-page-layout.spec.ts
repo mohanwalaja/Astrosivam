@@ -1,13 +1,13 @@
 import { test, expect, type Frame, type Page } from '@playwright/test';
-import { calculatePrecisionHoroscope } from '../../server/astrology/astronomy';
-import { calculateWeddingCompatibility } from '../../server/astrology/matchmaking';
-import { calculateBabyNamingDetails } from '../../server/astrology/babynames';
+import { calculatePrecisionHoroscope } from '../../src/lib/astrology/astronomy';
+import { calculateWeddingCompatibility } from '../../src/lib/astrology/matchmaking';
+import { calculateBabyNamingDetails } from '../../src/lib/astrology/babynames';
 import { buildJathagamHtml } from '../../src/services/jathagamHtmlBuilder';
 import { buildWeddingMatchHtml } from '../../src/services/weddingHtmlBuilder';
 import { buildBabyNamingHtml } from '../../src/services/babyNamingHtmlBuilder';
 import { buildMuhurthamHtml } from '../../src/services/muhurthamHtmlBuilder';
 import { buildInvoiceHtml, buildFamilyInvoiceHtml } from '../../src/services/invoiceHtmlBuilder';
-import type { AppLanguage } from '../../server/astrology/types';
+import type { AppLanguage } from '../../src/lib/astrology/types';
 import { routeReportFonts } from '../../scripts/report-fonts.mjs';
 
 /**

@@ -1,4 +1,4 @@
-import rajjuTable from '../../api/astrology/rajju.json' with { type: 'json' };
+import rajjuTable from '../../../api/astrology/rajju.json' with { type: 'json' };
 import {
   Rasi,
   PoruthamStatus,
@@ -640,7 +640,7 @@ export function calculateWeddingCompatibility(
       : 'मंगल दोष में असंतुलन है; विशेषज्ञ समीक्षा और उपाय संबंधी सलाह उचित है। यह केवल मंगल दोष का मार्गदर्शन है।'
   };
 
-  // This Node engine uses ten equal-weight Poruthams on a normalized 10-point
+  // This TypeScript engine uses ten equal-weight Poruthams on a normalized 10-point
   // scale. The legacy PHP engine keeps traditional weighted marks (max 35), so
   // reports must carry/display their own row-summed denominator rather than
   // relabeling one engine's score as the other's.

@@ -1,5 +1,8 @@
 # ASTRO SIVAM — Services, Prediction Accuracy & Security Audit
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 **Date:** 5 October 2026
 **Branch:** `arena/01a109b1-astrosivam` (from `main` @ `5487694`)
 **Scope:** every astrology service and report the site sells, the astronomical and

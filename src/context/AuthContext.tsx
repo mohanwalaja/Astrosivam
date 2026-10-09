@@ -42,8 +42,9 @@ const AuthContext = createContext<AuthContextType>({
 const SETTINGS_CACHE_KEY = 'astrosivam_settings';
 
 /**
- * PHP and Node API deployments return birth profiles in slightly different
- * shapes (SQL snake_case columns versus the client camelCase model). Normalize
+ * PHP API responses and older saved records may return birth profiles in
+ * slightly different shapes (SQL snake_case columns versus the client
+ * camelCase model). Normalize
  * at the auth boundary so every screen receives safe, numeric coordinates.
  */
 const normalizeBirthProfile = (value: any): CustomerBirthProfile | null => {

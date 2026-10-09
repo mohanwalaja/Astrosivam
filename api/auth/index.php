@@ -372,7 +372,7 @@ if ($isRegisterRoute) {
         $birthProfile['tob'] = AstroEngine::normalizeBirthTime($birthProfile['tob']);
     }
 
-    // 5 sign-ups per network per 10 minutes (mirrors the Node register limiter).
+    // 5 sign-ups per network in each 10-minute window.
     astro_rate_limit_enforce(
         $pdo,
         'register-ip',
@@ -654,8 +654,7 @@ if ($isRegisterRoute) {
     }
 
     // BRUTE-FORCE PROTECTION: 5 attempts per account+network and 25 per network
-    // per 15 minutes (the Node stack enforces the same policy through its shared
-    // attempt tracker). A successful login clears the pair counter, so a normal
+    // per 15 minutes. A successful login clears the pair counter, so a normal
     // user is never locked out by their own valid sign-ins.
     $loginClientIp = getClientIpAddress();
     astro_rate_limit_enforce(

@@ -5,7 +5,7 @@
 #
 # COLUMNS (tab separated, exactly 5):
 #   1. akshara   The birth-star pada letter (Tamil) this name belongs to,
-#                exactly as it appears in server/astrology/babynames.ts.
+#                exactly as it appears in src/lib/astrology/babynames.ts.
 #   2. gender    M = boy, F = girl
 #   3. style     S = South Indian style, N = North Indian style
 #   4. name      Name in Roman script (this is what the report prints)

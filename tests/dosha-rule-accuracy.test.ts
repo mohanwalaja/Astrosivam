@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy.js';
-import { Graha, Rasi } from '../server/astrology/types.js';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy.js';
+import { Graha, Rasi } from '../src/lib/astrology/types.js';
 import { NAVAGRAHA_DOSHA_DATA } from '../src/services/jathagamDoshaData.js';
-import { activeKujaHouses, KUJA_DEFAULT_HOUSES } from '../server/astrology/kujaDosha.js';
+import { activeKujaHouses, KUJA_DEFAULT_HOUSES } from '../src/lib/astrology/kujaDosha.js';
 
 type Chart = ReturnType<typeof calculatePrecisionHoroscope>;
 type PlanetPosition = Chart['planetPositions'][number];
@@ -21,7 +21,7 @@ type PlanetPosition = Chart['planetPositions'][number];
  *     Kumbham, or by the house-and-sign exceptions, or when Jupiter or the Moon
  *     shares its sign, or when Jupiter aspects it by the 5th/7th/9th, or for a
  *     Kadagam/Simham Lagna (Yogakaraka). The same rule set is implemented in
- *     server/astrology/kujaDosha.ts (a port of AstroEngine::evaluateKujaDosha()
+ *     src/lib/astrology/kujaDosha.ts (a port of AstroEngine::evaluateKujaDosha()
  *     in api/astrology/engine.php) so both stacks agree; it is restated here
  *     independently so a transcription error in either copy fails the suite.
  *   - Kala Sarpa: all seven classical planets on one side of the Rahu-Ketu axis.

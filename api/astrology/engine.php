@@ -79,8 +79,8 @@ class AstroEngine {
     /**
      * Coordinate → IANA zone lookup. PHP port of the tz-lookup npm package
      * decoder (CC0-1.0); the quadtree lives in tz_lookup_data.php, regenerated
-     * with `node scripts/build-tz-lookup-table.mjs` so the browser, the Node
-     * server and this API always agree on the zone for a given place.
+     * with `node scripts/build-tz-lookup-table.mjs` so the browser's
+     * TypeScript calculator and this PHP API agree on the zone for a place.
      * Territorial waters belong to their country; open ocean resolves to the
      * nautical "Etc/GMT±N" zones. Returns null when the table is unavailable.
      */
@@ -359,7 +359,7 @@ class AstroEngine {
      */
     private const LAHIRI_AYANAMSA_J2000 = 23.857092334;
 
-    /** Combustion orbs (degrees from the Sun), mirrored from the Node engine. */
+    /** Combustion orbs (degrees from the Sun), mirrored from the TypeScript engine. */
     private const COMBUSTION_LIMITS = [
         'moon' => 12.0, 'mars' => 17.0, 'mercury' => 14.0, 'jupiter' => 11.0, 'venus' => 10.0, 'saturn' => 15.0,
     ];
@@ -385,7 +385,7 @@ class AstroEngine {
      * engine.php never loads config.php itself (that file emits HTTP headers
      * and starts sessions), so the constant is consulted only when defined.
      * The default is MEAN (the classical, always-retrograde convention) and
-     * matches the Node engine's ASTRO_RAHU_NODE_TYPE default; unknown values
+     * matches the TypeScript engine's ASTRO_RAHU_NODE_TYPE default; unknown values
      * fall back to MEAN and are logged once per process.
      */
     public static function nodeType(): string {
@@ -862,7 +862,7 @@ class AstroEngine {
         $speed = [];
         if ($withSpeed) {
             // Centered ±0.5 day difference of SIDEREAL longitude: robust near
-            // the stations of slow planets, identical to the Node engine.
+            // the stations of slow planets, identical to the TypeScript engine.
             $before = self::computeGeocentricPositions($jdUt - 0.5, false, $nodeType);
             $after = self::computeGeocentricPositions($jdUt + 0.5, false, $nodeType);
             foreach ($sidereal as $body => $_) {
@@ -1228,7 +1228,7 @@ class AstroEngine {
     /**
      * House list used by the live evaluation: the ASTRO_KUJA_HOUSES environment
      * override when it holds a valid 1-12 list, else the South Indian default —
-     * the exact behaviour of activeKujaHouses() in server/astrology/kujaDosha.ts.
+     * the exact behaviour of activeKujaHouses() in src/lib/astrology/kujaDosha.ts.
      */
     private static function kujaDoshaHouses(): array {
         $raw = getenv('ASTRO_KUJA_HOUSES');
@@ -1674,8 +1674,8 @@ class AstroEngine {
     // ------------------------------------------------------------------
     // Items 3/4/6/7 — dignity, Neecha Bhanga, Graha Yuddha, Kendradhipati,
     // yoga notes and the next Mahadasa. Every table below mirrors
-    // server/astrology/dignity.ts and the Node engine value-for-value, so a
-    // PHP-rendered PDF can never disagree with the Node preview.
+    // src/lib/astrology/dignity.ts and the TypeScript engine value-for-value, so a
+    // PHP-rendered PDF can never disagree with the browser preview.
     // ------------------------------------------------------------------
     private const DIGNITY_EXALTATION_SIGN = ['sun' => 1, 'moon' => 2, 'mars' => 10, 'mercury' => 6, 'jupiter' => 4, 'venus' => 12, 'saturn' => 7];
     private const DIGNITY_OWN_SIGNS = [
@@ -1880,7 +1880,7 @@ class AstroEngine {
 
     /**
      * One-line dignity summary for report cards — mirror of dignityCardLine()
-     * in server/astrology/dignity.ts. When Neecha Bhanga applies the line names
+     * in src/lib/astrology/dignity.ts. When Neecha Bhanga applies the line names
      * the rule that caused it and carries the "reduces, does not erase"
      * caveat; '' means there is nothing to say.
      */
@@ -2212,7 +2212,7 @@ class AstroEngine {
             $pNakIndex = intval(floor($totalDeg / $nakshatraSpan)) % 27;
             $pPada = (intval(floor(($totalDeg - ($pNakIndex * $nakshatraSpan)) / ($nakshatraSpan / 4.0))) % 4) + 1;
             // D9 (Navamsa): each sign holds nine 3°20′ parts, so the navamsa rasi is
-            // floor(longitude / 3°20′) % 12 + 1 — the same rule the Node engine uses.
+            // floor(longitude / 3°20′) % 12 + 1 — the same rule the TypeScript engine uses.
             $navRasiForPlanet = (intval(floor($totalDeg / (360.0 / 108.0))) % 12) + 1;
             $planetPositions[] = [
                 'graha' => $rp['graha'],
@@ -2357,7 +2357,7 @@ class AstroEngine {
         $kujaStatus = $kujaDosha['status'];
 
         // Items 6/7: Graha Yuddha, Kendradhipati and the yoga notes the report
-        // prints. All three mirror the Node engine field-for-field.
+        // prints. All three mirror the TypeScript engine field-for-field.
         $grahaYuddha = self::grahaYuddhaPairs($siderealByGraha, $eclipticLatitudes, $rasiByGraha);
         $kendradhipati = self::kendradhipatiDosha($lagnaRasiIndex + 1);
         $yogas = self::yogaNotes($lagnaRasiIndex + 1, $rasiByGraha, $bhavaByGraha);
@@ -2433,7 +2433,7 @@ class AstroEngine {
 
         // Guru Chandala Dosha: Jupiter conjunct or in full 7th-sign opposition to Rahu/Ketu.
         // NOTE: $rasiIdxByGraha holds 0-based sign indices, for which (guru - node) % 12 === 6
-        // is the exact opposition test (mirrors the Node engine).
+        // is the exact opposition test (mirrors the TypeScript engine).
         $jupiterSignIdx = $rasiIdxByGraha['jupiter'] ?? null;
         $rahuSignIdx = $rasiIdxByGraha['rahu'] ?? null;
         $ketuSignIdx = $rasiIdxByGraha['ketu'] ?? null;
@@ -2984,8 +2984,8 @@ class AstroEngine {
 
         // The PHP delivery path retains its traditional weighted point maxima
         // (3+4+3+2+4+5+4+2+5+3 = 35); its denominator is summed from these rows.
-        // This intentionally differs from Node's normalized equal-weight /10
-        // score until a canonical cross-engine weighting is agreed.
+        // This intentionally differs from the TypeScript calculator's
+        // normalized equal-weight /10 score until a canonical weighting is agreed.
         $totalScore = 0; $maxScore = 0; $anyCrucialFailed = false;
         foreach ($poruthamDefs as &$pd) {
             $r = $realResults[$pd['id']];
@@ -3348,7 +3348,7 @@ class AstroEngine {
     /**
      * The curated 1366-name Namakaran bank (page 2 of the report), generated
      * from data/namakaran_name_bank.tsv by scripts/build_namakaran_bank.mjs.
-     * The TypeScript twin of this file is server/astrology/namakaranNameBank.ts
+     * The TypeScript twin of this file is src/lib/astrology/namakaranNameBank.ts
      * and both carry the same content hash, so the live preview and the mPDF
      * report can never drift apart.
      */
@@ -3386,7 +3386,7 @@ class AstroEngine {
     /**
      * A page-2 column (South or North Indian style) for one pada.
      *
-     * Mirrors buildNamakaranPadaNames() in server/astrology/namakaranNames.ts:
+     * Mirrors buildNamakaranPadaNames() in src/lib/astrology/namakaranNames.ts:
      * the akshara's own names come first, and lists that are still short are
      * completed round-robin with closely related sounds of the same letter.
      */
@@ -3921,7 +3921,7 @@ class AstroEngine {
                     'doshasHi' => self::muhurthamStringList($day['doshasHi'] ?? $day['doshasEn'] ?? []),
                     'personalChecks' => is_array($day['personalChecks'] ?? null) ? $day['personalChecks'] : [],
                     // Per-date Chandrashtama / Tara Bala summary line. Both
-                    // engines carry it, so the browser, Node and PHP reports
+                    // engines carry it, so the browser and PHP reports
                     // print the same note under the same star.
                     'personalNoteEn' => (string) ($day['personalNoteEn'] ?? ''),
                     'personalNoteTa' => (string) ($day['personalNoteTa'] ?? $day['personalNoteEn'] ?? ''),
@@ -4104,7 +4104,7 @@ class AstroEngine {
     /**
      * The real date range the scan covers, e.g. "07 Oct 2026 – 31 Mar 2027".
      * Mirrors windowRangeLabel() in src/services/muhurthamHtmlBuilder.ts and
-     * windowRangeFromMonths() in server/astrology/muhurthamScan.ts.
+     * windowRangeFromMonths() in src/lib/astrology/muhurthamScan.ts.
      */
     public static function muhurthamWindowRange(array $months): string {
         $dates = [];

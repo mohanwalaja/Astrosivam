@@ -34,7 +34,8 @@ copy_public_dist() {
   while IFS= read -r -d '' file; do
     relative="${file#dist/}"
     case "$relative" in
-      *.map|*.cjs|server.cjs) echo "Skipping private build artifact: $relative"; continue ;;
+      *.map) echo "Skipping source map: $relative"; continue ;;
+      *.cjs) echo "Refusing executable server bundle in static cPanel build: $relative" >&2; return 1 ;;
     esac
     target="$TARGET_DIR/$relative"
     mkdir -p "$(dirname "$target")"
@@ -42,15 +43,15 @@ copy_public_dist() {
   done < <(find dist -type f -print0)
 }
 
-# Deploy public assets only. A Node server bundle and source maps must never be
-# copied into public_html; the Node entry point belongs in a private app root.
+# Deploy only the static frontend build. The PHP API is copied separately
+# below; no application server process is needed on this shared host.
 if [ -d "dist" ]; then
   echo "Copying public production assets from dist/..."
   copy_public_dist
 elif [ -f "dist.zip" ]; then
   echo "Extracting the deployment archive..."
   if unzip -Z1 dist.zip | grep -E '(^|/)([^/]*\.map|[^/]*\.cjs)$' >/dev/null; then
-    echo "Refusing dist.zip: it contains a Node bundle or source map that must not be public."
+    echo "Refusing dist.zip: it contains an executable server bundle or source map."
     exit 1
   fi
   unzip -o -q dist.zip -d "$TARGET_DIR"

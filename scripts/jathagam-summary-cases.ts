@@ -11,9 +11,9 @@
  * Run `npx tsx scripts/jathagam-summary-cases.ts` to print { case: { lang: html } }.
  */
 import { writeFileSync } from 'node:fs';
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy';
 import { buildJathagamHtml } from '../src/services/jathagamHtmlBuilder';
-import type { AppLanguage, HoroscopeResult } from '../server/astrology/types';
+import type { AppLanguage, HoroscopeResult } from '../src/lib/astrology/types';
 
 export const SUMMARY_LANGUAGES: AppLanguage[] = ['en', 'ta', 'hi'];
 

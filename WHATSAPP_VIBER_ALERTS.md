@@ -1,5 +1,8 @@
 # WhatsApp & Viber Order Alerts — Setup Guide
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 ASTRO SIVAM can notify customers on **WhatsApp** and **Viber** at the two most
 important points of the order lifecycle:
 

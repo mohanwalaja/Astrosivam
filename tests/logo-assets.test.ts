@@ -39,8 +39,9 @@ check('Default live artwork variant matches the modern website mark', defaultVar
 check('PDF artwork defaults to the same variant as the website',
   builder.includes('pdf_variant = args.pdf_variant or args.variant')
   && builder.includes('pdf_emblem = emblem if (pdf_variant or variant) == variant'));
-check('Live mode always re-embeds BOTH base64 logo modules together',
-  builder.includes('ASTRO_LOGO_BASE64') && builder.includes('EMBEDDED_LOGO_BASE64'));
+check('Live mode refreshes the browser report emblem and PHP API logo together',
+  builder.includes('ASTRO_LOGO_BASE64')
+  && builder.includes('os.path.join(ROOT, "api", "assets", "astrosivam_logo.png")'));
 
 // --- the modern mark is drawn, not raster ---------------------------------- //
 const modernMark = read('scripts/modern_mark.py');

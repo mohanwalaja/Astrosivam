@@ -1,5 +1,8 @@
 # ASTRO SIVAM — Logo & Brand Mark Guidelines
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 **Mark name:** *Surya–Chandra Rasi Chakra* (ornate) · *Surya–Chandra Monogram* (modern)
 **Introduced:** 30 Sep 2026
 **Replaces:** the previous navy medallion with the trishul / snake / single-sun artwork

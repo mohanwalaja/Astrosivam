@@ -1,9 +1,9 @@
 /**
- * Node↔PHP parity for the Birth Jathagam page 3 (Short Summary).
+ * TypeScript↔PHP parity for the Birth Jathagam page 3 (Short Summary).
  *
  * tests/fixtures/jathagam-summary-parity.json freezes, per chart and language,
  * the input the rule reads and the supportive / needs-care lists the page must
- * print. This suite checks the Node engine against that contract; the PHP suite
+ * print. This suite checks the TypeScript engine against that contract; the PHP suite
  * tests/jathagam-summary-parity.test.php checks the mPDF engine against the
  * same file, so the two stacks can never disagree about which grahas a chart
  * flags ("Node and PHP agree on the planet lists for the same chart").
@@ -40,7 +40,7 @@ const LANGUAGES: DoshaLanguage[] = ['en', 'ta', 'hi'];
 assert.ok(fixture.cases.length >= 15, 'the parity fixture covers every chart in three languages');
 
 // ---------------------------------------------------------------------------
-// 1. The Node engine reproduces the frozen lists exactly.
+// 1. The TypeScript engine reproduces the frozen lists exactly.
 // ---------------------------------------------------------------------------
 for (const testCase of fixture.cases) {
   const actual = classifyJathagamPlanetsForSummary(testCase.input, testCase.lang);

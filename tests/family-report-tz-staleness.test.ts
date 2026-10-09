@@ -1,7 +1,7 @@
 /**
  * Regression test: family members whose Birth Jathagam chart stores the IANA
  * historical (DST-aware) timezone offset were permanently judged "stale" by
- * resultNeedsRecalculation(). Both engines (Node calculatePrecisionHoroscope
+ * resultNeedsRecalculation(). Both engines (TypeScript calculatePrecisionHoroscope
  * and the PHP engine) intentionally replace the submitted fixed offset with
  * the offset in force at the moment of birth, so the stored offset
  * legitimately differs from what the customer typed for any DST birth
@@ -26,7 +26,7 @@ import {
   getTimeZoneIdForCoordinates,
   resolveLocalDateTimeInTimeZone
 } from '../src/lib/timezone.js';
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy.js';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy.js';
 import {
   buildOrderReportHtml,
   resultNeedsRecalculation,
@@ -184,11 +184,21 @@ const members = [
 ];
 for (const member of members) {
   const needsRecalc = !member.calculatedResult || resultNeedsRecalculation(member, member.calculatedResult);
-  // Mirrors resolveCalculatedResult(): the recalculation path goes through the
-  // same calculate-preview dispatcher the browser API calls.
-  const { computeOrderReportResult } = await import('../server/astrology/orderReportResult.js');
+  // The production calculation endpoint is PHP on shared hosting. The
+  // TypeScript mirror is used here to create a deterministic fresh chart.
+  const input = member.inputPayload;
   const recalc = needsRecalc
-    ? computeOrderReportResult({ serviceType: member.serviceType, inputPayload: member.inputPayload, userName: member.userName })
+    ? calculatePrecisionHoroscope(
+        input.name || member.userName,
+        input.dob,
+        input.tob,
+        input.birthPlace,
+        input.latitude,
+        input.longitude,
+        input.timezoneOffsetHours,
+        input.country,
+        input.gender
+      )
     : null;
   const result = needsRecalc ? recalc : member.calculatedResult;
   assert.ok(result, `member ${member.userName} must resolve a chart (no skip)`);

@@ -3,11 +3,11 @@
  *
  * WHY THIS FILE EXISTS
  * --------------------
- * The site renders the same report from two stacks: this Node engine and
+ * The site renders the same report from two stacks: the TypeScript calculation code and
  * `api/astrology/engine.php` on cPanel. They used different ayanamsa
  * conventions:
  *
- *   Node  : MEAN  Lahiri ayanamsa  = 23.857092334° + p_A(T)
+ *   TypeScript: MEAN  Lahiri ayanamsa  = 23.857092334° + p_A(T)
  *   PHP   : TRUE Lahiri ayanamsa   = mean + Δψ   (the Drik Panchang /
  *                                    swe_get_ayanamsa_ex_ut() convention)
  *
@@ -16,7 +16,7 @@
  * 1900–2100. A preview and the PDF delivered from it could disagree.
  *
  * Both stacks now default to the TRUE ayanamsa, computed from the same IAU 1980
- * nutation series (server/astrology/nutationSeries.ts is generated from the PHP
+ * nutation series (src/lib/astrology/nutationSeries.ts is generated from the PHP
  * engine's table). The MEAN convention remains selectable for cross-checking
  * against `swe_get_ayanamsa_ut()` via ASTRO_AYANAMSA_MODE=MEAN, and every chart
  * reports which one produced it.
@@ -26,6 +26,12 @@
  */
 import * as Astronomy from 'astronomy-engine';
 import { NUTATION_1980_SERIES } from './nutationSeries.js';
+
+/** Read optional Node environment settings without requiring Node in the browser. */
+function runtimeSetting(name: string): string {
+  if (typeof process === 'undefined' || !process.env) return '';
+  return String(process.env[name] ?? '').trim();
+}
 
 export const J2000 = 2451545.0;
 
@@ -150,7 +156,7 @@ export function lahiriAyanamsaTrue(T: number, dpsi?: number): number {
  * ASTRO_AYANAMSA_OFFSET_ARCSEC=-2566 (-0.7128°). That is NOT Lahiri.
  */
 export function ayanamsaOffsetArcs(): number {
-  const raw = String(process.env.ASTRO_AYANAMSA_OFFSET_ARCSEC ?? '').trim();
+  const raw = runtimeSetting('ASTRO_AYANAMSA_OFFSET_ARCSEC');
   if (raw === '') return 0;
   const value = Number(raw);
   if (!Number.isFinite(value)) {
@@ -193,14 +199,14 @@ export function ayanamsaDebugLine(jdUt: number, value: number, mode: AyanamsaMod
  * Silence it with ASTRO_AYANAMSA_SILENT=1.
  */
 export function logAyanamsa(jdUt: number, value: number, mode: AyanamsaMode = ayanamsaMode()): number {
-  if (String(process.env.ASTRO_AYANAMSA_SILENT ?? '').trim() !== '1') {
+  if (runtimeSetting('ASTRO_AYANAMSA_SILENT') !== '1') {
     console.log(ayanamsaDebugLine(jdUt, value, mode));
   }
   return value;
 }
 
 export function ayanamsaMode(): AyanamsaMode {
-  const raw = String(process.env.ASTRO_AYANAMSA_MODE ?? '').trim().toUpperCase();
+  const raw = runtimeSetting('ASTRO_AYANAMSA_MODE').toUpperCase();
   if (raw === '') return 'TRUE';
   if (raw === 'TRUE' || raw === 'MEAN') return raw;
   console.error(

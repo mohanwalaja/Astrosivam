@@ -1,5 +1,8 @@
 # Multi-Person Checkout — One Order, Up To 6 People
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 A single order can now contain **up to 6 people**, each with **one or more
 reports** (Janma Jathagam, Marriage Compatibility, Baby Naming, Subha
 Muhurtham). The customer sees one running total and pays **once**; the admin

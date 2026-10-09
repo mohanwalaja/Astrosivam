@@ -10,7 +10,7 @@ import {
   SHORT_SUMMARY_REMEDY_LABELS,
   SHORT_SUMMARY_TEXT
 } from '../src/services/jathagamDoshaData';
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy';
 import {
   buildJathagamHtml,
   buildNavagrahaReferenceTableHtml,
@@ -29,7 +29,6 @@ const chart = calculatePrecisionHoroscope('Remedy Test', '2000-01-01', '12:00', 
 const phpEngine = readFileSync(new URL('../api/astrology/engine.php', import.meta.url), 'utf8');
 const phpReports = readFileSync(new URL('../api/astrology/pdf_mpdf_reports.php', import.meta.url), 'utf8');
 const builderSource = readFileSync(new URL('../src/services/jathagamHtmlBuilder.ts', import.meta.url), 'utf8');
-const pdfSource = readFileSync(new URL('../server/astrology/pdfGenerator.ts', import.meta.url), 'utf8');
 
 // ---------------------------------------------------------------------------
 // 1. The dosha remedy data is untouched, and so is its PHP mapping.
@@ -95,8 +94,8 @@ for (const lang of languages) {
 }
 
 // ---------------------------------------------------------------------------
-// 4. The removed chart-specific remedies section is gone from every renderer,
-//    while its data keys and the Navagraha material remain.
+// 4. The removed chart-specific remedies section is gone from the browser and
+//    PHP renderers, while its data keys and the Navagraha material remain.
 // ---------------------------------------------------------------------------
 const removedMarkers = [
   'activeRemediesHtml',
@@ -110,7 +109,6 @@ const removedMarkers = [
 ];
 const rendererSources: Array<[string, string]> = [
   ['src/services/jathagamHtmlBuilder.ts', builderSource],
-  ['server/astrology/pdfGenerator.ts', pdfSource],
   ['api/astrology/pdf_mpdf_reports.php', phpReports]
 ];
 for (const [path, source] of rendererSources) {

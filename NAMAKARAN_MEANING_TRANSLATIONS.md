@@ -1,5 +1,8 @@
 # Namakaran page 2 — correct Tamil & Hindi name meanings
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 The name suggestions themselves were already printed in the language the customer
 ordered in, but the **meaning line under each name** was wrong in Tamil (and
 Hindi) for most names — broken words such as `டமில் நமெ` for *"A Tamil name"*,

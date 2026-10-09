@@ -1,6 +1,6 @@
 <?php
 /**
- * Node↔PHP parity for the Birth Jathagam page 3 (Short Summary) — PHP side.
+ * TypeScript↔PHP parity for the Birth Jathagam page 3 (Short Summary) — PHP side.
  *
  * tests/fixtures/jathagam-summary-parity.json freezes, per chart and language,
  * the input the rule reads and the lists the page must print. This suite checks
@@ -46,23 +46,23 @@ foreach ($fixture['cases'] as $case) {
 
     checkSummaryParity(
         $keys($actual['supportive'] ?? []) === $keys($expected['supportive'] ?? []),
-        "{$id}: supportive list matches the Node engine"
+        "{$id}: supportive list matches the TypeScript engine"
     );
     checkSummaryParity(
         $keys($actual['needsCare'] ?? []) === $keys($expected['needsCare'] ?? []),
-        "{$id}: needs-care list matches the Node engine"
+        "{$id}: needs-care list matches the TypeScript engine"
     );
     checkSummaryParity(
         (bool) ($actual['compact'] ?? false) === (bool) ($expected['compact'] ?? false),
-        "{$id}: compact flag matches the Node engine"
+        "{$id}: compact flag matches the TypeScript engine"
     );
     checkSummaryParity(
         (int) ($actual['assessedCount'] ?? -1) === (int) ($expected['assessedCount'] ?? -2),
-        "{$id}: assessed count matches the Node engine"
+        "{$id}: assessed count matches the TypeScript engine"
     );
     checkSummaryParity(
         (bool) ($actual['assessmentComplete'] ?? false) === (bool) ($expected['assessmentComplete'] ?? false),
-        "{$id}: assessment completeness matches the Node engine"
+        "{$id}: assessment completeness matches the TypeScript engine"
     );
 
     // The remedy lines are part of the contract too: they are what the page prints.
@@ -71,7 +71,7 @@ foreach ($fixture['cases'] as $case) {
         foreach (['difficulties', 'worship', 'lamp', 'donation', 'mantra', 'compactLine'] as $field) {
             checkSummaryParity(
                 (string) ($actualPlanet[$field] ?? '') === (string) ($expectedPlanet[$field] ?? ''),
-                "{$id}: {$expectedPlanet['key']} {$field} matches the Node engine"
+                "{$id}: {$expectedPlanet['key']} {$field} matches the TypeScript engine"
             );
         }
     }
@@ -79,7 +79,7 @@ foreach ($fixture['cases'] as $case) {
         $actualPlanet = $actual['supportive'][$index] ?? [];
         checkSummaryParity(
             (string) ($actualPlanet['key'] ?? '') === (string) ($expectedPlanet['key'] ?? ''),
-            "{$id}: supportive box {$index} matches the Node engine"
+            "{$id}: supportive box {$index} matches the TypeScript engine"
         );
         checkSummaryParity(
             (string) ($actualPlanet['support'] ?? '') !== '',

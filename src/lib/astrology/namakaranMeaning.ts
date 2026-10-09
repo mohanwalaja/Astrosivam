@@ -11,7 +11,7 @@
  * can never print English text in its meaning line.
  */
 import { NAMAKARAN_MEANING_GLOSSARY } from './namakaranMeaningData.js';
-import { transliterateToHindi, transliterateToTamil } from '../../src/services/indicTransliteration.js';
+import { transliterateToHindi, transliterateToTamil } from '../../services/indicTransliteration.js';
 
 export type NamakaranMeaningLanguage = 'en' | 'ta' | 'hi';
 

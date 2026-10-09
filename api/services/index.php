@@ -477,7 +477,7 @@ if ((strpos($path, 'services/calculate-preview') !== false || $action === 'calcu
 // 4b. POST /api/services/payment/create-session (durable provider order)
 if ((strpos($path, 'payment/create-session') !== false || $action === 'create-payment-session') && $method === 'POST') {
     $user = requireAuth($pdo);
-    // 8 sessions/10 min per user and 20/10 min per network (Node parity).
+    // 8 sessions/10 min per user and 20/10 min per network.
     astro_rate_limit_enforce($pdo, 'payment-create-user', $user['id'], 8, 600,
         'Too many payment sessions were started. Please wait before trying again.');
     astro_rate_limit_enforce($pdo, 'payment-create-ip', getClientIpAddress(), 20, 600,
@@ -609,7 +609,7 @@ if ((strpos($path, 'payment/create-session') !== false || $action === 'create-pa
 // 4c. POST /api/services/payment/verify-session (provider verification)
 if ((strpos($path, 'payment/verify-session') !== false || $action === 'verify-payment-session') && $method === 'POST') {
     $user = requireAuth($pdo);
-    // 20 verifications/10 min per user and 40/10 min per network (Node parity).
+    // 20 verifications/10 min per user and 40/10 min per network.
     astro_rate_limit_enforce($pdo, 'payment-verify-user', $user['id'], 20, 600,
         'Too many payment verification attempts. Please wait before trying again.');
     astro_rate_limit_enforce($pdo, 'payment-verify-ip', getClientIpAddress(), 40, 600,

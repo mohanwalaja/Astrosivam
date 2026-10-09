@@ -1,7 +1,7 @@
 /**
  * ASTRO SIVAM — independent accuracy audit of the LIVE astrology engines.
  *
- * Runs the production code paths in server/astrology/ and src/lib/muhurtham/
+ * Runs the production code paths in src/lib/astrology/ and src/lib/muhurtham/
  * and reports, objectively:
  *
  *   1. Graha sidereal longitude error vs the checked-in Swiss Ephemeris 2.10.03
@@ -32,9 +32,9 @@ import {
   calculatePrecisionHoroscope,
   calculateVimshottariDashaTimeline,
   normalizeDelta
-} from '../server/astrology/astronomy.js';
-import { kujaDoshaFromHoroscope } from '../server/astrology/kujaDosha.js';
-import { Graha, Rasi } from '../server/astrology/types.js';
+} from '../src/lib/astrology/astronomy.js';
+import { kujaDoshaFromHoroscope } from '../src/lib/astrology/kujaDosha.js';
+import { Graha, Rasi } from '../src/lib/astrology/types.js';
 import { getTimeZoneIdForCoordinates, getTimezoneOffsetAtInstant } from '../src/lib/timezone.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -118,15 +118,15 @@ for (const sample of fixture.samples) {
 }
 
 console.log('='.repeat(78));
-console.log('1. GRAHA SIDEREAL LONGITUDES vs SWISS EPHEMERIS (LIVE Node engine)');
+console.log('1. GRAHA SIDEREAL LONGITUDES vs SWISS EPHEMERIS (LIVE TypeScript engine)');
 console.log(`   reference: swe ${fixture.sweVersion}, ${fixture.sidMode}, ${fixture.flags}`);
 console.log(`   ${fixture.samples.length} samples, JD ${Math.min(...fixture.samples.map((s: any) => s.jd_ut)).toFixed(1)}`
   + ` – ${Math.max(...fixture.samples.map((s: any) => s.jd_ut)).toFixed(1)} (1900–2100)`);
 console.log('='.repeat(78));
 console.log('\nAyanamsa (Chitra Paksha / Lahiri)');
 console.table({
-  'Node engine vs Swiss MEAN ayanamsa (the pre-fix convention)': fmt(ayanamsaVsMean),
-  'Node engine vs Swiss TRUE ayanamsa (= PHP / Drik Panchang, now in use)': fmt(ayanamsaVsTrue)
+  'TypeScript engine vs Swiss MEAN ayanamsa (the pre-fix convention)': fmt(ayanamsaVsMean),
+  'TypeScript engine vs Swiss TRUE ayanamsa (= PHP / Drik Panchang, now in use)': fmt(ayanamsaVsTrue)
 });
 console.log('\nSidereal longitude error with the TRUE ayanamsa now in use');
 console.table(Object.fromEntries(Object.entries(perBody).map(([b, s]) => [b, fmt(s)])));
@@ -144,7 +144,7 @@ console.log('='.repeat(78));
 console.log(`Δψ (true − mean Lahiri ayanamsa) over 1900–2100:`);
 console.log(`   peak magnitude ${fmt(dpsiStats).maxArcsec}″, RMS ${fmt(dpsiStats).rmsArcsec}″`);
 console.log('RESOLVED: both stacks now subtract the TRUE ayanamsa (mean + Δψ), so the');
-console.log('Node↔PHP ayanamsa gap is 0.000″. Before the fix the Node engine subtracted the MEAN');
+console.log('TypeScript↔PHP ayanamsa gap is 0.000″. Before the fix the TypeScript engine subtracted the MEAN');
 console.log('ayanamsa, so every sidereal longitude — and the Lagna — differed from the PHP');
 console.log('engine by exactly Δψ, peaking at 18.441″.');
 console.log(`Node ayanamsa now vs Swiss TRUE ayanamsa: max ${fmt(ayanamsaVsTrue).maxArcsec}″, ` +
@@ -214,9 +214,9 @@ console.log(`Current dasha: ${timeline.currentDasha?.mahadashaLord} / ${timeline
 /* 4. Kuja (Sevvay) Dosha — Node rule vs PHP rule                      */
 /* ------------------------------------------------------------------ */
 console.log('\n' + '='.repeat(78));
-console.log('4. KUJA / SEVVAY DOSHA — Node engine vs PHP rule on identical charts');
+console.log('4. KUJA / SEVVAY DOSHA — TypeScript engine vs PHP rule on identical charts');
 console.log('='.repeat(78));
-console.log('Node  (server/astrology/kujaDosha.ts)  : port of the PHP rule — houses 2,4,7,8,12');
+console.log('Node  (src/lib/astrology/kujaDosha.ts)  : port of the PHP rule — houses 2,4,7,8,12');
 console.log('                                         (South Indian) from LAGNA, MOON and VENUS with every exception.');
 console.log('PHP   (api/astrology/engine.php)       : the same rule set, restated here from its source');
 console.log('                                         so the two are compared independently.');
@@ -285,7 +285,7 @@ while (sampled < 400) {
     continue;
   }
   sampled += 1;
-  // The live engine, not a transcription of it: server/astrology/kujaDosha.ts.
+  // The live engine, not a transcription of it: src/lib/astrology/kujaDosha.ts.
   const n = kujaDoshaFromHoroscope(chart).isPresent === true;
   const p = phpRule(chart);
   if (n) nodePositive += 1;
@@ -296,10 +296,10 @@ while (sampled < 400) {
   }
 }
 console.log(`\n${sampled} random worldwide charts (1950–2020):`);
-console.log(`  Node engine flags Kuja Dosha : ${nodePositive} (${(nodePositive / sampled * 100).toFixed(1)}%)`);
+console.log(`  TypeScript engine flags Kuja Dosha : ${nodePositive} (${(nodePositive / sampled * 100).toFixed(1)}%)`);
 console.log(`  PHP  rule flags Kuja Dosha   : ${phpPositive} (${(phpPositive / sampled * 100).toFixed(1)}%)`);
 console.log(`  Charts where the two DISAGREE: ${disagreements} (${(disagreements / sampled * 100).toFixed(1)}%)`);
-console.log(`  …of which PHP finds a dosha the Node engine misses: ${nodeMissesPhpFinds}`);
+console.log(`  …of which PHP finds a dosha the TypeScript engine misses: ${nodeMissesPhpFinds}`);
 console.log('  Before the port: 83 disagreements of 400 (20.8%), 60 of them doshas the Node');
 console.log('  engine missed because it tested houses 2,4,7,8,12 from the Lagna only.');
 

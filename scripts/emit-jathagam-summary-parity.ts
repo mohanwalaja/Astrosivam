@@ -15,7 +15,7 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy';
 import { classifyJathagamPlanetsForSummary, SummaryChartInput } from '../src/services/jathagamPlanetSummary';
 import { DoshaLanguage } from '../src/services/jathagamDoshaData';
 

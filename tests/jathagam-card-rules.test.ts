@@ -9,9 +9,9 @@ import {
   calculatePrecisionHoroscope,
   calculateTrueLunarNode,
   rahuNodeType
-} from '../server/astrology/astronomy.js';
-import { Graha, HoroscopeResult, PlanetPosition, Rasi } from '../server/astrology/types.js';
-import { computePlanetDignity, debilitationSign } from '../server/astrology/dignity.js';
+} from '../src/lib/astrology/astronomy.js';
+import { Graha, HoroscopeResult, PlanetPosition, Rasi } from '../src/lib/astrology/types.js';
+import { computePlanetDignity, debilitationSign } from '../src/lib/astrology/dignity.js';
 import { fitJathagamLifeCardText, fitJathagamSummaryText } from '../src/services/jathagamLifeCardLayout.js';
 import {
   MALEFIC_CONJUNCTION_ORB_DEG,
@@ -397,21 +397,6 @@ check(
   page2.includes('Current Guidance') && /Mahadasha|Mahadasa/.test(page2),
   'Dasha details stay in the prediction data, not page-1 tables'
 );
-{
-  const nodePdf = readFileSync(new URL('../server/astrology/pdfGenerator.ts', import.meta.url), 'utf8');
-  const nodePdfPageOneStart = nodePdf.indexOf('// PAGE 1: Birth Details, Rasi + Navamsa Charts & Doshas');
-  const nodePdfPageTwoStart = nodePdf.indexOf('// PAGE 2: 8 Life-Prediction Cards', nodePdfPageOneStart);
-  const nodePdfPageOne = nodePdfPageOneStart >= 0 && nodePdfPageTwoStart > nodePdfPageOneStart
-    ? nodePdf.slice(nodePdfPageOneStart, nodePdfPageTwoStart)
-    : '';
-  check(
-    '7. Direct-download PDF fallback uses Rasi left / Navamsa right and omits both detailed tables',
-    nodePdfPageOne.includes("drawChartBox(margin, 'Rasi Chart', planetsBySign)")
-      && nodePdfPageOne.includes("drawChartBox(rightBoxX, 'Navamsa Chart (D9)', navamsaBySign, hasNavamsaData)")
-      && !nodePdfPageOne.includes('Planetary Positions')
-      && !nodePdfPageOne.includes('Current Dasa')
-  );
-}
 {
   const navagrahaCss = /table\.navagraha-table\s*\{[^}]*font-size:\s*([\d.]+)px/.exec(designHtml);
   const navagrahaThCss = /table\.navagraha-table th\s*\{[^}]*font-size:\s*([\d.]+)px/.exec(designHtml);

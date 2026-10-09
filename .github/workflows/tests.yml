@@ -1,9 +1,9 @@
 name: Test Suite
 
-# Regression gate for every change: the Node suites (payments, delivery, auth,
-# rate limiting, source-text guards) and the PHP suites that exercise the
-# cPanel API. The release workflow (build.yml) is intentionally separate so a
-# failing test blocks review without breaking the published dist.zip.
+# Regression gate for every change: TypeScript/frontend calculation tests run
+# with Node.js tooling, while the PHP suites exercise the cPanel API. The release
+# workflow (build.yml) is separate so a failing test blocks review without
+# breaking the published dist.zip.
 on:
   pull_request:
   push:

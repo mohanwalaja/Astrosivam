@@ -13,8 +13,8 @@
  * because every chart is priced in the currency the customer is actually
  * paying with.
  *
- * This module is framework free (no React) so the Node backend and the test
- * suite can import the exact same rules the UI uses.
+ * This module is framework-free (no React), so the UI and test suite can
+ * import the exact same pricing rules.
  */
 
 import type { CurrencyCode, CurrencyPriceMap, PaymentMethod, ServiceType } from '../types';
@@ -219,7 +219,7 @@ export function currencyForAccountCountry(accountCountry?: string | null): Curre
 }
 
 /**
- * THE server-side rule, shared by the Node backend and the test suite.
+ * Currency-selection rule mirrored by the PHP API and covered by the test suite.
  * 1. A real payment method always wins: GPAY/UPI -> INR, MPAISA/MYCASH -> FJD,
  *    PAYPAL/CARD -> USD.
  * 2. Only when there is no real payment method (FREE_BETA / NONE) do we look at

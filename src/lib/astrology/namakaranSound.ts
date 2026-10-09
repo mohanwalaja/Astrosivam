@@ -1,4 +1,4 @@
-import { transliterateToTamil } from '../../src/services/indicTransliteration';
+import { transliterateToTamil } from '../../services/indicTransliteration';
 
 /** First written Tamil syllable, including its vowel sign (not just a prefix). */
 export function firstTamilSound(text: string): string {

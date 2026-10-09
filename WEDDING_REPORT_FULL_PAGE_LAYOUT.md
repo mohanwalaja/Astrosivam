@@ -1,5 +1,8 @@
 # Marriage Matching Report — Full-Page Layout (no empty space)
 
+> **Historical note (October 2026):** This file records work from before the Node.js application server was removed. Production is now a static React frontend plus the PHP API in `api/`; Node.js remains build/test tooling only. Any `server/` paths and Node-server behaviors below describe the retired implementation, not the current deployment.
+
+
 > The same contract now covers **every** report and the invoice — see
 > [`REPORT_AND_INVOICE_FULL_PAGE_LAYOUT.md`](REPORT_AND_INVOICE_FULL_PAGE_LAYOUT.md)
 > for the general rule, the mPDF/jsPDF equivalents and how it is verified.

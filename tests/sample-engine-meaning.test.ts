@@ -1,16 +1,16 @@
-import { nameMatchesPada } from '../server/astrology/namakaranSound';
+import { nameMatchesPada } from '../src/lib/astrology/namakaranSound';
 import assert from 'node:assert/strict';
-import { calculatePrecisionHoroscope, calculateVimshottariDashaTimeline } from '../server/astrology/astronomy.js';
-import { calculateWeddingCompatibility } from '../server/astrology/matchmaking.js';
-import { ALL_NAKSHATRA_LETTERS, calculateBabyNamingDetails } from '../server/astrology/babynames.js';
-import { NAMAKARAN_BANK } from '../server/astrology/namakaranNameBank.js';
+import { calculatePrecisionHoroscope, calculateVimshottariDashaTimeline } from '../src/lib/astrology/astronomy.js';
+import { calculateWeddingCompatibility } from '../src/lib/astrology/matchmaking.js';
+import { ALL_NAKSHATRA_LETTERS, calculateBabyNamingDetails } from '../src/lib/astrology/babynames.js';
+import { NAMAKARAN_BANK } from '../src/lib/astrology/namakaranNameBank.js';
 import {
   buildNamakaranNameProvenance,
   buildNamakaranPadaNames,
   buildNamakaranPadaNamesFromResult,
   fallbackAksharas
-} from '../server/astrology/namakaranNames.js';
-import { Graha, PoruthamStatus } from '../server/astrology/types.js';
+} from '../src/lib/astrology/namakaranNames.js';
+import { Graha, PoruthamStatus } from '../src/lib/astrology/types.js';
 
 // Fixed public sample inputs, deliberately independent of the report renderer.
 const BIRTH = {

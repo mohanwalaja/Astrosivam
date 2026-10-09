@@ -35,7 +35,7 @@ import {
   OWN_SIGNS,
   SIGN_EXALTED_BY,
   SIGN_LORDS
-} from '../server/astrology/dignity';
+} from '../src/lib/astrology/dignity';
 
 const languages: DoshaLanguage[] = ['en', 'ta', 'hi'];
 
@@ -167,7 +167,7 @@ push('    /**');
 push('     * The ONE Birth Jathagam page-3 rule, mirrored statement-for-statement');
 push('     * from src/services/jathagamPlanetSummary.ts::classifyJathagamPlanetsForSummary().');
 push('     *');
-push('     * Same dignity tables (server/astrology/dignity.ts == AstroEngine::planetDignityTable()),');
+push('     * Same dignity tables (src/lib/astrology/dignity.ts == AstroEngine::planetDignityTable()),');
 push('     * same houses, same 10-degree conjunction orb, same scoring, same ordering.');
 push('     * tests/fixtures/jathagam-summary-parity.json holds the outputs both stacks');
 push('     * must reproduce.');
@@ -182,7 +182,7 @@ push('        $lang = in_array($lang, [\'en\', \'ta\', \'hi\'], true) ? $lang : 
 push('        $data = self::jathagamSummaryRemedyData();');
 push('        $summaryText = self::jathagamSummaryText($lang);');
 push('');
-push('        // Classical dignity tables, value-for-value with server/astrology/dignity.ts.');
+push('        // Classical dignity tables, value-for-value with src/lib/astrology/dignity.ts.');
 push('        $signLords = ' + phpLiteral(SIGN_LORDS as unknown as Record<string, string>) + ';');
 push('        $exaltationSign = ' + phpLiteral(EXALTATION_SIGN as unknown as Record<string, number>) + ';');
 push('        $ownSigns = ' + phpLiteral(OWN_SIGNS as unknown as Record<string, number[]>) + ';');

@@ -210,7 +210,7 @@ if (AstroMpdfReports::isAvailable()) {
 $glossary = astro_namakaran_meaning_glossary();
 checkNamakaran(count($glossary) > 1000, 'PHP loads the full curated meaning glossary (' . count($glossary) . ' meanings)');
 
-$tsMeaningData = (string) file_get_contents(__DIR__ . '/../server/astrology/namakaranMeaningData.ts');
+$tsMeaningData = (string) file_get_contents(__DIR__ . '/../src/lib/astrology/namakaranMeaningData.ts');
 $phpMeaningData = (string) file_get_contents(__DIR__ . '/../api/astrology/namakaran_meanings.php');
 preg_match("/NAMAKARAN_MEANING_GLOSSARY_HASH = '([0-9a-f]+)'/", $tsMeaningData, $tsMeaningHash);
 preg_match('/\* Content hash    : ([0-9a-f]+)/', $phpMeaningData, $phpMeaningHash);
@@ -338,7 +338,7 @@ checkNamakaran($exampleCount > 0, "PHP builds the page 1 example names for every
 checkNamakaran($exampleLatin === 0, "Every page 1 example meaning prints Tamil and Hindi, never English ({$exampleLatin} bad rows)");
 
 // ── 6. The generated name bank stayed in sync with the TypeScript twin ──────
-$tsBank = (string) file_get_contents(__DIR__ . '/../server/astrology/namakaranNameBank.ts');
+$tsBank = (string) file_get_contents(__DIR__ . '/../src/lib/astrology/namakaranNameBank.ts');
 $phpBank = (string) file_get_contents(__DIR__ . '/../api/astrology/namakaran_name_bank.php');
 preg_match("/NAMAKARAN_BANK_HASH = '([0-9a-f]+)'/", $tsBank, $tsHash);
 preg_match("/'hash' => '([0-9a-f]+)'/", $phpBank, $phpHash);

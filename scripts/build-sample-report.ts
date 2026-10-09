@@ -3,9 +3,9 @@
  * in a browser (npm run build:sample-report).
  */
 import { mkdirSync, writeFileSync } from 'fs';
-import { calculatePrecisionHoroscope } from '../server/astrology/astronomy';
+import { calculatePrecisionHoroscope } from '../src/lib/astrology/astronomy';
 import { buildJathagamHtml } from '../src/services/jathagamHtmlBuilder';
-import type { AppLanguage } from '../server/astrology/types';
+import type { AppLanguage } from '../src/lib/astrology/types';
 
 const lang = (process.argv[2] || 'en') as AppLanguage;
 const result = calculatePrecisionHoroscope(

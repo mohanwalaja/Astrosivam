@@ -6,8 +6,8 @@ import {
   NAKSHATRAM_NAMES_EN,
   calculateLahiriAyanamsa,
   calculatePrecisionHoroscope
-} from '../server/astrology/astronomy.js';
-import { evaluateKujaDosha } from '../server/astrology/kujaDosha.js';
+} from '../src/lib/astrology/astronomy.js';
+import { evaluateKujaDosha } from '../src/lib/astrology/kujaDosha.js';
 import {
   AYANAMSA_TOLERANCE_DEG,
   compareBirths,
@@ -18,9 +18,9 @@ import {
 } from '../scripts/compare-parity.js';
 
 /**
- * Node↔PHP parity over a fixed corpus of charts.
+ * TypeScript↔PHP parity over a fixed corpus of charts.
  *
- * WHY: the site renders the same report from two engines — this Node engine and
+ * WHY: the site renders the same report from two engines — this TypeScript engine and
  * api/astrology/engine.php on cPanel. They used to disagree on the two things
  * customers actually read: the Sevvay/Kuja Dosha verdict (finding F1) and the
  * ayanamsa behind every sidereal longitude (finding F2). This suite locks both
@@ -188,7 +188,7 @@ assert.ok(
 );
 
 // ---------------------------------------------------------------------------
-// 4. Direct Node↔PHP comparison when the PHP engine's output is available.
+// 4. Direct TypeScript↔PHP comparison when the PHP engine's output is available.
 // ---------------------------------------------------------------------------
 const phpPath = path.join(root, 'tests', 'fixtures', 'parity-php.json');
 if (existsSync(phpPath)) {
@@ -209,6 +209,6 @@ if (existsSync(phpPath)) {
 console.log(
   `  [PASS] ${Object.keys(nodePayload.kuja).length} Kuja verdicts (${doctrineChecked} doctrine), ` +
     `${Object.keys(nodePayload.births).length} birth charts and ` +
-    `${Object.keys(nodePayload.ayanamsa).length} ayanamsa instants match the Node↔PHP contract`
+    `${Object.keys(nodePayload.ayanamsa).length} ayanamsa instants match the TypeScript↔PHP contract`
 );
 console.log('Node ↔ PHP parity (Kuja Dosha rule set + ayanamsa convention) passed.');

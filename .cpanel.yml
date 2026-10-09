@@ -7,7 +7,7 @@ deployment:
     - /bin/find api -type f ! -path 'api/astrology/tmp/app_secret_key.txt' ! -path 'api/astrology/tmp/app_secret_key.txt.*' -exec sh -c 'for file do relative="${file#api/}"; target="$DEPLOYPATH/api/$relative"; if [ "$relative" = "config.php" ] && [ -f "$target" ]; then continue; fi; /bin/mkdir -p "$(dirname "$target")"; /bin/cp -f "$file" "$target"; done' sh {} +
     - /bin/mkdir -p $DEPLOYPATH/src/lib/muhurtham
     - /bin/cp -f src/lib/muhurtham/rules.json $DEPLOYPATH/src/lib/muhurtham/rules.json
-    - /bin/find dist -type f ! -name 'server.cjs' ! -name '*.cjs' ! -name '*.map' -exec sh -c 'for file do target="$DEPLOYPATH/${file#dist/}"; /bin/mkdir -p "$(dirname "$target")"; /bin/cp -f "$file" "$target"; done' sh {} +
+    - /bin/find dist -type f ! -name '*.map' ! -name '*.cjs' -exec sh -c 'for file do target="$DEPLOYPATH/${file#dist/}"; /bin/mkdir -p "$(dirname "$target")"; /bin/cp -f "$file" "$target"; done' sh {} +
     - /bin/cp -f public/.htaccess $DEPLOYPATH/.htaccess
     - /bin/find $DEPLOYPATH/api -type d -exec /bin/chmod 755 {} +
     - /bin/find $DEPLOYPATH/api -type f -exec /bin/chmod 644 {} +

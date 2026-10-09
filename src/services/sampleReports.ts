@@ -19,7 +19,7 @@
  *    (15 June 1998, 6:30 AM, Chennai) so the porutham table shows a realistic
  *    spread of results. She is also fixed — never a user choice.
  * 3. Samples are calculated by the SAME engines the paid reports use
- *    (`/api/services/calculate-preview`, i.e. the Node/PHP astrology service),
+ *    (`/api/services/calculate-preview`, i.e. the PHP astrology API),
  *    and rendered by the SAME HTML builders the PDF pipeline uses, so a sample
  *    can never drift away from the real report format.
  * 4. Every sample page carries a light "SAMPLE" watermark so a sample PDF can
@@ -209,7 +209,7 @@ function buildSampleMuhurthamPayload(): Record<string, any> {
   const targetDate = new Date(targetYear, targetMonth - 1, 1);
 
   // A v5 Muhurtham scan is accepted only when it is stamped with every input
-  // that produced it. This is required by both the Node and PHP calculators:
+  // that produced it. This is required by the TypeScript and PHP calculators:
   // without the stamp cPanel's PHP API correctly rejects the scan as stale,
   // which made only this public sample appear temporarily unavailable.
   const inputContext = {
@@ -228,7 +228,7 @@ function buildSampleMuhurthamPayload(): Record<string, any> {
     muhurthamTimezoneOffsetHours: SAMPLE_BIRTH.timezoneOffsetHours,
     muhurthamTimeZoneId: SAMPLE_BIRTH.timeZoneId,
     // Second person — part of the scan stamp, so a change to either chart
-    // invalidates the cached scan in both engines.
+    // invalidates the cached scan in the TypeScript and PHP calculators.
     brideName: SAMPLE_BRIDE_NAME,
     brideDob: SAMPLE_BRIDE.dob,
     brideTob: SAMPLE_BRIDE.tob,

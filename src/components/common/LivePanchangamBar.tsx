@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Clock, Sun, Moon, Sparkles, MapPin, AlertCircle, Compass } from 'lucide-react';
 import * as Astronomy from 'astronomy-engine';
-import { calculateLahiriAyanamsa } from '../../../server/astrology/ayanamsa.js';
+import { calculateLahiriAyanamsa } from '../../lib/astrology/ayanamsa.js';
 
 interface CityOption {
   name: string;
