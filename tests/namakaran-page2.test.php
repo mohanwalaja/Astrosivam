@@ -39,7 +39,7 @@ function namakaranFixture(array $row, string $gender, int $pada): array {
     return ['language' => 'en', 'order_number' => 'AS-BN-TEST'] + ['result' => $result];
 }
 
-// ── 1. The resolver itself: every pada of the star gets two usable lists ────
+// ── 1. The resolver only returns exact matches for the four pada sounds ──
 $stars = [
     ['Shatabhisha', 24, 'M'],
     ['Ashlesha', 9, 'F'],
@@ -54,37 +54,33 @@ foreach ($stars as [$label, $index, $gender]) {
     checkNamakaran(count($columns) === 4, "PHP builds four pada columns for {$label} ({$gender})");
 
     $seen = [];
-    $southTotal = 0;
-    $northTotal = 0;
     foreach ($columns as $column) {
         $sideCounts = count($column['south']) . '/' . count($column['north']);
         checkNamakaran(
-            count($column['south']) >= 3 && count($column['north']) >= 3,
-            "PHP pada {$column['soundTa']} of {$label} has a usable South/North list ({$sideCounts})"
-        );
-        checkNamakaran(
-            count($column['south']) <= 15 && count($column['north']) <= 15,
-            "PHP pada {$column['soundTa']} of {$label} stays within the 15-name cap ({$sideCounts})"
+            count($column['south']) <= 8 && count($column['north']) <= 8,
+            "PHP pada {$column['soundTa']} of {$label} respects the eight-name cap ({$sideCounts})"
         );
         checkNamakaran(
             $column['soundTa'] === $row['padas'][$column['padaNumber'] - 1]['letterTa'],
             "PHP pada {$column['padaNumber']} of {$label} keeps the pada order of page 1"
         );
-        $southTotal += count($column['south']);
-        $northTotal += count($column['north']);
         foreach (array_merge($column['south'], $column['north']) as $entry) {
             $key = strtolower($entry['name']);
             checkNamakaran(!isset($seen[$key]), "PHP never repeats \"{$entry['name']}\" twice on the {$label} page");
-            $seen[$key] = true;
+            checkNamakaran(
+                $entry['sourceAksharaTa'] === $column['soundTa']
+                && AstroReportViews::nameMatchesPada($entry['name'], $column['soundTa']),
+                "PHP only suggests exact {$column['soundTa']} names (\"{$entry['name']}\")"
+            );
             checkNamakaran(trim($entry['meaning']) !== '', "PHP prints a meaning for \"{$entry['name']}\"");
             checkNamakaran(mb_strlen($entry['meaning']) <= 30, "PHP meaning of \"{$entry['name']}\" is short");
+            $seen[$key] = true;
         }
     }
-    checkNamakaran($southTotal >= 20 && $northTotal >= 20, "PHP {$label} page 2 carries a full sheet of names ({$southTotal} South / {$northTotal} North)");
 }
 
-// Every pada of every star must print a name list on both sides — the report
-// is generated for any birth time, so no pada may render an empty column.
+// Every star still shows all four akshara headings. Sparse lists are valid:
+// nothing from a related sound is inserted just to reach a target count.
 $thinnest = ['min' => 99, 'label' => ''];
 foreach ($letters as $star) {
     foreach (['M', 'F'] as $gender) {
@@ -94,10 +90,16 @@ foreach ($letters as $star) {
             if ($lowest < $thinnest['min']) {
                 $thinnest = ['min' => $lowest, 'label' => $star['nakshatraNameEn'] . ' ' . $gender . ' ' . $column['soundTa']];
             }
+            foreach (array_merge($column['south'], $column['north']) as $entry) {
+                checkNamakaran(
+                    AstroReportViews::nameMatchesPada($entry['name'], $column['soundTa']),
+                    "PHP never fills {$column['soundTa']} with an alternative name"
+                );
+            }
         }
     }
 }
-checkNamakaran($thinnest['min'] >= 1, "PHP gives all 108 padas of all 27 Nakshatras a name list (thinnest: {$thinnest['label']})");
+checkNamakaran($thinnest['min'] >= 0, "PHP accepts a sparse exact-sound list (thinnest: {$thinnest['label']}, {$thinnest['min']} names)");
 
 // ── 2. The gender is respected: boys and girls never share one list ────────
 function namakaranNamesForGender(array $letters, int $index, string $gender): array {
@@ -117,7 +119,7 @@ $shared = array_values(array_intersect($boyNames, $girlNames));
 checkNamakaran(count($boyNames) > 0 && count($girlNames) > 0, 'PHP builds both the boy and the girl sheet');
 checkNamakaran($boyNames !== $girlNames, 'PHP boy and girl sheets are different lists');
 checkNamakaran(count($shared) < count($boyNames) / 4, 'PHP boy and girl sheets share at most a few unisex names (shared: ' . implode(', ', array_slice($shared, 0, 5)) . ')');
-checkNamakaran(in_array('Dinesh', $boyNames, true) && in_array('Divya', $girlNames, true), 'PHP boy sheet keeps boy names and the girl sheet keeps girl names');
+checkNamakaran(count($boyNames) > 0 && count($girlNames) > 0 && $boyNames !== $girlNames, 'PHP boy and girl sheets keep their gender-specific exact suggestions');
 
 // ── 3. The rendered mPDF HTML: page 1 certificate + page 2 name sheet ──────
 foreach ([['en', 'en'], ['ta', 'ta'], ['hi', 'hi']] as [$lang]) {
@@ -143,45 +145,64 @@ foreach ([['en', 'en'], ['ta', 'ta'], ['hi', 'hi']] as [$lang]) {
         $columns = AstroEngine::getBabyNameSuggestionsByPada($row['padas'], $gender, 15);
         foreach ($columns as $column) {
             checkNamakaran(strpos($html, $column['soundTa']) !== false, "PHP {$lang} {$gender} page 2 prints pada {$column['soundTa']}");
-            foreach ($column['south'] as $entry) {
+            foreach (array_merge($column['south'], $column['north']) as $entry) {
+                checkNamakaran(
+                    AstroReportViews::nameMatchesPada($entry['name'], $column['soundTa']),
+                    "PHP {$lang} {$gender} page 2 only uses the exact {$column['soundTa']} sound"
+                );
                 $expectedName = $lang === 'ta'
                     ? AstroReportViews::transliterateToTamil($entry['name'])
                     : ($lang === 'hi' ? AstroReportViews::transliterateToHindi($entry['name']) : $entry['name']);
                 checkNamakaran(strpos($html, $expectedName) !== false, "PHP {$lang} {$gender} page 2 prints {$expectedName}");
             }
-            foreach ($column['north'] as $entry) {
-                $expectedName = $lang === 'ta'
-                    ? AstroReportViews::transliterateToTamil($entry['name'])
-                    : ($lang === 'hi' ? AstroReportViews::transliterateToHindi($entry['name']) : $entry['name']);
-                checkNamakaran(strpos($html, $expectedName) !== false, "PHP {$lang} {$gender} page 2 prints the North Indian {$expectedName}");
+        }
+        $firstSouth = null;
+        foreach ($columns as $column) {
+            if (!empty($column['south'])) {
+                $firstSouth = $column['south'][0]['name'];
+                break;
             }
         }
-        $firstSouth = $columns[0]['south'][0]['name'];
-        if ($lang === 'ta') {
-            $expectedFirst = AstroReportViews::transliterateToTamil($firstSouth);
-            checkNamakaran(strpos($html, $expectedFirst) !== false, "PHP {$lang} shows the Tamil name {$expectedFirst} on page 2");
-        } elseif ($lang === 'hi') {
-            $expectedFirst = AstroReportViews::transliterateToHindi($firstSouth);
-            checkNamakaran(strpos($html, $expectedFirst) !== false, "PHP {$lang} shows the Hindi name {$expectedFirst} on page 2");
+        if ($firstSouth !== null) {
+            if ($lang === 'ta') {
+                $expectedFirst = AstroReportViews::transliterateToTamil($firstSouth);
+            } elseif ($lang === 'hi') {
+                $expectedFirst = AstroReportViews::transliterateToHindi($firstSouth);
+            } else {
+                $expectedFirst = $firstSouth;
+            }
+            checkNamakaran(strpos($html, $expectedFirst) !== false, "PHP {$lang} shows the first available exact name {$expectedFirst} on page 2");
         } else {
-            checkNamakaran(strpos($html, $firstSouth) !== false, "PHP {$lang} keeps the Roman name {$firstSouth} on page 2");
+            checkNamakaran(strpos($html, 'class="sug-empty"') !== false, "PHP {$lang} supports a page with no exact suggestions");
         }
+        checkNamakaran(strpos($html, '<sup>†</sup>') === false, "PHP {$lang} page 2 has no alternative-sound name markers");
+        $exactRule = $lang === 'ta'
+            ? 'கொடுக்கப்பட்ட நான்கு பாத ஒலிகளுடன்'
+            : ($lang === 'hi' ? 'केवल दिए गए चार पाद स्वरों' : 'Only exact matches to the four listed pada sounds');
+        checkNamakaran(strpos($html, $exactRule) !== false, "PHP {$lang} notes the exact-sound-only rule");
     }
 }
 
-// ── 4. A star whose pada sound has no names of its own still gets a sheet ──
-$x = array_values(array_filter($letters, fn($row) => $row['nakshatraIndex'] === 26))[0]; // Uttara Bhadrapada (Tha/Jha/Nya)
+// ── 4. Sparse sounds stay sparse; no related-sound alternatives are added ──
+$x = array_values(array_filter($letters, fn($row) => $row['nakshatraIndex'] === 26))[0]; // Uttara Bhadrapada
 $columns = AstroEngine::getBabyNameSuggestionsByPada($x['padas'], 'M', 15);
-$usesRelated = false;
-foreach ($columns as $column) { if (!empty($column['usesRelatedSounds'])) { $usesRelated = true; } }
+foreach ($columns as $column) {
+    foreach (array_merge($column['south'], $column['north']) as $entry) {
+        checkNamakaran(
+            AstroReportViews::nameMatchesPada($entry['name'], $column['soundTa']),
+            "PHP leaves no related-sound suggestion under {$column['soundTa']}"
+        );
+    }
+}
 $html = AstroReportViews::generateBabyNamingHtml(
     ['language' => 'en', 'order_number' => 'AS-BN-TEST'],
     namakaranFixture($x, 'M', 2)['result']
 );
-checkNamakaran($usesRelated, 'PHP marks lists that were completed with related sounds');
-checkNamakaran(strpos($html, 'class="sug-note"') !== false, 'PHP explains the related sounds in a footnote');
+checkNamakaran(strpos($html, 'Only exact matches to the four listed pada sounds') !== false, 'PHP explains that page 2 uses only the four exact sounds');
+checkNamakaran(strpos($html, '<sup>†</sup>') === false, 'PHP page 2 never marks alternative-sound names');
 
-// A fully populated bank must still be one full name sheet, never page 3.
+// A stale order with over-sized cached lists is rebuilt from exact bank names
+// and remains a two-page report; fewer current suggestions are acceptable.
 $denseResult = namakaranFixture($letters[23], 'F', 2)['result'];
 $denseResult['nameSuggestions'] = AstroEngine::getBabyNameSuggestionsByPada($letters[23]['padas'], 'F', 15);
 foreach ($denseResult['nameSuggestions'] as &$column) {
@@ -193,14 +214,18 @@ foreach ($denseResult['nameSuggestions'] as &$column) {
     }
 }
 unset($column);
+$exactDenseColumns = AstroEngine::getBabyNameSuggestionsByPada($letters[23]['padas'], 'F', 15);
+$expectedDenseNames = array_sum(array_map(fn($column) => count($column['south']) + count($column['north']), $exactDenseColumns));
+$expectedDenseRows = array_sum(array_map(fn($column) => max(1, (int) ceil(max(count($column['south']), count($column['north'])) / 2)), $exactDenseColumns));
 $denseHtml = AstroReportViews::generateBabyNamingHtml(['language' => 'en'], $denseResult);
-checkNamakaran(substr_count($denseHtml, 'class="sug-nm"') === 64, 'PHP rebuilds stale oversized lists to the current 64-name sheet');
-checkNamakaran(preg_match('/\.sug-nm\s*\{\s*font-size:\s*14px/', $denseHtml) === 1, 'PHP keeps even a full 64-name sheet at enlarged type');
+checkNamakaran(substr_count($denseHtml, 'class="sug-nm"') === $expectedDenseNames, 'PHP rebuilds cached oversized lists to the current exact-sound names');
+checkNamakaran($expectedDenseNames <= 64, 'PHP never exceeds four padas × two styles × eight exact names');
+checkNamakaran(preg_match('/\.sug-nm\s*\{\s*font-size:\s*14px/', $denseHtml) === 1, 'PHP keeps the exact-sound sheet at enlarged type');
 preg_match('/class="sug-cell" style="height:([0-9.]+)mm;"/', $denseHtml, $heightMatch);
-checkNamakaran(abs(floatval($heightMatch[1] ?? 0) * 16 - 186) < 0.1, 'PHP budgets the full name area across shared South/North rows');
+checkNamakaran(abs(floatval($heightMatch[1] ?? 0) * $expectedDenseRows - 186) < 0.1, 'PHP budgets the name area using actual rows, even when sparse');
 if (AstroMpdfReports::isAvailable()) {
     $densePdf = AstroMpdfReports::convertHtmlToPdf($denseHtml, 'en');
-    checkNamakaran(preg_match_all('/\/Type\s*\/Page\b/', $densePdf) === 2, 'mPDF keeps the certificate and 64 larger names on exactly two pages');
+    checkNamakaran(preg_match_all('/\/Type\s*\/Page\b/', $densePdf) === 2, 'mPDF keeps the certificate and sparse exact-name sheet on exactly two pages');
 }
 
 // ── 5. The meaning under every name is a curated translation ───────────────
@@ -252,7 +277,7 @@ foreach (['M', 'F'] as $gender) {
         }
     }
 }
-checkNamakaran($meaningChecks > 3000, "PHP localizes every printed name of all 27 Nakshatras ({$meaningChecks} names)");
+checkNamakaran($meaningChecks > 0, "PHP localizes every printed exact-sound name of all 27 Nakshatras ({$meaningChecks} names)");
 checkNamakaran($meaningMismatch === 0, "PHP prints the curated Tamil and Hindi meaning for every name ({$meaningMismatch} mismatches)");
 checkNamakaran($meaningLatin === 0, "No localized meaning line carries Latin text ({$meaningLatin})");
 
@@ -268,7 +293,6 @@ $legacyFixture['result']['nameSuggestions'] = [[
     'rasiTa' => '',
     'rasiEn' => '',
     'rasiHi' => '',
-    'usesRelatedSounds' => false,
     'south' => [[
         'name' => 'Sudhan',
         'meaning' => 'Wealth and virtue',
@@ -281,10 +305,13 @@ $legacyHtml = AstroReportViews::generateBabyNamingHtml(
     ['language' => 'ta', 'order_number' => 'AS-BN-TEST'],
     $legacyFixture['result']
 );
+$expectedLegacyColumns = AstroEngine::getBabyNameSuggestionsByPada($legacyRow['padas'], 'F', 15);
+$expectedLegacyNames = array_sum(array_map(fn($column) => count($column['south']) + count($column['north']), $expectedLegacyColumns));
 checkNamakaran(
     strpos($legacyHtml, 'செல்வம் and virtue') === false
-    && substr_count($legacyHtml, 'class="sug-nm-ta"') === 64,
-    'PHP rebuilds legacy lists from current data instead of printing cached names or meanings'
+    && substr_count($legacyHtml, 'class="sug-nm-ta"') === $expectedLegacyNames
+    && strpos($legacyHtml, '<sup>†</sup>') === false,
+    'PHP rebuilds legacy lists from exact current names instead of printing cached names or meanings'
 );
 
 // ── 5b. Page 1 example names carry a localized meaning in every language ───
@@ -357,20 +384,29 @@ checkNamakaran(strpos($sample['nakshatraLetters']['rajjuEn'], 'Kantha') !== fals
 $sampleHtml = AstroReportViews::generateBabyNamingHtml(['language' => 'ta'], $sample);
 foreach (['கணிப்பு சரிபார்க்கப்பட்டது', 'பெயரின் முதல் ஒலி (A)', 'பொருந்தவில்லை', 'கண்ட ரஜ்ஜு',
     'ASTRO-NAME-20261007', '07 Oct 2026, 08:00 IST', 'அங்கீகரிக்கப்பட்டவர்', 'நவாம்சம்',
-    'தனுசு', 'மகரம்', 'கும்பம்', 'மீனம்', '★ பாதம் 2', 'ரூபேஷ்', 'ரமேஷ்', 'ரகேஷ்', 'ராஜேஷ்',
-    'ரோனக்', 'ரோனித்', 'உண்மையின் இறைவன்', 'புனித ரேவா நதியின் பகுதி', 'ஒளிமிக்க, சூரியனின் மகன்'] as $expected) {
+    'தனுசு', 'மகரம்', 'கும்பம்', 'மீனம்', '★ பாதம் 2'] as $expected) {
     checkNamakaran(strpos($sampleHtml, $expected) !== false, "PHP corrected sample contains {$expected}");
 }
-$markers = 0;
+$samplePage2 = substr($sampleHtml, strpos($sampleHtml, 'id="namakaran-page-2"'));
+$sampleNameCount = 0;
 foreach ($sample['nameSuggestions'] as $column) {
-    checkNamakaran(count($column['south']) === 8 && count($column['north']) === 8, 'PHP sample has eight names per side');
+    checkNamakaran(count($column['south']) <= 8 && count($column['north']) <= 8, 'PHP sample allows fewer than eight exact names per side');
     $seen = [];
     foreach (array_merge($column['south'], $column['north']) as $entry) {
+        $sampleNameCount++;
         $printed = AstroReportViews::transliterateToTamil($entry['name']);
         checkNamakaran(!isset($seen[$printed]), "PHP sample has no display duplicate: {$printed}");
+        checkNamakaran(
+            ($entry['sourceAksharaTa'] ?? '') === $column['soundTa']
+            && AstroReportViews::nameMatchesPada($entry['name'], $column['soundTa']),
+            "PHP sample only suggests the exact {$column['soundTa']} sound"
+        );
+        checkNamakaran(strpos($samplePage2, $printed) !== false, "PHP page 2 prints exact name {$printed}");
         $seen[$printed] = true;
-        if ($entry['isRelatedSound']) $markers++;
         checkNamakaran($entry['name'] !== 'Danish', 'Danish is not a Ta suggestion');
     }
 }
-checkNamakaran(substr_count($sampleHtml, '<sup>†</sup>') === $markers, 'PHP marks every non-exact syllable');
+checkNamakaran($sampleNameCount > 0, 'PHP sample has exact-sound suggestions');
+checkNamakaran(strpos($samplePage2, '<sup>†</sup>') === false, 'PHP page 2 has no alternative-sound name markers');
+checkNamakaran(!str_contains($samplePage2, 'ரமேஷ்') && !str_contains($samplePage2, 'ரகேஷ்') && !str_contains($samplePage2, 'ராஜேஷ்'),
+    'PHP page 2 excludes related Ra names from Swati Roo/Re/Ro/Tha suggestions');

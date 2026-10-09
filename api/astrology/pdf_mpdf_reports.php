@@ -4078,7 +4078,6 @@ CSS;
             : ($isHi
                 ? 'दक्षिण भारतीय एवं उत्तर भारतीय शैली — नक्षत्र पाद ध्वनियों हेतु नाम'
                 : 'South &amp; North Indian Styles &mdash; Names for Every Pada Syllable');
-        $usesRelatedSounds = false;
         $southBlocks = '';
         $northBlocks = '';
         foreach ($suggestionColumns as $column) {
@@ -4089,10 +4088,6 @@ CSS;
                 : ($isHi ? ($column['rasiHi'] ?? '') : ($column['rasiEn'] ?? '')));
             $isBirthSection = intval($column['padaNumber'] ?? 0) === $birthPada;
             $padaLabel = ($isBirthSection ? '★ ' : '') . self::e($padaWord . ' ' . intval($column['padaNumber'] ?? 0));
-            if (!empty($column['usesRelatedSounds'])) {
-                $usesRelatedSounds = true;
-            }
-
             $rowCount = max(1, (int) ceil(max(count($column['south'] ?? []), count($column['north'] ?? [])) / 2));
             $renderList = function ($names) use ($rowCount, $nameRowHeight, $isTa, $isHi) {
                 $cells = is_array($names) ? array_values($names) : [];
@@ -4116,7 +4111,7 @@ CSS;
                             $meaning = $isTa
                                 ? ($entry['meaningTa'] ?? '')
                                 : ($isHi ? ($entry['meaningHi'] ?? '') : ($entry['meaningEn'] ?? $entry['meaning'] ?? ''));
-                            $rows .= $nameHtml . (!empty($entry['isRelatedSound']) ? '<sup>†</sup>' : '') . '<br/><span class="sug-mn">' . self::e($meaning) . '</span>';
+                            $rows .= $nameHtml . '<br/><span class="sug-mn">' . self::e($meaning) . '</span>';
                         } elseif (empty($cells) && $i === 0 && $col === 0) {
                             $rows .= '<span class="sug-empty">&#8212;</span>';
                         }
@@ -4139,13 +4134,11 @@ CSS;
             $northBlocks .= '<div class="sug-block"' . ($isBirthSection ? ' style="background:#fff7e0;border-left:2px solid #c9962c;"' : '') . '>' . $head . $renderList($column['north'] ?? []) . '</div>';
         }
 
-        $relatedNote = $usesRelatedSounds
-            ? ($isTa
-                ? '★ ஜன்ம பாத ஒலிக்கான பெயர்களுக்கு முன்னுரிமை அளிக்கவும். † தொடர்புடைய ஒலி; துல்லியமான பாத ஒலி அல்ல.'
-                : ($isHi
-                    ? 'जहाँ किसी पाद ध्वनि हेतु पारंपरिक नाम कम हैं, वहाँ उसी अक्षर की निकट ध्वनियों के नाम भी सम्मिलित किए गए हैं।'
-                    : 'Where tradition offers few names for a pada sound, closely related sounds of the same letter are included.'))
-            : '';
+        $exactSoundNote = $isTa
+            ? 'கொடுக்கப்பட்ட நான்கு பாத ஒலிகளுடன் சரியாகப் பொருந்தும் பெயர்கள் மட்டுமே காட்டப்படுகின்றன; சில ஒலிகளுக்கு பெயர்கள் குறைவாக இருக்கலாம்.'
+            : ($isHi
+                ? 'केवल दिए गए चार पाद स्वरों से ठीक मेल खाने वाले नाम दिखाए गए हैं; कुछ स्वरों के लिए नाम कम हो सकते हैं।'
+                : 'Only exact matches to the four listed pada sounds are shown; some sounds may have fewer names.');
 
         $suggestionsPage = '';
         if ($southBlocks !== '' || $northBlocks !== '') {
@@ -4168,7 +4161,7 @@ CSS;
                 . '<td class="sug-col" width="50%" valign="top">'
                 . '<div class="sug-col-head sug-north">' . $northTitle . '</div>' . $northBlocks . '</td>'
                 . '</tr></table>'
-                . ($relatedNote !== '' ? '<div class="sug-note">' . $relatedNote . '</div>' : '')
+                . '<div class="sug-note">' . $exactSoundNote . '</div>'
                 . '<div class="bn-footer-bar"><b>ASTRO SIVAM</b> &nbsp;&bull;&nbsp; ' . $footerLabel
                 . ' &nbsp;&bull;&nbsp; admin@astrosivam.com</div>'
                 . '</div>';

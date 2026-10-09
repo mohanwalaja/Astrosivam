@@ -6,7 +6,7 @@
  * Content hash    : c15e1c5ff9dec371
  *
  * The same hash is written into api/astrology/namakaran_name_bank.php so the
- * live preview, the browser preview and the official mPDF report can be proven to
+ * live preview, the browser-side TypeScript and the official mPDF report can be proven to
  * show an identical name bank.
  */
 
@@ -118,33 +118,4 @@ export const NAMAKARAN_BANK: Record<string, NamakaranBankAkshara> = {
   "த": { M: { south: [{n:"Thamizhselvan",m:"Mighty Tamil scholar"},{n:"Thandapani",m:"Lord Shiva"},{n:"Thambidurai",m:"Lord of the family"},{n:"Thangaraju",m:"Golden king"},{n:"Thavam",m:"Penance, devotion"}], north: [{n:"Thaman",m:"Beloved"},{n:"Thakur",m:"A leader"},{n:"Tanmay",m:"Absorbed in the divine"},{n:"Tarak",m:"A star, protector"},{n:"Tanish",m:"Lord of the night"},{n:"Tanuj",m:"A beloved son"}] }, F: { south: [{n:"Thamizhselvi",m:"Graceful Tamil girl"},{n:"Thamizharasi",m:"Queen of Tamil"},{n:"Thangammal",m:"Golden lady"},{n:"Thavamalar",m:"Flower of penance"},{n:"Thamizhini",m:"Sweet Tamil maiden"}], north: [{n:"Thara",m:"Star"},{n:"Thakshvi",m:"A graceful swan"},{n:"Tanishka",m:"A small star"},{n:"Tanya",m:"A fairy queen"},{n:"Taruna",m:"Young, tender"}] } },
   "ஜ": { M: { south: [], north: [] }, F: { south: [], north: [{n:"Jhalak",m:"A glimpse, sparkle"},{n:"Jhilmil",m:"A soft twinkle"}] } },
   "ஞ": { M: { south: [], north: [{n:"Trailokya",m:"The three worlds"},{n:"Trilok",m:"The three realms"},{n:"Trishank",m:"A noble king"}] }, F: { south: [{n:"Trisha",m:"A wish, desire"}], north: [{n:"Triveni",m:"Meeting of three rivers"}] } }
-};
-
-/**
- * Aksharas with no (or almost no) names of their own: the report completes the
- * list with names of the related varga sound, exactly as a Tamil astrologer
- * would.
- */
-export const NAMAKARAN_BANK_FALLBACKS: Record<string, string[]> = {
-  "ஒ": ["உ", "அ"],
-  "ங": ["க", "கா"],
-  "ஞ": ["ஜா", "ஜீ", "சா"],
-  "ஜ": ["ஜா", "ஜீ"],
-  "ணா": ["நா", "நீ", "நே"],
-  "டோ": ["டா", "டே"],
-  "தோ": ["தா", "தே"],
-  "நூ": ["நா", "நீ"],
-  "நோ": ["நா", "நீ", "நே"],
-  "பே": ["பா", "பீ", "பூ"],
-  "போ": ["பா", "பூ", "பீ"],
-  "மூ": ["மா", "மீ", "மே"],
-  "மே": ["மா", "மீ"],
-  "யீ": ["யா", "யூ"],
-  "யே": ["யா", "யூ"],
-  "லூ": ["லா", "லீ", "லே"],
-  "வு": ["வா", "வீ", "வே"],
-  "வோ": ["வா", "வீ", "வே"],
-  "ஹு": ["ஹா", "ஹே", "ஹோ"],
-  "ஹோ": ["ஹா", "ஹே"],
-  "ஷா": ["சா"]
 };

@@ -90,12 +90,12 @@ async function layout(frame: Frame) {
     const southHeads = Array.from(page.querySelectorAll('.south-panel .sug-block-head'));
     const northHeads = Array.from(page.querySelectorAll('.north-panel .sug-block-head'));
     return {
-      count: cards.length, clipped,
-      nameSize: getComputedStyle(cards[0].querySelector('.sug-name-text')!).fontSize,
-      meaningSize: getComputedStyle(cards[0].querySelector('.sug-name-meaning')!).fontSize,
+      count: cards.length, emptyCount: page.querySelectorAll('.sug-empty').length, clipped,
+      nameSize: cards.length ? getComputedStyle(cards[0].querySelector('.sug-name-text')!).fontSize : '',
+      meaningSize: cards.length ? getComputedStyle(cards[0].querySelector('.sug-name-meaning')!).fontSize : '',
       height: pageRect.height, scrollHeight: page.scrollHeight,
       columnHeight: columns.height, columnBottom: columns.bottom,
-      lastNameBottom: Math.max(...cards.map(card => card.getBoundingClientRect().bottom)) - pageRect.top,
+      lastNameBottom: cards.length ? Math.max(...cards.map(card => card.getBoundingClientRect().bottom)) - pageRect.top : 0,
       footerTop: page.querySelector('.footer')!.getBoundingClientRect().top,
       headingOffsets: southHeads.map((head, i) => head.getBoundingClientRect().top - northHeads[i].getBoundingClientRect().top)
     };
@@ -104,7 +104,7 @@ async function layout(frame: Frame) {
 
 for (const language of ['en', 'ta', 'hi'] as const) {
   for (const gender of ['M', 'F'] as const) {
-    test(`${language} ${gender}: all 27 birth stars use larger names and the full second page`, async ({ page }) => {
+    test(`${language} ${gender}: all 27 birth stars use exact pada names on page 2`, async ({ page }) => {
       await preparePage(page);
       for (let star = 0; star < ALL_NAKSHATRA_LETTERS.length; star++) {
         const result = fixture(star, gender);
@@ -117,27 +117,42 @@ for (const language of ['en', 'ta', 'hi'] as const) {
           language === 'ta' ? result.primaryPadaInfo.letterTa : language === 'hi' ? result.primaryPadaInfo.letterHi : result.primaryPadaInfo.letterEn
         );
         expect(metrics.count, label).toBe(result.nameSuggestions!.reduce((sum, c) => sum + c.south.length + c.north.length, 0));
-        expect(metrics.nameSize, label).toBe(language === 'ta' ? '13px' : '14px');
-        expect(metrics.meaningSize, label).toBe(language === 'ta' ? '9px' : '10px');
+        expect(metrics.count, label).toBeLessThanOrEqual(64);
+        await expect(frame.locator('[data-related-sound="true"]'), label).toHaveCount(0);
+        if (metrics.count > 0) {
+          expect(metrics.nameSize, label).toBe(language === 'ta' ? '13px' : '14px');
+          expect(metrics.meaningSize, label).toBe(language === 'ta' ? '9px' : '10px');
+          expect(metrics.lastNameBottom / metrics.height, label).toBeGreaterThan(0.91);
+        } else {
+          expect(metrics.emptyCount, label).toBeGreaterThan(0);
+        }
         expect(metrics.clipped, label).toEqual([]);
         expect(metrics.scrollHeight, label).toBeLessThanOrEqual(Math.ceil(metrics.height));
         expect(metrics.columnHeight / metrics.height, label).toBeGreaterThan(0.7);
-        expect(metrics.lastNameBottom / metrics.height, label).toBeGreaterThan(0.91);
         expect(metrics.columnBottom, label).toBeLessThan(metrics.footerTop);
         for (const offset of metrics.headingOffsets) expect(Math.abs(offset), label).toBeLessThan(1);
       }
     });
   }
 
-  test(`${language}: stale oversized lists rebuild to 64 current names without truncation`, async ({ page }) => {
+  test(`${language}: stale oversized lists rebuild to exact-sound suggestions`, async ({ page }) => {
     await preparePage(page);
-    const frame = await openReport(page, buildBabyNamingHtml(fixture(23, 'M', true), language));
+    const result = fixture(23, 'M', true);
+    const expectedNames = buildNamakaranPadaNames(ALL_NAKSHATRA_LETTERS[23].padas as any, 'M')
+      .reduce((sum, column) => sum + column.south.length + column.north.length, 0);
+    const frame = await openReport(page, buildBabyNamingHtml(result, language));
     const metrics = await layout(frame);
-    expect(metrics.count).toBe(64);
-    expect(metrics.nameSize).toBe(language === 'ta' ? '13px' : '14px');
-    expect(metrics.clipped).toEqual([]);
+    expect(metrics.count).toBe(expectedNames);
+    expect(metrics.count).toBeLessThanOrEqual(64);
+    await expect(frame.locator('[data-related-sound="true"]')).toHaveCount(0);
+    if (metrics.count > 0) {
+      expect(metrics.nameSize).toBe(language === 'ta' ? '13px' : '14px');
+      expect(metrics.clipped).toEqual([]);
+      expect(metrics.lastNameBottom / metrics.height).toBeGreaterThan(0.91);
+    } else {
+      expect(metrics.emptyCount).toBeGreaterThan(0);
+    }
     expect(metrics.scrollHeight).toBeLessThanOrEqual(Math.ceil(metrics.height));
-    expect(metrics.lastNameBottom / metrics.height).toBeGreaterThan(0.91);
     expect(metrics.columnBottom).toBeLessThan(metrics.footerTop);
   });
 
@@ -217,9 +232,11 @@ test('Aarav corrected Tamil report fits two A4 pages with no overlapping name in
   const html = buildBabyNamingHtml(result, 'ta');
   const frame = await openReport(page, html);
   const metrics = await layout(frame);
-  expect(metrics.count).toBe(64);
+  expect(metrics.count).toBe(result.nameSuggestions!.reduce((sum, column) => sum + column.south.length + column.north.length, 0));
+  expect(metrics.count).toBeLessThanOrEqual(64);
   expect(metrics.clipped).toEqual([]);
   expect(metrics.scrollHeight).toBeLessThanOrEqual(Math.ceil(metrics.height));
+  await expect(frame.locator('[data-related-sound="true"]')).toHaveCount(0);
   await expect(frame.locator('.verified-badge')).toHaveText('✓ கணிப்பு சரிபார்க்கப்பட்டது');
   await expect(frame.locator('.name-sound-check')).toContainText('பொருந்தவில்லை');
   await expect(frame.locator('.birth-pada-section')).toHaveCount(2);

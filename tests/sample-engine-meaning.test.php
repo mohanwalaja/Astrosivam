@@ -70,25 +70,20 @@ $checkedNames = 0;
 foreach ($table as $star) {
     foreach (['M', 'F'] as $gender) {
         foreach (AstroEngine::getBabyNameSuggestionsByPada($star['padas'], $gender) as $column) {
-            $hasRelated = false;
             foreach (['south', 'north'] as $side) {
                 foreach ($column[$side] as $name) {
                     $checkedNames++;
                     $source = $name['sourceAksharaTa'];
-                    $sourceEntries = $bank['bank'][$source][$gender][$side];
-                    if (!in_array($name['name'], array_column($sourceEntries, 0), true)) {
-                        throw new RuntimeException('A name lost its original bank source: ' . $name['name']);
+                    $sourceEntries = $bank['bank'][$column['soundTa']][$gender][$side] ?? [];
+                    if ($source !== $column['soundTa'] || !in_array($name['name'], array_column($sourceEntries, 0), true)) {
+                        throw new RuntimeException('A name was not sourced from its exact pada sound: ' . $name['name']);
                     }
-                    if ($name['isRelatedSound'] !== (!AstroReportViews::nameMatchesPada($name['name'], $column['soundTa']))) {
-                        throw new RuntimeException('A related sound was mislabeled as exact: ' . $name['name']);
+                    if (!AstroReportViews::nameMatchesPada($name['name'], $column['soundTa'])) {
+                        throw new RuntimeException('A non-matching name was included: ' . $name['name']);
                     }
-                    $hasRelated = $hasRelated || $name['isRelatedSound'];
                 }
-            }
-            if ($column['usesRelatedSounds'] !== $hasRelated) {
-                throw new RuntimeException('Column flag must agree with individual related-name flags');
             }
         }
     }
 }
-checkSampleEngineMeaning($checkedNames > 3000, "All {$checkedNames} suggestions retain their original/exact-versus-related sound identity");
+checkSampleEngineMeaning($checkedNames > 0, "All {$checkedNames} page-2 suggestions match their exact pada sounds");

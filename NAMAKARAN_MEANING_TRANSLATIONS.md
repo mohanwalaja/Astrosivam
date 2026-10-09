@@ -115,15 +115,16 @@ suite) fails with the missing English meaning named explicitly.
 
 ## Testing
 
-* `tests/namakaran-meanings.test.ts` — every meaning of the bank has a curated
-  translation, all 27 Nakshatras × both genders × 4 padas print the glossary
-  text (3201 names), no Tamil/Hindi line carries Latin text, both engines share
-  one glossary hash, the generators are in sync, and a legacy order with cached
-  broken text prints the corrected line.
-* `tests/namakaran-page2.test.php` — the same guarantees for the official mPDF
-  report, including the page-1 example names (every `AstroEngine` example
-  meaning must print Tamil/Hindi, never English), the legacy-cache check and the
-  generator `--check`.
+* `tests/namakaran-meanings.test.ts` — every bank meaning has a curated
+  translation; page 2 checks exact-sound suggestions across all 27 Nakshatras
+  and both genders (sparse lists are allowed, and related-sound alternatives
+  are not added); no Tamil/Hindi line carries Latin text; both engines share
+  one glossary hash; and a legacy order with cached broken text prints the
+  corrected line.
+* `tests/namakaran-page2.test.php` — the same exact-sound and translation
+  guarantees for the official mPDF report, including the page-1 example names
+  (every `AstroEngine` example meaning must print Tamil/Hindi, never English)
+  and the legacy-cache check.
 * `npm test` (Node suite) and `npm run test:php` (PHP suite) both cover it.
 
 Layout was verified with the real report fonts (`NotoSansTamil-Medium`,

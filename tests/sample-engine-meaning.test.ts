@@ -7,8 +7,7 @@ import { NAMAKARAN_BANK } from '../src/lib/astrology/namakaranNameBank.js';
 import {
   buildNamakaranNameProvenance,
   buildNamakaranPadaNames,
-  buildNamakaranPadaNamesFromResult,
-  fallbackAksharas
+  buildNamakaranPadaNamesFromResult
 } from '../src/lib/astrology/namakaranNames.js';
 import { Graha, PoruthamStatus } from '../src/lib/astrology/types.js';
 
@@ -110,44 +109,36 @@ assert.equal(buildNamakaranNameProvenance('Reyansh').status, 'SUPPLIED_NOT_CERTI
 const primaryColumn = baby.nameSuggestions!.find(column => column.padaNumber === baby.janmaPada)!;
 const reyansh = primaryColumn.north.find(entry => entry.name === 'Reyansh')!;
 assert.equal(reyansh.sourceAksharaTa, 'ரே');
-assert.equal(reyansh.isRelatedSound, false);
-const rahul = primaryColumn.north.find(entry => entry.name === 'Rahul')!;
-assert.equal(rahul.sourceAksharaTa, 'ரா');
-assert.equal(rahul.isRelatedSound, true, 'Rahul is an alternative Ra sound, not an exact Re sound');
-assert.equal(primaryColumn.usesRelatedSounds, true);
+assert(nameMatchesPada(reyansh.name, primaryColumn.soundTa));
+assert.equal(primaryColumn.north.some(entry => entry.name === 'Rahul'), false,
+  'A name from the related Ra sound is not added to the exact Re list');
 
-// Every generated name retains its real bank source. Tradition fallbacks and
-// the existing all-pada/gender coverage stay intact, without pretending all
-// names underneath a heading begin with that heading's exact akshara.
+// Every suggestion comes from its own listed pada sound and actually begins
+// with that sound. Sparse/empty lists are valid; they are never topped up with
+// names from another akshara.
 let checkedNames = 0;
 for (const star of ALL_NAKSHATRA_LETTERS) {
   for (const gender of ['M', 'F'] as const) {
-    for (const column of buildNamakaranPadaNames(star.padas, gender)) {
-      const options = [...column.south, ...column.north];
-      assert(options.length > 0);
-      for (const option of options) {
+    const columns = buildNamakaranPadaNames(star.padas, gender);
+    assert.equal(columns.length, 4);
+    for (const column of columns) {
+      for (const option of [...column.south, ...column.north]) {
         checkedNames++;
-        assert(option.sourceAksharaTa);
-        const source = NAMAKARAN_BANK[option.sourceAksharaTa][gender];
+        assert.equal(option.sourceAksharaTa, column.soundTa);
+        const source = NAMAKARAN_BANK[column.soundTa][gender];
         assert([...source.south, ...source.north].some(entry => entry.n === option.name));
-        assert.equal(option.isRelatedSound, !nameMatchesPada(option.name, column.soundTa));
-        if (option.sourceAksharaTa !== column.soundTa) {
-          assert(fallbackAksharas(column.soundTa).includes(option.sourceAksharaTa),
-            'Only the existing documented varga/same-letter alternatives are used');
-        }
+        assert(nameMatchesPada(option.name, column.soundTa),
+          `${option.name} must match the exact ${column.soundTa} sound`);
       }
-      assert.equal(column.usesRelatedSounds, options.some(option => option.isRelatedSound));
     }
   }
 }
+assert(checkedNames > 0);
 
 const legacy = structuredClone(baby);
 for (const column of legacy.nameSuggestions!) {
-  for (const option of [...column.south, ...column.north]) {
-    delete option.sourceAksharaTa;
-    delete option.isRelatedSound;
-  }
+  for (const option of [...column.south, ...column.north]) delete option.sourceAksharaTa;
 }
 assert.deepEqual(buildNamakaranPadaNamesFromResult(legacy), baby.nameSuggestions,
-  'Cached name lists recover exact-versus-related sound provenance from the bank');
-console.log(`[PASS] Supplied names are not certified; ${checkedNames} suggestions retain source/related sound identity`);
+  'Cached name lists are rebuilt from the exact current pada sounds');
+console.log(`[PASS] Supplied names are not certified; ${checkedNames} exact-sound suggestions checked`);
