@@ -24,6 +24,7 @@ const testFiles = [
   'tests/muhurtham-astronomy-regression.test.ts',
   'tests/sample-engine-meaning.test.ts',
   'tests/report-dob-format.test.ts',
+  'tests/ai-astrologer-sources.test.ts',
   'tests/lockfile-drift.test.ts'
 ];
 const tsxCli = resolve(projectRoot, 'node_modules/tsx/dist/cli.mjs');
