@@ -221,3 +221,68 @@ executed or even syntax-checked** here. The logic it mirrors has been executed, 
 TypeScript, by the 26 checks above, and the file is annotated to say so at the top.
 `smalot/pdfparser ^2.7` was added to `composer.json` for the extraction step; it is
 pure PHP, so it works on shared cPanel with no shell access.
+
+
+---
+
+## Part 4 — access control, rate limit and chat history (built 2026-10-09)
+
+| File | What it is | Verified by |
+| --- | --- | --- |
+| `api/migrations/007_ai_astrologer_chat.sql` | `ai_chat_sessions`, `ai_chat_messages`, `ai_chat_handoffs`. Idempotent, safe to re-run. | `tests/ai-astrologer-access.test.ts` |
+| `api/ai_astrologer.php` | The customer endpoint: `session`, `history`, `ask`, `upload`, `handoff`, `usage`. **Not executed** — see the caveat. | same |
+| `src/services/aiAstrologerApi.ts` | Browser client. No credential, no provider URL. | same |
+| `src/components/ai-astrologer/AiAstrologerPanel.tsx` | The chat panel: status line, three-dot typing, bubbles, upload, handoff, disclaimer. | same |
+| `src/pages/CustomerDashboard.tsx` | Two entry points: a dashboard button, and "Ask about this report" on each paid order. | same |
+
+### The two gates
+
+Both run on **every** action, including read-only ones, before the action switch:
+
+1. `requireAuth($pdo)` — signed-in customer, with the `token_version` revocation check `api/config.php` already applies.
+2. `astro_ai_require_paid_order()` — at least one order with `payment_confirmed = 1`, `status IN ('COMPLETED','PROCESSING')` and no refund.
+
+The React side hides the button when there is no completed order, but that is a
+**hint only**. The server re-checks on every request, because the browser is not
+trustworthy. A free-beta order does not qualify.
+
+### Rate limit
+
+The daily question limit reuses `api/rate_limit.php` with a 24-hour window keyed
+on the user id, so signing in from another device does not reset it. There is no
+second counter table — that would be a second source of truth.
+
+**`astro_rate_limit_enforce()` already counts the request** (it calls
+`astro_rate_limit_hit`, which calls `astro_rate_limit_upsert`). A first version of
+the endpoint also called `astro_rate_limit_bump()` afterwards, which would have
+charged the customer **two questions for one answer**. A test now fails if a bump
+appears in the `ask` handler.
+
+`astro_rate_limit_fetch()` does not know about window expiry, so
+`astro_ai_usage_count()` zeroes a stale row itself rather than reporting
+yesterday's usage as today's.
+
+### Column types
+
+`users.id`, `orders.id` and `orders.user_id` are `VARCHAR(64)` in `api/schema.sql`,
+so the chat tables use `VARCHAR(64)` too. Tidying these to `INT` would make the
+joins silently match nothing. A test pins the types.
+
+### Three bugs the tests caught while building them
+
+1. **`config.php` does not include `db.php`**, so `getDbConnection()` would have
+   been a fatal error on the first request.
+2. **`astro_report_normalize_language()` lives in `pdf_mpdf_invoice.php`**, a
+   738-line file. It was being required on every chat request just for one
+   helper; `astro_normalize_report_language()` in `config.php` does the same job.
+3. **The rate-limit double count** described above.
+
+### Caveat on the PHP
+
+PHP cannot be installed in this sandbox, so `api/ai_astrologer.php` has **not been
+executed or `php -l` checked**. `tests/ai-astrologer-access.test.ts` is a static
+contract test: it parses the PHP and asserts that both gates run before dispatch,
+that every function it calls exists in a file it actually requires, that every
+table and column exists in `schema.sql` or the migration, and that no credential
+appears in the browser-reachable files. That catches contradictions with the
+schema and the brief; it cannot prove the code runs.
