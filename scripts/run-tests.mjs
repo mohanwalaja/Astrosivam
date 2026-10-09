@@ -17,6 +17,7 @@ const testFiles = [
   'tests/node-php-parity.test.ts',
   'tests/astrology-integrity-regression.test.tsx',
   'tests/jathagam-card-rules.test.ts',
+  'tests/jathagam-lucky-indicators.test.ts',
   'tests/vimshottari-dasha-timeline.test.ts',
   'tests/dosha-rule-accuracy.test.ts',
   'tests/porutham-reference.test.ts',
