@@ -54,3 +54,20 @@ export function describeFamilyRenderQuality(res?: {
   return ` ⚠️ ${fallbacks} report(s)${numbers ? ` (${numbers})` : ''} were rendered server-side at lower quality - ` +
     'their preview PDF did not reach the server. Send the email again to retry.';
 }
+
+/**
+ * THE date-of-birth format used in every report PDF: `DD/MM/YYYY`
+ * (e.g. "27/07/1990"). Accepts the stored ISO `YYYY-MM-DD` (optionally with a
+ * time suffix), `YYYY/MM/DD`, or an already day-first `DD-MM-YYYY` /
+ * `DD.MM.YYYY` / `DD/MM/YYYY` value. Anything unrecognised is returned as-is.
+ */
+export function formatBirthDate(value?: string | null): string {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+  const pad = (part: string) => part.padStart(2, '0');
+  const isoMatch = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:$|[T\s])/.exec(raw);
+  if (isoMatch) return `${pad(isoMatch[3])}/${pad(isoMatch[2])}/${isoMatch[1]}`;
+  const dayFirst = /^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/.exec(raw);
+  if (dayFirst) return `${pad(dayFirst[1])}/${pad(dayFirst[2])}/${dayFirst[3]}`;
+  return raw;
+}

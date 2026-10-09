@@ -18,7 +18,7 @@ import {
   EXALTATION_SIGN,
   OWN_SIGNS
 } from '../lib/astrology/dignity';
-import { formatBirthPlace } from './formatUtils';
+import { formatBirthDate, formatBirthPlace } from './formatUtils';
 import { formatUtcOffset } from '../lib/timezone';
 import { buildReportHeaderHtml, reportHeaderCss } from './reportHeader';
 import { fitJathagamLifeCardText, fitJathagamSummaryText } from './jathagamLifeCardLayout';
@@ -657,14 +657,8 @@ export function buildJathagamHtml(result: HoroscopeResult, lang: AppLanguage = '
   const lagnaDegreeText = lagnaDegree === null ? 'N/A' : `${lagnaDegree.toFixed(1)}°`;
   const padaText = pada === null ? 'N/A' : isTa ? `${pada}-ஆம் பாதம்` : isHi ? `पाद ${pada}` : `Pada ${pada}`;
 
-  // Format DOB (DD-MM-YYYY)
-  let formattedDob = result.dob;
-  if (result.dob && result.dob.includes('-')) {
-    const parts = result.dob.split('-');
-    if (parts.length === 3) {
-      formattedDob = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    }
-  }
+  // Format DOB (DD/MM/YYYY)
+  let formattedDob = formatBirthDate(result.dob) || result.dob;
 
   // Format TOB
   let formattedTob = result.tob;

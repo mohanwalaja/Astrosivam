@@ -5,6 +5,7 @@ import { normalizeReportLanguage } from './reportLanguage';
 import { buildMuhurthamReportNotes } from './muhurthamReportNotes';
 import { AppLanguage } from '../types';
 import { buildReportHeaderHtml, reportHeaderCss } from './reportHeader';
+import { formatBirthDate } from './formatUtils';
 
 export interface MuhurthamDayRow {
   date: string;
@@ -366,8 +367,8 @@ export function buildMuhurthamHtml(result: MuhurthamScanResult, lang: AppLanguag
   const place = escapeHtml(formatPlace(result.muhurthamPlace, result.muhurthamCountry));
   const birthPlace = escapeHtml(formatPlace(result.birthPlace, result.country));
 
-  // One report date format everywhere: "07 Oct 2026" (DD Mon YYYY).
-  const formattedDob = formatReportDate(result.dob);
+  // Dates of birth are always printed as DD/MM/YYYY (e.g. "27/07/1990").
+  const formattedDob = formatBirthDate(result.dob) || '—';
   const formattedTob = formatClock12(result.tob);
 
   // Every person the report is checked against. A wedding carries both the
@@ -489,7 +490,7 @@ export function buildMuhurthamHtml(result: MuhurthamScanResult, lang: AppLanguag
     const star = personLang === 'ta' ? person.nakshatraNameTa : personLang === 'hi' ? person.nakshatraNameHi : person.nakshatraNameEn;
     const rasi = personLang === 'ta' ? person.rasiNameTa : personLang === 'hi' ? person.rasiNameHi : person.rasiNameEn;
     const lagna = personLang === 'ta' ? person.lagnaNameTa : personLang === 'hi' ? person.lagnaNameHi : person.lagnaNameEn;
-    const meta = [formatReportDate(person.dob), formatClock12(person.tob)].filter(Boolean).join(' • ');
+    const meta = [formatBirthDate(person.dob), formatClock12(person.tob)].filter(Boolean).join(' • ');
     return `<div class="person-card">
       <div class="person-role">${escapeHtml(roleLabel)}</div>
       <div class="person-name">${escapeHtml(person.name || '—')}</div>
@@ -980,7 +981,7 @@ ${REPORT_FONT_LINK_TAG}
         ${singlePersonMode ? `
         <div class="details-grid">
           <div class="detail-card"><span class="detail-label">${escapeHtml(labels.name)}</span><span class="detail-val">${devotee}</span>${personStarLine(persons[0], labels, lang)}</div>
-          <div class="detail-card"><span class="detail-label">${escapeHtml(labels.dob)}</span><span class="detail-val">${escapeHtml(persons[0]?.dob ? formatReportDate(persons[0].dob) : formattedDob)}</span></div>
+          <div class="detail-card"><span class="detail-label">${escapeHtml(labels.dob)}</span><span class="detail-val">${escapeHtml(persons[0]?.dob ? formatBirthDate(persons[0].dob) : formattedDob)}</span></div>
           <div class="detail-card"><span class="detail-label">${escapeHtml(labels.tob)}</span><span class="detail-val">${escapeHtml(persons[0]?.tob ? formatClock12(persons[0].tob) : formattedTob)}</span></div>
           <div class="detail-card"><span class="detail-label">${escapeHtml(labels.place)}</span><span class="detail-val">${place}</span><span class="detail-note">${escapeHtml(labels.birthPlace)}: ${birthPlace}</span></div>
         </div>

@@ -9,7 +9,7 @@ import {
   type NamakaranPadaNames
 } from '../lib/astrology/namakaranNames';
 import { getGunam } from './gunamData';
-import { formatBirthPlace } from './formatUtils';
+import { formatBirthDate, formatBirthPlace } from './formatUtils';
 import { normalizeReportLanguage } from './reportLanguage';
 import { formatBabyNameForReport } from './indicTransliteration';
 
@@ -133,13 +133,9 @@ export function buildBabyNamingHtml(result: BabyNamingResult, lang: AppLanguage 
     ? (lagnaRasiInfo?.nameHi || 'N/A')
     : (lagnaRasiInfo?.nameEn || 'N/A');
 
-  // Format DOB (DD-MM-YYYY)
+  // Format DOB (DD/MM/YYYY)
   let rawDob = result.dob || resAny.inputPayload?.dob || '';
-  let formattedDob = rawDob;
-  if (rawDob && rawDob.includes('-')) {
-    const parts = rawDob.split('-');
-    if (parts.length === 3) formattedDob = `${parts[2]}-${parts[1]}-${parts[0]}`;
-  }
+  let formattedDob = formatBirthDate(rawDob);
 
   // Format TOB
   let rawTob = result.tob || resAny.inputPayload?.tob || '';

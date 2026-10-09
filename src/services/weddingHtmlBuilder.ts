@@ -2,7 +2,7 @@ import { WeddingMatchResult, AppLanguage, PoruthamStatus } from '../lib/astrolog
 import { REPORT_FONT_LINK_TAG } from './reportFonts';
 import { buildReportHeaderHtml, reportHeaderCss } from './reportHeader';
 import { normalizeReportLanguage } from './reportLanguage';
-import { formatBirthPlace } from './formatUtils';
+import { formatBirthDate, formatBirthPlace } from './formatUtils';
 import {
   buildWeddingDisclaimerNotes,
   weddingDisclaimerRichHtml
@@ -131,14 +131,8 @@ export function buildWeddingMatchHtml(
   const bridePada = validPadaNumber(bridePadaRaw) ? Number(bridePadaRaw) : 'N/A';
   const groomPada = validPadaNumber(groomPadaRaw) ? Number(groomPadaRaw) : 'N/A';
 
-  // Format DOB (DD-MM-YYYY)
-  const formatDob = (dobStr: string) => {
-    if (dobStr && dobStr.includes('-')) {
-      const parts = dobStr.split('-');
-      if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
-    }
-    return dobStr || 'N/A';
-  };
+  // Format DOB (DD/MM/YYYY)
+  const formatDob = (dobStr: string) => formatBirthDate(dobStr) || 'N/A';
 
   // Format TOB
   const formatTob = (tobStr: string) => {

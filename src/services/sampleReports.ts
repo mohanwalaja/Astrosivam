@@ -82,8 +82,8 @@ export const SAMPLE_BRIDE = {
 export const SAMPLE_MUHURTHAM_EVENT_KEY = 'wedding';
 
 /** Human-readable label of the fixed sample birth (used in the UI). */
-export const SAMPLE_BIRTH_LABEL = '01 Jan 2000, 2:00 AM, Chennai (India)';
-export const SAMPLE_BRIDE_LABEL = '15 Jun 1998, 6:30 AM, Chennai (India)';
+export const SAMPLE_BIRTH_LABEL = '01/01/2000, 2:00 AM, Chennai (India)';
+export const SAMPLE_BRIDE_LABEL = '15/06/1998, 6:30 AM, Chennai (India)';
 
 /** Localized "SAMPLE REPORT" heading + explanation shown above the preview. */
 export const SAMPLE_BANNER: Record<AppLanguage, { title: string; note: string }> = {
