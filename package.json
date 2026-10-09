@@ -11,7 +11,7 @@
     "parity:compare": "tsx scripts/compare-parity.ts",
     "parity:seed": "npm run parity:corpus && npm run parity:node -- --write-expected",
     "test:pdf": "playwright test",
-    "test:php": "php tests/astrology-accuracy-regression.test.php && php tests/preview-pdf-quality.test.php && php tests/muhurtham-reports.test.php && php tests/wedding-matching-report.test.php && php tests/sample-engine-meaning.test.php && php tests/namakaran-page2.test.php && php tests/payment-webhook.test.php && php tests/mailer-guards.test.php && php tests/rate-limit.test.php && php tests/node-php-parity.test.php && php tests/jathagam-summary-parity.test.php && php tests/jathagam-navamsa-page1.test.php",
+    "test:php": "bash scripts/run-php-tests.sh",
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "build:zip": "npm run build && python3 scripts/create_dist_zip.py",

@@ -98,9 +98,11 @@ confirm the PHP engine still agrees.
 | `src/lib/astrology/ayanamsa.ts` | Lahiri ayanamsa, TRUE by default |
 | `src/lib/astrology/nutationSeries.ts` | Generated IAU 1980 table; rebuild with `node scripts/build-nutation-series.mjs` when `api/astrology/ephemeris_tables.php` changes |
 
-The `.github/workflows/tests.yml` workflow runs TypeScript/Node tooling tests,
-PHP tests, and a parity job that checks both calculations against the committed
-contract. None of these jobs launches or deploys a Node application server.
+The `.github/workflows/tests.yml` workflow runs only the PHP test suite and PHP
+syntax checks. TypeScript/Node parity commands remain available for local
+development, but are intentionally not part of the GitHub test workflow. The
+separate `build.yml` workflow uses Node.js only to compile the static frontend;
+no workflow launches or deploys a Node application server.
 
 ---
 
