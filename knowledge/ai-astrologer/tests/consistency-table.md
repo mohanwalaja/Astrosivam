@@ -10,70 +10,77 @@ agreement is structural rather than something the prompt has to ask for.
 
 Cells show `en/ta/hi` verdicts in order.
 
+The **Shared sources** column is the same reference set both sides cite. It is
+derived from the chat retrieval rules in
+`knowledge/ai-astrologer/rules/life-areas.json` keyed by `cardIndex`, so nothing
+was invented. A `:verse`/`:page` suffix means the source was read to passage
+level (only TA-02 and TA-07 qualify); `:chapter` is allowed only for EN-02,
+whose printed index was read; a bare id is book-level only.
+
 ## Chart 1 - favourable
 
-| Life area | Report says | Chat says | Match |
-| --- | --- | --- | --- |
-| Health & Vitality | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Wealth & Finance | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Education & Intellect | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Career & Profession | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Marriage & Relations | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Property & Real Estate | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Travel & Global Fortune | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Current Guidance | supportive / supportive / supportive | supportive / supportive / supportive | YES |
+| Life area | Report says | Chat says | Match | Shared sources |
+| --- | --- | --- | --- | --- |
+| Health & Vitality | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-02:chapter, REF-03, TA-15, TP-03 |
+| Wealth & Finance | supportive / supportive / supportive | supportive / supportive / supportive | YES | TA-02:46, EN-01, EN-09, EN-02:chapter |
+| Education & Intellect | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-04, EN-09, TA-07:15-16 |
+| Career & Profession | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-02:chapter, EN-07, TA-07:15-18 |
+| Marriage & Relations | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-02:chapter, EN-06, TA-19, EN-09, TA-07:18 |
+| Property & Real Estate | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-04 |
+| Travel & Global Fortune | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-09, EN-06 |
+| Current Guidance | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, TA-07:15-18, TA-06, TA-11, TA-25 |
 
 ## Chart 2 - afflicted
 
-| Life area | Report says | Chat says | Match |
-| --- | --- | --- | --- |
-| Health & Vitality | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Wealth & Finance | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Education & Intellect | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Career & Profession | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Marriage & Relations | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Property & Real Estate | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Travel & Global Fortune | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Current Guidance | challenging / challenging / challenging | challenging / challenging / challenging | YES |
+| Life area | Report says | Chat says | Match | Shared sources |
+| --- | --- | --- | --- | --- |
+| Health & Vitality | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, EN-06, EN-02:chapter, REF-03, TA-15, TP-03 |
+| Wealth & Finance | challenging / challenging / challenging | challenging / challenging / challenging | YES | TA-02:46, EN-01, EN-09, EN-02:chapter |
+| Education & Intellect | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, EN-06, EN-04, EN-09, TA-07:15-16 |
+| Career & Profession | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, EN-06, EN-02:chapter, EN-07, TA-07:15-18 |
+| Marriage & Relations | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, EN-02:chapter, EN-06, TA-19, EN-09, TA-07:18 |
+| Property & Real Estate | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, EN-06, EN-04 |
+| Travel & Global Fortune | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, EN-09, EN-06 |
+| Current Guidance | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, TA-07:15-18, TA-06, TA-11, TA-25 |
 
 ## Chart 3 - mixed
 
-| Life area | Report says | Chat says | Match |
-| --- | --- | --- | --- |
-| Health & Vitality | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Wealth & Finance | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Education & Intellect | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Career & Profession | challenging / challenging / challenging | challenging / challenging / challenging | YES |
-| Marriage & Relations | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Property & Real Estate | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Travel & Global Fortune | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Current Guidance | supportive / supportive / supportive | supportive / supportive / supportive | YES |
+| Life area | Report says | Chat says | Match | Shared sources |
+| --- | --- | --- | --- | --- |
+| Health & Vitality | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-02:chapter, REF-03, TA-15, TP-03 |
+| Wealth & Finance | challenging / challenging / challenging | challenging / challenging / challenging | YES | TA-02:46, EN-01, EN-09, EN-02:chapter |
+| Education & Intellect | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-04, EN-09, TA-07:15-16 |
+| Career & Profession | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, EN-06, EN-02:chapter, EN-07, TA-07:15-18 |
+| Marriage & Relations | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-02:chapter, EN-06, TA-19, EN-09, TA-07:18 |
+| Property & Real Estate | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-04 |
+| Travel & Global Fortune | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-09, EN-06 |
+| Current Guidance | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, TA-07:15-18, TA-06, TA-11, TA-25 |
 
 ## Chart 4 - Rahu Dasha
 
-| Life area | Report says | Chat says | Match |
-| --- | --- | --- | --- |
-| Health & Vitality | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Wealth & Finance | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Education & Intellect | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Career & Profession | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Marriage & Relations | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Property & Real Estate | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Travel & Global Fortune | supportive / supportive / supportive | supportive / supportive / supportive | YES |
-| Current Guidance | challenging / challenging / challenging | challenging / challenging / challenging | YES |
+| Life area | Report says | Chat says | Match | Shared sources |
+| --- | --- | --- | --- | --- |
+| Health & Vitality | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-02:chapter, REF-03, TA-15, TP-03 |
+| Wealth & Finance | supportive / supportive / supportive | supportive / supportive / supportive | YES | TA-02:46, EN-01, EN-09, EN-02:chapter |
+| Education & Intellect | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-04, EN-09, TA-07:15-16 |
+| Career & Profession | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-02:chapter, EN-07, TA-07:15-18 |
+| Marriage & Relations | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-02:chapter, EN-06, TA-19, EN-09, TA-07:18 |
+| Property & Real Estate | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-06, EN-04 |
+| Travel & Global Fortune | supportive / supportive / supportive | supportive / supportive / supportive | YES | EN-01, EN-09, EN-06 |
+| Current Guidance | challenging / challenging / challenging | challenging / challenging / challenging | YES | EN-01, TA-07:15-18, TA-06, TA-11, TA-25 |
 
 ## Chart 5 - incomplete data
 
-| Life area | Report says | Chat says | Match |
-| --- | --- | --- | --- |
-| Health & Vitality | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES |
-| Wealth & Finance | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES |
-| Education & Intellect | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES |
-| Career & Profession | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES |
-| Marriage & Relations | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES |
-| Property & Real Estate | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES |
-| Travel & Global Fortune | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES |
-| Current Guidance | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES |
+| Life area | Report says | Chat says | Match | Shared sources |
+| --- | --- | --- | --- | --- |
+| Health & Vitality | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES | EN-01, EN-06, EN-02:chapter, REF-03, TA-15, TP-03 |
+| Wealth & Finance | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES | TA-02:46, EN-01, EN-09, EN-02:chapter |
+| Education & Intellect | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES | EN-01, EN-06, EN-04, EN-09, TA-07:15-16 |
+| Career & Profession | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES | EN-01, EN-06, EN-02:chapter, EN-07, TA-07:15-18 |
+| Marriage & Relations | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES | EN-01, EN-02:chapter, EN-06, TA-19, EN-09, TA-07:18 |
+| Property & Real Estate | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES | EN-01, EN-06, EN-04 |
+| Travel & Global Fortune | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES | EN-01, EN-09, EN-06 |
+| Current Guidance | unavailable / unavailable / unavailable | unavailable / unavailable / unavailable | YES | EN-01, TA-07:15-18, TA-06, TA-11, TA-25 |
 
 ## What "match" means
 

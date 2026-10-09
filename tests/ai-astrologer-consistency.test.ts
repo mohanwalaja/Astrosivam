@@ -22,6 +22,7 @@ import {
   computeLifeCardPredictions,
   predictionsForPrompt,
   verdictForLord,
+  citationFor,
   LIFE_CARD_RULES,
   type ChartFacts,
   type LordFacts,
@@ -326,6 +327,135 @@ check('a favourable health card has no doctor line, so the chat guard must add o
 });
 
 /* ------------------------------------------------------------------ */
+/* Every card citation must be a real, verified source                  */
+/* ------------------------------------------------------------------ */
+
+const REG = JSON.parse(
+  fs.readFileSync(path.join(root, 'knowledge/ai-astrologer/sources.json'), 'utf8')
+) as {
+  sources: { id: string; title: string; verification: string; verifiedPassages?: unknown[] }[];
+  excludedSources: { id: string }[];
+};
+const byId = new Map(REG.sources.map((s) => [s.id, s]));
+const EXCLUDED = new Set(REG.excludedSources.map((s) => s.id));
+const CITABLE = new Set(['content-read', 'metadata-verified', 'catalogue-verified']);
+// A passage-level citation is honest only where passages were actually read.
+const PASSAGE_CAPABLE = new Set(
+  REG.sources.filter((s) => Array.isArray(s.verifiedPassages) && s.verifiedPassages.length > 0).map((s) => s.id)
+);
+
+check('every prediction carries its sources, including the Dasha-driven card 8', () => {
+  // Regression guard: the card-8 (current Dasha) branch has its own return
+  // object, and it shipped once without `sources`. TypeScript catches it, but the
+  // runtime tests would not - and a chat reply with no citation on the one card
+  // that answers "what about this coming year?" is exactly the reply a customer
+  // would want to check. Assert it on the returned predictions, not the config.
+  for (const { chart } of CHARTS) {
+    for (const p of computeLifeCardPredictions(chart)) {
+      assert.ok(
+        Array.isArray(p.sources) && p.sources.length > 0,
+        `prediction ${p.cardIndex} (${p.id}) came back with no sources`
+      );
+    }
+  }
+  const c8 = computeLifeCardPredictions(chart1).find((p) => p.cardIndex === 8)!;
+  assert.ok(c8.sources.length > 0, 'card 8 has no citations');
+  assert.ok(citationFor(LIFE_CARD_RULES.cards[7], 'en').length > 0, 'card 8 renders no citation line');
+});
+
+check('every card cites at least one source, and every citation is a real registry entry', () => {
+  for (const card of LIFE_CARD_RULES.cards) {
+    assert.ok(card.sources.length > 0, `card ${card.cardIndex} (${card.id}) has no sources`);
+    for (const src of card.sources) {
+      assert.ok(byId.has(src.id), `card ${card.cardIndex} cites ${src.id}, which is not in sources.json`);
+      assert.ok(!EXCLUDED.has(src.id), `card ${card.cardIndex} cites excluded source ${src.id}`);
+    }
+  }
+});
+
+check('no card cites an uncitable source (linked-not-opened, dead, excluded)', () => {
+  const bad: string[] = [];
+  for (const card of LIFE_CARD_RULES.cards) {
+    for (const src of card.sources) {
+      const entry = byId.get(src.id)!;
+      if (!CITABLE.has(entry.verification)) {
+        bad.push(`card ${card.cardIndex} -> ${src.id} (${entry.verification})`);
+      }
+    }
+  }
+  assert.deepEqual(bad, [], `uncitable citations: ${bad.join('; ')}`);
+});
+
+check('citation precision never exceeds what was actually verified', () => {
+  // The level rules from life-areas.json _sourceLevels: 'passage' requires a
+  // verifiedPassages entry, 'chapter' is allowed only for EN-02 (its printed
+  // index was read), everything else is book-level only.
+  const bad: string[] = [];
+  for (const card of LIFE_CARD_RULES.cards) {
+    for (const src of card.sources) {
+      assert.ok(
+        ['passage', 'chapter', 'book'].includes(src.level),
+        `card ${card.cardIndex} cites ${src.id} at undocumented level '${src.level}'`
+      );
+      if (src.level === 'passage' && !PASSAGE_CAPABLE.has(src.id)) {
+        bad.push(`card ${card.cardIndex}: ${src.id} cited to a passage but has no verifiedPassages`);
+      }
+      if (src.level === 'chapter' && src.id !== 'EN-02') {
+        bad.push(`card ${card.cardIndex}: ${src.id} cited to a chapter, only EN-02 may be`);
+      }
+      if (src.level !== 'passage' && (src.verse || src.page)) {
+        bad.push(`card ${card.cardIndex}: ${src.id} is ${src.level}-level but carries verse/page`);
+      }
+    }
+  }
+  assert.deepEqual(bad, [], `over-precise citations: ${bad.join('; ')}`);
+  // And the two passage-capable sources are the ones recorded as read to passage level.
+  assert.deepEqual([...PASSAGE_CAPABLE].sort(), ['TA-02', 'TA-07']);
+});
+
+check('card sources come from the chat rule base, so nothing was invented', () => {
+  const lifeAreas = JSON.parse(
+    fs.readFileSync(path.join(root, 'knowledge/ai-astrologer/rules/life-areas.json'), 'utf8')
+  ) as { areas: { cardIndex: number; rules: { source?: unknown }[] }[] };
+  const ruleSources = new Map<number, Set<string>>();
+  for (const area of lifeAreas.areas) {
+    const set = new Set<string>();
+    for (const r of area.rules) {
+      const src = Array.isArray(r.source) ? r.source : r.source ? [r.source] : [];
+      for (const e of src as { id?: string; level?: string }[]) {
+        if (e && e.id && e.level !== 'suppressed') set.add(e.id);
+      }
+    }
+    ruleSources.set(area.cardIndex, set);
+  }
+  for (const card of LIFE_CARD_RULES.cards) {
+    const allowed = ruleSources.get(card.cardIndex)!;
+    for (const src of card.sources) {
+      assert.ok(
+        allowed.has(src.id),
+        `card ${card.cardIndex} cites ${src.id}, which the chat rules for that area do not use`
+      );
+    }
+  }
+});
+
+check('the chat prompt carries the same citation the report shows', () => {
+  const preds = computeLifeCardPredictions(chart3);
+  for (const lang of ['en', 'ta', 'hi'] as PredLang[]) {
+    const block = predictionsForPrompt(preds, lang);
+    for (const card of LIFE_CARD_RULES.cards) {
+      const cite = citationFor(card, lang);
+      assert.ok(cite.length > 0, `card ${card.cardIndex} renders no citation in ${lang}`);
+      assert.ok(block.includes(cite), `card ${card.cardIndex} citation missing from the ${lang} prompt block`);
+    }
+  }
+  // The citation label itself is localised, matching the report's style.
+  assert.match(citationFor(LIFE_CARD_RULES.cards[0], 'en'), /^Source: /);
+  assert.match(citationFor(LIFE_CARD_RULES.cards[0], 'ta'), /^மூலம்: /);
+  assert.match(citationFor(LIFE_CARD_RULES.cards[0], 'hi'), /^स्रोत: /);
+});
+
+/* ------------------------------------------------------------------ */
 /* The table                                                           */
 /* ------------------------------------------------------------------ */
 
@@ -374,16 +504,41 @@ const lines: string[] = [
   '',
   'Cells show `en/ta/hi` verdicts in order.',
   '',
+  'The **Shared sources** column is the same reference set both sides cite. It is',
+  'derived from the chat retrieval rules in',
+  '`knowledge/ai-astrologer/rules/life-areas.json` keyed by `cardIndex`, so nothing',
+  'was invented. A `:verse`/`:page` suffix means the source was read to passage',
+  'level (only TA-02 and TA-07 qualify); `:chapter` is allowed only for EN-02,',
+  'whose printed index was read; a bare id is book-level only.',
+  '',
 ];
+const cardById = new Map(LIFE_CARD_RULES.cards.map((c) => [c.id, c]));
+const predsForTable = computeLifeCardPredictions(chart1);
+const citeByTitle = new Map(predsForTable.map((p) => [p.title.en, p.id]));
+
 for (const [chartName, chartRows] of byChart) {
   lines.push(`## ${chartName}`, '');
-  lines.push('| Life area | Report says | Chat says | Match |');
-  lines.push('| --- | --- | --- | --- |');
+  lines.push('| Life area | Report says | Chat says | Match | Shared sources |');
+  lines.push('| --- | --- | --- | --- | --- |');
   for (const area of new Set(chartRows.map((r) => r.area))) {
     const areaRows = chartRows.filter((r) => r.area === area);
     const rep = areaRows.map((r) => r.report.split(' | ')[0]).join(' / ');
     const chat = areaRows.map((r) => r.chat.split(' | ')[0]).join(' / ');
-    lines.push(`| ${area} | ${rep} | ${chat} | ${areaRows.every((r) => r.match) ? 'YES' : '**NO**'} |`);
+    const card = cardById.get(citeByTitle.get(area) ?? '');
+    const srcs = card
+      ? card.sources
+          .map((x) =>
+            x.level === 'passage' && (x.verse || x.page)
+              ? `${x.id}:${x.verse || x.page}`
+              : x.level === 'chapter'
+                ? `${x.id}:chapter`
+                : x.id
+          )
+          .join(', ')
+      : '';
+    lines.push(
+      `| ${area} | ${rep} | ${chat} | ${areaRows.every((r) => r.match) ? 'YES' : '**NO**'} | ${srcs} |`
+    );
   }
   lines.push('');
 }

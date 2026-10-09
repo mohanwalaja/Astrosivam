@@ -5,33 +5,59 @@
   "_purpose": "THE SINGLE SOURCE OF TRUTH for the eight page-2 life-area predictions of the Birth Jathagam. Page 2 of the report and the AI Astrologer chat both compute from this file. Neither keeps a private copy of the logic.",
   "_whyHere": "This repo already shares JSON between the TypeScript builders and the PHP engine - see api/astrology/rajju.json, read by src/lib/astrology/matchmaking.ts and babynames.ts. This file follows the same pattern so PHP 8.0 can json_decode it without a Node build step.",
   "_extractedFrom": "The constants and the verdict rule below were read out of src/services/jathagamHtmlBuilder.ts buildJathagamLifeCards (lines 122, 192-193, 256-262) and its PHP mirror api/astrology/pdf_mpdf_reports.php $lifeCardsData (line 1489). They are recorded here verbatim so the extraction can be checked against the code, not trusted.",
-
   "constants": {
     "maleficConjunctionOrbDeg": 10,
-    "dusthanaHouses": [6, 8, 12],
-    "supportHouses": [1, 4, 5, 7, 9, 10, 11],
-    "naturalMalefics": ["CHEVVAI", "SANI", "RAHU", "KETU"],
+    "dusthanaHouses": [
+      6,
+      8,
+      12
+    ],
+    "supportHouses": [
+      1,
+      4,
+      5,
+      7,
+      9,
+      10,
+      11
+    ],
+    "naturalMalefics": [
+      "CHEVVAI",
+      "SANI",
+      "RAHU",
+      "KETU"
+    ],
     "_dignityOffset": "An exalted or own-sign lord offsets exactly ONE malefic conjunction (jathagamHtmlBuilder.ts line 257).",
     "dignityOffsetCount": 1,
     "_debilitatedMalefic": "A debilitated malefic is in its weakest state and is NOT counted as a strong malefic (line 243).",
     "_nodesHaveNoDebilitation": "Rahu and Ketu have no debilitation sign: the classical schools disagree, so dignity.ts reports 'not-applicable'. Never invent one."
   },
-
   "verdict": {
     "_rule": "Verbatim from jathagamHtmlBuilder.ts lines 261-262.",
     "isSupportive": "isOwnHouse || (!isDusthana && supportHouses.includes(bhava))",
     "isChallenging": "isDusthana || isDebilitated || isCombust || conjunctMalefics.length > 0",
     "_precedence": "isChallenging wins. A card is Caution if ANY challenge flag is set, even if it is also supportive. This is the conclusion the chat must not contradict."
   },
-
   "cards": [
     {
       "cardIndex": 1,
       "house": 1,
       "id": "health",
-      "title": { "en": "Health & Vitality", "ta": "ஆரோக்கியம் & நல்வாழ்வு", "hi": "स्वास्थ्य एवं आरोग्य" },
-      "badgeBase": { "en": "Health", "ta": "உடல் நலம்", "hi": "आरोग्य" },
-      "lordLabel": { "en": "Lagna lord", "ta": "லக்னாதிபதி", "hi": "लग्नेश" },
+      "title": {
+        "en": "Health & Vitality",
+        "ta": "ஆரோக்கியம் & நல்வாழ்வு",
+        "hi": "स्वास्थ्य एवं आरोग्य"
+      },
+      "badgeBase": {
+        "en": "Health",
+        "ta": "உடல் நலம்",
+        "hi": "आरोग्य"
+      },
+      "lordLabel": {
+        "en": "Lagna lord",
+        "ta": "லக்னாதிபதி",
+        "hi": "लग्नेश"
+      },
       "benefit": {
         "en": "Good: Lagna lord {pos} supports vitality when routine, diet, and movement are maintained.",
         "ta": "நன்மை: லக்னாதிபதி {pos} இருப்பதால் உடல் சக்தி மேம்பட முயற்சி, உணவு ஒழுக்கம் உதவும்.",
@@ -42,15 +68,53 @@
         "ta": "கவனம்: {status}; பலவீனம் இருந்தால் உடல் வலி, சோர்வு, தோல்/வயிறு எரிச்சல் போன்ற சிறு தொந்தரவுகள் வரலாம். அறிகுறிகள் இருந்தால் மருத்துவரை அணுகவும்.",
         "hi": "सावधानी: {status}; कमजोरी हो तो शरीर-दर्द, थकान, त्वचा/पेट की परेशानी हो सकती है। लक्षण हों तो डॉक्टर से मिलें।"
       },
-      "medicalSafety": true
+      "medicalSafety": true,
+      "sources": [
+        {
+          "id": "EN-01",
+          "level": "book"
+        },
+        {
+          "id": "EN-06",
+          "level": "book"
+        },
+        {
+          "id": "EN-02",
+          "level": "chapter"
+        },
+        {
+          "id": "REF-03",
+          "level": "book"
+        },
+        {
+          "id": "TA-15",
+          "level": "book"
+        },
+        {
+          "id": "TP-03",
+          "level": "book"
+        }
+      ]
     },
     {
       "cardIndex": 2,
       "house": 2,
       "id": "wealth",
-      "title": { "en": "Wealth & Finance", "ta": "தனம் & நிதி நிலை", "hi": "धन एवं संपत्ति" },
-      "badgeBase": { "en": "Wealth", "ta": "செல்வம்", "hi": "धन" },
-      "lordLabel": { "en": "2nd lord", "ta": "தனாதிபதி", "hi": "धनेश" },
+      "title": {
+        "en": "Wealth & Finance",
+        "ta": "தனம் & நிதி நிலை",
+        "hi": "धन एवं संपत्ति"
+      },
+      "badgeBase": {
+        "en": "Wealth",
+        "ta": "செல்வம்",
+        "hi": "धन"
+      },
+      "lordLabel": {
+        "en": "2nd lord",
+        "ta": "தனாதிபதி",
+        "hi": "धनेश"
+      },
       "benefit": {
         "en": "Good: 2nd lord {pos} can support savings, family resources, and income planning.",
         "ta": "நன்மை: தனாதிபதி {pos} இருப்பதால் சேமிப்பு, குடும்ப ஆதரவு, வருமான திட்டம் பலன் தரலாம்.",
@@ -60,15 +124,47 @@
         "en": "Caution: {status}; watch for higher expenses, debt pressure, or delayed payments. Keep a budget.",
         "ta": "கவனம்: {status}; செலவு அதிகரிப்பு, கடன் அழுத்தம் அல்லது பணம் தாமதம் வரலாம். பட்ஜெட் அவசியம்.",
         "hi": "सावधानी: {status}; खर्च, कर्ज-दबाव या पैसा अटकना दिख सकता है। बजट रखें।"
-      }
+      },
+      "sources": [
+        {
+          "id": "TA-02",
+          "level": "passage",
+          "verse": 46,
+          "page": "20"
+        },
+        {
+          "id": "EN-01",
+          "level": "book"
+        },
+        {
+          "id": "EN-09",
+          "level": "book"
+        },
+        {
+          "id": "EN-02",
+          "level": "chapter"
+        }
+      ]
     },
     {
       "cardIndex": 3,
       "house": 5,
       "id": "education",
-      "title": { "en": "Education & Intellect", "ta": "கல்வி & அறிவுத்திறன்", "hi": "शिक्षा एवं बौद्धिकता" },
-      "badgeBase": { "en": "Study", "ta": "கல்வி", "hi": "विद्या" },
-      "lordLabel": { "en": "5th lord", "ta": "5-ஆம் அதிபதி", "hi": "पंचमेश" },
+      "title": {
+        "en": "Education & Intellect",
+        "ta": "கல்வி & அறிவுத்திறன்",
+        "hi": "शिक्षा एवं बौद्धिकता"
+      },
+      "badgeBase": {
+        "en": "Study",
+        "ta": "கல்வி",
+        "hi": "विद्या"
+      },
+      "lordLabel": {
+        "en": "5th lord",
+        "ta": "5-ஆம் அதிபதி",
+        "hi": "पंचमेश"
+      },
       "benefit": {
         "en": "Good: 5th lord {pos} can help memory, creativity, and exam preparation.",
         "ta": "நன்மை: 5-ஆம் அதிபதி {pos} இருப்பதால் நினைவாற்றல், படைப்பாற்றல், தேர்வு தயாரிப்பு மேற்படலாம்.",
@@ -78,15 +174,50 @@
         "en": "Caution: {status}; concentration breaks, forgetfulness, or study gaps may occur. Use a daily study plan.",
         "ta": "கவனம்: {status}; கவனம் சிதறல், மறதி, பாடத்தில் இடைவேளை வரலாம். தினசரி திட்டம் தேவை.",
         "hi": "सावधानी: {status}; ध्यान भटकना, भूलना या पढ़ाई में रुकावट आ सकती है। दैनिक योजना रखें।"
-      }
+      },
+      "sources": [
+        {
+          "id": "EN-01",
+          "level": "book"
+        },
+        {
+          "id": "EN-06",
+          "level": "book"
+        },
+        {
+          "id": "EN-04",
+          "level": "book"
+        },
+        {
+          "id": "EN-09",
+          "level": "book"
+        },
+        {
+          "id": "TA-07",
+          "level": "passage",
+          "page": "15-16"
+        }
+      ]
     },
     {
       "cardIndex": 4,
       "house": 10,
       "id": "career",
-      "title": { "en": "Career & Profession", "ta": "தொழில் & உத்தியோகம்", "hi": "व्यवसाय एवं आजीविका" },
-      "badgeBase": { "en": "Career", "ta": "தொழில்", "hi": "कार्य" },
-      "lordLabel": { "en": "10th lord", "ta": "10-ஆம் அதிபதி", "hi": "दशमेश" },
+      "title": {
+        "en": "Career & Profession",
+        "ta": "தொழில் & உத்தியோகம்",
+        "hi": "व्यवसाय एवं आजीविका"
+      },
+      "badgeBase": {
+        "en": "Career",
+        "ta": "தொழில்",
+        "hi": "कार्य"
+      },
+      "lordLabel": {
+        "en": "10th lord",
+        "ta": "10-ஆம் அதிபதி",
+        "hi": "दशमेश"
+      },
       "benefit": {
         "en": "Good: 10th lord {pos} can support responsibility, recognition, and skill growth.",
         "ta": "நன்மை: 10-ஆம் அதிபதி {pos} இருப்பதால் பொறுப்பு, பெயர், திறன் வளர்ச்சி வாய்ப்பு உண்டு.",
@@ -96,15 +227,50 @@
         "en": "Caution: {status}; delays, friction with seniors, or project changes may arise. Watch documents and deadlines.",
         "ta": "கவனம்: {status}; வேலை தாமதம், மேலதிகாரி உராய்வு, திட்ட மாற்றம் வரலாம். ஆவணங்களையும் காலக்கெடுவையும் கவனிக்கவும்.",
         "hi": "सावधानी: {status}; काम में देरी, वरिष्ठों से मतभेद या योजना-बदलाव हो सकता है। दस्तावेज़ और समय-सीमा संभालें।"
-      }
+      },
+      "sources": [
+        {
+          "id": "EN-01",
+          "level": "book"
+        },
+        {
+          "id": "EN-06",
+          "level": "book"
+        },
+        {
+          "id": "EN-02",
+          "level": "chapter"
+        },
+        {
+          "id": "EN-07",
+          "level": "book"
+        },
+        {
+          "id": "TA-07",
+          "level": "passage",
+          "page": "15-18"
+        }
+      ]
     },
     {
       "cardIndex": 5,
       "house": 7,
       "id": "marriage",
-      "title": { "en": "Marriage & Relations", "ta": "திருமணம் & உறவு", "hi": "विवाह एवं सम्बंध" },
-      "badgeBase": { "en": "Relations", "ta": "உறவு", "hi": "संबंध" },
-      "lordLabel": { "en": "7th lord", "ta": "7-ஆம் அதிபதி", "hi": "सप्तमेश" },
+      "title": {
+        "en": "Marriage & Relations",
+        "ta": "திருமணம் & உறவு",
+        "hi": "विवाह एवं सम्बंध"
+      },
+      "badgeBase": {
+        "en": "Relations",
+        "ta": "உறவு",
+        "hi": "संबंध"
+      },
+      "lordLabel": {
+        "en": "7th lord",
+        "ta": "7-ஆம் அதிபதி",
+        "hi": "सप्तमेश"
+      },
       "benefit": {
         "en": "Good: 7th lord {pos} can support spouse/partner cooperation.",
         "ta": "நன்மை: 7-ஆம் அதிபதி {pos} இருப்பதால் துணை/கூட்டாண்மை ஆதரவு கிடைக்கலாம்.",
@@ -114,15 +280,54 @@
         "en": "Caution: {status}; misunderstanding, delay, or arguments may occur. Use patient communication.",
         "ta": "கவனம்: {status}; தவறான புரிதல், தாமதம், வாக்குவாதம் வரலாம். மெதுவாக பேசுவது நல்லது.",
         "hi": "सावधानी: {status}; गलतफहमी, देरी या बहस हो सकती है। शांत संवाद रखें।"
-      }
+      },
+      "sources": [
+        {
+          "id": "EN-01",
+          "level": "book"
+        },
+        {
+          "id": "EN-02",
+          "level": "chapter"
+        },
+        {
+          "id": "EN-06",
+          "level": "book"
+        },
+        {
+          "id": "TA-19",
+          "level": "book"
+        },
+        {
+          "id": "EN-09",
+          "level": "book"
+        },
+        {
+          "id": "TA-07",
+          "level": "passage",
+          "page": "18"
+        }
+      ]
     },
     {
       "cardIndex": 6,
       "house": 4,
       "id": "property",
-      "title": { "en": "Property & Real Estate", "ta": "வீடு, நிலம் & சொத்து", "hi": "भूमि, भवन एवं संपत्ति" },
-      "badgeBase": { "en": "Property", "ta": "சொத்து", "hi": "संपत्ति" },
-      "lordLabel": { "en": "4th lord", "ta": "4-ஆம் அதிபதி", "hi": "चतुर्थेश" },
+      "title": {
+        "en": "Property & Real Estate",
+        "ta": "வீடு, நிலம் & சொத்து",
+        "hi": "भूमि, भवन एवं संपत्ति"
+      },
+      "badgeBase": {
+        "en": "Property",
+        "ta": "சொத்து",
+        "hi": "संपत्ति"
+      },
+      "lordLabel": {
+        "en": "4th lord",
+        "ta": "4-ஆம் அதிபதி",
+        "hi": "चतुर्थेश"
+      },
       "benefit": {
         "en": "Good: 4th lord {pos} can support home comfort, vehicle matters, and peace of mind.",
         "ta": "நன்மை: 4-ஆம் அதிபதி {pos} இருப்பதால் வீட்டு வசதி, வாகனம், மன அமைதி மேம்படலாம்.",
@@ -132,15 +337,41 @@
         "en": "Caution: {status}; property-document delays, repair expenses, or family stress may arise. Verify carefully.",
         "ta": "கவனம்: {status}; வீடு/நில ஆவண தாமதம், பழுது செலவு, குடும்ப மனஅழுத்தம் வரலாம். சரிபார்ப்பு அவசியம்.",
         "hi": "सावधानी: {status}; संपत्ति कागज़, मरम्मत खर्च या घरेलू तनाव आ सकता है। जाँच ज़रूरी है।"
-      }
+      },
+      "sources": [
+        {
+          "id": "EN-01",
+          "level": "book"
+        },
+        {
+          "id": "EN-06",
+          "level": "book"
+        },
+        {
+          "id": "EN-04",
+          "level": "book"
+        }
+      ]
     },
     {
       "cardIndex": 7,
       "house": 9,
       "id": "travel",
-      "title": { "en": "Travel & Global Fortune", "ta": "பயணம் & அதிர்ஷ்டம்", "hi": "विदेश यात्रा एवं भाग्य" },
-      "badgeBase": { "en": "Fortune", "ta": "பாக்கியம்", "hi": "भाग्य" },
-      "lordLabel": { "en": "9th lord", "ta": "9-ஆம் அதிபதி", "hi": "नवमेश" },
+      "title": {
+        "en": "Travel & Global Fortune",
+        "ta": "பயணம் & அதிர்ஷ்டம்",
+        "hi": "विदेश यात्रा एवं भाग्य"
+      },
+      "badgeBase": {
+        "en": "Fortune",
+        "ta": "பாக்கியம்",
+        "hi": "भाग्य"
+      },
+      "lordLabel": {
+        "en": "9th lord",
+        "ta": "9-ஆம் அதிபதி",
+        "hi": "नवमेश"
+      },
       "benefit": {
         "en": "Good: 9th lord {pos} can support blessings, travel, and higher learning.",
         "ta": "நன்மை: 9-ஆம் அதிபதி {pos} இருப்பதால் குரு அருள், பயணம், உயர் கற்றல் வாய்ப்பு கிடைக்கலாம்.",
@@ -150,14 +381,36 @@
         "en": "Caution: {status}; travel delays, visa/document issues, or mentor changes may happen. Plan early.",
         "ta": "கவனம்: {status}; பயண தாமதம், விசா/ஆவண பிரச்சனை, வழிகாட்டி மாற்றம் வரலாம். முன்கூட்டியே திட்டமிடவும்.",
         "hi": "सावधानी: {status}; यात्रा देरी, वीज़ा/कागज़ समस्या या मार्गदर्शन बदल सकता है। पहले से योजना करें।"
-      }
+      },
+      "sources": [
+        {
+          "id": "EN-01",
+          "level": "book"
+        },
+        {
+          "id": "EN-09",
+          "level": "book"
+        },
+        {
+          "id": "EN-06",
+          "level": "book"
+        }
+      ]
     },
     {
       "cardIndex": 8,
       "house": null,
       "id": "current-guidance",
-      "title": { "en": "Current Guidance", "ta": "தற்போதைய வழிகாட்டல்", "hi": "ज्योतिषीय मार्गदर्शन" },
-      "badgeBase": { "en": "Upcoming Year", "ta": "நடப்பு ஆண்டு", "hi": "आगामी वर्ष" },
+      "title": {
+        "en": "Current Guidance",
+        "ta": "தற்போதைய வழிகாட்டல்",
+        "hi": "ज्योतिषीय मार्गदर्शन"
+      },
+      "badgeBase": {
+        "en": "Upcoming Year",
+        "ta": "நடப்பு ஆண்டு",
+        "hi": "आगामी वर्ष"
+      },
       "_special": "No house anchor. The verdict comes from the current Dasha, not from a house lord - see verdictByDasha.",
       "benefit": {
         "en": "Good: the next 12 months can help complete pending efforts and improve spiritual clarity.",
@@ -168,24 +421,65 @@
         "en": "Caution: avoid rushed decisions, health neglect, and unnecessary spending.",
         "ta": "கவனம்: அடுத்த 12 மாதங்களில் அவசர முடிவு, ஆரோக்கிய அலட்சியம், தேவையற்ற செலவு தவிர்க்கவும்.",
         "hi": "सावधानी: अगले 12 महीनों में जल्दबाज़ निर्णय, स्वास्थ्य-लापरवाही और अनावश्यक खर्च से बचें।"
-      }
+      },
+      "sources": [
+        {
+          "id": "EN-01",
+          "level": "book"
+        },
+        {
+          "id": "TA-07",
+          "level": "passage",
+          "page": "15-18"
+        },
+        {
+          "id": "TA-06",
+          "level": "book"
+        },
+        {
+          "id": "TA-11",
+          "level": "book"
+        },
+        {
+          "id": "TA-25",
+          "level": "book"
+        }
+      ]
     }
   ],
-
   "verdictByDasha": {
     "_rule": "Card 8 only. Mirrors dashaIsChallenging in the report builder.",
-    "challengingLords": ["SANI", "RAHU", "KETU", "CHEVVAI"],
-    "badgeChallenging": { "en": "Upcoming Year ⚠ Caution", "ta": "நடப்பு ஆண்டு ⚠ கவனம்", "hi": "आगामी वर्ष ⚠ सावधान" },
-    "badgeSupportive": { "en": "Upcoming Year ✓ Opportunity", "ta": "நடப்பு ஆண்டு ✓ வாய்ப்பு", "hi": "आगामी वर्ष ✓ अवसर" },
+    "challengingLords": [
+      "SANI",
+      "RAHU",
+      "KETU",
+      "CHEVVAI"
+    ],
+    "badgeChallenging": {
+      "en": "Upcoming Year ⚠ Caution",
+      "ta": "நடப்பு ஆண்டு ⚠ கவனம்",
+      "hi": "आगामी वर्ष ⚠ सावधान"
+    },
+    "badgeSupportive": {
+      "en": "Upcoming Year ✓ Opportunity",
+      "ta": "நடப்பு ஆண்டு ✓ வாய்ப்பு",
+      "hi": "आगामी वर्ष ✓ अवसर"
+    },
     "badgeUnknown": "N/A"
   },
-
   "badgeSuffix": {
-    "challenging": { "en": " ⚠ Caution", "ta": " ⚠ கவனம்", "hi": " ⚠ सावधान" },
-    "supportive": { "en": " ✓ Strength", "ta": " ✓ பலம்", "hi": " ✓ बल" },
+    "challenging": {
+      "en": " ⚠ Caution",
+      "ta": " ⚠ கவனம்",
+      "hi": " ⚠ सावधान"
+    },
+    "supportive": {
+      "en": " ✓ Strength",
+      "ta": " ✓ பலம்",
+      "hi": " ✓ बल"
+    },
     "unavailable": " · N/A"
   },
-
   "unavailable": {
     "placement": {
       "en": "Required Ascendant or planet-house data is unavailable; no interpretation was generated.",
@@ -198,13 +492,19 @@
       "hi": "वर्तमान दशा या चंद्र राशि उपलब्ध नहीं है; मार्गदर्शन नहीं बनाया गया।"
     }
   },
-
   "statusWords": {
     "_purpose": "The short verdict word the templates interpolate as {status}. Both the report and the chat must use these exact words so the wording matches.",
-    "strong": { "en": "well placed", "ta": "நல்ல நிலையில்", "hi": "अच्छी स्थिति में" },
-    "weak": { "en": "under pressure", "ta": "அழுத்தத்தில்", "hi": "दबाव में" }
+    "strong": {
+      "en": "well placed",
+      "ta": "நல்ல நிலையில்",
+      "hi": "अच्छी स्थिति में"
+    },
+    "weak": {
+      "en": "under pressure",
+      "ta": "அழுத்தத்தில்",
+      "hi": "दबाव में"
+    }
   },
-
   "consistencyContract": {
     "rule": "Page 2 of the Birth Jathagam and the AI Astrologer chat MUST produce the same verdict for the same chart, in all three languages.",
     "enforcedBy": "tests/ai-astrologer-consistency.test.ts, which runs five sample charts through the shared module and compares the report verdict against the chat verdict for all 8 areas in 3 languages (120 comparisons). Any mismatch fails the suite.",
@@ -214,5 +514,6 @@
       "For anything the report does not cover, answer from the chart using the same rules, consistent with the report.",
       "If chart data and the stored report ever disagree: do not argue with the customer, log it for admin review, reply with the report's version, and offer 'Talk to our astrologer'."
     ]
-  }
+  },
+  "_sourcePolicy": "Each card's `sources` are the same references the chat's retrieval rules already cite for that area, taken from knowledge/ai-astrologer/rules/life-areas.json by cardIndex. Nothing here was invented: every id must exist in sources.json with a citable verification status. tests/ai-astrologer-consistency.test.ts enforces it, including the level rules - 'passage' only where verifiedPassages exist (TA-02, TA-07), 'chapter' only for EN-02, and never a linked-not-opened, dead or excluded source. Because page 2 and the chat both read this file, they cite the same authorities at the same level."
 }

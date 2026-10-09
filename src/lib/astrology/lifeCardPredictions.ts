@@ -25,6 +25,14 @@ export interface CardRule {
   title: Record<PredLang, string>;
   badgeBase: Record<PredLang, string>;
   lordLabel: Record<PredLang, string>;
+  /**
+   * Where this card's reading comes from. Derived from the chat's own retrieval
+   * rules in knowledge/ai-astrologer/rules/life-areas.json, keyed by cardIndex,
+   * so page 2 and the chat cite the same authorities at the same level.
+   * `level` is passage | chapter | book, and tests/ai-astrologer-consistency.test.ts
+   * validates it against sources.json.
+   */
+  sources: { id: string; level: 'passage' | 'chapter' | 'book'; verse?: string; page?: string }[];
   benefit: Record<PredLang, string>;
   caution: Record<PredLang, string>;
   medicalSafety?: boolean;
@@ -78,6 +86,8 @@ export interface LifeCardPrediction {
   lordName: Record<PredLang, string> | null;
   bhava: number | null;
   medicalSafety: boolean;
+  /** Citations for this card - identical for the report and the chat. */
+  sources: CardRule['sources'];
 }
 
 const RULES = rulesData as unknown as {
@@ -188,6 +198,7 @@ export function computeLifeCardPredictions(chart: ChartFacts): LifeCardPredictio
           lordName: null,
           bhava: null,
           medicalSafety: false,
+          sources: card.sources,
         };
       }
       const challenging = RULES.verdictByDasha.challengingLords.includes(
@@ -213,6 +224,7 @@ export function computeLifeCardPredictions(chart: ChartFacts): LifeCardPredictio
         lordName: null,
         bhava: null,
         medicalSafety: false,
+        sources: card.sources,
       };
     }
 
@@ -239,6 +251,7 @@ export function computeLifeCardPredictions(chart: ChartFacts): LifeCardPredictio
         lordName: null,
         bhava: null,
         medicalSafety: Boolean(card.medicalSafety),
+        sources: card.sources,
       };
     }
 
@@ -272,6 +285,7 @@ export function computeLifeCardPredictions(chart: ChartFacts): LifeCardPredictio
       lordName: lord.lordName,
       bhava: lord.bhava,
       medicalSafety: Boolean(card.medicalSafety),
+      sources: card.sources,
     };
   });
 }
@@ -287,9 +301,37 @@ export function predictionsForPrompt(predictions: LifeCardPrediction[], lang: Pr
       const head = `${p.cardIndex}. ${p.title[lang]} — ${p.badge[lang]}`;
       const body = p.text[lang];
       const why = p.reason[lang] ? `  Because: ${p.reason[lang]}` : '';
-      return `${head}\n  ${body}${why ? '\n' + why : ''}`;
+      const card = RULES.cards.find((c) => c.cardIndex === p.cardIndex);
+      const cite = card ? citationFor(card, lang) : '';
+      return `${head}\n  ${body}${why ? '\n' + why : ''}${cite ? '\n  ' + cite : ''}`;
     })
     .join('\n');
+}
+
+/**
+ * The citation line for a card, in the customer's language. Both page 2 and the
+ * chat call this, so a customer who checks a claim against their report finds
+ * the same reference at the same level of precision.
+ *
+ * The level matters: a `passage` citation may name a verse or page, because a
+ * verifiedPassages entry exists for it (only TA-02 and TA-07). A `chapter`
+ * citation may name a chapter, allowed only for EN-02, whose printed index was
+ * read. Everything else is book-level only - we do not claim precision we never
+ * verified.
+ */
+export function citationFor(card: CardRule, lang: PredLang): string {
+  const label =
+    lang === 'ta' ? 'மூலம்' : lang === 'hi' ? 'स्रोत' : 'Source';
+  const parts = card.sources.map((src) => {
+    const detail =
+      src.level === 'passage' && (src.verse || src.page)
+        ? src.verse
+          ? (lang === 'ta' ? ` (வசனம் ${src.verse})` : lang === 'hi' ? ` (श्लोक ${src.verse})` : ` (verse ${src.verse})`)
+          : (lang === 'ta' ? ` (பக்கம் ${src.page})` : lang === 'hi' ? ` (पृष्ठ ${src.page})` : ` (p. ${src.page})`)
+        : '';
+    return `${src.id}${detail}`;
+  });
+  return parts.length ? `${label}: ${parts.join(', ')}` : '';
 }
 
 export const LIFE_CARD_RULES = RULES;
