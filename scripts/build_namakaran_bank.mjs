@@ -36,36 +36,6 @@ const OUT_PHP = resolve(ROOT, 'api', 'astrology', 'namakaran_name_bank.php');
 const MAX_PER_SIDE = 8;
 
 /**
- * Aksharas whose own name pool is naturally tiny (no Indian names begin with
- * the pure nasal / short-u sound). For these the report completes the list
- * with names of the related varga (class) sound — the traditional fallback a
- * Tamil astrologer would suggest.
- */
-const FALLBACKS = {
-  'ஒ': ['உ', 'அ'],
-  'ங': ['க', 'கா'],
-  'ஞ': ['ஜா', 'ஜீ', 'சா'],
-  'ஜ': ['ஜா', 'ஜீ'],
-  'ணா': ['நா', 'நீ', 'நே'],
-  'டோ': ['டா', 'டே'],
-  'தோ': ['தா', 'தே'],
-  'நூ': ['நா', 'நீ'],
-  'நோ': ['நா', 'நீ', 'நே'],
-  'பே': ['பா', 'பீ', 'பூ'],
-  'போ': ['பா', 'பூ', 'பீ'],
-  'மூ': ['மா', 'மீ', 'மே'],
-  'மே': ['மா', 'மீ'],
-  'யீ': ['யா', 'யூ'],
-  'யே': ['யா', 'யூ'],
-  'லூ': ['லா', 'லீ', 'லே'],
-  'வு': ['வா', 'வீ', 'வே'],
-  'வோ': ['வா', 'வீ', 'வே'],
-  'ஹு': ['ஹா', 'ஹே', 'ஹோ'],
-  'ஹோ': ['ஹா', 'ஹே'],
-  'ஷா': ['சா']
-};
-
-/**
  * A Tamil pada letter covers every voiced/voiceless reading of that letter
  * (ச = cha / sa / sha, க = ka / kha / ga / gha ...), so a name is accepted when
  * it opens with ANY reading of the akshara's letter in the SAME vowel:
@@ -134,7 +104,7 @@ function splitToken(token) {
 //    can never drift apart.
 // ---------------------------------------------------------------------------
 function readPadaTable() {
-  const src = readFileSync(resolve(ROOT, 'server', 'astrology', 'babynames.ts'), 'utf8');
+  const src = readFileSync(resolve(ROOT, 'src', 'lib', 'astrology', 'babynames.ts'), 'utf8');
   const blocks = [...src.matchAll(/nakshatraIndex:\s*(\d+),([\s\S]*?)(?=\n  \{\n    nakshatraIndex:|\n\](?:;|\.map))/g)];
   const padas = [];
   for (const [, index, body] of blocks) {
@@ -303,10 +273,6 @@ function writeTs(bank, hash, aksharaOrder) {
     })
     .join(',\n');
 
-  const fallbacks = Object.entries(FALLBACKS)
-    .map(([ak, list]) => `  ${JSON.stringify(ak)}: [${list.map(v => JSON.stringify(v)).join(', ')}]`)
-    .join(',\n');
-
   const content = `/**
  * AUTO-GENERATED FILE — DO NOT EDIT BY HAND.
  *
@@ -353,15 +319,6 @@ export interface NamakaranBankAkshara {
 export const NAMAKARAN_BANK: Record<string, NamakaranBankAkshara> = {
 ${entries}
 };
-
-/**
- * Aksharas with no (or almost no) names of their own: the report completes the
- * list with names of the related varga sound, exactly as a Tamil astrologer
- * would.
- */
-export const NAMAKARAN_BANK_FALLBACKS: Record<string, string[]> = {
-${fallbacks}
-};
 `;
   writeFileSync(OUT_TS, content);
 }
@@ -379,10 +336,6 @@ function writePhp(bank, hash, aksharaOrder) {
       `'F' => ['south' => ${side('F', 'south')}, 'north' => ${side('F', 'north')}]],`
     );
   }
-  const fallbacks = Object.entries(FALLBACKS)
-    .map(([ak, list]) => `    ${phpString(ak)} => [${list.map(v => phpString(v)).join(', ')}],`)
-    .join('\n');
-
   const content = `<?php
 /**
  * AUTO-GENERATED FILE — DO NOT EDIT BY HAND.
@@ -402,10 +355,6 @@ return [
     'maxPerSide' => ${MAX_PER_SIDE},
     'bank' => [
 ${lines.join('\n')}
-    ],
-    // Aksharas with no names of their own fall back to the related sound.
-    'fallbacks' => [
-${fallbacks}
     ],
 ];
 `;

@@ -3362,85 +3362,60 @@ class AstroEngine {
         $path = __DIR__ . '/namakaran_name_bank.php';
         $loaded = is_file($path) ? require $path : null;
         if (!is_array($loaded) || !is_array($loaded['bank'] ?? null)) {
-            $loaded = ['bank' => [], 'fallbacks' => [], 'maxPerSide' => 15];
+            $loaded = ['bank' => [], 'maxPerSide' => 8];
         }
         $bank = $loaded;
         return $bank;
     }
 
-    /** First character (Tamil base letter) of an akshara, without mbstring. */
-    private static function namakaranBaseLetter($akshara) {
-        $akshara = (string) $akshara;
-        if ($akshara === '') {
-            return '';
-        }
-        if (function_exists('mb_substr')) {
-            return mb_substr($akshara, 0, 1, 'UTF-8');
-        }
-        if (preg_match('/^./us', $akshara, $match)) {
-            return $match[0];
-        }
-        return substr($akshara, 0, 1);
-    }
-
     /**
-     * A page-2 column (South or North Indian style) for one pada.
-     *
-     * Mirrors buildNamakaranPadaNames() in src/lib/astrology/namakaranNames.ts:
-     * the akshara's own names come first, and lists that are still short are
-     * completed round-robin with closely related sounds of the same letter.
+     * Collect names from one exact akshara only. Bank entries whose
+     * transliterated first sound does not match the displayed pada sound are
+     * omitted; short lists are intentionally not topped up with alternatives.
      */
-    private static function collectNamakaranNames($akshara, $style, $gender, &$used, $limit, $keys, $bank) {
+    private static function collectNamakaranNames($akshara, $style, $gender, &$used, $limit, $bank) {
         $names = [];
-        foreach ($keys as $index => $key) {
+        $entries = $bank[$akshara][$gender][$style] ?? [];
+        if (!is_array($entries)) {
+            return $names;
+        }
+
+        foreach ($entries as $entry) {
             if (count($names) >= $limit) {
                 break;
             }
-            $entries = $bank[$key][$gender][$style] ?? null;
-            if (!is_array($entries)) {
+            $name = (string) ($entry[0] ?? '');
+            if ($name === '' || !AstroReportViews::nameMatchesPada($name, $akshara)) {
                 continue;
             }
-            foreach ($entries as $entry) {
-                if (count($names) >= $limit) {
-                    break;
-                }
-                $name = (string) ($entry[0] ?? '');
-                $meaning = (string) ($entry[1] ?? '');
-                if ($name === '') {
-                    continue;
-                }
-                $fingerprint = AstroReportViews::transliterateToTamil($name);
-                if (isset($used[$fingerprint])) {
-                    continue;
-                }
-                $used[$fingerprint] = true;
-                $names[] = [
-                    'name' => $name,
-                    'meaning' => $meaning,
-                    'meaningEn' => $meaning,
-                    'meaningTa' => self::localizeNamakaranMeaning($meaning, 'ta'),
-                    'meaningHi' => self::localizeNamakaranMeaning($meaning, 'hi'),
-                    'sourceAksharaTa' => $key,
-                    'isRelatedSound' => $key !== $akshara
-                ];
+            $fingerprint = AstroReportViews::transliterateToTamil($name);
+            if (isset($used[$fingerprint])) {
+                continue;
             }
+            $used[$fingerprint] = true;
+            $meaning = (string) ($entry[1] ?? '');
+            $names[] = [
+                'name' => $name,
+                'meaning' => $meaning,
+                'meaningEn' => $meaning,
+                'meaningTa' => self::localizeNamakaranMeaning($meaning, 'ta'),
+                'meaningHi' => self::localizeNamakaranMeaning($meaning, 'hi'),
+                'sourceAksharaTa' => $akshara
+            ];
         }
         return $names;
     }
 
     /**
      * Builds the South + North Indian name columns for every pada of the birth
-     * star, for the baby's own gender. Used by the official mPDF report.
+     * star, for the baby's own gender. Each column contains exact sound matches
+     * from its own akshara only and may contain fewer than the requested limit.
      */
     public static function getBabyNameSuggestionsByPada($padas, $gender, $maxPerSide = 15) {
         $data = self::getNamakaranNameBank();
         $bank = $data['bank'];
-        $fallbacks = is_array($data['fallbacks'] ?? null) ? $data['fallbacks'] : [];
         $maxPerSide = max(1, min(8, intval($maxPerSide)));
-        $relatedTarget = $maxPerSide;
-
         $gender = strtoupper((string) $gender) === 'F' ? 'F' : 'M';
-        $allAksharas = array_keys($bank);
         $used = [];
         $columns = [];
 
@@ -3454,114 +3429,10 @@ class AstroEngine {
                 'rasiTa' => (string) ($pada['rasiTa'] ?? ''),
                 'rasiEn' => (string) ($pada['rasiEn'] ?? ''),
                 'rasiHi' => (string) ($pada['rasiHi'] ?? ''),
-                'usesRelatedSounds' => false,
-                'south' => self::collectNamakaranNames($akshara, 'south', $gender, $used, $maxPerSide, [$akshara], $bank),
-                'north' => self::collectNamakaranNames($akshara, 'north', $gender, $used, $maxPerSide, [$akshara], $bank)
+                'south' => self::collectNamakaranNames($akshara, 'south', $gender, $used, $maxPerSide, $bank),
+                'north' => self::collectNamakaranNames($akshara, 'north', $gender, $used, $maxPerSide, $bank)
             ];
         }
-
-        // Round-robin top-up with related sounds of the same letter. The
-        // candidates of every fallback akshara are flattened into one list per
-        // column, exactly like relatedCandidates() does in the TypeScript twin.
-        $queues = [];
-        foreach ($columns as $index => $column) {
-            $related = [];
-            foreach ((array) ($fallbacks[$column['soundTa']] ?? []) as $fallbackKey) {
-                if (isset($bank[$fallbackKey]) && !in_array($fallbackKey, $related, true)) {
-                    $related[] = $fallbackKey;
-                }
-            }
-            $base = self::namakaranBaseLetter($column['soundTa']);
-            foreach ($allAksharas as $key) {
-                if ($key !== $column['soundTa'] && self::namakaranBaseLetter($key) === $base && !in_array($key, $related, true)) {
-                    $related[] = $key;
-                }
-            }
-            $queues[$index] = ['south' => [], 'north' => [], 'southAt' => 0, 'northAt' => 0];
-            foreach ($related as $key) {
-                foreach (['south', 'north'] as $side) {
-                    $entries = $bank[$key][$gender][$side] ?? null;
-                    if (!is_array($entries)) {
-                        continue;
-                    }
-                    foreach ($entries as $entry) {
-                        $name = (string) ($entry[0] ?? '');
-                        if ($name === '') {
-                            continue;
-                        }
-                        $meaning = (string) ($entry[1] ?? '');
-                        $queues[$index][$side][] = [
-                            'name' => $name,
-                            'meaning' => $meaning,
-                            'meaningEn' => $meaning,
-                            'meaningTa' => self::localizeNamakaranMeaning($meaning, 'ta'),
-                            'meaningHi' => self::localizeNamakaranMeaning($meaning, 'hi'),
-                            'sourceAksharaTa' => $key,
-                            'isRelatedSound' => $key !== $column['soundTa']
-                        ];
-                    }
-                }
-            }
-        }
-
-        $needsMore = function () use ($columns, $relatedTarget) {
-            foreach ($columns as $column) {
-                if (count($column['south']) < $relatedTarget || count($column['north']) < $relatedTarget) {
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        $takeNext = function ($index, $side) use (&$queues, &$used, $relatedTarget) {
-            $queue = $queues[$index][$side];
-            $at = $queues[$index][$side . 'At'];
-            while ($at < count($queue)) {
-                $candidate = $queue[$at];
-                $at++;
-                $fingerprint = AstroReportViews::transliterateToTamil($candidate['name']);
-                if (isset($used[$fingerprint])) {
-                    continue;
-                }
-                $used[$fingerprint] = true;
-                $queues[$index][$side . 'At'] = $at;
-                return $candidate;
-            }
-            $queues[$index][$side . 'At'] = $at;
-            return null;
-        };
-
-        while ($needsMore()) {
-            $progress = false;
-            foreach ($columns as $index => $column) {
-                foreach (['south', 'north'] as $side) {
-                    if (count($columns[$index][$side]) >= $relatedTarget) {
-                        continue;
-                    }
-                    $taken = $takeNext($index, $side);
-                    if ($taken !== null) {
-                        $columns[$index][$side][] = $taken;
-                        $columns[$index]['usesRelatedSounds'] = true;
-                        $progress = true;
-                    }
-                }
-            }
-            if (!$progress) {
-                break;
-            }
-        }
-
-        foreach ($columns as &$column) {
-            $column['usesRelatedSounds'] = false;
-            foreach (['south', 'north'] as $side) {
-                foreach ($column[$side] as &$entry) {
-                    $entry['isRelatedSound'] = !AstroReportViews::nameMatchesPada($entry['name'], $column['soundTa']);
-                    $column['usesRelatedSounds'] = $column['usesRelatedSounds'] || $entry['isRelatedSound'];
-                }
-                unset($entry);
-            }
-        }
-        unset($column);
         return $columns;
     }
 

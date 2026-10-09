@@ -461,13 +461,9 @@ ${reportData.virtues.map((point, index) => `        <div class="virtue-card">
             const nameHtml = isLocalized
               ? `<span class="sug-name-primary" style="font-family: ${isTa ? "'Noto Sans Tamil', sans-serif" : "'Noto Sans Devanagari', sans-serif"};">${escapeHtml(primary)}</span>`
               : `<span class="sug-name-primary">${escapeHtml(entry.name)}</span>`;
-            const relatedSoundLabel = isTa ? 'தொடர்புடைய ஒலி; சரியான பாத ஒலி அல்ல' : isHi ? 'संबंधित ध्वनि; पाद की सटीक ध्वनि नहीं' : 'Related sound; not the exact pada sound';
-            const relatedSoundMarker = entry.isRelatedSound
-              ? `<sup class="sug-related-marker" title="${escapeHtml(relatedSoundLabel)}" data-related-sound="true">†</sup>`
-              : '';
             return `
               <div class="sug-name">
-                <span class="sug-name-text">${nameHtml}${relatedSoundMarker}</span>
+                <span class="sug-name-text">${nameHtml}</span>
                 <span class="sug-name-meaning" style="font-family: ${isTa ? "'Noto Sans Tamil', sans-serif" : isHi ? "'Noto Sans Devanagari', sans-serif" : "'Noto Sans', sans-serif"};">${escapeHtml(isTa ? entry.meaningTa : isHi ? entry.meaningHi : entry.meaningEn || entry.meaning)}</span>
               </div>`;
           }).join('')
@@ -485,15 +481,6 @@ ${reportData.virtues.map((point, index) => `        <div class="virtue-card">
           <div class="sug-names" style="grid-template-rows: repeat(${rowCount}, minmax(min-content, 1fr));">${namesHtml}</div>
         </div>`;
     }).join('');
-
-  const usesRelatedSounds = nameColumns.some(column => column.usesRelatedSounds);
-  const relatedNote = usesRelatedSounds
-    ? (isTa
-      ? '† குறிக்கப்பட்ட பெயர்கள் தொடர்புடைய மாற்று ஒலிகளைப் பயன்படுத்துகின்றன; அந்தப் பாதத்தின் சரியான தொடக்க ஒலி அல்ல.'
-      : isHi
-      ? '† चिह्नित नाम संबंधित वैकल्पिक ध्वनि के हैं; वे पाद की सटीक प्रारंभिक ध्वनि नहीं हैं।'
-      : '† Marked names use related alternative sounds, not the exact birth-pada starting sound.')
-    : '';
 
   const southTitle = isTa ? 'தென்னிந்திய பாணி பெயர்கள்' : isHi ? 'दक्षिण भारतीय शैली के नाम' : 'South Indian Style Names';
   const northTitle = isTa ? 'வடஇந்திய பாணி பெயர்கள்' : isHi ? 'उत्तर भारतीय शैली के नाम' : 'North Indian Style Names';
@@ -544,10 +531,10 @@ ${reportData.virtues.map((point, index) => `        <div class="virtue-card">
       </div>
       <div class="sug-band-note">${
         isTa
-          ? '★ குறியிட்ட ஜன்ம பாத ஒலிக்கான பெயர்களுக்கு முன்னுரிமை அளிக்கவும். மற்ற பாதப் பெயர்கள் மாற்று வாய்ப்புகள் மட்டுமே.'
+          ? 'பட்டியலிட்ட நான்கு பாத ஒலிகளுடன் சரியாகத் தொடங்கும் பெயர்கள் மட்டுமே காட்டப்படுகின்றன. சில ஒலிகளுக்கு பெயர்கள் குறைவாக இருக்கலாம்.'
           : isHi
-          ? '★ चिह्नित जन्म-पाद के नामों को प्राथमिकता दें। अन्य पादों के नाम विकल्प मात्र हैं.'
-          : 'Prioritize names in the ★ birth-pada section. Other pada names are alternatives.'
+          ? 'केवल इन चार पाद ध्वनियों से ठीक शुरू होने वाले नाम दिखाए गए हैं। कुछ ध्वनियों के लिए नाम कम हो सकते हैं।'
+          : 'Only names that exactly start with the four listed pada sounds are shown. Some sounds may have fewer suggestions.'
       }</div>
     </div>
 
@@ -561,8 +548,6 @@ ${reportData.virtues.map((point, index) => `        <div class="virtue-card">
         ${suggestionBlocks('north')}
       </div>
     </div>
-
-    ${relatedNote ? `<div class="sug-related-note">${relatedNote}</div>` : ''}
 
     <div class="footer">
       <div class="brand-title">ASTRO SIVAM - OFFICIAL VEDIC REPORT</div>
@@ -1128,7 +1113,7 @@ ${REPORT_FONT_LINK_TAG}
      The two style panels fill the remaining A4 height. Each pada receives
      space proportional to its shared South/North row count, including sparse
      lists. Names and meanings have separate lines rather than tiny, clipped
-     inline text; all 4 x 8 names per side still fit on this one page.
+     inline text; the page can hold up to 4 x 8 exact-match names per side.
      ══════════════════════════════════════════════════════════════════ */
   .namakaran-suggestions-page {
     page-break-before: always;
@@ -1325,7 +1310,6 @@ ${REPORT_FONT_LINK_TAG}
     font-family: 'Noto Sans', sans-serif;
     line-height: 1.3;
   }
-  .sug-related-marker { font-size: 0.65em; line-height: 0; }
   .sug-name-text {
     font-size: ${suggestionNameSize}px;
     flex-shrink: 0;
@@ -1356,15 +1340,6 @@ ${REPORT_FONT_LINK_TAG}
     font-size: 10px;
     color: var(--ink-muted);
     font-style: italic;
-  }
-  .sug-related-note {
-    font-size: 9px;
-    color: var(--ink-muted);
-    text-align: center;
-    margin-top: 1mm;
-    line-height: 1.25;
-    flex-shrink: 0;
-    overflow-wrap: anywhere;
   }
 </style>
 </head>
