@@ -7,7 +7,9 @@ renderers (browser/jsPDF preview and the PHP mPDF download).
 | Row | Driven by | Boxes |
 | --- | --- | --- |
 | ஜென்ம நட்சத்திரப்படி / By Janma Nakshatra | nakshatra lord (Vimshottari) | நட்சத்திரக் கல் (birth stone) · அதிர்ஷ்ட நிறம் · அதிர்ஷ்ட எண்கள் (3 numbers) |
-| சந்திர ராசிப்படி / By Chandra Rasi | rasi lord | ராசிக் கல் · ராசி நிறம் · ராசி எண் (graha number) |
+
+Only the nakshatra-based row is printed (the rasi-lord row was removed on
+request; the rasi-lord table remains in the data module for reference).
 
 ## Tamil source research
 

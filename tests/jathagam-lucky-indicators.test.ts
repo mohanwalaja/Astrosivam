@@ -68,23 +68,19 @@ const numbers = Object.values(GRAHA_LUCKY_PROFILES).map(p => p.number).sort((a, 
 assert.deepEqual(numbers, [1, 2, 3, 4, 5, 6, 7, 8, 9], 'the nine graha numbers are 1..9 exactly once');
 
 // 3. Resolution
-const ta = resolveLuckyIndicators(2, 5, 'ta'); // Karthigai, Simmam → Surya both
+const ta = resolveLuckyIndicators(2, 'ta'); // Karthigai → Surya
 assert.equal(ta.birthStone, 'மாணிக்கம்');
 assert.equal(ta.luckyColour, 'சிவப்பு');
 assert.equal(ta.luckyNumbers, '1, 5, 7');
-assert.equal(ta.rasiStone, 'மாணிக்கம்');
-assert.equal(ta.rasiNumber, '1');
 assert.equal(ta.nakshatraLordName, 'சூரியன்');
-const en = resolveLuckyIndicators(7, 4, 'en'); // Poosam (Sani), Kadagam (Chandra)
+const en = resolveLuckyIndicators(7, 'en'); // Poosam → Sani
 assert.equal(en.birthStone, 'Blue Sapphire (Neelam)');
-assert.equal(en.rasiStone, 'Pearl (Muthu)');
-assert.equal(en.rasiColour, 'White');
-assert.equal(en.rasiNumber, '2');
-const bad = resolveLuckyIndicators(undefined, 99, 'en');
+assert.equal(en.luckyColour, 'Dark blue / Black');
+assert.equal(en.luckyNumbers, '5, 6, 8');
+const bad = resolveLuckyIndicators(undefined, 'en');
 assert.equal(bad.birthStone, 'N/A');
-assert.equal(bad.rasiStone, 'N/A');
 assert.equal(bad.nakshatraLord, null);
-const badTa = resolveLuckyIndicators(null, null, 'ta');
+const badTa = resolveLuckyIndicators(null, 'ta');
 assert.equal(badTa.luckyNumbers, LUCKY_INDICATOR_TEXT.ta.unavailable);
 console.log('[PASS] lucky-indicator table and resolution');
 
@@ -97,14 +93,15 @@ for (const lang of ['en', 'ta', 'hi'] as const) {
   const page3Start = html.indexOf('id="jathagam-page-3"');
   const luckyPos = html.indexOf('id="summary-lucky"');
   assert.ok(page3Start > 0 && luckyPos > page3Start, `${lang}: lucky card sits on page 3`);
-  const resolved = resolveLuckyIndicators(chart.janmaNakshatraIndex, chart.chandraRasi, lang);
+  const resolved = resolveLuckyIndicators(chart.janmaNakshatraIndex, lang);
   const t = LUCKY_INDICATOR_TEXT[lang];
-  for (const needle of [t.title, t.birthStone, t.luckyColour, t.luckyNumbers, t.rasiStone, t.rasiColour, t.rasiNumber,
-    resolved.birthStone, resolved.luckyColour, resolved.luckyNumbers, resolved.rasiStone, resolved.rasiNumber]) {
+  for (const needle of [t.title, t.birthStone, t.luckyColour, t.luckyNumbers,
+    resolved.birthStone, resolved.luckyColour, resolved.luckyNumbers]) {
     const escaped = needle.replace(/&/g, '&amp;').replace(/'/g, '&#039;');
     assert.ok(html.includes(escaped) || html.includes(needle), `${lang}: page prints "${needle}"`);
   }
   assert.ok(!html.includes('>N/A<') || resolved.nakshatraLord === null, `${lang}: real chart never prints N/A for lucky data`);
+  assert.ok(!html.includes('id="lucky-rasi-row"') && !html.includes(t.rasiStone + '</span>'), `${lang}: no rasi-based row is printed`);
 }
 console.log('[PASS] page 3 prints the lucky-indicator card in en / ta / hi');
 

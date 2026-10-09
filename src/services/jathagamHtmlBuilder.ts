@@ -1051,11 +1051,11 @@ export function buildJathagamHtml(result: HoroscopeResult, lang: AppLanguage = '
     </div>`).join('');
 
   // Lucky indicators (birth stone / colour / numbers). Resolved from the
-  // janma nakshatra lord and the Chandra rasi lord via the shared Tamil
-  // Ratna Sastra table in jathagamLuckyData.ts (mirrored in PHP). Never
-  // fabricated: an unreadable index prints N/A.
+  // janma nakshatra lord via the shared Tamil Ratna Sastra table in
+  // jathagamLuckyData.ts (mirrored in PHP). Never fabricated: an unreadable
+  // index prints N/A.
   const luckyText = LUCKY_INDICATOR_TEXT[lang] || LUCKY_INDICATOR_TEXT.en;
-  const lucky = resolveLuckyIndicators(result.janmaNakshatraIndex, result.chandraRasi, lang);
+  const lucky = resolveLuckyIndicators(result.janmaNakshatraIndex, lang);
   const luckyCell = (label: string, value: string, extraClass = '') =>
     `<div class="summary-detail lucky-cell${extraClass ? ' ' + extraClass : ''}">
       <span class="summary-detail-label">${escapeHtml(label)}</span>
@@ -1068,14 +1068,6 @@ export function buildJathagamHtml(result: HoroscopeResult, lang: AppLanguage = '
           ${luckyCell(luckyText.birthStone, lucky.birthStone, 'lucky-stone')}
           ${luckyCell(luckyText.luckyColour, lucky.luckyColour, 'lucky-colour')}
           ${luckyCell(luckyText.luckyNumbers, lucky.luckyNumbers, 'lucky-number')}
-        </div>
-      </div>
-      <div class="lucky-row" id="lucky-rasi-row">
-        <div class="lucky-row-head">${escapeHtml(luckyText.rasiRow)}<span class="lucky-row-sub">${escapeHtml(rasiSignName)} · ${escapeHtml(luckyText.lord)}: ${escapeHtml(lucky.rasiLordName)}</span></div>
-        <div class="lucky-grid">
-          ${luckyCell(luckyText.rasiStone, lucky.rasiStone, 'lucky-stone')}
-          ${luckyCell(luckyText.rasiColour, lucky.rasiColour, 'lucky-colour')}
-          ${luckyCell(luckyText.rasiNumber, lucky.rasiNumber, 'lucky-number')}
         </div>
       </div>`;
 
@@ -1500,8 +1492,8 @@ ${REPORT_FONT_LINK_TAG}
     word-break: break-word;
   }
 
-  /* Lucky indicators: gold tint; two rows (nakshatra lord / rasi lord), each
-     with three boxes: stone, colour, numbers. */
+  /* Lucky indicators: gold tint; one row (nakshatra lord) with three boxes:
+     stone, colour, numbers. */
   .summary-lucky { background: #fffbeb; border-color: #f3e0a6; }
   .summary-page .card-title-gold { color: #8a5a00; border-bottom-color: #f3e0a6; }
   .lucky-row { margin-bottom: calc(4px * var(--summary-scale)); }
@@ -1990,7 +1982,7 @@ ${REPORT_FONT_LINK_TAG}
     </div>
 
     <!-- 1b. Lucky indicators: birth stone / lucky colour / lucky numbers by
-         nakshatra lord (row 1) and rasi lord (row 2). -->
+         the janma nakshatra lord. -->
     <div class="card summary-lucky" id="summary-lucky">
       <div class="card-title card-title-gold">${escapeHtml(luckyText.title)}</div>
       ${luckyRowsHtml}

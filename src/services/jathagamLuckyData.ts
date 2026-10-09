@@ -5,11 +5,10 @@
  * used by Tamil almanac and astrology publications: every indicator is a
  * property of a GRAHA, and the native receives it through
  *
- *   • the NAKSHATRA LORD (ஜென்ம நட்சத்திர அதிபதி) — the Vimshottari lord of the
- *     janma nakshatra; this is the primary source for the birth stone
- *     (நட்சத்திரக் கல்), lucky colour and the three lucky numbers;
- *   • the RASI LORD (ராசி அதிபதி) — the lord of the Chandra rasi; this gives
- *     the rasi stone (ராசிக் கல்), rasi colour and the single rasi number.
+ *   the NAKSHATRA LORD (ஜென்ம நட்சத்திர அதிபதி) — the Vimshottari lord of the
+ *   janma nakshatra; it gives the birth stone (நட்சத்திரக் கல்), the lucky
+ *   colour and the three lucky numbers. (The rasi-lord table is kept in the
+ *   data for reference but is not printed on the report.)
  *
  * Tamil sources cross-checked (all agree on the lord → stone / colour / number
  * tables below):
@@ -146,7 +145,7 @@ export const LUCKY_INDICATOR_TEXT: Record<LuckyLanguage, {
   unavailable: string;
 }> = {
   en: {
-    title: 'Lucky Indicators — Birth Stone, Colour & Numbers',
+    title: 'Lucky Indicators — Birth Stone, Colour & Numbers (by Nakshatra)',
     nakshatraRow: 'By Janma Nakshatra',
     rasiRow: 'By Chandra Rasi',
     lord: 'Lord',
@@ -156,12 +155,12 @@ export const LUCKY_INDICATOR_TEXT: Record<LuckyLanguage, {
     rasiColour: 'Rasi Colour',
     luckyNumbers: 'Lucky Numbers',
     rasiNumber: 'Rasi Number',
-    note: 'As per Tamil Ratna Sastra the stone, colour and numbers follow the nakshatra lord and the rasi lord. A gem should be worn only after a personal consultation; the colour and numbers can be used freely in daily life.',
+    note: 'As per Tamil Ratna Sastra the stone, colour and numbers follow the janma nakshatra lord. A gem should be worn only after a personal consultation; the colour and numbers can be used freely in daily life.',
     noteShort: 'Wear a gem only after a personal consultation; colour and numbers may be used freely.',
     unavailable: 'N/A'
   },
   ta: {
-    title: 'அதிர்ஷ்டக் குறிப்புகள் — ராசிக் கல், நிறம், எண்',
+    title: 'அதிர்ஷ்டக் குறிப்புகள் — நட்சத்திரக் கல், நிறம், எண்',
     nakshatraRow: 'ஜென்ம நட்சத்திரப்படி',
     rasiRow: 'சந்திர ராசிப்படி',
     lord: 'அதிபதி',
@@ -171,12 +170,12 @@ export const LUCKY_INDICATOR_TEXT: Record<LuckyLanguage, {
     rasiColour: 'ராசி நிறம்',
     luckyNumbers: 'அதிர்ஷ்ட எண்கள்',
     rasiNumber: 'ராசி எண்',
-    note: 'தமிழ் ரத்ன சாஸ்திரப்படி கல், நிறம், எண் ஆகியவை நட்சத்திர அதிபதி மற்றும் ராசி அதிபதியைப் பொறுத்து அமைகின்றன. ரத்தினக் கல்லை தனிப்பட்ட ஆலோசனைக்குப் பின்னரே அணிய வேண்டும்; நிறத்தையும் எண்களையும் அன்றாட வாழ்வில் தாராளமாகப் பயன்படுத்தலாம்.',
+    note: 'தமிழ் ரத்ன சாஸ்திரப்படி கல், நிறம், எண் ஆகியவை ஜென்ம நட்சத்திர அதிபதியைப் பொறுத்து அமைகின்றன. ரத்தினக் கல்லை தனிப்பட்ட ஆலோசனைக்குப் பின்னரே அணிய வேண்டும்; நிறத்தையும் எண்களையும் அன்றாட வாழ்வில் தாராளமாகப் பயன்படுத்தலாம்.',
     noteShort: 'ரத்தினக் கல்லை ஆலோசனைக்குப் பின்னரே அணியவும்; நிறம், எண்களைத் தாராளமாகப் பயன்படுத்தலாம்.',
     unavailable: 'கிடைக்கவில்லை'
   },
   hi: {
-    title: 'शुभ संकेत — जन्म रत्न, रंग व अंक',
+    title: 'शुभ संकेत — जन्म रत्न, रंग व अंक (नक्षत्र अनुसार)',
     nakshatraRow: 'जन्म नक्षत्र के अनुसार',
     rasiRow: 'चंद्र राशि के अनुसार',
     lord: 'स्वामी',
@@ -186,7 +185,7 @@ export const LUCKY_INDICATOR_TEXT: Record<LuckyLanguage, {
     rasiColour: 'राशि रंग',
     luckyNumbers: 'शुभ अंक',
     rasiNumber: 'राशि अंक',
-    note: 'तमिल रत्न शास्त्र के अनुसार रत्न, रंग और अंक नक्षत्र स्वामी तथा राशि स्वामी से निर्धारित होते हैं। रत्न केवल व्यक्तिगत परामर्श के बाद ही धारण करें; रंग और अंक दैनिक जीवन में सहज रूप से अपनाए जा सकते हैं।',
+    note: 'तमिल रत्न शास्त्र के अनुसार रत्न, रंग और अंक जन्म नक्षत्र स्वामी से निर्धारित होते हैं। रत्न केवल व्यक्तिगत परामर्श के बाद ही धारण करें; रंग और अंक दैनिक जीवन में सहज रूप से अपनाए जा सकते हैं।',
     noteShort: 'रत्न केवल परामर्श के बाद धारण करें; रंग और अंक सहज रूप से अपनाएँ।',
     unavailable: 'उपलब्ध नहीं'
   }
@@ -194,15 +193,10 @@ export const LUCKY_INDICATOR_TEXT: Record<LuckyLanguage, {
 
 export interface LuckyIndicators {
   nakshatraLord: Graha | null;
-  rasiLord: Graha | null;
   nakshatraLordName: string;
-  rasiLordName: string;
   birthStone: string;
   luckyColour: string;
   luckyNumbers: string;
-  rasiStone: string;
-  rasiColour: string;
-  rasiNumber: string;
 }
 
 /** Nakshatra lord for a 0-based janma nakshatra index (0 = Aswini … 26 = Revathi). */
@@ -222,32 +216,24 @@ export function rasiLordForNumber(rasi: unknown): Graha | null {
 }
 
 /**
- * Resolve the page-3 lucky indicators for a chart. Both inputs are validated:
- * an unreadable nakshatra index or rasi never fabricates a stone — the page
+ * Resolve the page-3 lucky indicators from the janma nakshatra. The input is
+ * validated: an unreadable nakshatra index never fabricates a stone — the page
  * prints the language's "N/A" instead.
  */
 export function resolveLuckyIndicators(
   janmaNakshatraIndex: unknown,
-  chandraRasi: unknown,
   lang: LuckyLanguage = 'en'
 ): LuckyIndicators {
   const text = LUCKY_INDICATOR_TEXT[lang] || LUCKY_INDICATOR_TEXT.en;
   const nakshatraLord = nakshatraLordForIndex(janmaNakshatraIndex);
-  const rasiLord = rasiLordForNumber(chandraRasi);
   const nak = nakshatraLord ? GRAHA_LUCKY_PROFILES[nakshatraLord] : null;
-  const rasi = rasiLord ? GRAHA_LUCKY_PROFILES[rasiLord] : null;
   const pick = (record: Record<LuckyLanguage, string> | undefined) =>
     record ? record[lang] || record.en : text.unavailable;
   return {
     nakshatraLord,
-    rasiLord,
     nakshatraLordName: nakshatraLord ? pick(GRAHA_LUCKY_NAMES[nakshatraLord]) : text.unavailable,
-    rasiLordName: rasiLord ? pick(GRAHA_LUCKY_NAMES[rasiLord]) : text.unavailable,
     birthStone: nak ? pick(nak.stone) : text.unavailable,
     luckyColour: nak ? pick(nak.colour) : text.unavailable,
-    luckyNumbers: nak ? nak.luckyNumbers.join(', ') : text.unavailable,
-    rasiStone: rasi ? pick(rasi.stone) : text.unavailable,
-    rasiColour: rasi ? pick(rasi.colour) : text.unavailable,
-    rasiNumber: rasi ? String(rasi.number) : text.unavailable
+    luckyNumbers: nak ? nak.luckyNumbers.join(', ') : text.unavailable
   };
 }

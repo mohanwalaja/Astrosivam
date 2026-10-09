@@ -1698,13 +1698,12 @@ HTML;
         $page3Html .= '<div class="summary-card">'
             . '<div class="summary-card-title">' . self::e($summaryText['detailsTitle']) . '</div>'
             . $summaryDetailsHtml . '</div>';
-        // Lucky indicators (birth stone / colour / numbers) from the nakshatra
-        // lord and the Chandra rasi lord — mirrored from
+        // Lucky indicators (birth stone / colour / numbers) from the janma
+        // nakshatra lord — mirrored from
         // src/services/jathagamLuckyData.ts (Tamil Ratna Sastra convention).
         $luckyText = self::jathagamLuckyText($lang);
         $lucky = self::resolveJathagamLuckyIndicators(
             $result['janmaNakshatraIndex'] ?? ($result['nakshatram']['index'] ?? null),
-            $chandraRasiNum,
             $lang
         );
         $luckyCell = static function (string $label, string $value): string {
@@ -1730,15 +1729,6 @@ HTML;
                     [$luckyText['birthStone'], $lucky['birthStone']],
                     [$luckyText['luckyColour'], $lucky['luckyColour']],
                     [$luckyText['luckyNumbers'], $lucky['luckyNumbers']],
-                ]
-            )
-            . $luckyRow(
-                $luckyText['rasiRow'],
-                html_entity_decode($rasiName, ENT_QUOTES, 'UTF-8') . ' · ' . $luckyText['lord'] . ': ' . $lucky['rasiLordName'],
-                [
-                    [$luckyText['rasiStone'], $lucky['rasiStone']],
-                    [$luckyText['rasiColour'], $lucky['rasiColour']],
-                    [$luckyText['rasiNumber'], $lucky['rasiNumber']],
                 ]
             )
             . '<p class="lucky-note">' . self::e($isCompact ? $luckyText['noteShort'] : $luckyText['note']) . '</p></div>';
@@ -1898,32 +1888,32 @@ CSS;
     {
         $all = [
             'en' => [
-                'title' => 'Lucky Indicators — Birth Stone, Colour & Numbers',
+                'title' => 'Lucky Indicators — Birth Stone, Colour & Numbers (by Nakshatra)',
                 'nakshatraRow' => 'By Janma Nakshatra', 'rasiRow' => 'By Chandra Rasi', 'lord' => 'Lord',
                 'birthStone' => 'Birth Stone', 'rasiStone' => 'Rasi Stone',
                 'luckyColour' => 'Lucky Colour', 'rasiColour' => 'Rasi Colour',
                 'luckyNumbers' => 'Lucky Numbers', 'rasiNumber' => 'Rasi Number',
-                'note' => 'As per Tamil Ratna Sastra the stone, colour and numbers follow the nakshatra lord and the rasi lord. A gem should be worn only after a personal consultation; the colour and numbers can be used freely in daily life.',
+                'note' => 'As per Tamil Ratna Sastra the stone, colour and numbers follow the janma nakshatra lord. A gem should be worn only after a personal consultation; the colour and numbers can be used freely in daily life.',
                 'noteShort' => 'Wear a gem only after a personal consultation; colour and numbers may be used freely.',
                 'unavailable' => 'N/A',
             ],
             'ta' => [
-                'title' => 'அதிர்ஷ்டக் குறிப்புகள் — ராசிக் கல், நிறம், எண்',
+                'title' => 'அதிர்ஷ்டக் குறிப்புகள் — நட்சத்திரக் கல், நிறம், எண்',
                 'nakshatraRow' => 'ஜென்ம நட்சத்திரப்படி', 'rasiRow' => 'சந்திர ராசிப்படி', 'lord' => 'அதிபதி',
                 'birthStone' => 'நட்சத்திரக் கல்', 'rasiStone' => 'ராசிக் கல்',
                 'luckyColour' => 'அதிர்ஷ்ட நிறம்', 'rasiColour' => 'ராசி நிறம்',
                 'luckyNumbers' => 'அதிர்ஷ்ட எண்கள்', 'rasiNumber' => 'ராசி எண்',
-                'note' => 'தமிழ் ரத்ன சாஸ்திரப்படி கல், நிறம், எண் ஆகியவை நட்சத்திர அதிபதி மற்றும் ராசி அதிபதியைப் பொறுத்து அமைகின்றன. ரத்தினக் கல்லை தனிப்பட்ட ஆலோசனைக்குப் பின்னரே அணிய வேண்டும்; நிறத்தையும் எண்களையும் அன்றாட வாழ்வில் தாராளமாகப் பயன்படுத்தலாம்.',
+                'note' => 'தமிழ் ரத்ன சாஸ்திரப்படி கல், நிறம், எண் ஆகியவை ஜென்ம நட்சத்திர அதிபதியைப் பொறுத்து அமைகின்றன. ரத்தினக் கல்லை தனிப்பட்ட ஆலோசனைக்குப் பின்னரே அணிய வேண்டும்; நிறத்தையும் எண்களையும் அன்றாட வாழ்வில் தாராளமாகப் பயன்படுத்தலாம்.',
                 'noteShort' => 'ரத்தினக் கல்லை ஆலோசனைக்குப் பின்னரே அணியவும்; நிறம், எண்களைத் தாராளமாகப் பயன்படுத்தலாம்.',
                 'unavailable' => 'கிடைக்கவில்லை',
             ],
             'hi' => [
-                'title' => 'शुभ संकेत — जन्म रत्न, रंग व अंक',
+                'title' => 'शुभ संकेत — जन्म रत्न, रंग व अंक (नक्षत्र अनुसार)',
                 'nakshatraRow' => 'जन्म नक्षत्र के अनुसार', 'rasiRow' => 'चंद्र राशि के अनुसार', 'lord' => 'स्वामी',
                 'birthStone' => 'जन्म रत्न', 'rasiStone' => 'राशि रत्न',
                 'luckyColour' => 'शुभ रंग', 'rasiColour' => 'राशि रंग',
                 'luckyNumbers' => 'शुभ अंक', 'rasiNumber' => 'राशि अंक',
-                'note' => 'तमिल रत्न शास्त्र के अनुसार रत्न, रंग और अंक नक्षत्र स्वामी तथा राशि स्वामी से निर्धारित होते हैं। रत्न केवल व्यक्तिगत परामर्श के बाद ही धारण करें; रंग और अंक दैनिक जीवन में सहज रूप से अपनाए जा सकते हैं।',
+                'note' => 'तमिल रत्न शास्त्र के अनुसार रत्न, रंग और अंक जन्म नक्षत्र स्वामी से निर्धारित होते हैं। रत्न केवल व्यक्तिगत परामर्श के बाद ही धारण करें; रंग और अंक दैनिक जीवन में सहज रूप से अपनाए जा सकते हैं।',
                 'noteShort' => 'रत्न केवल परामर्श के बाद धारण करें; रंग और अंक सहज रूप से अपनाएँ।',
                 'unavailable' => 'उपलब्ध नहीं',
             ],
@@ -1953,32 +1943,26 @@ CSS;
     }
 
     /**
-     * Resolve the page-3 lucky indicators. Unreadable inputs never fabricate a
-     * stone — the language's "N/A" is printed instead (same rule as Node).
+     * Resolve the page-3 lucky indicators from the janma nakshatra. An
+     * unreadable index never fabricates a stone — the language's "N/A" is
+     * printed instead (same rule as Node).
      */
-    public static function resolveJathagamLuckyIndicators($janmaNakshatraIndex, $chandraRasi, string $lang): array
+    public static function resolveJathagamLuckyIndicators($janmaNakshatraIndex, string $lang): array
     {
         $text = self::jathagamLuckyText($lang);
         $profiles = self::jathagamLuckyProfiles();
         $nakLord = self::jathagamNakshatraLord($janmaNakshatraIndex);
-        $rasiLord = self::jathagamRasiLordKey($chandraRasi);
         $nak = $nakLord !== null ? ($profiles[$nakLord] ?? null) : null;
-        $rasi = $rasiLord !== null ? ($profiles[$rasiLord] ?? null) : null;
         $pick = static function ($record) use ($lang, $text): string {
             if (!is_array($record)) return (string) $text['unavailable'];
             return (string) ($record[$lang] ?? $record['en'] ?? $text['unavailable']);
         };
         return [
             'nakshatraLord' => $nakLord,
-            'rasiLord' => $rasiLord,
             'nakshatraLordName' => $nak ? $pick($nak['name']) : (string) $text['unavailable'],
-            'rasiLordName' => $rasi ? $pick($rasi['name']) : (string) $text['unavailable'],
             'birthStone' => $nak ? $pick($nak['stone']) : (string) $text['unavailable'],
             'luckyColour' => $nak ? $pick($nak['colour']) : (string) $text['unavailable'],
             'luckyNumbers' => $nak ? implode(', ', $nak['luckyNumbers']) : (string) $text['unavailable'],
-            'rasiStone' => $rasi ? $pick($rasi['stone']) : (string) $text['unavailable'],
-            'rasiColour' => $rasi ? $pick($rasi['colour']) : (string) $text['unavailable'],
-            'rasiNumber' => $rasi ? (string) $rasi['number'] : (string) $text['unavailable'],
         ];
     }
 
