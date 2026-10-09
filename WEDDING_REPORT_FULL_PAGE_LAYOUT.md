@@ -24,9 +24,11 @@ on page 2.
         └── .inner (flex column)
               ├── header                 (natural height, flex-shrink: 0)
               ├── profile cards          (natural height)
-              ├── score panel            (natural height)
+              ├── .compatibility-overview-grid (paired bordered cards)
+              │     ├── left: visual compatibility meter
+              │     └── right: concise Kuja Dosha status + guidance
               ├── .poruthams-wrap        ← flex: 1 0 auto  (page 1 growing block)
-              ├── guidance + verdict     (natural height)
+              ├── final recommendation   (natural height)
               └── footer                 (natural height, flex-shrink: 0)
 ```
 
@@ -46,9 +48,9 @@ on page 2.
 | ----- | ------ | ----- |
 | Header emblem | 68 px | 72 px |
 | Profile cards | 6 fields, Mars house only | 6 fields incl. **Lagna (Ascendant)**; larger type and padding |
-| Guidance panel | Dosha balance + recommendation | **Mars placement for both charts** + Dosha balance + recommendation + **Kuja Dosha guidance** (the engine's `sevvayDosham.recommendation*`, previously never printed by the browser renderer) |
+| First-page summary row | Full-width score panel, followed later by a separate Kuja guidance panel | Two distinct bordered cards side by side: **Visual Compatibility Meter** on the left (score, percentage bar, matched count and Rajju status) and **Kuja Dosha Summary** on the right (bride, groom, balance and one concise guidance line) |
 | 10 Poruthams table | fixed row height, name column 130 px (names wrapped to 3 lines) | name column 168 px + `<colgroup>`, compact 1.2 mm body-cell padding, rows **grow** to fill the sheet |
-| Score / verdict / footer | compact | proportionally larger type and padding |
+| Final verdict / footer | compact | One separate concise **Final Recommendation** follows the table; footer remains at the bottom of the sheet |
 
 The table keeps its row heights tied to the localized content, then absorbs
 remaining vertical room as the page's growing block. The browser A4 layout test
@@ -80,8 +82,8 @@ gaps.
 
 | Renderer | File | Change |
 | -------- | ---- | ------ |
-| Browser preview / html2canvas download / family bundles | `src/services/weddingHtmlBuilder.ts` | full-page contract, Lagna, Mars placement, Kuja guidance, attestation |
-| mPDF (server-side email + admin fallback) | `api/astrology/pdf_mpdf_reports.php` | enlarged panels/table (`table.wedding-poruthams`), Lagna + Mars rows, per-language disclaimer sizing, same attestation block |
+| Browser preview / html2canvas download / family bundles | `src/services/weddingHtmlBuilder.ts` | full-page contract, paired visual-meter/Kuja summary cards, Lagna, Mars placement, concise guidance, attestation |
+| mPDF (server-side email + admin fallback) | `api/astrology/pdf_mpdf_reports.php` | paired visual-meter/Kuja cards, enlarged table (`table.wedding-poruthams`), Lagna + Mars rows, per-language disclaimer sizing, same attestation block |
 | Backend jsPDF (admin/export fallback) | `server/astrology/pdfGenerator.ts` | page 1 shares the leftover space between the guidance box, the verdict banner and the gaps; page 2 disclaimer panel now fills down to a new **CERTIFIED & ATTESTED** block instead of floating in the middle of the sheet |
 
 `buildWeddingMatchHtml(result, lang, options?)` gained an optional third

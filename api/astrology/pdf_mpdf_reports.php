@@ -2863,7 +2863,46 @@ CSS;
         $percentRaw = $result['matchPercentage'] ?? $result['percentage'] ?? null;
         $score = self::e(is_numeric($scoreRaw) && (float) $scoreRaw >= 0 ? (string) $scoreRaw : 'N/A');
         $maxScore = self::e(is_numeric($maxScoreRaw) && (float) $maxScoreRaw > 0 ? (string) $maxScoreRaw : 'N/A');
-        $percent = self::e(is_numeric($percentRaw) && (float) $percentRaw >= 0 ? (string) $percentRaw : 'N/A');
+        $scorePercentForMeter = is_numeric($percentRaw)
+            ? (float) $percentRaw
+            : (is_numeric($scoreRaw) && is_numeric($maxScoreRaw) && (float) $maxScoreRaw > 0
+                ? ((float) $scoreRaw / (float) $maxScoreRaw) * 100.0
+                : null);
+        $scorePercentForMeter = $scorePercentForMeter !== null && is_finite($scorePercentForMeter)
+            ? max(0.0, min(100.0, $scorePercentForMeter))
+            : null;
+        $scoreMeterPercent = $scorePercentForMeter === null ? 'N/A' : (rtrim(rtrim(number_format($scorePercentForMeter, 1, '.', ''), '0'), '.') . '%');
+        $scoreMeterWidth = $scorePercentForMeter === null ? '0%' : number_format($scorePercentForMeter, 1, '.', '') . '%';
+        $scoreMeterValue = $scorePercentForMeter === null ? 0 : round($scorePercentForMeter, 1);
+
+        $matchedCountRaw = $result['totalPoruthamsMatched'] ?? $result['matchedCount'] ?? null;
+        $matchedCountValue = null;
+        if (is_numeric($matchedCountRaw) && (float) $matchedCountRaw >= 0 && (float) $matchedCountRaw <= 10 && floor((float) $matchedCountRaw) === (float) $matchedCountRaw) {
+            $matchedCountValue = (int) $matchedCountRaw;
+        } else {
+            $matchRows = is_array($result['poruthams'] ?? null) ? $result['poruthams'] : [];
+            if (count($matchRows) === 10) {
+                $rowsCanBeCounted = true;
+                $matchedCountValue = 0;
+                foreach ($matchRows as $matchRow) {
+                    $rowStatus = strtoupper(trim((string) ($matchRow['status'] ?? '')));
+                    $rowPoints = $matchRow['pointsEarned'] ?? $matchRow['points'] ?? null;
+                    $statusCanBeCounted = in_array($rowStatus, ['UTTHAMAM', 'MADHYAMAM', 'PORUNDHADHU'], true);
+                    $pointsCanBeCounted = is_numeric($rowPoints);
+                    if (!$statusCanBeCounted && !$pointsCanBeCounted) {
+                        $rowsCanBeCounted = false;
+                        break;
+                    }
+                    if ($statusCanBeCounted ? in_array($rowStatus, ['UTTHAMAM', 'MADHYAMAM'], true) : (float) $rowPoints > 0) {
+                        $matchedCountValue++;
+                    }
+                }
+                if (!$rowsCanBeCounted) {
+                    $matchedCountValue = null;
+                }
+            }
+        }
+        $matchedCountDisplay = $matchedCountValue === null ? 'N/A' : (string) $matchedCountValue;
 
         $verdictStatus = strtoupper(trim((string) ($result['verdictStatus'] ?? '')));
         $ratingTier = in_array($verdictStatus, ['UTTHAMAM', 'MADHYAMAM', 'PORUNDHADHU'], true) ? $verdictStatus : null;
@@ -2885,69 +2924,95 @@ CSS;
             }
         }
         if ($ratingTier === 'UTTHAMAM') {
-            $verdictText = $isTa ? 'இந்தப் பொருத்தம் நல்லது' : ($isHi ? 'यह अच्छा मिलान है।' : 'This is a good match.');
+            $verdictText = $isTa ? 'இந்த மதிப்பீட்டின்படி நல்ல பொருத்தம்.' : ($isHi ? 'इस आकलन के अनुसार अच्छा मेल है।' : 'Good match based on this assessment.');
         } elseif ($ratingTier === 'MADHYAMAM') {
-            $verdictText = $isTa ? 'ஏற்றுக்கொள்ளத்தக்க பொருத்தம்; பரிகாரங்களுடன் பொருந்தும்' : ($isHi ? 'स्वीकार्य मिलान; उपायों के साथ विचारणीय।' : 'Acceptable match; suitable with remedies.');
+            $verdictText = $isTa ? 'ஏற்றுக்கொள்ளத்தக்க பொருத்தம்; பரிகாரங்களைப் பரிசீலிக்கலாம்.' : ($isHi ? 'स्वीकार्य मेल; उपायों पर विचार किया जा सकता है।' : 'Acceptable match; remedies may be considered.');
         } elseif ($ratingTier === 'PORUNDHADHU') {
             $verdictText = $isTa
-                ? 'இந்தப் பொருத்தம் சாதகமற்றது; இது ஜோதிட வழிகாட்டல் மட்டுமே. இறுதி முடிவிற்கு முன் விரிவான ஜாதக ஆய்வு மற்றும் நிபுணர் ஆலோசனை பெறவும்.'
+                ? 'இந்த மதிப்பீட்டின்படி பரிந்துரைக்கப்படவில்லை; நிபுணர் ஆலோசனை பெறவும்.'
                 : ($isHi
-                    ? 'वर्तमान आकलन के अनुसार यह मिलान अनुकूल नहीं है; यह केवल ज्योतिषीय मार्गदर्शन है। निर्णय से पहले विस्तृत कुंडली समीक्षा और विशेषज्ञ सलाह लें।'
-                    : 'This match is not recommended on the current assessment; this is astrological guidance only. Seek a detailed horoscope review before deciding.');
+                    ? 'इस आकलन के अनुसार अनुशंसित नहीं; विशेषज्ञ सलाह लें।'
+                    : 'Not recommended on this assessment; seek expert review.');
         } else {
             $verdictText = 'N/A';
         }
-        $verdict = self::e($verdictText);
-
-        $finalVerdictLabel = $isTa ? 'இறுதி முடிவு' : ($isHi ? 'अंतिम निर्णय' : 'FINAL VERDICT');
-        // The score-line summary and final box share the exact tier-specific copy.
+        $finalVerdictLabel = $isTa ? 'இறுதிப் பரிந்துரை' : ($isHi ? 'अंतिम अनुशंसा' : 'FINAL RECOMMENDATION');
         $finalVerdictText = $verdictText;
         $finalVerdictClass = $ratingTier === null ? 'final-verdict-unavailable' : ($ratingTier === 'UTTHAMAM' ? 'final-verdict-good' : ($ratingTier === 'MADHYAMAM' ? 'final-verdict-moderate' : 'final-verdict-not-good'));
         $finalVerdictColor = $ratingTier === null ? '#475569' : ($ratingTier === 'UTTHAMAM' ? '#166534' : ($ratingTier === 'MADHYAMAM' ? '#92400e' : '#991b1b'));
         $finalVerdictBackground = $ratingTier === null ? '#f1f5f9' : ($ratingTier === 'UTTHAMAM' ? '#ecfdf5' : ($ratingTier === 'MADHYAMAM' ? '#fffbeb' : '#fef2f2'));
         $finalVerdictBorder = $ratingTier === null ? '#cbd5e1' : ($ratingTier === 'UTTHAMAM' ? '#86efac' : ($ratingTier === 'MADHYAMAM' ? '#fcd34d' : '#fca5a5'));
+        if ($ratingTier === 'UTTHAMAM') {
+            $meterBadgeText = $isTa ? 'உத்தமம்' : ($isHi ? 'उत्तम' : 'Utthamam');
+            $meterBadgeStyle = 'background:#ecfdf5;color:#065f46;border:1px solid #6ee7b7;';
+            $meterFillColor = '#059669';
+        } elseif ($ratingTier === 'MADHYAMAM') {
+            $meterBadgeText = $isTa ? 'மத்திமம்' : ($isHi ? 'मध्यम' : 'Madhyamam');
+            $meterBadgeStyle = 'background:#fef3c7;color:#92400e;border:1px solid #fcd34d;';
+            $meterFillColor = '#d97706';
+        } elseif ($ratingTier === 'PORUNDHADHU') {
+            $meterBadgeText = $isTa ? 'பொருந்தாது' : ($isHi ? 'अनुशंसित नहीं' : 'Not Recommended');
+            $meterBadgeStyle = 'background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;';
+            $meterFillColor = '#be123c';
+        } else {
+            $meterBadgeText = 'N/A';
+            $meterBadgeStyle = 'background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;';
+            $meterFillColor = '#94a3b8';
+        }
 
         $sevvay = is_array($result['sevvayDosham'] ?? null) ? $result['sevvayDosham'] : [];
         $groomDoshaStatus = self::e($isTa ? ($sevvay['groomDoshamSeverityTa'] ?? 'N/A') : ($isHi ? ($sevvay['groomDoshamSeverityHi'] ?? 'N/A') : ($sevvay['groomDoshamSeverityEn'] ?? 'N/A')));
         $brideDoshaStatus = self::e($isTa ? ($sevvay['brideDoshamSeverityTa'] ?? 'N/A') : ($isHi ? ($sevvay['brideDoshamSeverityHi'] ?? 'N/A') : ($sevvay['brideDoshamSeverityEn'] ?? 'N/A')));
-        // The profile placement and detailed Kuja status are the same computed
-        // result, so the fifth-house groom line cannot read as an active dosha.
+        // Keep the profile placement and its simple status in sync.
         $groomMarsHouse .= ' (' . $groomDoshaStatus . ')';
         $brideMarsHouse .= ' (' . $brideDoshaStatus . ')';
-        $doshaSamyam = self::e($isTa ? ($sevvay['doshaSamyamStatusTa'] ?? 'N/A') : ($isHi ? ($sevvay['doshaSamyamStatusHi'] ?? 'N/A') : ($sevvay['doshaSamyamStatusEn'] ?? 'N/A')));
-        $doshaRecommendation = self::e($isTa ? ($sevvay['recommendationTa'] ?? '') : ($isHi ? ($sevvay['recommendationHi'] ?? '') : ($sevvay['recommendationEn'] ?? '')));
-        // Why a Mars placement in a dosha house was cancelled (exception) or
-        // reduced (mitigation) — empty when no dosha house is involved.
-        $doshaReasonRow = static function (string $label, ?string $reason): string {
-            $reason = trim((string) $reason);
-            if ($reason === '') return '';
-            return '<tr><td style="color:#7a1f1f; font-weight:bold; vertical-align:top;">' . $label . '</td><td style="font-size:9px; line-height:1.45; color:#4b3d28;">' . self::e($reason) . '</td></tr>';
-        };
-        $groomDoshaReason = $doshaReasonRow($isTa ? 'வரன் விலக்கு/குறைப்பு:' : ($isHi ? 'वर अपवाद:' : 'Groom exception:'), $isTa ? ($sevvay['groomCancellationReasonTa'] ?? null) : ($isHi ? ($sevvay['groomCancellationReasonHi'] ?? null) : ($sevvay['groomCancellationReasonEn'] ?? null)));
-        $brideDoshaReason = $doshaReasonRow($isTa ? 'கன்னிகை விலக்கு/குறைப்பு:' : ($isHi ? 'वधू अपवाद:' : 'Bride exception:'), $isTa ? ($sevvay['brideCancellationReasonTa'] ?? null) : ($isHi ? ($sevvay['brideCancellationReasonHi'] ?? null) : ($sevvay['brideCancellationReasonEn'] ?? null)));
-        $formatKujaReferences = static function (string $person) use ($sevvay, $result, $isTa, $isHi): string {
-            $houses = is_array($sevvay[$person . 'MarsHouses'] ?? null) ? $sevvay[$person . 'MarsHouses'] : [];
-            // Render every assessed reference so a cancelled Venus/Moon count
-            // cannot conceal a clean house from Lagna (or the reverse).
-            $references = ['lagna', 'moon', 'venus'];
-            $fromTa = ['lagna' => 'லக்னத்திலிருந்து', 'moon' => 'சந்திரனிலிருந்து', 'venus' => 'சுக்கிரனிலிருந்து'];
-            $fromHi = ['lagna' => 'लग्न से', 'moon' => 'चंद्र से', 'venus' => 'शुक्र से'];
-            $fromEn = ['lagna' => 'the Lagna', 'moon' => 'Chandra (Moon)', 'venus' => 'Sukra (Venus)'];
-            $parts = [];
-            foreach ($references as $reference) {
-                $house = $houses[$reference] ?? ($reference === 'lagna' ? ($result[$person . 'MarsHouse'] ?? null) : null);
-                if (!is_numeric($house) || (int) $house < 1 || (int) $house > 12 || (float) $house !== (float) (int) $house) { continue; }
-                $number = (int) $house;
-                $parts[] = $isTa
-                    ? $fromTa[$reference] . ' ' . $number . '-ஆம் இடம்'
-                    : ($isHi ? $fromHi[$reference] . ' ' . $number . 'वाँ भाव' : 'House ' . $number . ' from ' . $fromEn[$reference]);
+
+        // The first page uses a concise summary. Prefer the engine's structured
+        // Samyam code, then fall back to the assessed statuses when available.
+        $doshaBalanceCode = strtoupper(trim((string) ($sevvay['doshaSamyamStatus'] ?? '')));
+        if (!in_array($doshaBalanceCode, ['BALANCED', 'MINOR_IMBALANCE', 'IMBALANCE'], true)) {
+            if ((($sevvay['brideDoshaStatus'] ?? '') === 'DOSHA_MILD' && ($sevvay['isGroomHasDosham'] ?? null) === false) ||
+                (($sevvay['groomDoshaStatus'] ?? '') === 'DOSHA_MILD' && ($sevvay['isBrideHasDosham'] ?? null) === false)) {
+                $doshaBalanceCode = 'MINOR_IMBALANCE';
+            } elseif (is_bool($sevvay['isBalanced'] ?? null)) {
+                $doshaBalanceCode = $sevvay['isBalanced'] ? 'BALANCED' : 'IMBALANCE';
+            } elseif (is_bool($sevvay['isBrideHasDosham'] ?? null) && is_bool($sevvay['isGroomHasDosham'] ?? null)) {
+                $doshaBalanceCode = $sevvay['isBrideHasDosham'] === $sevvay['isGroomHasDosham'] ? 'BALANCED' : 'IMBALANCE';
+            } else {
+                $doshaBalanceCode = 'UNKNOWN';
             }
-            return self::e($parts ? implode($isTa ? ', ' : '; ', $parts) : 'N/A');
-        };
-        $groomKujaReferences = $formatKujaReferences('groom');
-        $brideKujaReferences = $formatKujaReferences('bride');
-        $lblGroomKujaReferences = $isTa ? 'வரன் செவ்வாய் நிலை:' : ($isHi ? 'वर मंगल भाव:' : 'Groom Mars houses:');
-        $lblBrideKujaReferences = $isTa ? 'கன்னிகை செவ்வாய் நிலை:' : ($isHi ? 'वधू मंगल भाव:' : 'Bride Mars houses:');
+        }
+        $doshaNotAssessed = $isTa ? 'கிடைக்கவில்லை (N/A)' : ($isHi ? 'उपलब्ध नहीं (N/A)' : 'Not assessed');
+        $doshaBalance = $doshaBalanceCode === 'BALANCED'
+            ? ($isTa ? 'சமநிலை' : ($isHi ? 'संतुलित' : 'Balanced'))
+            : ($doshaBalanceCode === 'MINOR_IMBALANCE'
+                ? ($isTa ? 'சிறிய சமனின்மை' : ($isHi ? 'मामूली असंतुलन' : 'Minor imbalance'))
+                : ($doshaBalanceCode === 'IMBALANCE'
+                    ? ($isTa ? 'சமநிலை இல்லை' : ($isHi ? 'असंतुलन' : 'Imbalance'))
+                    : $doshaNotAssessed));
+        $doshaGuidance = $doshaBalanceCode === 'BALANCED'
+            ? ($isTa ? 'செவ்வாய் தோஷக் கண்ணோட்டத்தில் சமநிலை உள்ளது; இது முழுத் திருமணப் பரிந்துரை அல்ல.' : ($isHi ? 'मंगल दोष की दृष्टि से संतुलन है; यह समग्र विवाह अनुशंसा नहीं है।' : 'Kuja Dosha is balanced; this does not determine overall compatibility.'))
+            : ($doshaBalanceCode === 'MINOR_IMBALANCE'
+                ? ($isTa ? 'சிறிய சமனின்மை உள்ளது; எளிய பரிகாரங்களுக்கு ஜோதிடரிடம் ஆலோசனை பெறவும்.' : ($isHi ? 'मामूली असंतुलन है; सरल उपायों के लिए ज्योतिषी से सलाह लें।' : 'A mild imbalance is indicated; ask an astrologer about simple remedies.'))
+                : ($doshaBalanceCode === 'IMBALANCE'
+                    ? ($isTa ? 'செவ்வாய் தோஷ சமநிலை இல்லை; பரிகாரங்களுக்கு நிபுணர் ஆலோசனை பெறவும்.' : ($isHi ? 'मंगल दोष में असंतुलन है; उपायों के लिए विशेषज्ञ सलाह लें।' : 'A Kuja Dosha imbalance is indicated; seek expert guidance on remedies.'))
+                    : ($isTa ? 'கிடைத்த ஜாதகத் தகவல்களால் செவ்வாய் தோஷத்தை மதிப்பிட முடியவில்லை.' : ($isHi ? 'उपलब्ध जन्म विवरण से मंगल दोष का आकलन नहीं हो सका।' : 'Kuja Dosha could not be assessed from the available chart data.'))));
+        $doshaTitle = $isTa ? 'செவ்வாய் தோஷச் சுருக்கம்' : ($isHi ? 'मंगल दोष सारांश' : 'Kuja (Mars) Dosha Summary');
+        $lblDoshaBride = $isTa ? 'பெண்' : ($isHi ? 'वधू' : 'Bride');
+        $lblDoshaGroom = $isTa ? 'ஆண்' : ($isHi ? 'वर' : 'Groom');
+        $lblDoshaBalance = $isTa ? 'தோஷ சமநிலை' : ($isHi ? 'दोष संतुलन' : 'Dosha Balance');
+        $lblDoshaGuidance = $isTa ? 'செவ்வாய் வழிகாட்டல்' : ($isHi ? 'मंगल मार्गदर्शन' : 'Kuja Guidance');
+        $lblVisualMeter = $isTa ? 'பொருத்த ஒத்திசைவு அளவுகோல்' : ($isHi ? 'विवाह अनुकूलता मीटर' : 'Visual Compatibility Meter');
+        $lblMeterPoints = $isTa ? 'புள்ளிகள்' : ($isHi ? 'अंक' : 'Points');
+        $lblPoruthamsMatched = $isTa ? 'பொருத்தங்கள் பொருந்தின' : ($isHi ? 'गुण मेल खाते हैं' : 'Poruthams matched');
+        $lblRajju = $isTa ? 'ரஜ்ஜு நிலை' : ($isHi ? 'रज्जु स्थिति' : 'Rajju status');
+        $rajjuMatch = $result['rajjuMatch'] ?? null;
+        $rajjuStatusText = !is_bool($rajjuMatch)
+            ? 'N/A'
+            : ($rajjuMatch
+                ? ($isTa ? 'பொருத்துகிறது (சுபம்)' : ($isHi ? 'शुभ मेल' : 'Auspicious match'))
+                : ($isTa ? 'ரஜ்ஜு தட்டுப்படுகிறது' : ($isHi ? 'अशुभ' : 'Afflicted')));
+        $rajjuStatusColor = !is_bool($rajjuMatch) ? '#64748b' : ($rajjuMatch ? '#047857' : '#be123c');
 
         $rows = '';
         $idx = 1;
@@ -2973,8 +3038,6 @@ CSS;
         $headerSub = $isTa ? 'திருமணப் பொருத்த அறிக்கை (10 திருமணப் பொருத்தங்கள்)' : ($isHi ? 'विवाह कुंडली मिलान (10 गुण मिलान)' : 'Marriage Compatibility (10 Poruthams Report)');
         $lblGroom = $isTa ? 'வரன் (ஆண்) விவரம்' : ($isHi ? 'वर का विवरण' : 'GROOM DETAILS');
         $lblBride = $isTa ? 'கன்னிகை (பெண்) விவரம்' : ($isHi ? 'कन्या का विवरण' : 'BRIDE DETAILS');
-        $lblScore = $isTa ? "பொருத்த மதிப்பெண்: {$score} / {$maxScore} ({$percent}%) &nbsp;|&nbsp; முடிவு: {$verdict}" : ($isHi ? "मिलान प्राप्तांक: {$score} / {$maxScore} ({$percent}%) &nbsp;|&nbsp; परिणाम: {$verdict}" : "COMPATIBILITY SCORE: {$score} / {$maxScore} ({$percent}%) &nbsp;|&nbsp; VERDICT: {$verdict}");
-
         $thP = $isTa ? 'பொருத்தம்' : ($isHi ? 'गुण / कूट' : 'Porutham');
         $thPts = $isTa ? 'மதிப்பெண்' : ($isHi ? 'अंक' : 'Points');
         $thSt = $isTa ? 'நிலை' : ($isHi ? 'स्थिति' : 'Status');
@@ -3004,28 +3067,57 @@ CSS;
   </tr></table>
 </div>
 
-<div class="panel" style="background:#fdf3e0; text-align:center; padding:3.5mm 4mm;">
-  <div style="font-size:12px; font-weight:bold; color:#7a1f1f; line-height:1.4;">{$lblScore}</div>
-</div>
+<table class="wedding-overview-grid" cellpadding="0" cellspacing="0" style="width:100%; table-layout:fixed; border-collapse:collapse; margin:2mm 0 2.5mm;">
+  <tr>
+    <td style="width:50%; vertical-align:top; padding:0 1.2mm 0 0;">
+      <div class="panel" style="padding:3mm; margin:0; border:1px solid #e2e8f0; background:#ffffff; border-radius:4px;">
+        <table style="width:100%; border-collapse:collapse; margin-bottom:1mm;">
+          <tr>
+            <td style="font-size:9.5px; line-height:1.25; color:#7a1f1f; font-weight:bold; vertical-align:middle;">{$lblVisualMeter}</td>
+            <td style="text-align:right; vertical-align:middle; white-space:nowrap;"><span style="display:inline-block; font-size:7px; line-height:1.2; font-weight:bold; border-radius:12px; padding:0.8mm 1.6mm; {$meterBadgeStyle}">{$meterBadgeText}</span></td>
+          </tr>
+        </table>
+        <div style="font-size:15px; line-height:1.2; color:#0f172a; font-weight:bold; margin-bottom:1.2mm;">
+          {$score} / {$maxScore}<span style="font-size:8px; color:#64748b; font-weight:normal;"> {$lblMeterPoints}</span>
+          <span style="float:right; font-size:9px; color:#334155;">{$scoreMeterPercent}</span>
+        </div>
+        <div role="meter" aria-label="{$lblVisualMeter}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{$scoreMeterValue}" aria-valuetext="{$scoreMeterPercent}" style="width:100%; height:2.5mm; overflow:hidden; border-radius:20px; background:#e2e8f0; margin-bottom:1.2mm;">
+          <div style="width:{$scoreMeterWidth}; height:2.5mm; background:{$meterFillColor}; border-radius:20px;"></div>
+        </div>
+        <div style="font-size:8px; line-height:1.35; color:#475569; margin-bottom:0.8mm;"><b>{$matchedCountDisplay} / 10</b> {$lblPoruthamsMatched}</div>
+        <div style="font-size:8px; line-height:1.35; color:#475569;">{$lblRajju}: <b style="color:{$rajjuStatusColor};">{$rajjuStatusText}</b></div>
+      </div>
+    </td>
+    <td style="width:50%; vertical-align:top; padding:0 0 0 1.2mm;">
+      <div class="panel" style="padding:3mm; margin:0; border:1px solid #e8d9b8; border-left:3px solid #7a1f1f; background:#f8fafc; border-radius:4px;">
+        <div class="panel-title" style="font-size:9.5px; line-height:1.25; border-bottom:0; padding:0; margin:0 0 1.2mm;">{$doshaTitle}</div>
+        <table style="width:100%; border-collapse:separate; border-spacing:1mm 0; table-layout:fixed; font-size:8px; line-height:1.3; margin:0 -1mm 1mm;">
+          <tr>
+            <td style="width:50%; vertical-align:top; padding:1.2mm 1.5mm; border:1px solid #e8d9b8; background:#fffdf7;">
+              <div style="font-size:7px; color:#64748b; font-weight:bold; text-transform:uppercase; margin-bottom:0.6mm;">{$lblDoshaBride}</div>
+              <div style="font-weight:bold; color:#2b1d14;">{$brideDoshaStatus}</div>
+            </td>
+            <td style="width:50%; vertical-align:top; padding:1.2mm 1.5mm; border:1px solid #e8d9b8; background:#fffdf7;">
+              <div style="font-size:7px; color:#64748b; font-weight:bold; text-transform:uppercase; margin-bottom:0.6mm;">{$lblDoshaGroom}</div>
+              <div style="font-weight:bold; color:#2b1d14;">{$groomDoshaStatus}</div>
+            </td>
+          </tr>
+        </table>
+        <div style="display:block; padding:0.9mm 1.5mm; border:1px solid #e8d9b8; background:#fffdf7; font-size:8px; line-height:1.25; margin-bottom:1mm;">
+          <span style="color:#64748b; font-weight:bold;">{$lblDoshaBalance}:</span> <b style="color:#2b1d14;">{$doshaBalance}</b>
+        </div>
+        <div style="border-top:1px solid #e8d9b8; padding-top:1mm; font-size:7.8px; line-height:1.3; color:#4b3d28;">
+          <b style="color:#7a1f1f;">{$lblDoshaGuidance}:</b> {$doshaGuidance}
+        </div>
+      </div>
+    </td>
+  </tr>
+</table>
 
 <table class="data-table" style="font-size:9.5px;">
   <thead><tr><th width="26" style="padding:2mm 2.5mm;">#</th><th style="padding:2mm 2.5mm;">{$thP}</th><th width="52" style="padding:2mm 2.5mm;">{$thPts}</th><th width="70" style="padding:2mm 2.5mm;">{$thSt}</th><th style="padding:2mm 2.5mm;">{$thExp}</th></tr></thead>
   <tbody>{$rows}</tbody>
 </table>
-
-<div class="panel" style="padding:3.5mm 4mm;">
-  <div class="panel-title">SEVVAY (KUJA / MANGAL) DOSHAM &amp; SAMYAM</div>
-  <table style="width:100%; font-size:10px; line-height:1.5;">
-    <tr><td style="color:#7a1f1f; font-weight:bold; width:35%;">{$lblGroomKujaReferences}</td><td>{$groomKujaReferences}</td></tr>
-    <tr><td style="color:#7a1f1f; font-weight:bold;">Groom Kuja Dosham:</td><td>{$groomDoshaStatus}</td></tr>
-{$groomDoshaReason}
-    <tr><td style="color:#7a1f1f; font-weight:bold;">{$lblBrideKujaReferences}</td><td>{$brideKujaReferences}</td></tr>
-    <tr><td style="color:#7a1f1f; font-weight:bold;">Bride Kuja Dosham:</td><td>{$brideDoshaStatus}</td></tr>
-{$brideDoshaReason}
-    <tr><td style="color:#7a1f1f; font-weight:bold;">Dosha Samyam Status:</td><td style="font-weight:bold; color:#166534;">{$doshaSamyam}</td></tr>
-  </table>
-  <div style="margin-top:2mm; font-size:9.5px; line-height:1.5; color:#4b3d28;">{$doshaRecommendation}</div>
-</div>
 
 <div class="panel {$finalVerdictClass}" role="status" style="text-align:center; background:{$finalVerdictBackground}; border:1px solid {$finalVerdictBorder}; margin-top:1mm; margin-bottom:1mm; padding:3mm 4mm;">
   <div style="font-size:9.5px; font-weight:bold; letter-spacing:0.5px; color:{$finalVerdictColor};">{$finalVerdictLabel}</div>
