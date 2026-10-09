@@ -23,12 +23,11 @@ require_once __DIR__ . '/branding.php';
 /**
  * Per-message attachment budget, in *encoded* (MIME base64) bytes.
  *
- * A family bundle is N * ~2 MB of preview-quality PDF plus the invoice, so the
- * server enforces a hard budget instead of only warning about the size: a big
- * bundle is split across several emails and a single document that cannot fit
- * is reported back to the admin. Configure with
- * FAMILY_EMAIL_MAX_ATTACHMENT_MB (default 18) or
- * FAMILY_EMAIL_MAX_ATTACHMENT_BYTES.
+ * A family bundle can contain up to six preview-quality reports plus one
+ * invoice. The 25 MiB default is sized so a typical maximum family bundle fits
+ * in one message, while unusually large PDFs still split safely. Configure the
+ * budget to match the mail provider with FAMILY_EMAIL_MAX_ATTACHMENT_MB
+ * (default 25) or FAMILY_EMAIL_MAX_ATTACHMENT_BYTES.
  */
 function astro_max_attachment_encoded_bytes() {
     $asMb = getenv('FAMILY_EMAIL_MAX_ATTACHMENT_MB');
@@ -39,13 +38,18 @@ function astro_max_attachment_encoded_bytes() {
     if ($asBytes !== false && is_numeric($asBytes) && (int)$asBytes >= 524288 && (int)$asBytes <= 209715200) {
         return (int)$asBytes;
     }
-    return 18 * 1048576;
+    return 25 * 1048576;
 }
 
-/** MIME base64 expands binary data by 4/3; allow a small constant for headers. */
+/** Account for MIME base64 expansion, line wrapping, and attachment headers. */
 function astro_mime_encoded_size($rawBytes) {
     $safe = max(0, (int)$rawBytes);
-    return (int)(ceil(($safe + 2) / 3) * 4 + 512);
+    $base64Bytes = (int)(ceil(($safe + 2) / 3) * 4);
+    // AstroMailer::buildMimeBody() uses chunk_split(), which inserts CRLF
+    // after every 76 base64 characters. Count those line breaks too so the
+    // budget reflects the actual wire size rather than only the base64 text.
+    $lineBreakBytes = (int)(ceil($base64Bytes / 76) * 2);
+    return $base64Bytes + $lineBreakBytes + 512;
 }
 
 /**
@@ -188,7 +192,7 @@ class AstroMailer
             return [
                 'success' => false,
                 'message' => "Attachments total {$actualMb} MB (MIME encoded), which exceeds the {$limitMb} MB per-message limit. "
-                    . 'Nothing was sent. Split the delivery into smaller emails or lower FAMILY_EMAIL_MAX_ATTACHMENT_MB on the server.'
+                    . 'Nothing was sent. Split the delivery into smaller emails, or raise FAMILY_EMAIL_MAX_ATTACHMENT_MB only if the SMTP provider allows larger messages.'
             ];
         }
 

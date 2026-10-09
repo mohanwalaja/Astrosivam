@@ -348,7 +348,7 @@ export const FamilyCartDrawer: React.FC<FamilyCartDrawerProps> = ({ onNavigate }
               <div className={`p-2.5 border rounded-xl text-xs ${items.length > MAX_FAMILY_ORDER_ITEMS ? 'bg-rose-500/10 border-rose-500/30 text-rose-300' : 'bg-amber-500/10 border-amber-500/25 text-amber-200'}`}>
                 {items.length > MAX_FAMILY_ORDER_ITEMS
                   ? `This tray exceeds the ${MAX_FAMILY_ORDER_ITEMS}-report limit. Remove ${items.length - MAX_FAMILY_ORDER_ITEMS} report(s) before continuing.`
-                  : `Up to ${MAX_FAMILY_ORDER_ITEMS} reports per checkout. After admin approval, every preview-quality report and one consolidated invoice are emailed; size limits may split delivery across labelled emails.`}
+                  : `Up to ${MAX_FAMILY_ORDER_ITEMS} reports per checkout. After admin approval, all reports and the consolidated invoice are normally sent together in one email; only unusually large PDF bundles may be split across labelled emails.`}
               </div>
               <div className="space-y-2 pt-1">
                 <button

@@ -176,10 +176,12 @@ is only *active* when its variable is present.
 | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | PayPal REST checkout | Admin → Payment Settings |
 | `PAYPAL_WEBHOOK_ID` | verifying `PAYMENT.CAPTURE.COMPLETED` (PayPal verify API) | Admin → Payment Settings |
 | `CONTACT_INQUIRY_TO` | recipient of contact-form inquiries | admin notification / site contact / `ADMIN_EMAIL` |
-| `FAMILY_EMAIL_MAX_ATTACHMENT_MB` | per-email attachment budget (default 18) | `FAMILY_EMAIL_MAX_ATTACHMENT_BYTES`, else 18 MB |
+| `FAMILY_EMAIL_MAX_ATTACHMENT_MB` | optional custom per-email cap; code default is 25 MiB | `FAMILY_EMAIL_MAX_ATTACHMENT_BYTES`, else 25 MiB |
 | `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TEMPLATE_NAME` | WhatsApp order alerts | alerts stay off |
 | `VIBER_AUTH_TOKEN`, `VIBER_SENDER_NAME` | Viber order alerts | alerts stay off |
 | `ASTROSIVAM_DIAGNOSTICS` | enables `/api/check_mpdf.php` (prints server paths) | page answers 404 |
+
+The application uses a 25 MiB email budget by default, so no email-budget `SetEnv` line is needed. To use this default on an existing deployment, remove any explicit `FAMILY_EMAIL_MAX_ATTACHMENT_MB` or `FAMILY_EMAIL_MAX_ATTACHMENT_BYTES` setting from the hosting environment or `api/.htaccess`; explicit host settings take precedence over the code default. Keep any custom value at or below your SMTP provider's message-size limit.
 
 **Method A — `api/.htaccess` (works on Apache / LiteSpeed, the usual cPanel setup).**
 Add one `SetEnv` line per variable inside the `api/` folder's `.htaccess`:
@@ -188,7 +190,6 @@ Add one `SetEnv` line per variable inside the `api/` folder's `.htaccess`:
 # api/.htaccess — keep this file out of any repository; it holds live secrets.
 SetEnv APP_SECRET_KEY "paste-a-64-character-random-string"
 SetEnv CONTACT_INQUIRY_TO "admin@astrosivam.com"
-SetEnv FAMILY_EMAIL_MAX_ATTACHMENT_MB "18"
 SetEnv RAZORPAY_WEBHOOK_SECRET "..."
 SetEnv PAYPAL_WEBHOOK_ID "..."
 ```

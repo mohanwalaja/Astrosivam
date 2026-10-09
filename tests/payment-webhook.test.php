@@ -28,6 +28,43 @@ check(astro_mime_encoded_size(0) >= 512 && astro_mime_encoded_size(0) < 1024, 'E
 check(astro_mime_encoded_size(3 * 1048576) > 4 * 1048576, 'Base64 expansion (4/3) is accounted for');
 
 $mb = 1048576;
+$threeMbBase64Bytes = (int)(ceil((3 * $mb + 2) / 3) * 4);
+check(
+    astro_mime_encoded_size(3 * $mb) > $threeMbBase64Bytes + 512,
+    'MIME sizing accounts for the CRLF line wrapping added to base64 attachments'
+);
+
+// The default budget should keep the supported maximum family checkout
+// (six reports + one invoice) in one email for typical preview-PDF sizes.
+// Clear inherited env values so this test checks the application default.
+putenv('FAMILY_EMAIL_MAX_ATTACHMENT_MB');
+putenv('FAMILY_EMAIL_MAX_ATTACHMENT_BYTES');
+$defaultAttachmentBudget = astro_max_attachment_encoded_bytes();
+check($defaultAttachmentBudget === 25 * $mb, 'The default family-email attachment budget is 25 MiB');
+
+$familyNonPdfReserve = 128 * 1024;
+foreach (astro_inline_logo_attachment() as $logoPart) {
+    $familyNonPdfReserve += astro_mime_encoded_size(strlen((string)($logoPart['content'] ?? '')));
+}
+$familyPdfBudget = max(512 * 1024, $defaultAttachmentBudget - $familyNonPdfReserve);
+$planFamilyBundle = function (int $reportCount, int $reportBytes, int $invoiceBytes, int $budget) {
+    $reportContent = str_repeat('R', $reportBytes);
+    $invoiceContent = str_repeat('I', $invoiceBytes);
+    $bundle = [];
+    for ($index = 1; $index <= $reportCount; $index++) {
+        $bundle[] = ['name' => "report-{$index}.pdf", 'content' => $reportContent];
+    }
+    $bundle[] = ['name' => 'invoice.pdf', 'content' => $invoiceContent];
+    return astro_plan_attachment_parts($bundle, $budget);
+};
+$fiveReportPlan = $planFamilyBundle(5, (int)(2.5 * $mb), (int)(1.5 * $mb), $familyPdfBudget);
+check(count($fiveReportPlan['parts']) === 1, 'Five typical preview reports and their invoice fit in one email');
+check(count($fiveReportPlan['parts'][0]) === 6, 'The five-report email contains all five reports plus the invoice');
+$maximumFamilyPlan = $planFamilyBundle(6, (int)(2.25 * $mb), (int)(1.25 * $mb), $familyPdfBudget);
+check(count($maximumFamilyPlan['parts']) === 1, 'A typical maximum family bundle fits in one email');
+check(count($maximumFamilyPlan['parts'][0]) === 7, 'A maximum family email contains six reports plus the invoice');
+unset($fiveReportPlan, $maximumFamilyPlan, $planFamilyBundle);
+
 $attachments = [
     ['name' => 'report-1.pdf', 'content' => str_repeat('A', 4 * $mb)],
     ['name' => 'report-2.pdf', 'content' => str_repeat('B', 4 * $mb)],

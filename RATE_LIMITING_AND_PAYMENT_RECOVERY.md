@@ -71,10 +71,10 @@ The PHP API re-queries the provider and captures only a payment whose amount and
 
 ## 3. Attachment delivery budget
 
-Family report bundles can contain several PDFs plus an invoice. `api/mailer.php` enforces a per-message limit measured in MIME-encoded bytes (base64 expands binary attachments by roughly one third).
+Family report bundles can contain up to six PDFs plus an invoice. `api/mailer.php` enforces a per-message limit measured in MIME-encoded bytes (base64 expansion and line wrapping are included).
 
-* Default: **18 MiB** encoded. Configure with `FAMILY_EMAIL_MAX_ATTACHMENT_MB` (1–200); `FAMILY_EMAIL_MAX_ATTACHMENT_BYTES` (512 KiB–200 MiB) is also supported. Invalid or out-of-range values fall back to the default.
-* A family bundle is split into multiple emails only when needed; each continuation is labelled `(Part N of M)`.
+* Default: **25 MiB** encoded, with no environment override required. This is intended to fit a typical six-report family bundle plus its invoice in one email. Optional custom caps can be set with `FAMILY_EMAIL_MAX_ATTACHMENT_MB` (1–200) or `FAMILY_EMAIL_MAX_ATTACHMENT_BYTES` (512 KiB–200 MiB); invalid or out-of-range values fall back to the default.
+* A family bundle is split into multiple emails only when the actual PDFs exceed the configured provider-safe budget; each continuation is labelled `(Part N of M)`. If your SMTP provider has a lower message-size cap, set the budget at or below that cap.
 * A single attachment that exceeds the whole per-message budget is isolated and reported to the administrator, but the mailer refuses to send an over-budget message. Re-render or compress that attachment before retrying.
 * If any part fails, the delivery is reported as unsuccessful and the order/group remains available for retry; a family group is not marked `COMPLETED` until all parts are accepted.
 
