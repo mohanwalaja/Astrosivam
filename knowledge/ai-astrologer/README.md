@@ -286,3 +286,48 @@ that every function it calls exists in a file it actually requires, that every
 table and column exists in `schema.sql` or the migration, and that no credential
 appears in the browser-reachable files. That catches contradictions with the
 schema and the brief; it cannot prove the code runs.
+
+
+---
+
+## Part 5 — model call, guard and deliverables (built 2026-10-09)
+
+| File | What it is | Verified by |
+| --- | --- | --- |
+| `api/astrology/ai_astrologer_provider.php` | The ONLY place a model is called: prompt assembly, retrieval, the OpenAI-compatible call, bubble splitting and the output guard. **Not executed.** | `tests/ai-astrologer-provider.test.ts` (16 checks) |
+| `tests/questions-30.md` | Deliverable 5: 30 test questions, 10 per language, each with its route, four "must contain" points and a sample answer. | manual review |
+| `tests/sample-conversations.md` | Deliverable 6: 5 conversations (TA/EN/HI) with the real timing sequence, including a failure-and-retry. | manual review |
+| `DEPLOYMENT.md` | Deliverable 7: BigRock cPanel steps doable from an Android phone. | manual review |
+
+### The reply path
+
+assemble prompt -> call model -> parse bubbles -> **GUARD** -> persist.
+
+The guard runs before the reply is returned. A non-compliant draft is sent back to
+the model once with the rejection reason; a second failure ships the safe
+fallback and escalates to a human. There is no third attempt, and the customer
+never sees an unguarded draft.
+
+The guard reads its banned phrases from `rules/guardrails.json` rather than a
+hardcoded list, so a wording change is a file edit. It enforces four things: no
+guarantee phrasing (in all three languages), no frightening language, no sales
+language, and the rule that any reply touching the body must point at a qualified
+doctor.
+
+### The placeholder check
+
+`tests/ai-astrologer-provider.test.ts` extracts every `{{PLACEHOLDER}}` from the
+prompt markdown and asserts the provider fills exactly that set, in both
+directions. A typo on either side would otherwise ship an empty
+`{{CHART_HEADER}}` and nothing would notice.
+
+### Caveat on the PHP
+
+PHP cannot be installed in this sandbox, so neither `ai_astrologer_provider.php`
+nor `ai_astrologer.php` has been executed or `php -l` checked. The static tests
+assert the placeholder contract, that every condition type in the rule base has a
+PHP branch, that suppressed and excluded sources cannot reach the prompt, and that
+the API key is never logged or sent anywhere but the provider. That catches
+contradictions; it cannot prove the code runs. **Smoke-test on the server using
+the four guardrail checks in `DEPLOYMENT.md` step 6 before opening this to
+customers.**

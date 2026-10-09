@@ -250,13 +250,25 @@ check('the entry points exist on the dashboard and on each paid order', () => {
   assert.match(panel, /\[customerId, orderId\]/);
 });
 
-check('the generation stub fails loudly instead of inventing an answer', () => {
-  assert.match(endpoint, /throw new RuntimeException\('AI provider integration is not wired yet \(Part 5\)\.'\)/);
-  assert.match(endpoint, /GENERATION_FAILED/);
-  assert.match(endpoint, /Please give me a moment, I am checking again\./);
-  // a failed generation must not consume the customer's allowance
-  // a FAILED row is written, and the allowance was already spent by enforce()
-  assert.match(code(endpoint), /'status' => 'FAILED'/);
+check('a generation failure is recorded, not swallowed, and costs nothing', () => {
+  // Part 5 replaced the throwing stub with the real provider, so what matters now
+  // is that a failure still produces a FAILED row and the friendly retry text.
+  const ask = code(
+    endpoint.slice(endpoint.indexOf('function astro_ai_action_ask'), endpoint.indexOf('function astro_ai_action_upload'))
+  );
+  assert.match(ask, /catch \(Throwable \$e\)/);
+  assert.match(ask, /'status' => 'FAILED'/);
+  assert.match(ask, /error_message/);
+  assert.match(ask, /GENERATION_FAILED/);
+  assert.match(ask, /Please give me a moment, I am checking again\./);
+  // the question was stored BEFORE the slow work, so a failure cannot lose it
+  const savedAt = ask.indexOf('$questionId = astro_ai_save_message');
+  const tryAt = ask.indexOf('try {');
+  assert.ok(savedAt > 0 && tryAt > 0 && savedAt < tryAt,
+    'the question must be persisted before generation starts, so a failure cannot lose it');
+  // and the endpoint delegates to the provider rather than calling a model itself
+  assert.match(code(endpoint), /AstroAiProvider::answer\(/);
+  assert.ok(!/curl_init/.test(code(endpoint)), 'the endpoint must not call a model directly');
 });
 
 console.log(`\n[OK] ai-astrologer access control: ${passed} checks passed`);

@@ -38,6 +38,7 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/rate_limit.php';
 require_once __DIR__ . '/client_ip.php';
 require_once __DIR__ . '/astrology/ai_report_extract.php';
+require_once __DIR__ . '/astrology/ai_astrologer_provider.php';
 
 // Questions per customer per rolling 24 hours. Overridable by env on the server
 // without a code change, clamped so a typo cannot open the floodgates.
@@ -573,47 +574,107 @@ function astro_ai_action_usage(PDO $pdo, array $user): void
 /* ================================================================== */
 
 /**
- * Builds the reply. Retrieval is the tested TypeScript spec's contract; the
- * model call itself is Part 5 and is intentionally the only external call here.
+ * Builds the reply. All of it happens server-side: retrieval from the knowledge
+ * base, prompt assembly, the model call and the output guard. No key reaches the
+ * browser. Throws on failure so the caller records a FAILED row.
  *
  * @return array{content:string, bubbles:array, sourceLine:?string, areaId:?string, handoff:bool}
  */
 function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $language, string $question): array
 {
-    $kbDir = dirname(__DIR__) . '/knowledge/ai-astrologer';
-
-    $guardrails = json_decode((string) file_get_contents($kbDir . '/rules/guardrails.json'), true) ?: [];
-
     // The chart comes from the order bound to this session, rebuilt from the
     // saved inputs - never from a cached calculated_result.
     $chart = null;
+    $context = [
+        'customerName' => (string) ($user['name'] ?? 'there'),
+        'orderTitle' => 'your report',
+        'dashaEndDate' => null,
+    ];
+
     if (!empty($session['order_id'])) {
         $stmt = $pdo->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ? LIMIT 1");
         $stmt->execute([$session['order_id'], $user['id']]);
         $order = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-        if ($order && class_exists('AstroEngine')) {
-            $chart = AstroEngine::rebuildReportResultFromSavedInputs($order);
+        if ($order) {
+            $context['orderTitle'] = (string) ($order['service_type'] ?? 'your report');
+            $facts = astro_ai_chart_facts($order);
+            if ($facts !== null) {
+                $chart = $facts['chart'];
+                $context['chartHeader'] = $facts['header'];
+                $context['dashaEndDate'] = $facts['dashaEndDate'];
+            }
         }
     }
 
-    $history = astro_ai_recent_messages($pdo, $session['id']);
+    if (!isset($context['chartHeader'])) {
+        $context['chartHeader'] = $language === 'ta'
+            ? 'இந்த உரையாடலுடன் இன்னும் ஜாதகம் இணைக்கப்படவில்லை.'
+            : $language === 'hi'
+                ? 'इस बातचीत से अभी कोई कुंडली नहीं जुड़ी है।'
+                : 'No chart is attached to this conversation yet.';
+    }
 
-    // Part 5 replaces this stub with the real provider call, passing the system
-    // prompt from knowledge/ai-astrologer/prompt/system-prompt.md with the
-    // placeholders filled. It must run checkReply() on the draft before
-    // returning, and must throw on failure so the caller records a FAILED row.
-    return astro_ai_build_reply($guardrails, $chart, $history, $language, $question);
+    $history = astro_ai_recent_messages($pdo, $session['id']);
+    $context['chatHistory'] = $history
+        ? implode(' | ', array_map(function ($m) {
+            return $m['role'] . ': ' . mb_substr((string) $m['content'], 0, 120, 'UTF-8');
+        }, $history))
+        : '(this is the first message)';
+
+    return AstroAiProvider::answer($question, $language, $history, $chart, $context);
 }
 
 /**
- * Deliberately throws. Part 4 ships the gate, the history and the rate limit;
- * wiring a live provider is Part 5. Failing loudly here is correct - it records
- * a FAILED message row and returns the friendly retry text rather than
- * pretending to answer.
+ * Flattens a stored order into the small chart shape the retrieval layer reads.
+ * Returns null when the order cannot be calculated, which makes every
+ * chart-dependent rule decline to fire rather than guess.
+ *
+ * @return array{chart:array, header:string, dashaEndDate:?string}|null
  */
-function astro_ai_build_reply(array $guardrails, $chart, array $history, string $language, string $question): array
+function astro_ai_chart_facts(array $order): ?array
 {
-    throw new RuntimeException('AI provider integration is not wired yet (Part 5).');
+    try {
+        require_once __DIR__ . '/astrology/engine.php';
+        if (!class_exists('AstroEngine')) {
+            return null;
+        }
+        $result = AstroEngine::rebuildReportResultFromSavedInputs($order);
+    } catch (Throwable $e) {
+        error_log('AI Astrologer: chart rebuild failed for order '
+            . ($order['order_number'] ?? '?') . ': ' . $e->getMessage());
+        return null;
+    }
+    if (!is_array($result)) {
+        return null;
+    }
+
+    // Only the handful of facts the rule conditions read are needed. Anything
+    // absent stays absent, which is what stops a partial chart from inventing a
+    // finding. Field names are read defensively because the engine's result is
+    // shaped for the report, not for this layer.
+    $chart = [
+        'lagna' => (string) ($result['lagnaSign'] ?? ''),
+        'moonSign' => (string) ($result['chandraRasi'] ?? ($result['moonSign'] ?? '')),
+        'moonNakshatra' => (string) ($result['janmaNakshatra'] ?? ''),
+        'moonNakshatraLord' => (string) ($result['nakshatraLord'] ?? ''),
+        'currentDasha' => (string) ($result['currentDasha'] ?? ''),
+        'currentAntardasha' => (string) ($result['currentBhukti'] ?? ($result['currentAntardasha'] ?? '')),
+        'dashaEndDate' => (string) ($result['dashaEndDate'] ?? ''),
+        'planetHouse' => is_array($result['planetHouses'] ?? null) ? $result['planetHouses'] : [],
+        'lordHouse' => is_array($result['houseLords'] ?? null) ? $result['houseLords'] : [],
+        'dignity' => is_array($result['dignities'] ?? null) ? $result['dignities'] : [],
+        'saniTransitFromMoon' => (int) ($result['saniFromMoon'] ?? 0),
+        'doshas' => is_array($result['doshas'] ?? null) ? array_keys(array_filter($result['doshas'])) : [],
+    ];
+
+    $lang = astro_normalize_report_language((string) ($order['language'] ?? 'ta'));
+    $label = $lang === 'ta' ? 'உங்கள் ஜாதகம்' : ($lang === 'hi' ? 'आपकी कुंडली' : 'Your chart');
+    $header = $label . ': ' . $chart['lagna'] . ' / ' . $chart['moonSign'] . ' / ' . $chart['moonNakshatra'] . "\n"
+        . ($lang === 'ta' ? 'தசை' : $lang === 'hi' ? 'दशा' : 'Dasha') . ' ' . $chart['currentDasha']
+        . ' / ' . $chart['currentAntardasha']
+        . ($chart['dashaEndDate'] !== '' ? ' (' . $chart['dashaEndDate'] . ')' : '');
+
+    return ['chart' => $chart, 'header' => $header, 'dashaEndDate' => $chart['dashaEndDate'] ?: null];
 }
 
 /* ================================================================== */
