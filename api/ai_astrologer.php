@@ -730,9 +730,9 @@ function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $
     if (!isset($context['chartHeader'])) {
         $context['chartHeader'] = $language === 'ta'
             ? 'இந்த உரையாடலுடன் இன்னும் ஜாதகம் இணைக்கப்படவில்லை.'
-            : $language === 'hi'
+            : ($language === 'hi'
                 ? 'इस बातचीत से अभी कोई कुंडली नहीं जुड़ी है।'
-                : 'No chart is attached to this conversation yet.';
+                : 'No chart is attached to this conversation yet.');
     }
 
     $history = astro_ai_recent_messages($pdo, $session['id']);
@@ -791,7 +791,7 @@ function astro_ai_chart_facts(array $order): ?array
     $lang = astro_normalize_report_language((string) ($order['language'] ?? 'ta'));
     $label = $lang === 'ta' ? 'உங்கள் ஜாதகம்' : ($lang === 'hi' ? 'आपकी कुंडली' : 'Your chart');
     $header = $label . ': ' . $chart['lagna'] . ' / ' . $chart['moonSign'] . ' / ' . $chart['moonNakshatra'] . "\n"
-        . ($lang === 'ta' ? 'தசை' : $lang === 'hi' ? 'दशा' : 'Dasha') . ' ' . $chart['currentDasha']
+        . ($lang === 'ta' ? 'தசை' : ($lang === 'hi' ? 'दशा' : 'Dasha')) . ' ' . $chart['currentDasha']
         . ' / ' . $chart['currentAntardasha']
         . ($chart['dashaEndDate'] !== '' ? ' (' . $chart['dashaEndDate'] . ')' : '');
 
