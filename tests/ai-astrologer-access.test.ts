@@ -13,6 +13,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sliceText, assertNonEmptySet } from './helpers/sourceSlice';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p: string) => fs.readFileSync(path.join(root, p), 'utf8');
@@ -65,9 +66,8 @@ function check(name: string, fn: () => void) {
 
 check('the paid-order gate is defined and is the strict one', () => {
   assert.match(endpoint, /function astro_ai_require_paid_order/);
-  const gate = endpoint.slice(
-    endpoint.indexOf('function astro_ai_require_paid_order'),
-    endpoint.indexOf('function astro_ai_gate')
+  const gate = sliceText(
+    endpoint, 'function astro_ai_require_paid_order', 'function astro_ai_gate', 'requirePaidOrder body'
   );
   assert.match(gate, /payment_confirmed\s*=\s*1/, 'must require confirmed payment');
   assert.match(gate, /status IN \('COMPLETED', 'PROCESSING'\)/, 'must restrict to real statuses');
@@ -86,9 +86,8 @@ check('BOTH gates run before any action is dispatched', () => {
   assert.ok(gateCall > 0, 'the combined gate is never called');
   assert.ok(gateCall < dispatch, 'the gate must run before the action switch, not inside a branch');
 
-  const combined = endpoint.slice(
-    endpoint.indexOf('function astro_ai_gate'),
-    endpoint.indexOf('/** The customer\u2019s daily question allowance')
+  const combined = sliceText(
+    endpoint, 'function astro_ai_gate', 'function astro_ai_daily_limit', 'combined gate body'
   );
   assert.match(combined, /requireAuth\(\$pdo\)/, 'gate 1 missing');
   assert.match(combined, /astro_ai_require_paid_order\(\$pdo, \$user\)/, 'gate 2 missing');
@@ -110,18 +109,20 @@ check('the daily question limit uses the existing rate limiter', () => {
 
   // astro_rate_limit_enforce() already counts the request (enforce -> hit ->
   // upsert). A second bump would charge two questions for one answer.
-  const askBody = code(
-    endpoint.slice(endpoint.indexOf('function astro_ai_action_ask'), endpoint.indexOf('function astro_ai_action_upload'))
-  );
+  const askBody = code(sliceText(
+    endpoint, 'function astro_ai_action_ask', 'function astro_ai_action_upload', 'ask handler body'
+  ));
+  // The negative assertion below is only meaningful if the slice has content, so
+  // pin that first: an empty slice would make "!bump" pass for no reason.
+  assert.ok(askBody.length > 400, 'the ask handler slice looks truncated');
   assert.ok(!/astro_rate_limit_bump\(/.test(askBody), 'the ask handler double-counts the question');
   // and the gate really is in there
   assert.match(askBody, /astro_rate_limit_enforce\(\s*\$pdo,\s*AI_ASTROLOGER_RATE_BUCKET/);
 });
 
 check('the usage counter accounts for window expiry', () => {
-  const usage = endpoint.slice(
-    endpoint.indexOf('function astro_ai_usage_count'),
-    endpoint.indexOf('function astro_ai_action_usage')
+  const usage = sliceText(
+    endpoint, 'function astro_ai_usage_count', 'function astro_ai_action_usage', 'usage counter body'
   );
   assert.match(usage, /windowStartedAt/, 'astro_rate_limit_fetch() ignores expiry, so the caller must handle it');
   assert.match(usage, /time\(\) - AI_ASTROLOGER_WINDOW_SECONDS/);
@@ -223,7 +224,7 @@ check('the chat header always names the AI Astrologer and never a person', () =>
   assert.match(panel, /not a substitute for medical, legal or financial advice/);
   // trilingual disclaimer, status text and handoff label
   for (const token of ['DISCLAIMER', 'STATUS', 'GREETING', 'RETRY_TEXT', 'HANDOFF_LABEL']) {
-    const block = panel.slice(panel.indexOf(`const ${token}`), panel.indexOf('interface Props'));
+    const block = sliceText(panel, `const ${token}`, 'interface Props', `${token} block`);
     for (const key of ['en:', 'ta:', 'hi:']) {
       assert.ok(block.includes(key), `${token} is missing a ${key} entry`);
     }
@@ -233,7 +234,9 @@ check('the chat header always names the AI Astrologer and never a person', () =>
 check('the 12-second cap is enforced and the real response time counts', () => {
   assert.match(panel, /hardCap: 12000/);
   // every timer that delays a bubble must be clamped against the cap
-  const bubbleLoop = panel.slice(panel.indexOf('bubbles.forEach'), panel.indexOf('setRemaining(reply.remainingToday)'));
+  const bubbleLoop = sliceText(
+    panel, 'bubbles.forEach', 'setRemaining(reply.remainingToday)', 'bubble timing loop'
+  );
   assert.match(bubbleLoop, /TIMING\.hardCap/, 'bubble timing is not clamped to the cap');
   assert.match(panel, /statusMin: 2000/);
   assert.match(panel, /statusMax: 4000/);
@@ -253,9 +256,9 @@ check('the entry points exist on the dashboard and on each paid order', () => {
 check('a generation failure is recorded, not swallowed, and costs nothing', () => {
   // Part 5 replaced the throwing stub with the real provider, so what matters now
   // is that a failure still produces a FAILED row and the friendly retry text.
-  const ask = code(
-    endpoint.slice(endpoint.indexOf('function astro_ai_action_ask'), endpoint.indexOf('function astro_ai_action_upload'))
-  );
+  const ask = code(sliceText(
+    endpoint, 'function astro_ai_action_ask', 'function astro_ai_action_upload', 'ask handler body'
+  ));
   assert.match(ask, /catch \(Throwable \$e\)/);
   assert.match(ask, /'status' => 'FAILED'/);
   assert.match(ask, /error_message/);

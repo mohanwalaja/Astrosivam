@@ -11,6 +11,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sliceText, sliceToEnd, assertNonEmptySet } from './helpers/sourceSlice';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p: string) => fs.readFileSync(path.join(root, p), 'utf8');
@@ -67,7 +68,10 @@ check('every placeholder in the prompt is filled by the provider', () => {
 check('the provider fills nothing the prompt does not ask for', () => {
   const block = promptMd.match(/```text\s*\n([\s\S]*?)\n```/)![1];
   const inPrompt = new Set([...block.matchAll(/\{\{([A-Z0-9_]+)\}\}/g)].map((m) => m[1]));
-  const fillCall = provider.slice(provider.indexOf('self::fillPrompt(self::systemPrompt()'), provider.indexOf('$draft = null;'));
+  const fillCall = sliceText(
+    provider, 'self::fillPrompt(self::systemPrompt()', '$draft = null;', 'provider fillPrompt call'
+  );
+  assertNonEmptySet('placeholders filled by the provider', fillCall.matchAll(/'([A-Z0-9_]+)'\s*=>/g), 8);
   const filled = new Set([...fillCall.matchAll(/'([A-Z0-9_]+)'\s*=>/g)].map((m) => m[1]));
   const stray = [...filled].filter((p) => !inPrompt.has(p));
   assert.deepEqual(stray, [], `provider fills placeholders the prompt never declares: ${stray.join(', ')}`);
@@ -78,7 +82,7 @@ check('an unfilled placeholder is stripped rather than shown to the model', () =
 });
 
 check('the guard reads its banned phrases from guardrails.json, not a hardcoded list', () => {
-  const guard = provider.slice(provider.indexOf('public static function checkReply'), provider.indexOf('public static function fallbackReply'));
+  const guard = sliceText(provider, 'public static function checkReply', 'public static function fallbackReply', 'checkReply body');
   assert.match(guard, /self::kb\(self::GUARDRAILS_PATH\)/);
   assert.match(guard, /noGuarantees/);
   assert.match(guard, /noFrighteningLanguage/);
@@ -102,7 +106,7 @@ check('the guard actually has rules to enforce in every language', () => {
 
 check('a rejected draft is retried once and then falls back, never a third try', () => {
   assert.match(provider, /MAX_GENERATION_ATTEMPTS = 2/);
-  const answer = provider.slice(provider.indexOf('public static function answer'), provider.indexOf('private static function remedyBlock'));
+  const answer = sliceText(provider, 'public static function answer', 'private static function remedyBlock', 'answer body');
   assert.match(answer, /for \(\$attempt = 1; \$attempt <= self::MAX_GENERATION_ATTEMPTS/);
   assert.match(answer, /self::fallbackReply\(\$language\)/);
   assert.match(answer, /'handoff' => true/, 'a non-compliant reply must escalate to a human');
@@ -124,7 +128,7 @@ check('the API key never leaves the server', () => {
 });
 
 check('the reply is split into at most four bubbles', () => {
-  const bubbles = provider.slice(provider.indexOf('public static function toBubbles'), provider.indexOf('public static function answer'));
+  const bubbles = sliceText(provider, 'public static function toBubbles', 'public static function answer', 'toBubbles body');
   assert.match(bubbles, /count\(\$bubbles\) > 4/);
   assert.match(bubbles, /array_slice\(\$bubbles, 0, 3\)/);
   // short fragments are merged, not sent as one-word messages
@@ -132,7 +136,7 @@ check('the reply is split into at most four bubbles', () => {
 });
 
 check('the source line rides on the last bubble', () => {
-  const answer = provider.slice(provider.indexOf('public static function answer'), provider.indexOf('private static function remedyBlock'));
+  const answer = sliceText(provider, 'public static function answer', 'private static function remedyBlock', 'answer body');
   assert.ok(
     answer.includes(`$bubbles[count($bubbles) - 1] .= "\\n" . $retrieved['sourceLine']`),
     'the source line is not appended to the final bubble'
@@ -144,7 +148,10 @@ check('the PHP retrieval honours the same two rules the TS spec pins', () => {
   assert.match(provider, /if \(empty\(\$area\['houseAnchors'\]\)\)/);
   assert.match(provider, /\$pool = \$ranked \?: \$fallback/);
   // Without a chart, only 'always' and customerSays conditions may fire.
-  const evaluate = provider.slice(provider.indexOf('public static function evaluateCondition'), provider.indexOf('private static function phraseHit'));
+  const evaluate = sliceText(
+    provider, 'public static function evaluateCondition', 'private static function phraseHit',
+    'evaluateCondition body'
+  );
   assert.match(evaluate, /if \(\$chart === null\)/);
   assert.match(evaluate, /'always'/);
   assert.match(evaluate, /customerSays/);
@@ -162,7 +169,11 @@ check('every condition type in the rule base has a PHP branch', () => {
     };
     for (const r of area.rules) walk(r.condition);
   }
-  const evaluate = provider.slice(provider.indexOf('public static function evaluateCondition'), provider.indexOf('private static function phraseHit'));
+  const evaluate = sliceText(
+    provider, 'public static function evaluateCondition', 'private static function phraseHit',
+    'evaluateCondition body'
+  );
+  assertNonEmptySet('condition types used by the rule base', used, 8);
   const missing = [...used].filter((t) => !new RegExp(`case '${t}':`).test(evaluate));
   assert.deepEqual(missing, [], `rule conditions with no PHP branch: ${missing.join(', ')}`);
 });
@@ -186,14 +197,14 @@ check('the endpoint hands the provider everything it needs', () => {
 
 check('a chart that cannot be built declines rather than guessing', () => {
   assert.match(endpoint, /function astro_ai_chart_facts\(array \$order\): \?array/);
-  const facts = endpoint.slice(endpoint.indexOf('function astro_ai_chart_facts'));
+  const facts = sliceToEnd(endpoint, 'function astro_ai_chart_facts', 'astro_ai_chart_facts');
   assert.match(facts, /return null/);
   assert.match(facts, /error_log\('AI Astrologer: chart rebuild failed/);
   assert.match(facts, /is_array\(\$result\['planetHouses'\] \?\? null\)/);
 });
 
 check('the model call fails loudly and never returns a degraded answer', () => {
-  const complete = provider.slice(provider.indexOf('public static function complete'), provider.indexOf('public static function toBubbles'));
+  const complete = sliceText(provider, 'public static function complete', 'public static function toBubbles', 'complete body');
   assert.match(complete, /throw new RuntimeException\('AI_ASTROLOGER_API_KEY is not set/);
   assert.match(complete, /throw new RuntimeException\('Model returned an empty completion\.'\)/);
   assert.match(complete, /CURLOPT_TIMEOUT/);
