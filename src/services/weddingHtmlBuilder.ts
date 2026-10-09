@@ -31,11 +31,6 @@ const validPadaNumber = (value: unknown): value is number => {
   const number = Number(value);
   return Number.isInteger(number) && number >= 1 && number <= 4;
 };
-const validHouseNumber = (value: unknown): value is number => {
-  const number = Number(value);
-  return Number.isInteger(number) && number >= 1 && number <= 12;
-};
-
 function escapeHtml(str: string | undefined | null): string {
   if (!str) return '';
   return String(str)
@@ -160,21 +155,20 @@ export function buildWeddingMatchHtml(
   const verdictKnown = isGood || isModerate || isIncompatible;
   const notAvailableLabel = isTa ? 'கிடைக்கவில்லை (N/A)' : isHi ? 'उपलब्ध नहीं (N/A)' : 'N/A';
 
-  const finalVerdictLabel = isTa ? 'இறுதி முடிவு' : isHi ? 'अंतिम निर्णय' : 'FINAL VERDICT';
-  // The final sentence and colour follow the same exact rating tier as the
-  // badge and the overall summary. Madhyamam is acceptable with remedies, not
-  // an unqualified "good match"; Porundhadhu stays cautious and non-categorical.
+  const finalVerdictLabel = isTa ? 'இறுதிப் பரிந்துரை' : isHi ? 'अंतिम अनुशंसा' : 'FINAL RECOMMENDATION';
+  // Keep the recommendation direct and consistent with the score tier. Longer
+  // interpretive notes remain on the report's disclaimer page.
   const finalVerdictText = !verdictKnown
     ? notAvailableLabel
     : isGood
-    ? (isTa ? 'இந்தப் பொருத்தம் நல்லது' : isHi ? 'यह अच्छा मिलान है।' : 'This is a good match.')
+    ? (isTa ? 'இந்த மதிப்பீட்டின்படி நல்ல பொருத்தம்.' : isHi ? 'इस आकलन के अनुसार अच्छा मेल है।' : 'Good match based on this assessment.')
     : isModerate
-    ? (isTa ? 'ஏற்றுக்கொள்ளத்தக்க பொருத்தம்; பரிகாரங்களுடன் பொருந்தும்' : isHi ? 'स्वीकार्य मिलान; उपायों के साथ विचारणीय।' : 'Acceptable match; suitable with remedies.')
+    ? (isTa ? 'ஏற்றுக்கொள்ளத்தக்க பொருத்தம்; பரிகாரங்களைப் பரிசீலிக்கலாம்.' : isHi ? 'स्वीकार्य मेल; उपायों पर विचार किया जा सकता है।' : 'Acceptable match; remedies may be considered.')
     : (isTa
-      ? 'இந்தப் பொருத்தம் சாதகமற்றது; இது ஜோதிட வழிகாட்டல் மட்டுமே. இறுதி முடிவிற்கு முன் விரிவான ஜாதக ஆய்வு மற்றும் நிபுணர் ஆலோசனை பெறவும்.'
+      ? 'இந்த மதிப்பீட்டின்படி பரிந்துரைக்கப்படவில்லை; நிபுணர் ஆலோசனை பெறவும்.'
       : isHi
-      ? 'वर्तमान आकलन के अनुसार यह मिलान अनुकूल नहीं है; यह केवल ज्योतिषीय मार्गदर्शन है। निर्णय से पहले विस्तृत कुंडली समीक्षा और विशेषज्ञ सलाह लें।'
-      : 'This match is not recommended on the current assessment; this is astrological guidance only. Seek a detailed horoscope review before deciding.');
+      ? 'इस आकलन के अनुसार अनुशंसित नहीं; विशेषज्ञ सलाह लें।'
+      : 'Not recommended on this assessment; seek expert review.');
   const finalVerdictClass = !verdictKnown
     ? 'final-verdict-unavailable'
     : isGood ? 'final-verdict-good' : isModerate ? 'final-verdict-moderate' : 'final-verdict-not-good';
@@ -188,58 +182,55 @@ export function buildWeddingMatchHtml(
     : (isTa ? 'பொருந்தாது' : isHi ? 'अशुभ' : 'Not Recommended');
 
   const verdictBadgeClass = !verdictKnown ? 'badge-na' : isGood ? 'badge-good' : isModerate ? 'badge-moderate' : 'badge-bad';
+  const scoreMeterFillClass = !verdictKnown ? 'score-meter-fill-na' : isGood ? 'score-meter-fill-good' : isModerate ? 'score-meter-fill-moderate' : 'score-meter-fill-bad';
 
-  // Keep the summary sentence on the same rating tier as the badge and final box;
-  // legacy engine copy is not allowed to upgrade a Madhyamam to a good match.
-  const overallVerdictText = verdictKnown ? finalVerdictText : notAvailableLabel;
-  const doshaBalanceText = (isTa ? result.sevvayDosham?.doshaSamyamStatusTa : isHi ? result.sevvayDosham?.doshaSamyamStatusHi : result.sevvayDosham?.doshaSamyamStatusEn) || notAvailableLabel;
+  const doshaAnalysis = result.sevvayDosham as any;
+  const rawDoshaBalanceCode = String(doshaAnalysis?.doshaSamyamStatus ?? '').trim().toUpperCase();
+  const rawBrideDoshaCode = String(doshaAnalysis?.brideDoshaStatus ?? '').trim().toUpperCase();
+  const rawGroomDoshaCode = String(doshaAnalysis?.groomDoshaStatus ?? '').trim().toUpperCase();
+  const brideDoshaAssessment = doshaAnalysis?.isBrideHasDosham;
+  const groomDoshaAssessment = doshaAnalysis?.isGroomHasDosham;
+  const hasMinorDoshaImbalance = rawDoshaBalanceCode === 'MINOR_IMBALANCE' ||
+    (rawBrideDoshaCode === 'DOSHA_MILD' && groomDoshaAssessment === false) ||
+    (rawGroomDoshaCode === 'DOSHA_MILD' && brideDoshaAssessment === false);
+  const doshaBalanceCode = hasMinorDoshaImbalance
+    ? 'MINOR_IMBALANCE'
+    : rawDoshaBalanceCode === 'BALANCED'
+    ? 'BALANCED'
+    : rawDoshaBalanceCode === 'IMBALANCE'
+    ? 'IMBALANCE'
+    : typeof doshaAnalysis?.isBalanced === 'boolean'
+    ? (doshaAnalysis.isBalanced ? 'BALANCED' : 'IMBALANCE')
+    : typeof brideDoshaAssessment === 'boolean' && typeof groomDoshaAssessment === 'boolean'
+    ? (brideDoshaAssessment === groomDoshaAssessment ? 'BALANCED' : 'IMBALANCE')
+    : 'UNKNOWN';
+  const doshaAssessmentKnown = doshaBalanceCode !== 'UNKNOWN';
+  const doshaBalanceText = !doshaAssessmentKnown
+    ? notAvailableLabel
+    : doshaBalanceCode === 'BALANCED'
+    ? (isTa ? 'சமநிலை' : isHi ? 'संतुलित' : 'Balanced')
+    : doshaBalanceCode === 'MINOR_IMBALANCE'
+    ? (isTa ? 'சிறிய சமனின்மை' : isHi ? 'मामूली असंतुलन' : 'Minor imbalance')
+    : (isTa ? 'சமநிலை இல்லை' : isHi ? 'असंतुलन' : 'Imbalance');
   const brideDoshaText = (isTa ? result.sevvayDosham?.brideDoshamSeverityTa : isHi ? result.sevvayDosham?.brideDoshamSeverityHi : result.sevvayDosham?.brideDoshamSeverityEn) || notAvailableLabel;
   const groomDoshaText = (isTa ? result.sevvayDosham?.groomDoshamSeverityTa : isHi ? result.sevvayDosham?.groomDoshamSeverityHi : result.sevvayDosham?.groomDoshamSeverityEn) || notAvailableLabel;
-  const doshaGuidanceText = (isTa ? result.sevvayDosham?.recommendationTa : isHi ? result.sevvayDosham?.recommendationHi : result.sevvayDosham?.recommendationEn) || notAvailableLabel;
-  // Classical exception / mitigation that cancelled or reduced a Mars placement
-  // in a dosha house (DOSHA_CANCELLED / DOSHA_MILD); empty when not applicable.
-  const brideDoshaReason = (isTa ? result.sevvayDosham?.brideCancellationReasonTa : isHi ? result.sevvayDosham?.brideCancellationReasonHi : result.sevvayDosham?.brideCancellationReasonEn) || '';
-  const groomDoshaReason = (isTa ? result.sevvayDosham?.groomCancellationReasonTa : isHi ? result.sevvayDosham?.groomCancellationReasonHi : result.sevvayDosham?.groomCancellationReasonEn) || '';
+  const doshaGuidanceText = !doshaAssessmentKnown
+    ? notAvailableLabel
+    : doshaBalanceCode === 'BALANCED'
+    ? (isTa ? 'செவ்வாய் தோஷக் கண்ணோட்டத்தில் சமநிலை உள்ளது; இது முழுத் திருமணப் பரிந்துரை அல்ல.' : isHi ? 'मंगल दोष की दृष्टि से संतुलन है; यह समग्र विवाह अनुशंसा नहीं है।' : 'Kuja Dosha is balanced; this does not determine overall compatibility.')
+    : doshaBalanceCode === 'MINOR_IMBALANCE'
+    ? (isTa ? 'சிறிய சமனின்மை உள்ளது; எளிய பரிகாரங்களுக்கு ஜோதிடரிடம் ஆலோசனை பெறவும்.' : isHi ? 'मामूली असंतुलन है; सरल उपायों के लिए ज्योतिषी से सलाह लें।' : 'A mild imbalance is indicated; ask an astrologer about simple remedies.')
+    : (isTa ? 'செவ்வாய் தோஷ சமநிலை இல்லை; பரிகாரங்களுக்கு நிபுணர் ஆலோசனை பெறவும்.' : isHi ? 'मंगल दोष में असंतुलन है; उपायों के लिए विशेषज्ञ सलाह लें।' : 'A Kuja Dosha imbalance is indicated; seek expert guidance on remedies.');
 
   const lblBride = isTa ? 'பெண்' : isHi ? 'वधू' : 'Bride';
   const lblGroom = isTa ? 'ஆண்' : isHi ? 'वर' : 'Groom';
-  const lblMarsPlacement = isTa ? 'செவ்வாய் நிலை' : isHi ? 'मंगल स्थिति' : 'Mars (Kuja) Placement';
-  const lblGuidance = isTa ? 'வழிகாட்டல்' : isHi ? 'मार्गदर्शन' : 'Guidance';
-
-  const houseOrdinal = (house: number): string => {
-    if (house % 100 >= 11 && house % 100 <= 13) return `${house}th`;
-    return `${house}${({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[house % 10] || 'th'}`;
-  };
-  const referenceFromText = (reference: 'lagna' | 'moon' | 'venus') => isTa
-    ? ({ lagna: 'லக்னத்திலிருந்து', moon: 'சந்திரனிலிருந்து', venus: 'சுக்கிரனிலிருந்து' }[reference])
-    : isHi
-    ? ({ lagna: 'लग्न से', moon: 'चंद्र से', venus: 'शुक्र से' }[reference])
-    : ({ lagna: 'from the Lagna', moon: 'from Chandra (Moon)', venus: 'from Sukra (Venus)' }[reference]);
-  const marsPlacementLabel = (
-    person: 'bride' | 'groom',
-    fallbackHouse: unknown,
-    severity: string
-  ): string => {
-    const houses = person === 'bride' ? result.sevvayDosham?.brideMarsHouses : result.sevvayDosham?.groomMarsHouses;
-    // Show each house actually assessed, not just the raw triggering points:
-    // a cancelled Venus-based indication must not hide a clean fifth house
-    // from Lagna (the same computed values used by the detail/explanation).
-    const references = ['lagna', 'moon', 'venus'] as const;
-    const locations = references.map(reference => {
-      const rawHouse = houses?.[reference] ?? (reference === 'lagna' ? fallbackHouse : null);
-      if (!validHouseNumber(rawHouse)) return null;
-      const house = Number(rawHouse);
-      return isTa
-        ? `${referenceFromText(reference)} ${house}-ஆம் இடம்`
-        : isHi
-        ? `${referenceFromText(reference)} ${house}वाँ भाव`
-        : `${houseOrdinal(house)} house ${referenceFromText(reference)}`;
-    }).filter((location): location is string => Boolean(location));
-    const locationText = locations.length > 0 ? locations.join(isTa ? ', ' : '; ') : 'N/A';
-    return `${locationText} (${severity || 'N/A'})`;
-  };
-  const marsPlacementValues = `${lblBride}: ${escapeHtml(marsPlacementLabel('bride', result.brideMarsHouse, brideDoshaText))} &bull; ` +
-    `${lblGroom}: ${escapeHtml(marsPlacementLabel('groom', result.groomMarsHouse, groomDoshaText))}`;
+  const lblDoshaBalance = isTa ? 'தோஷ சமநிலை' : isHi ? 'दोष संतुलन' : 'Dosha Balance';
+  const lblDoshaTitle = isTa ? 'செவ்வாய் தோஷச் சுருக்கம்' : isHi ? 'मंगल दोष सारांश' : 'Kuja (Mars) Dosha Summary';
+  const lblGuidance = isTa ? 'செவ்வாய் வழிகாட்டல்' : isHi ? 'मंगल मार्गदर्शन' : 'Kuja Guidance';
+  const lblVisualMeter = isTa ? 'பொருத்த ஒத்திசைவு அளவுகோல்' : isHi ? 'विवाह अनुकूलता मीटर' : 'Visual Compatibility Meter';
+  const lblPoints = isTa ? 'புள்ளிகள்' : isHi ? 'अंक' : 'Points';
+  const lblPoruthamsMatched = isTa ? 'பொருத்தங்கள் பொருந்தின' : isHi ? 'गुण मेल खाते हैं' : 'Poruthams matched';
+  const lblRajju = isTa ? 'ரஜ்ஜு நிலை' : isHi ? 'रज्जु स्थिति' : 'Rajju Status';
   const scoreRows = Array.isArray(result.poruthams) ? result.poruthams : [];
   const scoreRowsComplete = scoreRows.length === 10 && scoreRows.every((p: any) => {
     const earned = p?.pointsEarned ?? p?.points;
@@ -259,6 +250,15 @@ export function buildWeddingMatchHtml(
   const maxScoreValue = rawMaxScore !== undefined && rawMaxScore !== null && rawMaxScore !== '' ? Number(rawMaxScore) : Number.NaN;
   const scoreDisplay = Number.isFinite(scoreValue) && scoreValue >= 0 ? String(Number(scoreValue.toFixed(1))) : 'N/A';
   const maxScoreDisplay = Number.isFinite(maxScoreValue) && maxScoreValue > 0 ? String(Number(maxScoreValue.toFixed(1))) : 'N/A';
+  const rawScorePercent = resAny.matchPercentage ?? resAny.percentage;
+  const scorePercentRaw = rawScorePercent !== undefined && rawScorePercent !== null && rawScorePercent !== '' && Number.isFinite(Number(rawScorePercent))
+    ? Number(rawScorePercent)
+    : Number.isFinite(scoreValue) && scoreValue >= 0 && Number.isFinite(maxScoreValue) && maxScoreValue > 0
+    ? (scoreValue / maxScoreValue) * 100
+    : Number.NaN;
+  const scorePercentValue = Number.isFinite(scorePercentRaw) ? Math.min(100, Math.max(0, scorePercentRaw)) : null;
+  const scorePercentWidth = scorePercentValue === null ? 0 : Number(scorePercentValue.toFixed(1));
+  const scorePercentDisplay = scorePercentValue === null ? 'N/A' : `${Number(scorePercentValue.toFixed(1))}%`;
   const rawMatchedCount = result.totalPoruthamsMatched ?? resAny.matchedCount;
   const poruthamsForCount = Array.isArray(result.poruthams) ? result.poruthams : [];
   const poruthamRowsCountable = poruthamsForCount.length === 10 && poruthamsForCount.every((p: any) => {
@@ -538,49 +538,104 @@ ${REPORT_FONT_LINK_TAG}
     font-size: 11.5px;
   }
 
-  /* ── Score Medallion ── */
+  /* ── Compatibility meter + Kuja summary: paired first-page cards ── */
+  .compatibility-overview-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 3mm;
+    margin-bottom: 2mm;
+    flex-shrink: 0;
+  }
   .score-panel {
+    min-width: 0;
     background: #ffffff;
     border: 1px solid var(--slate-border);
     border-radius: 8px;
-    padding: 2.5mm 4.5mm;
-    margin-bottom: 2mm;
+    padding: 3mm 3.5mm;
+    margin: 0;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 3.5mm;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1.1mm;
     box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     flex-shrink: 0;
   }
-  .score-left { flex: 1; }
+  .score-panel-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2mm;
+  }
   .score-title {
     font-family: ${headerFont};
-    font-size: 12.5px;
+    font-size: 10px;
     font-weight: 800;
     color: var(--maroon);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.35px;
+    line-height: 1.3;
   }
-  .score-stats {
-    font-size: 11px;
+  .score-value-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2mm;
+    margin-top: 0.5mm;
+  }
+  .score-value {
+    font-size: 17px;
+    line-height: 1.1;
+    color: var(--ink);
+    font-weight: 900;
+  }
+  .score-percent {
     color: var(--ink-light);
-    margin-top: 0.8mm;
+    font-size: 10px;
+    font-weight: 800;
+  }
+  .score-meter-track {
+    width: 100%;
+    height: 2.5mm;
+    margin-top: 0.6mm;
+    overflow: hidden;
+    border-radius: 99px;
+    background: #e2e8f0;
+  }
+  .score-meter-fill {
+    height: 100%;
+    border-radius: inherit;
+    transition: width 160ms ease;
+  }
+  .score-meter-fill-good { background: linear-gradient(90deg, #34d399, #059669); }
+  .score-meter-fill-moderate { background: linear-gradient(90deg, #fbbf24, #d97706); }
+  .score-meter-fill-bad { background: linear-gradient(90deg, #fb7185, #be123c); }
+  .score-meter-fill-na { background: #94a3b8; }
+  .score-meter-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1mm 2mm;
+    color: var(--ink-light);
+    font-size: 8.5px;
     font-weight: 600;
-    line-height: 1.45;
+    line-height: 1.3;
   }
   .score-badge {
-    padding: 1.8mm 5mm;
+    flex-shrink: 0;
+    padding: 1mm 2.3mm;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 8px;
+    line-height: 1.2;
     font-weight: 800;
     text-align: center;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
     white-space: nowrap;
   }
-  .badge-good { background: #ecfdf5; color: #065f46; border: 1.5px solid #6ee7b7; }
-  .badge-moderate { background: #fef3c7; color: #92400e; border: 1.5px solid #fcd34d; }
-  .badge-bad { background: #fee2e2; color: #991b1b; border: 1.5px solid #fca5a5; }
-  .badge-na { background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; }
+  .badge-good { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+  .badge-moderate { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+  .badge-bad { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .badge-na { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
   /* ── 10 Poruthams Table ──────────────────────────────────────────────────
      The growing block of page 1: it takes every millimetre left between the
@@ -641,30 +696,78 @@ ${REPORT_FONT_LINK_TAG}
 
   /* ── Sevvay Dosham & Matrimonial Guidance ── */
   .recommendation-panel {
+    min-width: 0;
     background: var(--slate-bg);
     border: 1px solid var(--slate-border);
     border-left: 4px solid var(--maroon);
     border-radius: 8px;
-    padding: 2.4mm 4.5mm;
-    margin-bottom: 2mm;
+    padding: 3mm 3.5mm;
+    margin: 0;
     flex-shrink: 0;
   }
   .recommendation-panel h3 {
     font-family: ${headerFont};
     color: var(--maroon);
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 800;
+    line-height: 1.3;
     margin-bottom: 1mm;
   }
   .recommendation-panel p {
-    font-size: 10px;
-    line-height: 1.4;
+    font-size: 9px;
+    line-height: 1.35;
     color: var(--ink-light);
     margin-bottom: 1mm;
     font-weight: 500;
   }
   .recommendation-panel p:last-child { margin-bottom: 0; }
-  .recommendation-panel p.dosha-reason { font-size: 9px; line-height: 1.35; color: var(--ink-light); padding-left: 3mm; }
+  .dosha-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.3mm;
+    margin: 1.3mm 0 1.1mm;
+  }
+  .dosha-balance-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2mm;
+    margin: 0 0 1.1mm;
+    padding: 1mm 1.6mm;
+    border: 1px solid var(--slate-border);
+    border-radius: 5px;
+    background: #ffffff;
+    font-size: 8.5px;
+    line-height: 1.25;
+  }
+  .dosha-summary-card {
+    background: #ffffff;
+    border: 1px solid var(--slate-border);
+    border-radius: 5px;
+    padding: 1.2mm 2.2mm;
+    min-width: 0;
+  }
+  .dosha-summary-label {
+    display: block;
+    color: var(--ink-muted);
+    font-size: 8.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+    margin-bottom: 0.5mm;
+  }
+  .dosha-summary-value {
+    display: block;
+    color: var(--ink);
+    font-size: 10px;
+    line-height: 1.3;
+    font-weight: 800;
+  }
+  .recommendation-panel p.dosha-guidance {
+    border-top: 1px solid var(--slate-border);
+    padding-top: 1.2mm;
+    margin-bottom: 0;
+  }
   .recommendation-panel strong { color: var(--maroon); font-weight: 800; }
 
   /* ── Clear final match verdict ── */
@@ -946,21 +1049,47 @@ ${REPORT_FONT_LINK_TAG}
       </div>
     </div>
 
-    <!-- Compatibility Score Medallion -->
-    <div class="score-panel">
-      <div class="score-left">
-        <div class="score-title">
-          ${isTa ? 'பொருத்த முடிவுகள் மற்றும் மதிப்பெண்' : isHi ? 'मेलापक परिणाम एवं प्राप्तांक' : 'Compatibility Score & Summary'}
+    <!-- Visual Compatibility Meter and Kuja Dosha: matching side-by-side cards -->
+    <div class="compatibility-overview-grid">
+      <section class="score-panel" aria-label="${lblVisualMeter}">
+        <div class="score-panel-top">
+          <div class="score-title">${lblVisualMeter}</div>
+          <div class="score-badge ${verdictBadgeClass}">${verdictBadgeText}</div>
         </div>
-        <div class="score-stats">
-          <strong>${matchedCountDisplay} / 10</strong> ${isTa ? 'பொருத்தங்கள் பொருந்துகின்றன' : isHi ? 'गुण मिलान' : 'Poruthams Matched'}
-          &bull; <strong>${scoreDisplay} / ${maxScoreDisplay}</strong> ${isTa ? 'புள்ளிகள்' : isHi ? 'अंक' : 'Points'}
-          &bull; ${isTa ? 'ரஜ்ஜு பொருத்தம்:' : isHi ? 'रज्जु स्थिति:' : 'Rajju Status:'} <strong style="color: ${rajjuStatusColor}">${rajjuStatusText}</strong>
+        <div class="score-value-row">
+          <strong class="score-value">${scoreDisplay} / ${maxScoreDisplay}</strong>
+          <span class="score-percent">${scorePercentDisplay}</span>
         </div>
-      </div>
-      <div class="score-badge ${verdictBadgeClass}">
-        ${verdictBadgeText}
-      </div>
+        <div class="score-meter-track" role="meter" aria-label="${lblVisualMeter}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${scorePercentValue ?? 0}" aria-valuetext="${scorePercentDisplay}">
+          <div class="score-meter-fill ${scoreMeterFillClass}" style="width:${scorePercentWidth}%"></div>
+        </div>
+        <div class="score-meter-meta">
+          <span><strong>${matchedCountDisplay} / 10</strong> ${lblPoruthamsMatched}</span>
+          <span>${lblPoints}</span>
+        </div>
+        <div class="score-meter-meta">
+          <span>${lblRajju}: <strong style="color: ${rajjuStatusColor}">${rajjuStatusText}</strong></span>
+        </div>
+      </section>
+
+      <section class="recommendation-panel" aria-label="${lblDoshaTitle}">
+        <h3>${lblDoshaTitle}</h3>
+        <div class="dosha-summary-grid">
+          <div class="dosha-summary-card">
+            <span class="dosha-summary-label">${lblBride}</span>
+            <strong class="dosha-summary-value">${escapeHtml(brideDoshaText)}</strong>
+          </div>
+          <div class="dosha-summary-card">
+            <span class="dosha-summary-label">${lblGroom}</span>
+            <strong class="dosha-summary-value">${escapeHtml(groomDoshaText)}</strong>
+          </div>
+        </div>
+        <div class="dosha-balance-summary">
+          <span class="dosha-summary-label">${lblDoshaBalance}</span>
+          <strong class="dosha-summary-value">${escapeHtml(doshaBalanceText)}</strong>
+        </div>
+        <p class="dosha-guidance"><strong>${lblGuidance}:</strong> ${escapeHtml(doshaGuidanceText)}</p>
+      </section>
     </div>
 
     <!-- 10 Poruthams Table (grows to fill the sheet) -->
@@ -986,19 +1115,6 @@ ${REPORT_FONT_LINK_TAG}
           ${poruthamsRowsHtml}
         </tbody>
       </table>
-    </div>
-
-    <!-- Sevvay Dosham & Matrimonial Guidance -->
-    <div class="recommendation-panel">
-      <h3>${isTa ? 'செவ்வாய் தோஷ சமநிலை & ஜோதிட வழிகாட்டல்' : isHi ? 'मंगल दोष संतुलन एवं अंतिम परामर्श' : 'Kuja (Mars) Dosha Analysis & Final Recommendation'}</h3>
-      <p><strong>${lblMarsPlacement}:</strong> ${marsPlacementValues}</p>
-      ${brideDoshaReason ? `<p class="dosha-reason"><strong>${lblBride}:</strong> ${escapeHtml(brideDoshaReason)}</p>` : ''}
-      ${groomDoshaReason ? `<p class="dosha-reason"><strong>${lblGroom}:</strong> ${escapeHtml(groomDoshaReason)}</p>` : ''}
-      <p><strong>${isTa ? 'தோஷ சமநிலை:' : isHi ? 'दोष संतुलन:' : 'Dosha Balance:'}</strong> ${doshaBalanceText}</p>
-      <p style="font-weight: 600; color: var(--maroon);">
-        <strong>${isTa ? 'இறுதி முடிவு:' : isHi ? 'अंतिम परामर्श:' : 'Recommendation:'}</strong> ${overallVerdictText}
-      </p>
-      ${doshaGuidanceText ? `      <p><strong>${lblGuidance}:</strong> ${doshaGuidanceText}</p>` : ''}
     </div>
 
     <div class="final-verdict ${finalVerdictClass}" role="status" aria-label="${finalVerdictLabel}">

@@ -234,16 +234,25 @@ checkWeddingVerdict(
 $sampleTaHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'ta', 'order_number' => 'ORD-CASE1'], $sampleCouple);
 checkWeddingVerdict(
     strpos($sampleTaHtml, 'final-verdict-moderate') !== false &&
-    substr_count($sampleTaHtml, 'ஏற்றுக்கொள்ளத்தக்க பொருத்தம்; பரிகாரங்களுடன் பொருந்தும்') >= 2 &&
-    strpos($sampleTaHtml, 'இந்தப் பொருத்தம் நல்லது') === false,
-    'CASE 1: badge summary and final box present Madhyamam as acceptable with remedies, not Uttamam'
+    strpos($sampleTaHtml, 'இறுதிப் பரிந்துரை') !== false &&
+    substr_count($sampleTaHtml, 'ஏற்றுக்கொள்ளத்தக்க பொருத்தம்; பரிகாரங்களைப் பரிசீலிக்கலாம்.') === 1 &&
+    strpos($sampleTaHtml, 'இந்த மதிப்பீட்டின்படி நல்ல பொருத்தம்') === false,
+    'CASE 1: the report shows one concise Madhyamam recommendation, not repeated verdict copy'
 );
+$overviewGridPosition = strpos($sampleTaHtml, 'class="wedding-overview-grid"');
+$visualMeterPosition = strpos($sampleTaHtml, 'பொருத்த ஒத்திசைவு அளவுகோல்', $overviewGridPosition === false ? 0 : $overviewGridPosition);
+$kujaSummaryPosition = strpos($sampleTaHtml, 'செவ்வாய் தோஷச் சுருக்கம்', $overviewGridPosition === false ? 0 : $overviewGridPosition);
+$poruthamTablePosition = strpos($sampleTaHtml, 'class="data-table"', $overviewGridPosition === false ? 0 : $overviewGridPosition);
 checkWeddingVerdict(
+    $overviewGridPosition !== false && $visualMeterPosition !== false && $kujaSummaryPosition !== false &&
+    $poruthamTablePosition !== false && $visualMeterPosition < $kujaSummaryPosition && $kujaSummaryPosition < $poruthamTablePosition &&
+    strpos($sampleTaHtml, 'role="meter"') !== false && strpos($sampleTaHtml, 'aria-valuenow="68.6"') !== false &&
     strpos($sampleTaHtml, 'Mars: <b>House 5 (தோஷம் இல்லை') !== false &&
-    strpos($sampleTaHtml, 'சுக்கிரனிலிருந்து ') !== false &&
-    strpos($sampleTaHtml, 'லக்னத்திலிருந்து 5-ஆம் இடம்') !== false &&
-    strpos($sampleTaHtml, 'தோஷம் இல்லை') !== false,
-    'CASE 1: the report shows the computed bride Venus reference and groom fifth-house no-dosha summary'
+    strpos($sampleTaHtml, 'தோஷ சமநிலை') !== false &&
+    strpos($sampleTaHtml, 'செவ்வாய் வழிகாட்டல்') !== false &&
+    strpos($sampleTaHtml, 'சுக்கிரனிலிருந்து ') === false &&
+    strpos($sampleTaHtml, 'லக்னத்திலிருந்து 5-ஆம் இடம்') === false,
+    'CASE 1: page 1 pairs the visual compatibility meter on the left and simple Kuja status/guidance on the right'
 );
 $sampleFailedRow = array_values(array_filter($sampleCouple['poruthams'], static fn($p) => is_numeric($p['pointsEarned'] ?? null) && (float) $p['pointsEarned'] === 0.0))[0] ?? [];
 $sampleFailedPoints = isset($sampleFailedRow['maxPoints']) ? '0 / ' . (string) $sampleFailedRow['maxPoints'] : '';
@@ -352,9 +361,10 @@ $goodResult['overallVerdictEn'] = 'Acceptable with Remedies - Madhyama Porutham'
 $goodHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'en'], $goodResult);
 checkWeddingVerdict(
     strpos($goodHtml, 'class="panel final-verdict-moderate"') !== false &&
-    strpos($goodHtml, 'Acceptable match; suitable with remedies.') !== false &&
+    strpos($goodHtml, 'Acceptable match; remedies may be considered.') !== false &&
+    strpos($goodHtml, 'FINAL RECOMMENDATION') !== false &&
     strpos($goodHtml, 'The matching is good.') === false,
-    'A Madhyamam report ends with an amber, remedies-based verdict rather than a green Uttamam verdict'
+    'A Madhyamam report ends with a concise amber recommendation rather than a green Uttamam recommendation'
 );
 $uttamamResult = $baseResult;
 $uttamamResult['verdictStatus'] = 'UTTHAMAM';
@@ -362,9 +372,9 @@ $uttamamResult['overallVerdictEn'] = 'Highly Recommended - Utthama Porutham';
 $uttamamHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'ta'], $uttamamResult);
 checkWeddingVerdict(
     strpos($uttamamHtml, 'class="panel final-verdict-good"') !== false &&
-    substr_count($uttamamHtml, 'இந்தப் பொருத்தம் நல்லது') >= 2 &&
+    substr_count($uttamamHtml, 'இந்த மதிப்பீட்டின்படி நல்ல பொருத்தம்.') === 1 &&
     strpos($uttamamHtml, 'ஏற்றுக்கொள்ளத்தக்க பொருத்தம்') === false,
-    'An Uttamam report repeats the matching-good verdict in the summary and final box, not Madhyamam copy'
+    'An Uttamam report presents one concise Tamil recommendation, not Madhyamam copy'
 );
 
 // ---------------------------------------------------------------------------
@@ -426,9 +436,10 @@ $badResult['overallVerdictEn'] = 'Not Recommended - Porutham does not meet the r
 $badHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'en'], $badResult);
 checkWeddingVerdict(
     strpos($badHtml, 'class="panel final-verdict-not-good"') !== false &&
-    strpos($badHtml, 'not recommended on the current assessment') !== false &&
+    strpos($badHtml, 'Not recommended on this assessment; seek expert review.') !== false &&
+    strpos($badHtml, 'FINAL RECOMMENDATION') !== false &&
     strpos($badHtml, 'color:#991b1b') !== false,
-    'An incompatible matching report ends with a cautious red, clearly labeled verdict'
+    'An incompatible matching report ends with a concise, cautious red recommendation'
 );
 checkWeddingVerdict(
     strpos($badHtml, 'astrological guidance only') !== false,
@@ -436,10 +447,9 @@ checkWeddingVerdict(
 );
 $badTaHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'ta'], $badResult);
 checkWeddingVerdict(
-    strpos($badTaHtml, 'இந்தப் பொருத்தம் சாதகமற்றது') !== false &&
-    strpos($badTaHtml, 'ஜோதிட வழிகாட்டல் மட்டுமே') !== false &&
-    strpos($badTaHtml, 'விரிவான ஜாதக ஆய்வு') !== false,
-    'An Adhamam Tamil verdict stays cautious and points to expert horoscope review'
+    strpos($badTaHtml, 'இந்த மதிப்பீட்டின்படி பரிந்துரைக்கப்படவில்லை') !== false &&
+    strpos($badTaHtml, 'நிபுணர் ஆலோசனை பெறவும்') !== false,
+    'An Adhamam Tamil recommendation stays cautious and concise'
 );
 
 $missingScoreHtml = AstroReportViews::generateWeddingMatchingHtml(['language' => 'en'], ['poruthams' => []]);

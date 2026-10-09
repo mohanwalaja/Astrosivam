@@ -54,6 +54,25 @@ for (const lang of ['en', 'ta', 'hi'] as const) {
   const html = buildWeddingMatchHtml(match, lang);
   expectDob(`Marriage bride (${lang})`, html, '27/07/1990', ['27-07-1990']);
   expectDob(`Marriage groom (${lang})`, html, '03/01/1988', ['03-01-1988']);
+
+  const pageOne = html.slice(0, html.indexOf('<div class="page" id="wedding-page-2">'));
+  const overviewStart = pageOne.indexOf('class="compatibility-overview-grid"');
+  const visualMeterLabel = lang === 'en' ? 'Visual Compatibility Meter' : lang === 'ta' ? 'பொருத்த ஒத்திசைவு அளவுகோல்' : 'विवाह अनुकूलता मीटर';
+  const kujaPanelLabel = lang === 'en' ? 'Kuja (Mars) Dosha Summary' : lang === 'ta' ? 'செவ்வாய் தோஷச் சுருக்கம்' : 'मंगल दोष सारांश';
+  const visualMeterPosition = pageOne.indexOf(`<div class="score-title">${visualMeterLabel}</div>`);
+  const kujaPanelPosition = pageOne.indexOf(`<h3>${kujaPanelLabel}</h3>`);
+  const poruthamsTablePosition = pageOne.indexOf('class="poruthams-wrap"');
+  assert(overviewStart >= 0 && visualMeterPosition > overviewStart && kujaPanelPosition > visualMeterPosition && kujaPanelPosition < poruthamsTablePosition,
+    `Marriage (${lang}): visual meter is the left card and Kuja Dosha is the adjacent right card before the Poruthams table`);
+  assert(pageOne.includes('role="meter"') && pageOne.includes('class="score-meter-fill '),
+    `Marriage (${lang}): compatibility score is displayed as a proportional visual meter`);
+  assert(pageOne.includes('class="dosha-summary-grid"'), `Marriage (${lang}): Kuja status is grouped in a compact first-page summary`);
+  assert.equal((pageOne.match(/class="dosha-summary-card"/g) || []).length, 2, `Marriage (${lang}): Kuja summary has separate bride and groom status cards`);
+  assert(pageOne.includes('class="dosha-balance-summary"'), `Marriage (${lang}): dosha balance remains visible in the right-hand card`);
+  assert(pageOne.includes(lang === 'en' ? 'FINAL RECOMMENDATION' : lang === 'ta' ? 'இறுதிப் பரிந்துரை' : 'अंतिम अनुशंसा'),
+    `Marriage (${lang}): the overall recommendation is clear on page 1`);
+  assert.doesNotMatch(pageOne, /Mars \(Kuja\) Placement|from the Lagna|from Chandra|from Sukra|dosha-reason/,
+    `Marriage (${lang}): detailed Mars house-reference text is kept out of the simple first-page summary`);
 }
 
 // ── 4. Baby naming ─────────────────────────────────────────────────────────

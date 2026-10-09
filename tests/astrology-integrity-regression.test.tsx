@@ -214,7 +214,15 @@ const incompleteWedding = {
 const weddingHtml = buildWeddingMatchHtml(incompleteWedding, 'en');
 assert.match(weddingHtml, /Simham/);
 assert.match(weddingHtml, /Magaram/);
-assert.match(weddingHtml, /Mars \(Kuja\) Placement:<\/strong> Bride: N\/A \(N\/A\) &bull; Groom: N\/A \(N\/A\)/);
+assert.match(weddingHtml, /class="compatibility-overview-grid"/);
+assert.match(weddingHtml, /aria-label="Visual Compatibility Meter"/);
+assert.match(weddingHtml, /role="meter"/);
+assert.match(weddingHtml, /class="dosha-summary-grid"/);
+assert.equal((weddingHtml.match(/class="dosha-summary-card"/g) || []).length, 2);
+assert.match(weddingHtml, /class="dosha-balance-summary"/);
+assert.equal((weddingHtml.match(/class="dosha-summary-value">N\/A<\/strong>/g) || []).length, 2,
+  'Missing Mars placements keep each partner status explicitly unavailable in the compact summary');
+assert.match(weddingHtml, /FINAL RECOMMENDATION/);
 assert.match(weddingHtml, /N\/A \/ N\/A/,
   'The report must not manufacture a score of zero or a 10-point denominator when those values are missing');
 assert.doesNotMatch(weddingHtml, /House 1 \(N\/A\)/);
