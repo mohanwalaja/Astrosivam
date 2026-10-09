@@ -23,6 +23,7 @@ import { formatUtcOffset } from '../lib/timezone';
 import { buildReportHeaderHtml, reportHeaderCss } from './reportHeader';
 import { fitJathagamLifeCardText, fitJathagamSummaryText } from './jathagamLifeCardLayout';
 import { normalizeReportLanguage } from './reportLanguage';
+import { LUCKY_INDICATOR_TEXT, resolveLuckyIndicators } from './jathagamLuckyData';
 
 // Rasi names in 3 languages
 export const RASI_NAMES_REPORT: Record<number, { en: string; ta: string; hi: string }> = {
@@ -1049,6 +1050,27 @@ export function buildJathagamHtml(result: HoroscopeResult, lang: AppLanguage = '
       <span class="summary-detail-value">${item.value}</span>
     </div>`).join('');
 
+  // Lucky indicators (birth stone / colour / numbers). Resolved from the
+  // janma nakshatra lord via the shared Tamil Ratna Sastra table in
+  // jathagamLuckyData.ts (mirrored in PHP). Never fabricated: an unreadable
+  // index prints N/A.
+  const luckyText = LUCKY_INDICATOR_TEXT[lang] || LUCKY_INDICATOR_TEXT.en;
+  const lucky = resolveLuckyIndicators(result.janmaNakshatraIndex, lang);
+  const luckyCell = (label: string, value: string, extraClass = '') =>
+    `<div class="summary-detail lucky-cell${extraClass ? ' ' + extraClass : ''}">
+      <span class="summary-detail-label">${escapeHtml(label)}</span>
+      <span class="summary-detail-value">${escapeHtml(value)}</span>
+    </div>`;
+  const luckyRowsHtml = `
+      <div class="lucky-row" id="lucky-nakshatra-row">
+        <div class="lucky-row-head">${escapeHtml(luckyText.nakshatraRow)}<span class="lucky-row-sub">${escapeHtml(nakshatraName)} · ${escapeHtml(luckyText.lord)}: ${escapeHtml(lucky.nakshatraLordName)}</span></div>
+        <div class="lucky-grid">
+          ${luckyCell(luckyText.birthStone, lucky.birthStone, 'lucky-stone')}
+          ${luckyCell(luckyText.luckyColour, lucky.luckyColour, 'lucky-colour')}
+          ${luckyCell(luckyText.luckyNumbers, lucky.luckyNumbers, 'lucky-number')}
+        </div>
+      </div>`;
+
   // Navagraha reference table + guidance prose are kept as exported builders
   // (see buildNavagrahaReferenceTableHtml / buildNavagrahaGuidanceHtml below).
   // They are the report's single Navagraha data surface and stay available to
@@ -1469,6 +1491,42 @@ ${REPORT_FONT_LINK_TAG}
     overflow-wrap: anywhere;
     word-break: break-word;
   }
+
+  /* Lucky indicators: gold tint; one row (nakshatra lord) with three boxes:
+     stone, colour, numbers. */
+  .summary-lucky { background: #fffbeb; border-color: #f3e0a6; }
+  .summary-page .card-title-gold { color: #8a5a00; border-bottom-color: #f3e0a6; }
+  .lucky-row { margin-bottom: calc(4px * var(--summary-scale)); }
+  .lucky-row:last-of-type { margin-bottom: 0; }
+  .lucky-row-head {
+    color: #8a5a00;
+    font-size: calc(10.5px * var(--summary-scale));
+    font-weight: 800;
+    line-height: 1.4;
+    margin-bottom: calc(2px * var(--summary-scale));
+    overflow-wrap: anywhere;
+  }
+  .lucky-row-sub { color: #6b7280; font-weight: 600; margin-left: calc(6px * var(--summary-scale)); }
+  .lucky-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: calc(5px * var(--summary-scale));
+  }
+  .lucky-cell { border-color: #f3e0a6; }
+  .lucky-cell .summary-detail-value { color: #7a1230; }
+  .lucky-note {
+    margin: calc(4px * var(--summary-scale)) 0 0;
+    color: #4b5563;
+    font-size: calc(10.5px * var(--summary-scale));
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+  /* Compact page (5+ flagged grahas): the lucky card gives back vertical
+     space — tighter rows, label-only heads and a one-line caution. */
+  .summary-page.is-compact .lucky-row { margin-bottom: 2px; }
+  .summary-page.is-compact .lucky-row-head { margin-bottom: 1px; }
+  .summary-page.is-compact .lucky-row-sub { display: none; }
+  .summary-page.is-compact .lucky-note { margin-top: 2px; line-height: 1.35; }
 
   /* Supportive planets: green tint, at most three boxes in a row. */
   .summary-good { background: #f2fbf6; border-color: #bfe6d3; }
@@ -1921,6 +1979,14 @@ ${REPORT_FONT_LINK_TAG}
       <div class="summary-details-grid">
         ${summaryDetailsHtml}
       </div>
+    </div>
+
+    <!-- 1b. Lucky indicators: birth stone / lucky colour / lucky numbers by
+         the janma nakshatra lord. -->
+    <div class="card summary-lucky" id="summary-lucky">
+      <div class="card-title card-title-gold">${escapeHtml(luckyText.title)}</div>
+      ${luckyRowsHtml}
+      <p class="lucky-note">${escapeHtml(summaryCompact ? luckyText.noteShort : luckyText.note)}</p>
     </div>
 
     <!-- 2. Supportive planets (green tint), at most three boxes in a row. -->

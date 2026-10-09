@@ -19,6 +19,17 @@ export default defineConfig(() => {
       hmr: process.env.DISABLE_HMR !== 'true',
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      // Dev-only: when DEV_PREVIEW_API is set, route /api to the Node stand-in
+      // (scripts/dev-preview-api.ts) so report previews work without PHP.
+      proxy: process.env.DEV_PREVIEW_API
+        ? { '/api': { target: `http://127.0.0.1:${process.env.DEV_PREVIEW_API_PORT || 8787}`, changeOrigin: true } }
+        : undefined,
+    },
+    preview: {
+      allowedHosts: true as const,
+      proxy: process.env.DEV_PREVIEW_API
+        ? { '/api': { target: `http://127.0.0.1:${process.env.DEV_PREVIEW_API_PORT || 8787}`, changeOrigin: true } }
+        : undefined,
     },
   };
 });

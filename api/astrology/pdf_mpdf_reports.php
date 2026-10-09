@@ -1698,6 +1698,40 @@ HTML;
         $page3Html .= '<div class="summary-card">'
             . '<div class="summary-card-title">' . self::e($summaryText['detailsTitle']) . '</div>'
             . $summaryDetailsHtml . '</div>';
+        // Lucky indicators (birth stone / colour / numbers) from the janma
+        // nakshatra lord — mirrored from
+        // src/services/jathagamLuckyData.ts (Tamil Ratna Sastra convention).
+        $luckyText = self::jathagamLuckyText($lang);
+        $lucky = self::resolveJathagamLuckyIndicators(
+            $result['janmaNakshatraIndex'] ?? ($result['nakshatram']['index'] ?? null),
+            $lang
+        );
+        $luckyCell = static function (string $label, string $value): string {
+            return '<td class="summary-cell lucky-cell">'
+                . '<div class="summary-detail-label">' . self::e($label) . '</div>'
+                . '<div class="summary-detail-value lucky-value">' . self::e($value) . '</div></td>';
+        };
+        $luckyRow = static function (string $head, string $sub, array $cells) use ($luckyCell): string {
+            $html = '<div class="lucky-row-head">' . self::e($head)
+                . ' <span class="lucky-row-sub">' . self::e($sub) . '</span></div>'
+                . '<table class="summary-details lucky-grid"><tr>';
+            foreach ($cells as $cell) {
+                $html .= $luckyCell($cell[0], $cell[1]);
+            }
+            return $html . '</tr></table>';
+        };
+        $page3Html .= '<div class="summary-card lucky" id="summary-lucky">'
+            . '<div class="summary-card-title lucky">' . self::e($luckyText['title']) . '</div>'
+            . $luckyRow(
+                $luckyText['nakshatraRow'],
+                html_entity_decode($nakName, ENT_QUOTES, 'UTF-8') . ' · ' . $luckyText['lord'] . ': ' . $lucky['nakshatraLordName'],
+                [
+                    [$luckyText['birthStone'], $lucky['birthStone']],
+                    [$luckyText['luckyColour'], $lucky['luckyColour']],
+                    [$luckyText['luckyNumbers'], $lucky['luckyNumbers']],
+                ]
+            )
+            . '<p class="lucky-note">' . self::e($isCompact ? $luckyText['noteShort'] : $luckyText['note']) . '</p></div>';
         $page3Html .= '<div class="summary-card good">'
             . '<div class="summary-card-title good">' . self::e($summaryText['supportiveTitle']) . '</div>'
             . $summaryGoodHtml . '</div>';
@@ -1762,6 +1796,15 @@ HTML;
     #birth-summary-sheet .summary-short { font-size: 11.5px; line-height: 1.5; color: #1f2937; margin: 0; }
     #birth-summary-sheet .summary-short + .summary-short { margin-top: 0.6mm; }
     #birth-summary-sheet .summary-reassurance { background: #f8f9fb; border: 0.6px solid #e5e7eb; border-left: 2.5px solid #7a1230; border-radius: 4px; padding: 1mm 1.4mm; font-size: 11px; line-height: 1.5; color: #1f2937; }
+    #birth-summary-sheet .summary-card.lucky { background: #fffbeb; border-color: #f3e0a6; }
+    #birth-summary-sheet .summary-card-title.lucky { color: #8a5a00; border-bottom-color: #f3e0a6; }
+    #birth-summary-sheet .lucky-row-head { font-size: 10.5px; font-weight: bold; color: #8a5a00; line-height: 1.35; margin-top: 0.6mm; }
+    #birth-summary-sheet .lucky-row-sub { color: #6b7280; font-weight: normal; }
+    #birth-summary-sheet table.lucky-grid td.lucky-cell { border-color: #f3e0a6; }
+    #birth-summary-sheet .lucky-value { color: #7a1230; }
+    #birth-summary-sheet .lucky-note { font-size: 10.5px; line-height: 1.4; color: #4b5563; margin: 0.6mm 0 0; }
+    #birth-summary-sheet.is-compact .lucky-row-sub { display: none; }
+    #birth-summary-sheet.is-compact .lucky-row-head { margin-top: 0.3mm; }
     #birth-summary-sheet.is-compact .summary-card { padding: 1.1mm 1.6mm; margin-bottom: 1.3mm; }
     #birth-summary-sheet.is-compact table.summary-care td { font-size: 10.5px; padding: 0.5mm 0.8mm; line-height: 1.4; }
     #birth-summary-sheet.is-compact .summary-detail-value { font-size: 11px; }
@@ -1769,6 +1812,158 @@ HTML;
     #birth-summary-sheet.is-compact .summary-short { font-size: 11px; line-height: 1.45; }
     #birth-summary-sheet.is-compact .summary-reassurance { font-size: 10.5px; line-height: 1.45; }
 CSS;
+    }
+
+    /**
+     * Lucky-indicator data for the Birth Jathagam page 3 — mirror of
+     * src/services/jathagamLuckyData.ts. Every indicator belongs to a GRAHA:
+     * the native receives it through the janma nakshatra lord (birth stone,
+     * lucky colour, three lucky numbers) and the Chandra rasi lord (rasi
+     * stone, rasi colour, rasi number). Tamil sources: Samayam Tamil (27
+     * nakshatra lucky god/number/colour/stone; 27 nakshatra gems; graha
+     * numbers), livingastro 27 நட்சத்திரக் குறிப்புகள், SwasthikTv 12 ராசி நிறங்கள்,
+     * Zee News Tamil ராசிக்கு ஏற்ற ரத்தினம். Keep both copies in sync.
+     */
+    public static function jathagamLuckyProfiles(): array
+    {
+        return [
+            'sun' => [
+                'name' => ['en' => 'Surya (Sun)', 'ta' => 'சூரியன்', 'hi' => 'सूर्य'],
+                'stone' => ['en' => 'Ruby (Manikkam)', 'ta' => 'மாணிக்கம்', 'hi' => 'माणिक्य (रूबी)'],
+                'colour' => ['en' => 'Red', 'ta' => 'சிவப்பு', 'hi' => 'लाल'],
+                'number' => 1, 'luckyNumbers' => [1, 5, 7],
+            ],
+            'moon' => [
+                'name' => ['en' => 'Chandra (Moon)', 'ta' => 'சந்திரன்', 'hi' => 'चंद्र'],
+                'stone' => ['en' => 'Pearl (Muthu)', 'ta' => 'முத்து', 'hi' => 'मोती'],
+                'colour' => ['en' => 'White', 'ta' => 'வெள்ளை', 'hi' => 'सफ़ेद'],
+                'number' => 2, 'luckyNumbers' => [2, 3, 9],
+            ],
+            'mars' => [
+                'name' => ['en' => 'Chevvai (Mars)', 'ta' => 'செவ்வாய்', 'hi' => 'मंगल'],
+                'stone' => ['en' => 'Red Coral (Pavalam)', 'ta' => 'பவளம்', 'hi' => 'मूंगा'],
+                'colour' => ['en' => 'Light red / Pink', 'ta' => 'இளஞ்சிவப்பு', 'hi' => 'हल्का लाल / गुलाबी'],
+                'number' => 9, 'luckyNumbers' => [3, 6, 9],
+            ],
+            'mercury' => [
+                'name' => ['en' => 'Budha (Mercury)', 'ta' => 'புதன்', 'hi' => 'बुध'],
+                'stone' => ['en' => 'Emerald (Maragatham)', 'ta' => 'மரகதம்', 'hi' => 'पन्ना'],
+                'colour' => ['en' => 'Green', 'ta' => 'பச்சை', 'hi' => 'हरा'],
+                'number' => 5, 'luckyNumbers' => [1, 5, 8],
+            ],
+            'jupiter' => [
+                'name' => ['en' => 'Guru (Jupiter)', 'ta' => 'குரு', 'hi' => 'गुरु'],
+                'stone' => ['en' => 'Yellow Sapphire (Pushparagam)', 'ta' => 'புஷ்பராகம்', 'hi' => 'पुखराज'],
+                'colour' => ['en' => 'Yellow', 'ta' => 'மஞ்சள்', 'hi' => 'पीला'],
+                'number' => 3, 'luckyNumbers' => [2, 3, 9],
+            ],
+            'venus' => [
+                'name' => ['en' => 'Sukra (Venus)', 'ta' => 'சுக்கிரன்', 'hi' => 'शुक्र'],
+                'stone' => ['en' => 'Diamond (Vairam)', 'ta' => 'வைரம்', 'hi' => 'हीरा'],
+                'colour' => ['en' => 'White', 'ta' => 'வெள்ளை', 'hi' => 'सफ़ेद'],
+                'number' => 6, 'luckyNumbers' => [3, 6, 8],
+            ],
+            'saturn' => [
+                'name' => ['en' => 'Sani (Saturn)', 'ta' => 'சனி', 'hi' => 'शनि'],
+                'stone' => ['en' => 'Blue Sapphire (Neelam)', 'ta' => 'நீலம்', 'hi' => 'नीलम'],
+                'colour' => ['en' => 'Dark blue / Black', 'ta' => 'கருநீலம் / கருப்பு', 'hi' => 'गहरा नीला / काला'],
+                'number' => 8, 'luckyNumbers' => [5, 6, 8],
+            ],
+            'rahu' => [
+                'name' => ['en' => 'Rahu', 'ta' => 'ராகு', 'hi' => 'राहु'],
+                'stone' => ['en' => 'Hessonite (Gomedhagam)', 'ta' => 'கோமேதகம்', 'hi' => 'गोमेद'],
+                'colour' => ['en' => 'Black / Smoky', 'ta' => 'கருப்பு', 'hi' => 'काला / धुएँ जैसा'],
+                'number' => 4, 'luckyNumbers' => [1, 4, 7],
+            ],
+            'ketu' => [
+                'name' => ['en' => 'Ketu', 'ta' => 'கேது', 'hi' => 'केतु'],
+                'stone' => ['en' => "Cat's Eye (Vaiduryam)", 'ta' => 'வைடூரியம்', 'hi' => 'लहसुनिया (वैदूर्य)'],
+                'colour' => ['en' => 'Red with mixed colours', 'ta' => 'சிவப்பு கலந்த பல நிறங்கள்', 'hi' => 'लाल व मिश्रित रंग'],
+                'number' => 7, 'luckyNumbers' => [5, 7, 9],
+            ],
+        ];
+    }
+
+    public static function jathagamLuckyText(string $lang): array
+    {
+        $all = [
+            'en' => [
+                'title' => 'Lucky Indicators — Birth Stone, Colour & Numbers (by Nakshatra)',
+                'nakshatraRow' => 'By Janma Nakshatra', 'rasiRow' => 'By Chandra Rasi', 'lord' => 'Lord',
+                'birthStone' => 'Birth Stone', 'rasiStone' => 'Rasi Stone',
+                'luckyColour' => 'Lucky Colour', 'rasiColour' => 'Rasi Colour',
+                'luckyNumbers' => 'Lucky Numbers', 'rasiNumber' => 'Rasi Number',
+                'note' => 'As per Tamil Ratna Sastra the stone, colour and numbers follow the janma nakshatra lord. A gem should be worn only after a personal consultation; the colour and numbers can be used freely in daily life.',
+                'noteShort' => 'Wear a gem only after a personal consultation; colour and numbers may be used freely.',
+                'unavailable' => 'N/A',
+            ],
+            'ta' => [
+                'title' => 'அதிர்ஷ்டக் குறிப்புகள் — நட்சத்திரக் கல், நிறம், எண்',
+                'nakshatraRow' => 'ஜென்ம நட்சத்திரப்படி', 'rasiRow' => 'சந்திர ராசிப்படி', 'lord' => 'அதிபதி',
+                'birthStone' => 'நட்சத்திரக் கல்', 'rasiStone' => 'ராசிக் கல்',
+                'luckyColour' => 'அதிர்ஷ்ட நிறம்', 'rasiColour' => 'ராசி நிறம்',
+                'luckyNumbers' => 'அதிர்ஷ்ட எண்கள்', 'rasiNumber' => 'ராசி எண்',
+                'note' => 'தமிழ் ரத்ன சாஸ்திரப்படி கல், நிறம், எண் ஆகியவை ஜென்ம நட்சத்திர அதிபதியைப் பொறுத்து அமைகின்றன. ரத்தினக் கல்லை தனிப்பட்ட ஆலோசனைக்குப் பின்னரே அணிய வேண்டும்; நிறத்தையும் எண்களையும் அன்றாட வாழ்வில் தாராளமாகப் பயன்படுத்தலாம்.',
+                'noteShort' => 'ரத்தினக் கல்லை ஆலோசனைக்குப் பின்னரே அணியவும்; நிறம், எண்களைத் தாராளமாகப் பயன்படுத்தலாம்.',
+                'unavailable' => 'கிடைக்கவில்லை',
+            ],
+            'hi' => [
+                'title' => 'शुभ संकेत — जन्म रत्न, रंग व अंक (नक्षत्र अनुसार)',
+                'nakshatraRow' => 'जन्म नक्षत्र के अनुसार', 'rasiRow' => 'चंद्र राशि के अनुसार', 'lord' => 'स्वामी',
+                'birthStone' => 'जन्म रत्न', 'rasiStone' => 'राशि रत्न',
+                'luckyColour' => 'शुभ रंग', 'rasiColour' => 'राशि रंग',
+                'luckyNumbers' => 'शुभ अंक', 'rasiNumber' => 'राशि अंक',
+                'note' => 'तमिल रत्न शास्त्र के अनुसार रत्न, रंग और अंक जन्म नक्षत्र स्वामी से निर्धारित होते हैं। रत्न केवल व्यक्तिगत परामर्श के बाद ही धारण करें; रंग और अंक दैनिक जीवन में सहज रूप से अपनाए जा सकते हैं।',
+                'noteShort' => 'रत्न केवल परामर्श के बाद धारण करें; रंग और अंक सहज रूप से अपनाएँ।',
+                'unavailable' => 'उपलब्ध नहीं',
+            ],
+        ];
+        return $all[$lang] ?? $all['en'];
+    }
+
+    /** Vimshottari nakshatra-lord cycle from Aswini (0-based index). */
+    public static function jathagamNakshatraLord($index): ?string
+    {
+        if (!is_numeric($index)) return null;
+        $n = (int) $index;
+        if ((float) $index !== (float) $n || $n < 0 || $n > 26) return null;
+        $cycle = ['ketu', 'venus', 'sun', 'moon', 'mars', 'rahu', 'jupiter', 'saturn', 'mercury'];
+        return $cycle[$n % 9];
+    }
+
+    /** Rasi lord for a 1-based rasi number. */
+    public static function jathagamRasiLordKey($rasi): ?string
+    {
+        if (!is_numeric($rasi)) return null;
+        $n = (int) $rasi;
+        if ((float) $rasi !== (float) $n || $n < 1 || $n > 12) return null;
+        $lords = [1 => 'mars', 2 => 'venus', 3 => 'mercury', 4 => 'moon', 5 => 'sun', 6 => 'mercury',
+            7 => 'venus', 8 => 'mars', 9 => 'jupiter', 10 => 'saturn', 11 => 'saturn', 12 => 'jupiter'];
+        return $lords[$n];
+    }
+
+    /**
+     * Resolve the page-3 lucky indicators from the janma nakshatra. An
+     * unreadable index never fabricates a stone — the language's "N/A" is
+     * printed instead (same rule as Node).
+     */
+    public static function resolveJathagamLuckyIndicators($janmaNakshatraIndex, string $lang): array
+    {
+        $text = self::jathagamLuckyText($lang);
+        $profiles = self::jathagamLuckyProfiles();
+        $nakLord = self::jathagamNakshatraLord($janmaNakshatraIndex);
+        $nak = $nakLord !== null ? ($profiles[$nakLord] ?? null) : null;
+        $pick = static function ($record) use ($lang, $text): string {
+            if (!is_array($record)) return (string) $text['unavailable'];
+            return (string) ($record[$lang] ?? $record['en'] ?? $text['unavailable']);
+        };
+        return [
+            'nakshatraLord' => $nakLord,
+            'nakshatraLordName' => $nak ? $pick($nak['name']) : (string) $text['unavailable'],
+            'birthStone' => $nak ? $pick($nak['stone']) : (string) $text['unavailable'],
+            'luckyColour' => $nak ? $pick($nak['colour']) : (string) $text['unavailable'],
+            'luckyNumbers' => $nak ? implode(', ', $nak['luckyNumbers']) : (string) $text['unavailable'],
+        ];
     }
 
     /**
