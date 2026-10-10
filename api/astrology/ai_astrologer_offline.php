@@ -69,8 +69,25 @@ class AstroAiOffline
 
     const TIMING_WORDS = ['when', 'which year', 'how long', 'what time', 'எப்போது', 'எப்பொழுது', 'எந்த வருடம்', 'எவ்வளவு காலம்', 'कब', 'किस साल', 'कितने समय'];
 
-    const GREETING_WORDS = ['hi', 'hello', 'hey', 'vanakkam', 'namaste', 'namaskar', 'good morning', 'good evening', 'thanks', 'thank you',
-        'வணக்கம்', 'நன்றி', 'नमस्ते', 'नमस्कार', 'धन्यवाद'];
+    const GREETING_WORDS = ['hi', 'hello', 'hey', 'vanakkam', 'namaste', 'namaskar', 'good morning', 'good evening',
+        'வணக்கம்', 'नमस्ते', 'नमस्कार'];
+
+    /**
+     * Everyday small talk, per reply id. Phrases are checked before the astrology
+     * areas, so "how are you" or "what's your name" is answered here instead of
+     * being handed to the astrologer. Order matters: the first id that matches wins.
+     */
+    const SMALL_TALK_PHRASES = [
+        'nice' => ['nice to meet you', 'nice to meet', 'pleasure to meet', 'உங்களைச் சந்தித்ததில்', 'आपसे मिलकर', 'मिलकर खुशी'],
+        'bye' => ['bye', 'goodbye', 'good bye', 'good night', 'see you', 'take care', 'விடைபெறுகிறேன்', 'अलविदा', 'शुभ रात्रि'],
+        'thanks' => ['thank you', 'thanks', 'thank u', 'thank', 'நன்றி', 'धन्यवाद', 'शुक्रिया'],
+        'wellbeing' => ['how are you', 'how r u', 'how are u', 'how do you do', 'what\'s up', 'whats up', 'எப்படி இருக்கீங்க', 'எப்படி இருக்கிறீர்கள்', 'எப்படி இருக்கிறீங்க', 'आप कैसे हैं', 'आप कैसे हो'],
+        'origin' => ['where are you from', 'where do you live', 'where are you', 'where r u', 'where do you come from', 'நீங்கள் எங்கிருந்து', 'எங்கிருந்து வருகிறீர்கள்', 'आप कहाँ से', 'आप कहां से'],
+        'name' => ['what\'s your name', 'what is your name', 'your name', 'who are you', 'who am i talking', 'உங்கள் பெயர்', 'நீங்கள் யார்', 'आपका नाम', 'आप कौन'],
+        'bot' => ['are you a bot', 'are you a robot', 'are you human', 'are you real', 'are you ai', 'are you an ai', 'are you a human', 'நீங்கள் மனிதரா', 'आप इंसान', 'आप रोबोट'],
+        'age' => ['how old are you', 'your age', 'உங்கள் வயது', 'आपकी उम्र'],
+        'help' => ['what can you do', 'how can you help', 'what do you do', 'what can i ask', 'help', 'உதவி', 'आप क्या कर', 'मदद'],
+    ];
 
     /** Rule-vocabulary graha => names a customer might type. */
     const PLANET_NAMES = [
@@ -115,9 +132,14 @@ class AstroAiOffline
             return self::finish([$text], '', null, true, $lang);
         }
 
-        // 2. A plain greeting gets a greeting and the list of topics.
+        // 2. Small talk and greetings are answered here, never handed to the astrologer.
+        $talk = self::smallTalkBubbles($q, $lang);
         if (self::isGreeting($q)) {
-            return self::finish([self::greeting($name, $lang, $chart !== null), self::topicsLine($lang)], '', null, false, $lang);
+            $greeting = self::greeting($name, $lang, $chart !== null);
+            return self::finish($talk !== [] ? array_merge([$greeting], $talk) : [$greeting, self::topicsLine($lang)], '', null, false, $lang);
+        }
+        if ($talk !== []) {
+            return self::finish($talk, '', null, false, $lang);
         }
 
         // Area choice on WHOLE words (the shared retrieve() matches substrings,
@@ -621,6 +643,90 @@ class AstroAiOffline
             return preg_match('/(?<![a-z])' . preg_quote($w, '/') . '(?![a-z])/u', $q) === 1;
         }
         return mb_strpos($q, $w, 0, 'UTF-8') !== false;
+    }
+
+    /**
+     * Small-talk replies (name, how are you, where from, thanks, bye, bot or human).
+     * Returns [] when the question is not small talk, or is about an astrology area.
+     */
+    private static function smallTalkBubbles(string $q, string $lang): array
+    {
+        $q = str_replace(["\u{2019}", "\u{2018}"], "'", $q);
+        if (mb_strlen($q, 'UTF-8') > 60) {
+            return [];
+        }
+        foreach (self::SMALL_TALK_PHRASES as $id => $phrases) {
+            if (self::containsAny($q, $phrases)) {
+                // Remove the small-talk words first, then look for astrology words in
+                // what is left: "thanks, what about my career" is astrology, while the
+                // Hindi thanks word धन्यवाद only contains the wealth word धन.
+                $rest = $q;
+                foreach ($phrases as $phrase) {
+                    $rest = str_replace(mb_strtolower($phrase, 'UTF-8'), ' ', $rest);
+                }
+                if (self::matchExtraArea($rest) !== null || self::containsAny($rest, self::REMEDY_WORDS)) {
+                    return [];
+                }
+                $bubbles = [self::smallTalkText($id, $lang)];
+                if ($id === 'help') {
+                    $bubbles[] = self::topicsLine($lang);
+                }
+                return $bubbles;
+            }
+        }
+        return [];
+    }
+
+    private static function smallTalkText(string $id, string $lang): string
+    {
+        $replies = [
+            'nice' => [
+                'en' => 'Nice to meet you too! How can I help with your astrology today?',
+                'ta' => 'உங்களைச் சந்தித்ததில் மகிழ்ச்சி! இன்று ஜோதிடம் பற்றி எப்படி உதவட்டும்?',
+                'hi' => 'आपसे मिलकर अच्छा लगा! आज ज्योतिष में किस बात में मदद करूँ?',
+            ],
+            'bye' => [
+                'en' => 'Goodbye! Come back anytime you have a question.',
+                'ta' => 'விடைபெறுகிறேன்! எப்போது வேண்டுமானாலும் மீண்டும் வாருங்கள்.',
+                'hi' => 'अलविदा! जब भी कोई सवाल हो, फिर से आइए।',
+            ],
+            'thanks' => [
+                'en' => 'You are welcome! Ask me anything else about your chart.',
+                'ta' => 'நல்வரவு! உங்கள் ஜாதகம் பற்றி வேறு ஏதேனும் கேளுங்கள்.',
+                'hi' => 'आपका स्वागत है! अपनी कुंडली के बारे में और कुछ पूछिए।',
+            ],
+            'wellbeing' => [
+                'en' => 'I am doing well, thank you for asking! How can I help you with your astrology today?',
+                'ta' => 'நான் நன்றாக இருக்கிறேன், கேட்டதற்கு நன்றி! இன்று உங்கள் ஜோதிடம் பற்றி எப்படி உதவட்டும்?',
+                'hi' => 'मैं ठीक हूँ, पूछने के लिए धन्यवाद! आज आपकी ज्योतिष संबंधी किस बात में मदद करूँ?',
+            ],
+            'origin' => [
+                'en' => 'I do not have a hometown. I am the ASTRO SIVAM astrology assistant, and I answer from ASTRO SIVAM\'s own Tamil astrology sources.',
+                'ta' => 'எனக்கு சொந்த ஊர் இல்லை. நான் ASTRO SIVAM ஜோதிட உதவியாளர்; எங்கள் சொந்த தமிழ் ஜோதிட நூல்களிலிருந்து பதில் சொல்கிறேன்.',
+                'hi' => 'मेरा कोई अपना शहर नहीं है। मैं ASTRO SIVAM का ज्योतिष सहायक हूँ और हमारे अपने तमिल ज्योतिष स्रोतों से उत्तर देता हूँ।',
+            ],
+            'name' => [
+                'en' => 'I am the ASTRO SIVAM astrology assistant. Ask me anything about your chart.',
+                'ta' => 'நான் ASTRO SIVAM ஜோதிட உதவியாளர். உங்கள் ஜாதகம் பற்றி எதையும் கேளுங்கள்.',
+                'hi' => 'मैं ASTRO SIVAM का ज्योतिष सहायक हूँ। अपनी कुंडली के बारे में कुछ भी पूछिए।',
+            ],
+            'bot' => [
+                'en' => 'I am an automated assistant, not a human. For a personal reply, tap "Talk to our astrologer".',
+                'ta' => 'நான் ஒரு தானியங்கி உதவியாளர், மனிதர் அல்ல. தனிப்பட்ட பதில் வேண்டுமெனில் "எங்கள் ஜோதிடருடன் பேசுங்கள்" என்பதை அழுத்துங்கள்.',
+                'hi' => 'मैं एक स्वचालित सहायक हूँ, इंसान नहीं। व्यक्तिगत उत्तर के लिए "हमारे ज्योतिषी से बात करें" दबाएँ।',
+            ],
+            'age' => [
+                'en' => 'I do not have an age, I am an automated assistant. How can I help with your chart today?',
+                'ta' => 'எனக்கு வயது இல்லை - நான் ஒரு தானியங்கி உதவியாளர். இன்று உங்கள் ஜாதகத்தில் எப்படி உதவட்டும்?',
+                'hi' => 'मेरी कोई उम्र नहीं है, मैं एक स्वचालित सहायक हूँ। आज कुंडली में किस बात में मदद करूँ?',
+            ],
+            'help' => [
+                'en' => 'I can answer questions about your chart and the topics below.',
+                'ta' => 'உங்கள் ஜாதகம் மற்றும் கீழே உள்ள தலைப்புகள் பற்றி பதில் சொல்ல முடியும்.',
+                'hi' => 'मैं आपकी कुंडली और नीचे दिए विषयों के बारे में उत्तर दे सकता हूँ।',
+            ],
+        ];
+        return self::t($lang, $replies[$id]);
     }
 
     private static function isGreeting(string $q): bool

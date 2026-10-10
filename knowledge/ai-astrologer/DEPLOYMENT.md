@@ -25,7 +25,7 @@ knowledge/ai-astrologer/rules/
 knowledge/ai-astrologer/sources.json
 ```
 
-Upload the rebuilt frontend (`dist/`) as usual. The `knowledge/` folder belongs beside `api/` in the document root, not inside it. Both `.cpanel.yml` and `deploy_cpanel.sh` copy it during automated deployment.
+Upload the rebuilt frontend (`dist/`) as usual. The `knowledge/` folder belongs beside `api/` in the document root, not inside it. `deploy_cpanel.sh` copies it during SSH deployment; otherwise upload it by hand.
 
 ## Step 2 — Ensure the database tables exist
 

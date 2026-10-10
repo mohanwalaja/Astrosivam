@@ -13,7 +13,7 @@
  * Moon nakshatra + pada | Kuja verdict | Graha Yuddha | Kendradhipati |
  * yoga notes | Pitru strength | current Mahadasa + Bhukti and the next one.
  *
- * This file lives in tests/ (never deployed: .cpanel.yml copies only api/ and
+ * This file lives in tests/ (never deployed: deployment copies only api/ and
  * dist/) and refuses to run outside the PHP CLI, so it can never execute from
  * the live site.
  */

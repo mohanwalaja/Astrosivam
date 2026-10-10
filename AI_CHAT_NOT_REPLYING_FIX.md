@@ -18,10 +18,7 @@ The registry currently has 224 catalogue records and 13 excluded records. Of tho
 
 ## Deploy the local files
 
-Both deployment paths should copy `knowledge/` into the document root:
-
-- `.cpanel.yml` copies the tree on cPanel Git deployment.
-- `deploy_cpanel.sh` copies it during SSH deployment.
+The deployment should copy `knowledge/` into the document root. `deploy_cpanel.sh` copies it during SSH deployment; otherwise upload it by hand.
 
 The minimum runtime needs include PHP `mbstring` and valid local JSON files under `knowledge/ai-astrologer/`. No curl/model provider, API key, model name, or provider URL is required for this chat.
 

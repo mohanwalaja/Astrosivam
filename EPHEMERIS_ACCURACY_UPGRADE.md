@@ -83,7 +83,7 @@ records `rahuNodeType`, `rahuTrueNode`, `rahuMeanNode`. The
 Node server does the same with `RAHU_NODE_TYPE = 'TRUE'`). Ketu is always
 exactly Rahu + 180° under either convention.
 
-> Deployment note: `.cpanel.yml` / `deploy_cpanel.sh` keep the live
+> Deployment note: `deploy_cpanel.sh` keeps the live
 > `config.php`, so add the `define('ASTRO_RAHU_NODE_TYPE', 'TRUE');` line to
 > the server copy by hand (or set the environment variable).
 
