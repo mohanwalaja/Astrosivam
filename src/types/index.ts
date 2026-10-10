@@ -325,6 +325,23 @@ export interface SystemSettings {
   emailSettings?: EmailConfig;
   emailTemplates?: Record<string, EmailTemplate>;
   chatAlertSettings?: ChatAlertConfig;
+  aiAstrologerSettings?: AiAstrologerConfig;
+}
+
+/**
+ * AI Astrologer chat model (OpenAI-compatible chat/completions endpoint).
+ * Stored in system_settings.general_settings.aiAstrologerSettings. The server
+ * never returns apiKey; it returns apiKeyConfigured + apiKeyHint instead.
+ */
+export interface AiAstrologerConfig {
+  apiKey?: string;
+  baseUrl?: string;
+  model?: string;
+  maxTokens?: string;
+  apiKeyConfigured?: boolean;
+  apiKeyHint?: string;
+  /** Write-only: true removes the stored key. */
+  clearApiKey?: boolean;
 }
 
 export type AppSettings = SystemSettings;

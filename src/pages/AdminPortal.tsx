@@ -86,6 +86,7 @@ import { AdminAnalyticsDashboard } from '../components/admin/AdminAnalyticsDashb
 import { PaymentConfigPanel } from '../components/admin/PaymentConfigPanel';
 import { EmailConfigPanel } from '../components/admin/EmailConfigPanel';
 import { ChatAlertConfigPanel } from '../components/admin/ChatAlertConfigPanel';
+import { AiAstrologerConfigPanel } from '../components/admin/AiAstrologerConfigPanel';
 import { DatabaseBackupPanel } from '../components/admin/DatabaseBackupPanel';
 import { SetupChecklistPanel } from '../components/admin/SetupChecklistPanel';
 import { GoogleSetupPanel } from '../components/admin/GoogleSetupPanel';
@@ -151,7 +152,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
     setExpandedGroupIds(prev => ({ ...prev, [groupId]: !prev[groupId] }));
 
   const [activeSection, setActiveSection] = useState<
-    'orders' | 'analytics' | 'financial' | 'payments' | 'emails' | 'alerts' | 'database' | 'checklist' | 'messages' | 'team' | 'settings' | 'users' | 'logs' | 'google' | 'security' | 'errors' | 'escalations'
+    'orders' | 'analytics' | 'financial' | 'payments' | 'emails' | 'alerts' | 'aiastrologer' | 'database' | 'checklist' | 'messages' | 'team' | 'settings' | 'users' | 'logs' | 'google' | 'security' | 'errors' | 'escalations'
   >('orders');
 
   // AI Astrologer escalation queue: complaints forwarded from the AI chat and
@@ -1791,6 +1792,18 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
         </button>
 
         <button
+          onClick={() => setActiveSection('aiastrologer')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            activeSection === 'aiastrologer'
+              ? 'bg-purple-600 text-white shadow-sm'
+              : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+          <span>AI Astrologer</span>
+        </button>
+
+        <button
           onClick={() => setActiveSection('database')}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
             activeSection === 'database'
@@ -3191,6 +3204,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
       {/* SECTION: WHATSAPP & VIBER CHAT ALERTS */}
       {activeSection === 'alerts' && (
         <ChatAlertConfigPanel
+          settings={settings}
+          onUpdateSettings={handleUpdateSettingsGeneric}
+        />
+      )}
+
+      {/* SECTION: AI ASTROLOGER CHAT MODEL */}
+      {activeSection === 'aiastrologer' && (
+        <AiAstrologerConfigPanel
           settings={settings}
           onUpdateSettings={handleUpdateSettingsGeneric}
         />

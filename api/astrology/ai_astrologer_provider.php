@@ -205,6 +205,42 @@ class AstroAiProvider
     }
 
     /**
+     * 'model' when an AI model is configured, otherwise 'knowledge-base': the
+     * chat then answers from ASTRO SIVAM's own sources only (the customer's
+     * report readings, the curated rules and the remedies registry) with no
+     * external service and no API key. See ai_astrologer_offline.php.
+     */
+    public static function mode(): string
+    {
+        return self::isConfigured() ? 'model' : 'knowledge-base';
+    }
+
+    /**
+     * True when the chat can answer at all, in either mode. Only a missing
+     * knowledge base (or mbstring) stops it - an API key is optional.
+     */
+    public static function canAnswer(): bool
+    {
+        if (!function_exists('mb_strlen')) {
+            return false;
+        }
+        foreach ([self::LIFE_AREAS_PATH, self::GUARDRAILS_PATH, self::REMEDIES_PATH, self::SOURCES_PATH] as $rel) {
+            $path = self::kbPath($rel);
+            if (!is_file($path) || !is_array(json_decode((string) file_get_contents($path), true))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** The knowledge-base answer (no model). Same return shape as answer(). */
+    public static function answerFromKnowledgeBase(string $question, string $language, ?array $chart, array $context = []): array
+    {
+        require_once __DIR__ . '/ai_astrologer_offline.php';
+        return AstroAiOffline::answer($question, $language, $chart, $context);
+    }
+
+    /**
      * Resolve a knowledge-base file against the candidate roots.
      *
      * knowledge/ lives at the repository root in development and at the
@@ -918,18 +954,28 @@ class AstroAiProvider
         };
 
         // 1. The runtime the model call needs.
+        // curl and the model prompt matter only when an AI model is configured;
+        // knowledge-base mode needs neither.
+        $modelMode = $cfg['apiKey'] !== '';
         $add('curl', 'PHP curl extension', function_exists('curl_init'),
-            function_exists('curl_init') ? 'loaded' : 'NOT loaded - the model call cannot be made at all.');
+            function_exists('curl_init') ? 'loaded' : 'NOT loaded - the model call cannot be made (knowledge-base mode still works).',
+            $modelMode);
         $add('mbstring', 'PHP mbstring extension', function_exists('mb_strlen'),
             function_exists('mb_strlen') ? 'loaded' : 'NOT loaded - Tamil/Hindi text handling would fail.');
 
         // 2. The credential, and WHERE PHP found it.
-        $add('apiKey', 'Model API key visible to PHP', $source['source'] === 'environment' || $source['source'] === 'admin-settings',
+        // OPTIONAL: without a key the chat answers in knowledge-base mode from
+        // our own sources, so a missing key never blocks a reply.
+        $add('apiKey', 'AI model API key (optional)', $source['source'] === 'environment' || $source['source'] === 'admin-settings',
             $source['source'] === 'none'
-                ? 'Not set. Set AI_ASTROLOGER_API_KEY, or paste the key into Admin Portal > Setup > AI Astrologer.'
+                ? 'Not set - the chat answers from the ASTRO SIVAM knowledge base (no AI model, no API key needed). Add a key in Admin Portal > AI Astrologer only if you want AI-written replies.'
                 : ($source['source'] === 'placeholder-only'
-                    ? 'A placeholder value (' . $source['keyHint'] . ') is set, which is treated as unset. Replace it with a real key.'
-                    : 'found in ' . $source['source'] . ' (' . $source['keyHint'] . ')'));
+                    ? 'A placeholder value (' . $source['keyHint'] . ') is set, which is treated as unset, so the chat uses knowledge-base mode.'
+                    : 'found in ' . $source['source'] . ' (' . $source['keyHint'] . ')'),
+            false);
+        $add('mode', 'Answer mode', true, $modelMode
+            ? 'AI model (falls back to the knowledge base if the model call fails)'
+            : 'Knowledge base - replies come only from ASTRO SIVAM\'s own sources (report readings, curated rules, remedies registry)', false);
         $add('baseUrl', 'Base URL', $cfg['baseUrl'] !== '', $cfg['baseUrl'] . '/chat/completions', false);
         $add('model', 'Model', $cfg['model'] !== '', $cfg['model'] . ' (max_tokens ' . $cfg['maxTokens'] . ')', false);
 
@@ -955,16 +1001,17 @@ class AstroAiProvider
             $ok = $exists && (!$isJson || is_array($parsed));
             // An empty remedies or sources file degrades the answer; a missing
             // prompt or life-area file stops every answer.
-            $add('kb-' . $id, 'Knowledge base: ' . $id, $ok, $detail, in_array($id, ['prompt', 'lifeAreas', 'guardrails'], true));
+            $add('kb-' . $id, 'Knowledge base: ' . $id, $ok, $detail,
+                in_array($id, ['lifeAreas', 'guardrails', 'remedies', 'sources'], true) || ($id === 'prompt' && $modelMode));
         }
 
         // 4. The prompt actually extracts, and the retrieval layer has areas to match.
         try {
             $prompt = self::systemPrompt();
             $add('systemPrompt', 'System prompt extracts', strlen($prompt) > 1000,
-                strlen($prompt) . ' bytes extracted from the ```text block.', true);
+                strlen($prompt) . ' bytes extracted from the ```text block.', $modelMode);
         } catch (Throwable $e) {
-            $add('systemPrompt', 'System prompt extracts', false, 'THREW: ' . $e->getMessage(), true);
+            $add('systemPrompt', 'System prompt extracts', false, 'THREW: ' . $e->getMessage(), $modelMode);
         }
 
         $kb = self::kb(self::LIFE_AREAS_PATH);
@@ -975,7 +1022,7 @@ class AstroAiProvider
 
         // 5. The live call. Only when asked for: it spends a real request.
         $pingResult = ['attempted' => false, 'ok' => false, 'httpStatus' => 0, 'latencyMs' => 0, 'error' => 'not requested'];
-        if ($livePing) {
+        if ($livePing && self::isConfigured()) {
             $pingResult = self::ping();
             $add('modelPing', 'Live model call', $pingResult['ok'],
                 $pingResult['ok']
@@ -985,8 +1032,9 @@ class AstroAiProvider
         }
 
         return [
-            'ok' => empty($blocking) && (!$livePing || $pingResult['ok']),
+            'ok' => empty($blocking) && (!$pingResult['attempted'] || $pingResult['ok']),
             'configured' => self::isConfigured(),
+            'mode' => self::mode(),
             'blocking' => $blocking,
             'checks' => $checks,
             'ping' => $pingResult,
@@ -1041,7 +1089,8 @@ class AstroAiProvider
     public static function answer(string $question, string $language, array $history, ?array $chart, array $context = []): array
     {
         if (!self::isConfigured()) {
-            throw new RuntimeException('The AI Astrologer is not configured on this server.');
+            // No API key: answer from our own sources instead of refusing.
+            return self::answerFromKnowledgeBase($question, $language, $chart, $context);
         }
 
         $retrieved = self::retrieve($question, $language, $chart);

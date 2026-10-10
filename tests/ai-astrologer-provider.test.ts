@@ -219,7 +219,10 @@ check('a chart that cannot be built declines rather than guessing', () => {
   const facts = sliceToEnd(endpoint, 'function astro_ai_chart_facts', 'astro_ai_chart_facts');
   assert.match(facts, /return null/);
   assert.match(facts, /error_log\('AI Astrologer: chart rebuild failed/);
-  assert.match(facts, /is_array\(\$result\['planetHouses'\] \?\? null\)/);
+  // Only a Birth Jathagam result (planetPositions + dasha) yields chart facts;
+  // anything else declines instead of feeding the rules an empty chart.
+  assert.match(facts, /is_array\(\$result\['planetPositions'\] \?\? null\)/);
+  assert.match(facts, /'summary' =>/, 'the report readings must reach knowledge-base mode');
 });
 
 check('the provider includes resolve relative to this file, never to the wrong directory', () => {

@@ -156,6 +156,8 @@ export const aiAstrologer = {
   async diagnose(ping = false): Promise<{
     ok: boolean;
     configured: boolean;
+    /** 'knowledge-base' = no API key, replies from ASTRO SIVAM's own sources. */
+    mode?: 'model' | 'knowledge-base';
     blocking: string[];
     checks: { id: string; label: string; ok: boolean; detail: string }[];
     ping: { attempted: boolean; ok: boolean; httpStatus: number; latencyMs: number; error: string };

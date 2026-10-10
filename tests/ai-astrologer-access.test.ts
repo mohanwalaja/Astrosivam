@@ -259,7 +259,7 @@ check('the endpoint only calls functions that exist somewhere in api/', () => {
     mb_strpos mb_strtolower microtime round max min is_string is_array is_uploaded_file file_get_contents json_decode
     random_bytes bin2hex header error_log time date count in_array isset empty class_exists file_exists
     is_readable strpos substr array_keys array_values intval number_format htmlspecialchars http_response_code
-    exit dirname preg_split preg_replace str_replace file`.split(/\s+/));
+    exit dirname preg_split preg_replace str_replace file elseif strrpos`.split(/\s+/));
 
   const called = new Set([...codeNoStrings(endpoint).matchAll(/(?<![->:\w$])([a-z_][a-z0-9_]*)\s*\(/g)].map((m) => m[1]));
   const tableNames = /^(ai_chat_\w+|orders|users|api_rate_limits)$/;

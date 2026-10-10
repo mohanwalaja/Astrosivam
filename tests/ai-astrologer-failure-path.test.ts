@@ -106,10 +106,10 @@ check('the client can tell a setup problem from a slow model', () => {
   assert.match(endpoint, /'code' => 'AI_NOT_CONFIGURED'/, 'the endpoint must label the refusal');
 });
 
-check('the endpoint answers a missing key in all three languages', () => {
+check('the endpoint refuses only when the knowledge base is missing, in all three languages', () => {
   const refusal = sliceText(
     endpoint,
-    'if (!AstroAiProvider::isConfigured())',
+    'if (!AstroAiProvider::canAnswer())',
     '$sessionId = trim((string) ($body[\'sessionId\']',
     'not-configured refusal'
   );
