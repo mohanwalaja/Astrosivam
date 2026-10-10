@@ -23,21 +23,21 @@
     "_note": "Counted by category. Hindi books are NOT counted here - see excludedSources.",
     "classicalTextsEnglish": 9,
     "hindiBooks": 0,
-    "tamilBooks": 138,
+    "tamilBooks": 194,
     "navagrahaSthalamAndTemples": 12,
     "reference": 5,
-    "total": 164,
+    "total": 220,
     "excluded": 13,
     "byLanguageField": {
       "en": 22,
       "sa": 1,
-      "ta": 141
+      "ta": 197
     },
     "byVerificationLevel": {
       "content-read": 11,
       "metadata-verified": 140,
       "catalogue-verified": 1,
-      "linked-not-opened": 11,
+      "linked-not-opened": 67,
       "dead": 1
     },
     "passageLevelSources": [
@@ -3216,6 +3216,1014 @@
       "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
       "usefulFor": [
         "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-140",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (numerology)",
+      "titleNative": "அதிர்ஷ்ட நியுமராலஜி",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Numerology%20lucky%20numbers.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: numerology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-141",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (numerology)",
+      "titleNative": "தமிழ்முறை எண் கணிதம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Tamil%20numerology.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: numerology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-142",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (vaastu)",
+      "titleNative": "வீட்டைக் கட்டிப் பார்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Veettai%20katti%20paar.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: vaastu.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-143",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஆயுட் பாவகம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Ayut%20pagavam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-144",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astronomy)",
+      "titleNative": "ஆரம்ப விண்ணியல்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Basic%20astronomy.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astronomy.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-145",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "சந்திர காவியம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Chandira%20kaviyam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-146",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "குருநாடி சாஸ்திரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Gurunadi%20sasthiram.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-147",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (panchangam)",
+      "titleNative": "பஞ்சாங்கம் (1952-61)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201952-61%20).PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: panchangam.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-148",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (panchangam)",
+      "titleNative": "பஞ்சாங்கம் (1962-71)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201962-71%20).PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: panchangam.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-149",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (panchangam)",
+      "titleNative": "பஞ்சாங்கம் (1972-81)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201972-81%20).PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: panchangam.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-150",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (panchangam)",
+      "titleNative": "பஞ்சாங்கம் (1982-91)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201982-91%20).PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: panchangam.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-151",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (panchangam)",
+      "titleNative": "பஞ்சாங்கம் (1992-01)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201991-01%20).PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: panchangam.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-152",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (panchangam)",
+      "titleNative": "பஞ்சாங்கம் (2002-11)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%202002-11%20).PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: panchangam.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-153",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "பஞ்சபட்சி சாஸ்திரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panjapatchi%20sasthiram.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-154",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (nadi)",
+      "titleNative": "சப்தரிஷி நாடி (கன்யா லக்னம்)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Saptarishi%20nadi%20-%20kanya%20lagnam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: nadi.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-155",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (nadi)",
+      "titleNative": "சப்தரிஷி நாடி (மேஷ லக்னம்)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Saptarishi%20nadi%20-%20mesa%20lagnam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: nadi.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-156",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "விதி விளக்கம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Vithi%20vilakkam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-157",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "வராகர் ஓரா சாத்திரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Varagar%20ora%20sathiram.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-158",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிடத் திறவுகோல்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Astrological.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-159",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிடம் - I",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Astrology.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-160",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிடம் - II",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jothidaragalam.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-161",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (vaastu)",
+      "titleNative": "மனைக்குறி சாஸ்திரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Manaikurisasthiram.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: vaastu.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-162",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (vaastu)",
+      "titleNative": "மனையடி சாஸ்திரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/ManaiyadiSasthiram.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: vaastu.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-163",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "திருமணப் பொருத்தம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Marriagematching.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-164",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (numerology)",
+      "titleNative": "எண் ஐோதிடம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Numerology.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: numerology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-165",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (numerology)",
+      "titleNative": "எண்ணியல் கைரேகை சோதிடக் கலைஞானம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Numerologyhands.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: numerology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-166",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (numerology)",
+      "titleNative": "என்ன அதிர்ஷ்டம் பெறுவீர்கள்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Numerologylucky.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: numerology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-167",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (numerology)",
+      "titleNative": "எண் கணித சோதிடத்தில் 'கர்ம எண்'",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Numerologynumber.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: numerology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-168",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "பாச்சிகை சாஸ்திரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Patchikaisastram.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-169",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (vaastu)",
+      "titleNative": "வாஸ்து சாஸ்திரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Vasdusasthra.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: vaastu.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-170",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "சுந்தர சேகரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Sundarasegaram.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-171",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ராம சேகரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Rama-sekaram.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-172",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "சூக்கும பஞ்சபட்சி நூல்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Sookkuma-panja-patchi.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-173",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "சில்லரைக் கோவை",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Sillarai%20kovai.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-174",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astronomy)",
+      "titleNative": "வானியல்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Vaniyal.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astronomy.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-175",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜாதக அலங்காரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jathaga%20alankaram.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-176",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிடக் களஞ்சியம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jothida%20kalanjiyam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-177",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (nadi)",
+      "titleNative": "நாடி ஜோதிடம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Nadi%20jothidam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: nadi.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-178",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (panchangam)",
+      "titleNative": "பஞ்சாங்க கணனம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panchanka%20kananam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: panchangam.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-179",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிட பாஸ்கரன்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jathaga%20baskaran.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-180",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜாதகத்தில் உங்கள் எதிர்காலம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jathakathil%20ungal%20ethirkalam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-181",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "மயமதம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Maya%20matham.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-182",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (numerology)",
+      "titleNative": "எண் ஜோதிட ஜோதி",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Numerology%20jothida%20jothi.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: numerology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-183",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஆஸ்திக விஞ்ஞான சாகரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Asthiga%20vingnana%20sagaram.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-184",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜயமுனி வாக்கியம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jayamunivaakkiyam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-185",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிட நுணுக்கங்கள்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jothida%20nunukkam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-186",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "கன்ம காண்டம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Kanma%20kandam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-187",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "கேரள ஜோதிடம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Kerala%20jothidam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-188",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "சந்தானமணி",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Santhanamani.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-189",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிடம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jothidam.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-190",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "வாதக்கோவை",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Vadha%20kovai.PDF",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-191",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிஷ சாஸ்திரம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jothisha-sasthiram.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-192",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "பஞ்சபட்சி சாஸ்திரம் (second file)",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Panjapatchi-sasthiram.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-193",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "சாமக்கோள் ஆருடம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Samakkoal-arudam.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-194",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "ஜோதிடம் கற்றுக்கொள்ளுங்கள்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Jothidam-katrukollungal.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "TA-195",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamilnavarasam astrology PDF (astrology)",
+      "titleNative": "குடும்ப ஜோதிடம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/Books/astrologybook/Kudumba-jothidam.pdf",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
+      "usefulFor": [
+        "Lead only - open and read this PDF before citing it"
       ]
     }
   ],

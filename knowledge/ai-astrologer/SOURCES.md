@@ -363,6 +363,69 @@ Identifiers from the Archive.org advancedsearch API. Titles are not decoded and 
 | TA-138 | Tamil text (`tdl.8545-nuul-vaastuvityai`) | [link](https://archive.org/details/tdl.8545-nuul-vaastuvityai) | Subject to be confirmed; book-level only | metadata-verified |
 | TA-139 | Tamil text (`tdl.8548-nuul-ilingknnn-iyrrrriy-vraakr-ooraa-caattirm-plllaiy-uraiyuttnnn`) | [link](https://archive.org/details/tdl.8548-nuul-ilingknnn-iyrrrriy-vraakr-ooraa-caattirm-plllaiy-uraiyuttnnn) | Subject to be confirmed; book-level only | metadata-verified |
 
+### 3o. tamilnavarasam.in astrology PDFs - NOT citable (56)
+
+The listing page was opened. The PDF files could not be fetched on 2026-10-10, so every row is `linked-not-opened`: a lead list, not an authority. Numerology and Vaastu rows are not astrology.
+
+| ID | நூல் / Title | URL | Subject | Verified |
+|---|---|---|---|---|
+| TA-140 | அதிர்ஷ்ட நியுமராலஜி | [PDF](https://tamilnavarasam.in/Books/astrologybook/Numerology%20lucky%20numbers.PDF) | numerology | linked-not-opened |
+| TA-141 | தமிழ்முறை எண் கணிதம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Tamil%20numerology.PDF) | numerology | linked-not-opened |
+| TA-142 | வீட்டைக் கட்டிப் பார் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Veettai%20katti%20paar.PDF) | vaastu | linked-not-opened |
+| TA-143 | ஆயுட் பாவகம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Ayut%20pagavam.PDF) | astrology | linked-not-opened |
+| TA-144 | ஆரம்ப விண்ணியல் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Basic%20astronomy.PDF) | astronomy | linked-not-opened |
+| TA-145 | சந்திர காவியம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Chandira%20kaviyam.PDF) | astrology | linked-not-opened |
+| TA-146 | குருநாடி சாஸ்திரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Gurunadi%20sasthiram.PDF) | astrology | linked-not-opened |
+| TA-147 | பஞ்சாங்கம் (1952-61) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201952-61%20).PDF) | panchangam | linked-not-opened |
+| TA-148 | பஞ்சாங்கம் (1962-71) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201962-71%20).PDF) | panchangam | linked-not-opened |
+| TA-149 | பஞ்சாங்கம் (1972-81) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201972-81%20).PDF) | panchangam | linked-not-opened |
+| TA-150 | பஞ்சாங்கம் (1982-91) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201982-91%20).PDF) | panchangam | linked-not-opened |
+| TA-151 | பஞ்சாங்கம் (1992-01) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%201991-01%20).PDF) | panchangam | linked-not-opened |
+| TA-152 | பஞ்சாங்கம் (2002-11) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panchangam%20(%202002-11%20).PDF) | panchangam | linked-not-opened |
+| TA-153 | பஞ்சபட்சி சாஸ்திரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panjapatchi%20sasthiram.PDF) | astrology | linked-not-opened |
+| TA-154 | சப்தரிஷி நாடி (கன்யா லக்னம்) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Saptarishi%20nadi%20-%20kanya%20lagnam.PDF) | nadi | linked-not-opened |
+| TA-155 | சப்தரிஷி நாடி (மேஷ லக்னம்) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Saptarishi%20nadi%20-%20mesa%20lagnam.PDF) | nadi | linked-not-opened |
+| TA-156 | விதி விளக்கம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Vithi%20vilakkam.PDF) | astrology | linked-not-opened |
+| TA-157 | வராகர் ஓரா சாத்திரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Varagar%20ora%20sathiram.PDF) | astrology | linked-not-opened |
+| TA-158 | ஜோதிடத் திறவுகோல் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Astrological.pdf) | astrology | linked-not-opened |
+| TA-159 | ஜோதிடம் - I | [PDF](https://tamilnavarasam.in/Books/astrologybook/Astrology.pdf) | astrology | linked-not-opened |
+| TA-160 | ஜோதிடம் - II | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jothidaragalam.pdf) | astrology | linked-not-opened |
+| TA-161 | மனைக்குறி சாஸ்திரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Manaikurisasthiram.pdf) | vaastu | linked-not-opened |
+| TA-162 | மனையடி சாஸ்திரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/ManaiyadiSasthiram.pdf) | vaastu | linked-not-opened |
+| TA-163 | திருமணப் பொருத்தம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Marriagematching.pdf) | astrology | linked-not-opened |
+| TA-164 | எண் ஐோதிடம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Numerology.pdf) | numerology | linked-not-opened |
+| TA-165 | எண்ணியல் கைரேகை சோதிடக் கலைஞானம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Numerologyhands.pdf) | numerology | linked-not-opened |
+| TA-166 | என்ன அதிர்ஷ்டம் பெறுவீர்கள் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Numerologylucky.pdf) | numerology | linked-not-opened |
+| TA-167 | எண் கணித சோதிடத்தில் 'கர்ம எண்' | [PDF](https://tamilnavarasam.in/Books/astrologybook/Numerologynumber.pdf) | numerology | linked-not-opened |
+| TA-168 | பாச்சிகை சாஸ்திரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Patchikaisastram.pdf) | astrology | linked-not-opened |
+| TA-169 | வாஸ்து சாஸ்திரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Vasdusasthra.PDF) | vaastu | linked-not-opened |
+| TA-170 | சுந்தர சேகரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Sundarasegaram.PDF) | astrology | linked-not-opened |
+| TA-171 | ராம சேகரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Rama-sekaram.PDF) | astrology | linked-not-opened |
+| TA-172 | சூக்கும பஞ்சபட்சி நூல் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Sookkuma-panja-patchi.PDF) | astrology | linked-not-opened |
+| TA-173 | சில்லரைக் கோவை | [PDF](https://tamilnavarasam.in/Books/astrologybook/Sillarai%20kovai.PDF) | astrology | linked-not-opened |
+| TA-174 | வானியல் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Vaniyal.PDF) | astronomy | linked-not-opened |
+| TA-175 | ஜாதக அலங்காரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jathaga%20alankaram.PDF) | astrology | linked-not-opened |
+| TA-176 | ஜோதிடக் களஞ்சியம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jothida%20kalanjiyam.PDF) | astrology | linked-not-opened |
+| TA-177 | நாடி ஜோதிடம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Nadi%20jothidam.PDF) | nadi | linked-not-opened |
+| TA-178 | பஞ்சாங்க கணனம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panchanka%20kananam.PDF) | panchangam | linked-not-opened |
+| TA-179 | ஜோதிட பாஸ்கரன் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jathaga%20baskaran.PDF) | astrology | linked-not-opened |
+| TA-180 | ஜாதகத்தில் உங்கள் எதிர்காலம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jathakathil%20ungal%20ethirkalam.PDF) | astrology | linked-not-opened |
+| TA-181 | மயமதம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Maya%20matham.PDF) | astrology | linked-not-opened |
+| TA-182 | எண் ஜோதிட ஜோதி | [PDF](https://tamilnavarasam.in/Books/astrologybook/Numerology%20jothida%20jothi.PDF) | numerology | linked-not-opened |
+| TA-183 | ஆஸ்திக விஞ்ஞான சாகரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Asthiga%20vingnana%20sagaram.PDF) | astrology | linked-not-opened |
+| TA-184 | ஜயமுனி வாக்கியம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jayamunivaakkiyam.PDF) | astrology | linked-not-opened |
+| TA-185 | ஜோதிட நுணுக்கங்கள் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jothida%20nunukkam.PDF) | astrology | linked-not-opened |
+| TA-186 | கன்ம காண்டம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Kanma%20kandam.PDF) | astrology | linked-not-opened |
+| TA-187 | கேரள ஜோதிடம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Kerala%20jothidam.PDF) | astrology | linked-not-opened |
+| TA-188 | சந்தானமணி | [PDF](https://tamilnavarasam.in/Books/astrologybook/Santhanamani.PDF) | astrology | linked-not-opened |
+| TA-189 | ஜோதிடம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jothidam.PDF) | astrology | linked-not-opened |
+| TA-190 | வாதக்கோவை | [PDF](https://tamilnavarasam.in/Books/astrologybook/Vadha%20kovai.PDF) | astrology | linked-not-opened |
+| TA-191 | ஜோதிஷ சாஸ்திரம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jothisha-sasthiram.pdf) | astrology | linked-not-opened |
+| TA-192 | பஞ்சபட்சி சாஸ்திரம் (second file) | [PDF](https://tamilnavarasam.in/Books/astrologybook/Panjapatchi-sasthiram.pdf) | astrology | linked-not-opened |
+| TA-193 | சாமக்கோள் ஆருடம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Samakkoal-arudam.pdf) | astrology | linked-not-opened |
+| TA-194 | ஜோதிடம் கற்றுக்கொள்ளுங்கள் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Jothidam-katrukollungal.pdf) | astrology | linked-not-opened |
+| TA-195 | குடும்ப ஜோதிடம் | [PDF](https://tamilnavarasam.in/Books/astrologybook/Kudumba-jothidam.pdf) | astrology | linked-not-opened |
+
 ## 4. நவக்கிரக ஸ்தலங்கள் — Navagraha temple remedies (12)
 
 Mapping **content-read** from TP-01:
