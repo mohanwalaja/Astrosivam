@@ -7,7 +7,7 @@ education, business/career and foreign opportunities. Each entry states the
 question, which area it must route to, what the answer must contain, and a sample
 answer.
 
-**How to use these.** Ask each one in a live chat against a real paid order and
+**How to use these.** Ask each one in the AI Astrologer chat against a real paid order and
 check the four *must contain* points. The sample answers are the shape to aim
 for, not text to copy — the real answer must be built from that customer's chart.
 

@@ -1,10 +1,11 @@
 /**
  * ASTRO SIVAM AI Astrologer — browser client.
  *
- * Every call goes to /api/ai_astrologer.php, which enforces BOTH gates (signed-in
- * customer AND at least one PAID order) on every request. The client never
- * decides whether the customer is allowed to ask - it only renders what the
- * server allows, including the 403 and 429 cases.
+ * Every call goes to /api/ai_astrologer.php, which requires an authenticated
+ * account on every request. Customers need an active paid-report entitlement;
+ * admins bypass purchase and daily-usage limits. The client never decides who
+ * is allowed to ask - it only renders what the server allows, including 403 and
+ * 429 responses.
  *
  * No AI key ever reaches this file. Model calls happen only in PHP.
  */
@@ -79,7 +80,8 @@ async function call(action: string, body: Record<string, unknown> = {}, method: 
 export const aiAstrologer = {
   /** Opens a conversation. Pass orderId to bind it to a specific report. */
   async createSession(opts: { orderId?: string; language?: ChatLanguage } = {}): Promise<{
-    sessionId: string; language: ChatLanguage; orderNumber: string | null; serviceType: string | null; dailyLimit: number;
+    sessionId: string; language: ChatLanguage; orderNumber: string | null; serviceType: string | null;
+    dailyLimit: number | null; unlimited: boolean;
   }> {
     return call('session', opts);
   },
@@ -90,12 +92,15 @@ export const aiAstrologer = {
 
   async ask(sessionId: string, question: string, language: ChatLanguage): Promise<{
     messageId: number; content: string; bubbles: string[]; sources: string;
-    areaId: string | null; handoff: boolean; latencyMs: number; remainingToday: number;
+    areaId: string | null; handoff: boolean; latencyMs: number;
+    remainingToday: number | null; unlimited: boolean;
   }> {
     return call('ask', { sessionId, question, language });
   },
 
-  async usage(): Promise<{ used: number; limit: number; remaining: number }> {
+  async usage(): Promise<{
+    used: number | null; limit: number | null; remaining: number | null; unlimited: boolean;
+  }> {
     return call('usage', {}, 'GET');
   },
 

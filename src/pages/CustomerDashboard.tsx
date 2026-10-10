@@ -46,7 +46,7 @@ interface CustomerDashboardProps {
 }
 
 export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate }) => {
-  const { user, birthProfile, updateBirthProfile, refreshProfile } = useAuth();
+  const { user, isAdmin, birthProfile, updateBirthProfile, refreshProfile } = useAuth();
   // The name saved in the website profile is authoritative — never a stale
   // name or one with a "(Google)" tag attached.
   const displayName = user ? resolveDisplayName(birthProfile?.name, user.name, user.email) : 'User';
@@ -285,11 +285,6 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
     );
   }
 
-  // Client-side hint only. api/ai_astrologer.php re-checks this on EVERY request
-  // (requireAuth + requirePaidOrder), because the browser is not trustworthy.
-  const paidOrders = orders.filter(
-    (o) => o.status === 'COMPLETED' && o.hasPdf && o.serviceMode !== 'FREE_BETA'
-  );
   const aiLanguage = (user?.country === 'India' ? 'hi' : 'ta') as 'ta' | 'hi' | 'en';
 
   return (
@@ -309,6 +304,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
               language={aiLanguage}
               orderId={aiChatOrder?.id}
               orderLabel={aiChatOrder ? `Report #${aiChatOrder.orderNumber}` : undefined}
+              isAdmin={isAdmin}
               onClose={() => setAiChatOpen(false)}
             />
           </div>
@@ -331,15 +327,6 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
 
         {/* Quick Service Ordering Buttons */}
         <div className="flex flex-wrap gap-2">
-          {paidOrders.length > 0 && (
-            <button
-              onClick={() => { setAiChatOrder(null); setAiChatOpen(true); }}
-              className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-950 text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Ask AI Astrologer</span>
-            </button>
-          )}
           <button
             onClick={() => onNavigate('birth-jathagam')}
             className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
@@ -597,9 +584,9 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
                         {getLangBadge()}
                       </div>
 
-                      {/* Part 4 entry point: ask about THIS report. Shown only for a
-                          completed paid order; the server re-checks on every request. */}
-                      {order.status === 'COMPLETED' && order.hasPdf && order.serviceMode !== 'FREE_BETA' && (
+                      {/* This report-specific shortcut appears after delivery; the
+                          global floating launcher follows the same server entitlement. */}
+                      {order.status === 'COMPLETED' && order.hasPdf && order.serviceMode !== 'FREE_BETA' && order.emailStatus === 'SENT' && order.emailSentAt && (
                         <button
                           onClick={() => { setAiChatOrder(order); setAiChatOpen(true); }}
                           className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-600/40 text-amber-300 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"

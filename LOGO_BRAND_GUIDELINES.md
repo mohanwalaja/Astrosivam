@@ -53,7 +53,7 @@ Used for: About page, marketing material, anywhere there is wide, short space.
 ### C. Simplified mark (app icon)
 Surya + Chandra only — **no rasi ring**. Used wherever the full emblem would turn to
 mush: favicons (16 / 32 / 48 px), the PWA tile, and inline UI avatars
-(live-chat header, home-page badges, admin banner).
+(home-page badges, admin banner).
 
 > **Rule of thumb:** full emblem at **≥ 48 px**; simplified mark below that.
 

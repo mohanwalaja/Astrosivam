@@ -1,7 +1,7 @@
 /**
- * ASTRO SIVAM AI Astrologer — the customer-facing chat panel.
+ * ASTRO SIVAM AI Astrologer — the customer/admin chat panel.
  *
- * Part 4 scope: the entry point, the paid-gate handling, the history and the
+ * Part 4 scope: the entry point, customer paid-gate handling, the history and the
  * upload. The typing choreography (status text for 2-4s, then three dots, then
  * 2-4 bubbles 1-2s apart, capped at 12s) is tuned in Part 5; the hooks it needs
  * are already here as TIMING constants so the tuning is a numbers change, not a
@@ -67,6 +67,8 @@ interface Props {
   /** Bind the conversation to one report. Omit for a general chat. */
   orderId?: string;
   orderLabel?: string;
+  /** Administrators have purchase- and daily-limit-free access. */
+  isAdmin?: boolean;
   onClose?: () => void;
 }
 
@@ -76,6 +78,7 @@ export default function AiAstrologerPanel({
   language,
   orderId,
   orderLabel,
+  isAdmin = false,
   onClose,
 }: Props) {
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -84,6 +87,7 @@ export default function AiAstrologerPanel({
   const [phase, setPhase] = useState<'idle' | 'status' | 'typing' | 'failed'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [sessionOrderLabel, setSessionOrderLabel] = useState<string | undefined>(orderLabel);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const timers = useRef<number[]>([]);
@@ -107,6 +111,7 @@ export default function AiAstrologerPanel({
         const s = await aiAstrologer.createSession({ orderId, language });
         if (cancelled) return;
         setSessionId(s.sessionId);
+        setSessionOrderLabel(orderLabel || (s.orderNumber ? `Report #${s.orderNumber}` : undefined));
         const h = await aiAstrologer.history(s.sessionId);
         if (cancelled) return;
         setMessages(h.messages);
@@ -244,7 +249,9 @@ export default function AiAstrologerPanel({
         <div className="min-w-0 flex-1">
           <div className="text-sm font-bold leading-tight truncate">ASTRO SIVAM AI Astrologer</div>
           <div className="text-[11px] text-slate-400 truncate">
-            {orderLabel || (remaining !== null ? `${remaining} questions left today` : ' ')}
+            {sessionOrderLabel || (isAdmin
+              ? 'Administrator access · no daily limit'
+              : (remaining !== null ? `${remaining} questions left today` : ' '))}
           </div>
         </div>
         {onClose && (

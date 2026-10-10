@@ -126,7 +126,7 @@ function getItemStatusBadge(status?: string) {
 }
 
 export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
-  const { user, isAdmin, isLoading: isAuthLoading, settings: authSettings, refreshSettings } = useAuth();
+  const { isAdmin, isLoading: isAuthLoading, settings: authSettings, refreshSettings } = useAuth();
 
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
