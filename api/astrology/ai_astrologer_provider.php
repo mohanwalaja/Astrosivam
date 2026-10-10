@@ -234,6 +234,106 @@ class AstroAiProvider
         ];
     }
 
+    /**
+     * Multi-source fallback for questions no life-area card matched directly.
+     * Instead of answering "I don't know" immediately, the agent consults, in
+     * order:
+     *   1. EVERY life-area card with a loose phrase match (not just the best)
+     *   2. the remedies registry, on planet names mentioned in the question
+     *   3. the customer's own chart period (already in CHART_HEADER)
+     * The model is instructed to use only what these sources actually contain
+     * and, when nothing truly applies, to say so honestly and offer the
+     * handoff. No outside web search: every source is the curated knowledge
+     * base, so nothing unreviewed can reach a customer.
+     *
+     * @return array{rulesBlock:string, sourceLine:string}
+     */
+    public static function consultMoreSources(string $question, string $language, ?array $chart): array
+    {
+        $q = mb_strtolower(trim($question), 'UTF-8');
+        $lines = [];
+        $sources = [];
+
+        // Source 1: loose phrase match across ALL life-area cards.
+        $kb = self::kb(self::LIFE_AREAS_PATH);
+        foreach (($kb['areas'] ?? []) as $area) {
+            $phrases = array_merge(
+                $area['customerPhrases'][$language] ?? [],
+                $area['customerPhrases']['en'] ?? []
+            );
+            $hit = false;
+            foreach ($phrases as $p) {
+                $needle = mb_strtolower(trim((string) $p), 'UTF-8');
+                if ($needle !== '' && mb_strpos($q, $needle, 0, 'UTF-8') !== false) {
+                    $hit = true;
+                    break;
+                }
+            }
+            if (!$hit) {
+                continue;
+            }
+            $title = (string) ($area['cardTitle'][$language] ?? ($area['cardTitle']['en'] ?? ($area['id'] ?? 'card')));
+            $added = 0;
+            foreach (($area['rules'] ?? []) as $rule) {
+                if ($added >= 2) {
+                    break;
+                }
+                if (!self::evaluateCondition($rule['condition'] ?? [], $chart, $question)) {
+                    continue;
+                }
+                $meaning = (string) ($rule['meaning'][$language] ?? ($rule['meaning']['en'] ?? ''));
+                if ($meaning === '') {
+                    continue;
+                }
+                $lines[] = '- [' . $title . '] ' . $meaning;
+                $added++;
+            }
+            if ($added > 0) {
+                $sources[] = $title;
+            }
+        }
+
+        // Source 2: the remedies registry, matched on planet names in the question.
+        $remedies = self::kb(self::REMEDIES_PATH);
+        foreach (($remedies['grahas'] ?? []) as $g) {
+            $names = [
+                (string) ($g['graha'] ?? ''),
+                (string) ($g['tamil'] ?? ''),
+                (string) ($g['hindi'] ?? ''),
+            ];
+            $hit = false;
+            foreach ($names as $name) {
+                $needle = mb_strtolower(trim($name), 'UTF-8');
+                if ($needle !== '' && mb_strpos($q, $needle, 0, 'UTF-8') !== false) {
+                    $hit = true;
+                    break;
+                }
+            }
+            if (!$hit) {
+                continue;
+            }
+            $lines[] = '- [Remedies registry: ' . ($g['graha'] ?? 'planet') . '] '
+                . ($g['mantra']['simple'] ?? '') . ' | charity: ' . ($g['charity'] ?? '')
+                . ' | temple: ' . ($g['temple']['name'] ?? '');
+            $sources[] = 'Remedies registry (' . ($g['graha'] ?? 'planet') . ')';
+            if (count($lines) >= 6) {
+                break;
+            }
+        }
+
+        if (empty($lines)) {
+            return [
+                'rulesBlock' => "(Consulted every life-area card, the remedies registry and the customer's chart period; none covers this question directly. Give an honest general reading from their chart period if you can, say plainly that your knowledge base has no specific rule for it, and offer the astrologer handoff.)",
+                'sourceLine' => '',
+            ];
+        }
+
+        return [
+            'rulesBlock' => implode("\n", $lines),
+            'sourceLine' => 'Consulted: ' . implode(' · ', array_slice(array_values(array_unique($sources)), 0, 4)),
+        ];
+    }
+
     /** Mirrors evaluateCondition() in the TS spec. Unknown types return false. */
     public static function evaluateCondition(array $cond, ?array $chart, string $question): bool
     {
@@ -567,17 +667,26 @@ class AstroAiProvider
                 $rulesBlock .= "  Practical: " . $p . "\n";
             }
         }
+        $sourceLine = $retrieved['sourceLine'];
         if ($rulesBlock === '') {
-            $rulesBlock = "(No rule in the knowledge base covers this question. Say so honestly and offer the handoff.)";
+            // No life-area card matched directly: consult the remaining
+            // sources before admitting we have nothing - every card loose
+            // match, the remedies registry, and the chart period.
+            $more = self::consultMoreSources($question, $language, $chart);
+            $rulesBlock = $more['rulesBlock'];
+            if ($more['sourceLine'] !== '') {
+                $sourceLine = $more['sourceLine'];
+            }
         }
 
         $prompt = self::fillPrompt(self::systemPrompt(), [
             'RETRIEVED_RULES' => $rulesBlock,
-            'SOURCE_LINE' => $retrieved['sourceLine'],
+            'SOURCE_LINE' => $sourceLine,
             'REMEDIES' => self::remedyBlock($chart),
             'CHART_HEADER' => $context['chartHeader'] ?? '(no chart attached to this conversation yet)',
             'CUSTOMER_NAME' => $context['customerName'] ?? 'there',
             'ORDER_TITLE' => $context['orderTitle'] ?? 'your report',
+            'ORDER_DETAILS' => $context['orderDetails'] ?? '(no order attached to this conversation yet)',
             'LANGUAGE' => $language,
             'CHAT_HISTORY' => $context['chatHistory'] ?? '(this is the first message)',
             'DASHA_END_DATE' => $context['dashaEndDate'] ?? 'the date shown on your report',

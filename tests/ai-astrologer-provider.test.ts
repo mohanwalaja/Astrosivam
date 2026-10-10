@@ -212,6 +212,23 @@ check('the provider includes resolve relative to this file, never to the wrong d
   assert.match(provider, /dirname\(__DIR__, 2\) \. \$rel/);
 });
 
+check('an unmatched question consults more sources before admitting it has nothing', () => {
+  // retrieve() keeps its strict semantics (the TS/PHP parity tests guard it);
+  // the multi-source fallback lives in answer() and must only fire when no
+  // rule matched.
+  assert.match(provider, /public static function consultMoreSources\(/);
+  assert.match(provider, /self::consultMoreSources\(\$question, \$language, \$chart\)/);
+  const fallback = sliceText(provider, 'public static function consultMoreSources', 'public static function evaluateCondition', 'consultMoreSources body');
+  assert.match(fallback, /LIFE_AREAS_PATH/, 'fallback must search every life-area card');
+  assert.match(fallback, /REMEDIES_PATH/, 'fallback must search the remedies registry');
+  assert.match(fallback, /Consulted: /, 'the consulted sources must be named for the customer');
+  assert.match(fallback, /offer the astrologer handoff/, 'an empty consultation must stay honest');
+  // answer() only swaps the fallback in when the strict retrieval found nothing.
+  const answer = sliceText(provider, 'public static function answer', 'private static function remedyBlock', 'answer body');
+  assert.match(answer, /if \(\$rulesBlock === ''\) \{\s*\/\/ No life-area card matched directly/);
+  assert.match(answer, /'ORDER_DETAILS' =>/, 'the customer\'s own order facts must reach the prompt');
+});
+
 check('the model call fails loudly and never returns a degraded answer', () => {
   const complete = sliceText(provider, 'public static function complete', 'public static function toBubbles', 'complete body');
   assert.match(complete, /throw new RuntimeException\('AI_ASTROLOGER_API_KEY is not set/);

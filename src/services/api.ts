@@ -1,4 +1,4 @@
-import { AppLanguage, ServiceType, PaymentMethod, CurrencyCode, User, CustomerBirthProfile, Order, OrderItem, SystemSettings, Statistics, AuditLog, TeamMember, ContactMessage, AdminAnalyticsData, BannedIpEntry, OnlinePaymentSession } from '../types';
+import { AppLanguage, ServiceType, PaymentMethod, CurrencyCode, User, CustomerBirthProfile, Order, OrderItem, SystemSettings, Statistics, AuditLog, AiChatHandoff, TeamMember, ContactMessage, AdminAnalyticsData, BannedIpEntry, OnlinePaymentSession } from '../types';
 
 export function getApiBase(): string {
   // Always default to relative '/api' in browser contexts.
@@ -1602,6 +1602,20 @@ export const api = {
   async getAdminAuditLogs(): Promise<{ success: boolean; logs: AuditLog[] }> {
     const res = await fetch(`${API_BASE}/admin/audit-logs`, {
       headers: { ...getAuthHeader() }
+    });
+    return safeJson(res);
+  },
+
+  async getAiHandoffs(): Promise<{ success: boolean; count: number; handoffs: AiChatHandoff[]; note?: string }> {
+    const res = await apiFetch(`${API_BASE}/admin/ai-handoffs`);
+    return safeJson(res);
+  },
+
+  async updateAiHandoff(id: number, status: 'NEW' | 'ACKNOWLEDGED' | 'RESOLVED', adminNotes?: string): Promise<{ success: boolean; message?: string }> {
+    const res = await apiFetch(`${API_BASE}/admin/ai-handoffs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status, adminNotes })
     });
     return safeJson(res);
   },

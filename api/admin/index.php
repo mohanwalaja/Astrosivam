@@ -1773,4 +1773,79 @@ if (strpos($path, 'admin/payments/reconcile') !== false && $method === 'POST') {
     ]);
 }
 
+// =========================================================================
+// AI Astrologer escalation queue — customer complaints forwarded from the
+// AI chat plus the "Talk to our astrologer" handoffs. The table is owned by
+// api/migrations/007_ai_astrologer_chat.sql and bootstrapped here too, so
+// the queue works even before the first chat request on a fresh database.
+// =========================================================================
+function astroAdminEnsureAiChatTables($pdo) {
+    static $done = false;
+    if ($done) return;
+    $file = __DIR__ . '/../migrations/007_ai_astrologer_chat.sql';
+    if (is_file($file)) {
+        $sql = preg_replace('/^[[:blank:]]*--.*$/m', '', (string) file_get_contents($file));
+        foreach (explode(';', (string) $sql) as $statement) {
+            $statement = trim($statement);
+            if ($statement === '') continue;
+            try {
+                $pdo->exec($statement);
+            } catch (\Throwable $e) {
+                // CREATE TABLE IF NOT EXISTS: any error here is surfaced by
+                // the SELECT below, not swallowed silently.
+            }
+        }
+    }
+    $done = true;
+}
+
+if (strpos($path, 'admin/ai-handoffs') !== false) {
+    astroAdminEnsureAiChatTables($pdo);
+
+    if ($method === 'GET') {
+        try {
+            $rows = $pdo->query(
+                "SELECT id, session_id, user_id, user_name, user_email, user_mobile,
+                        language, question, reason, order_number, status, admin_notes,
+                        resolved_at, created_at
+                   FROM ai_chat_handoffs
+                  ORDER BY (status = 'NEW') DESC, created_at DESC
+                  LIMIT 200"
+            )->fetchAll(PDO::FETCH_ASSOC);
+            jsonResponse(['success' => true, 'count' => count($rows), 'handoffs' => $rows]);
+        } catch (\Throwable $e) {
+            error_log('AI handoffs list failed: ' . $e->getMessage());
+            jsonResponse(['success' => true, 'count' => 0, 'handoffs' => [],
+                'note' => 'The AI chat tables are not available on this database yet.']);
+        }
+    }
+
+    // POST — update status / admin notes for one escalation.
+    $body = json_decode(file_get_contents('php://input'), true) ?: [];
+    $id = (int) ($body['id'] ?? ($_GET['id'] ?? 0));
+    if ($id <= 0) {
+        jsonResponse(['success' => false, 'message' => 'Missing handoff id.'], 400);
+    }
+    $status = strtoupper(trim((string) ($body['status'] ?? '')));
+    if (!in_array($status, ['NEW', 'ACKNOWLEDGED', 'RESOLVED'], true)) {
+        jsonResponse(['success' => false, 'message' => 'status must be NEW, ACKNOWLEDGED or RESOLVED.'], 400);
+    }
+    $notes = isset($body['adminNotes']) ? mb_substr((string) $body['adminNotes'], 0, 2000, 'UTF-8') : null;
+
+    $stmt = $pdo->prepare(
+        "UPDATE ai_chat_handoffs
+            SET status = ?,
+                admin_notes = COALESCE(?, admin_notes),
+                resolved_at = CASE WHEN ? = 'RESOLVED' THEN NOW() ELSE resolved_at END
+          WHERE id = ?"
+    );
+    $stmt->execute([$status, $notes, $status, $id]);
+    if ($stmt->rowCount() === 0) {
+        jsonResponse(['success' => false, 'message' => 'Handoff not found.'], 404);
+    }
+    logAudit($pdo, $admin['id'], $admin['name'], 'admin', 'AI_HANDOFF_UPDATED',
+        'AI chat escalation #' . $id . ' set to ' . $status . '.');
+    jsonResponse(['success' => true, 'id' => $id, 'status' => $status]);
+}
+
 jsonResponse(['success' => false, 'message' => 'Admin endpoint not found'], 404);

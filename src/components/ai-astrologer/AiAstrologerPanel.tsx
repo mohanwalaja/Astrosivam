@@ -48,6 +48,24 @@ const GREETING: Record<ChatLanguage, (name: string) => string> = {
   hi: (n) => `नमस्ते ${n} — मैं ASTRO SIVAM AI ज्योतिषी हूँ। अपनी कुंडली के बारे में कुछ भी पूछें, या हमारी बनाई रिपोर्ट जोड़ें और मैं उसका हर हिस्सा समझाऊँगा।`,
 };
 
+/** Display names for the report the customer just received, per language. */
+const SERVICE_TITLE: Record<string, Record<ChatLanguage, string>> = {
+  BIRTH_JATHAGAM: { en: 'Birth Jathagam', ta: 'ஜன்ம ஜாதக', hi: 'जन्म कुंडली' },
+  MARRIAGE_COMPATIBILITY: { en: 'Marriage Compatibility', ta: 'திருமண பொருத்த', hi: 'विवाह मिलान' },
+  BABY_NAMING: { en: 'Baby Naming', ta: 'குழந்தை பெயர்', hi: 'नामकरण' },
+  MUHURTHAM: { en: 'Muhurtham', ta: 'முகூர்த்த', hi: 'मुहूर्त' },
+};
+
+/**
+ * Welcome for a customer whose report was just delivered. Names the report and
+ * its order number, and opens the floor to chart AND order questions.
+ */
+const ORDER_GREETING: Record<ChatLanguage, (name: string, service: string, orderNo: string) => string> = {
+  en: (n, s, o) => `Hello ${n} — thank you for your order. Your ${s} report (#${o}) has been delivered to your email. Ask me anything about your chart or your order — I am here to help.`,
+  ta: (n, s, o) => `வணக்கம் ${n} — உங்கள் ஆர்டருக்கு நன்றி. உங்கள் ${s} அறிக்கை (#${o}) உங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்டுள்ளது. உங்கள் ஜாதகம் அல்லது ஆர்டர் பற்றி எதுவும் கேளுங்கள் — நான் உதவ தயாராக இருக்கிறேன்.`,
+  hi: (n, s, o) => `नमस्ते ${n} — आपके ऑर्डर के लिए धन्यवाद। आपकी ${s} रिपोर्ट (#${o}) आपके ईमेल पर भेज दी गई है। अपनी कुंडली या ऑर्डर के बारे में कुछ भी पूछें — मैं मदद के लिए यहाँ हूँ।`,
+};
+
 const RETRY_TEXT: Record<ChatLanguage, string> = {
   en: 'Please give me a moment, I am checking again.',
   ta: 'ஒரு கணம் பொறுங்கள், மீண்டும் பார்க்கிறேன்.',
@@ -116,7 +134,16 @@ export default function AiAstrologerPanel({
         if (cancelled) return;
         setMessages(h.messages);
         if (h.messages.length === 0) {
-          push({ role: 'system', language, content: GREETING[language](customerName) });
+          // A delivered report gets a welcome that names it; anything else
+          // (admins, report-less sessions) gets the general greeting.
+          const serviceTitle = s.serviceType ? (SERVICE_TITLE[s.serviceType]?.[language] ?? s.serviceType) : null;
+          push({
+            role: 'system',
+            language,
+            content: s.orderNumber && serviceTitle
+              ? ORDER_GREETING[language](customerName, serviceTitle, s.orderNumber)
+              : GREETING[language](customerName),
+          });
         }
         const u = await aiAstrologer.usage();
         if (!cancelled) setRemaining(u.remaining);

@@ -256,7 +256,7 @@ check('the endpoint only calls functions that exist somewhere in api/', () => {
   const builtins = new Set(`if foreach for while switch catch function return use array_map array_filter
     define strtotime ceil gmdate time error_log is_numeric file_get_contents json_decode is_file
     array_reverse array_slice implode explode trim basename pathinfo strtolower strtoupper mb_strlen mb_substr
-    mb_strpos microtime round max min is_string is_array is_uploaded_file file_get_contents json_decode
+    mb_strpos mb_strtolower microtime round max min is_string is_array is_uploaded_file file_get_contents json_decode
     random_bytes bin2hex header error_log time date count in_array isset empty class_exists file_exists
     is_readable strpos substr array_keys array_values intval number_format htmlspecialchars http_response_code
     exit dirname preg_split preg_replace str_replace file`.split(/\s+/));
@@ -363,6 +363,39 @@ check('a generation failure is recorded, not swallowed, and costs nothing', () =
   // and the endpoint delegates to the provider rather than calling a model itself
   assert.match(code(endpoint), /AstroAiProvider::answer\(/);
   assert.ok(!/curl_init/.test(code(endpoint)), 'the endpoint must not call a model directly');
+});
+
+check('complaints are forwarded to the admin queue in every supported language', () => {
+  // The detector exists and is trilingual: English, Tamil and Hindi complaint
+  // words must all be present, or a complaining customer in one language would
+  // never reach the admin panel.
+  const detector = sliceText(endpoint, 'function astro_ai_escalation_reason', 'function astro_ai_escalation_notice', 'complaint detector');
+  assert.match(detector, /complaint/);
+  assert.match(detector, /புகார்/, 'Tamil complaint word missing');
+  assert.match(detector, /शिकायत/, 'Hindi complaint word missing');
+  assert.match(detector, /refund/);
+  assert.match(detector, /return 'complaint'/);
+
+  // ask() records the escalation into the admin queue and shows the customer
+  // a visible confirmation bubble.
+  const ask = sliceText(endpoint, 'function astro_ai_action_ask', 'function astro_ai_action_upload', 'ask handler body');
+  assert.match(ask, /astro_ai_escalation_reason\(\$question\)/, 'ask must screen every question for complaints');
+  assert.match(ask, /astro_ai_record_escalation\(/, 'a detected complaint must be queued for the admin');
+  assert.match(endpoint, /INSERT INTO ai_chat_handoffs/);
+  assert.match(ask, /\$bubbles\[\] = \$notice/, 'the customer must see that the message was forwarded');
+});
+
+check('the admin panel can read and update the AI escalation queue', () => {
+  const adminRouter = read('api/admin/index.php');
+  assert.match(adminRouter, /admin\/ai-handoffs/, 'the admin router must expose the AI handoff queue');
+  assert.match(adminRouter, /FROM ai_chat_handoffs/);
+  assert.match(adminRouter, /'NEW', 'ACKNOWLEDGED', 'RESOLVED'/, 'queue statuses must match the migration lifecycle');
+  assert.match(adminRouter, /UPDATE ai_chat_handoffs/);
+  assert.match(adminRouter, /logAudit\(\$pdo/, 'queue updates must be audited');
+  // The chat endpoint's session response carries the delivery date so the UI
+  // can greet the customer with the report that opened the chat.
+  const session = sliceText(endpoint, 'function astro_ai_action_session', 'function astro_ai_action_history', 'session handler');
+  assert.match(session, /'deliveredAt'/);
 });
 
 console.log(`\n[OK] ai-astrologer access control: ${passed} checks passed`);
