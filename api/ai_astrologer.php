@@ -18,10 +18,12 @@
  *
  *   1. requireAuth()       — a signed-in account, with the token_version check
  *                            that api/config.php already applies.
- *   2. Customer entitlement — customers need a delivered paid report. Admins
- *                            are exempt from payment and daily-usage gates.
+ *   2. Customer entitlement — customers need a delivered report (a paid order
+ *                            or the free-beta first report). Admins are exempt
+ *                            from payment and daily-usage gates.
  *
- * A free-beta order does not qualify for customer access. An order that is
+ * A free-beta first report qualifies for customer access exactly like a paid
+ * order once it has been delivered. An order that is
  * PENDING, PROCESSING, REJECTED or CANCELLED does not qualify. A refunded order
  * does not qualify. Admin access is based only on the persisted database role.
  *
@@ -56,7 +58,8 @@ function astro_ai_is_admin(array $user): bool
 }
 
 /**
- * GATE 2 — customers need a current paid-report entitlement; admins are exempt.
+ * GATE 2 — customers need a current delivered-report entitlement (a paid order
+ * or the free-beta first report); admins are exempt.
  *
  * Deliberately a single indexed lookup rather than loading the orders: this runs
  * on every customer request, including history reads, so it must stay cheap on
@@ -128,15 +131,15 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
         ];
     };
 
-    // Newest delivered paid order. Ordering by email_sent_at DESC is what makes
-    // "newest order wins" true: we only ever look at the one that would expire
-    // last, so an old order cannot keep the chat alive.
+    // Newest delivered order (paid or free-beta first report). Ordering by
+    // email_sent_at DESC is what makes "newest order wins" true: we only ever
+    // look at the one that would expire last, so an old order cannot keep the
+    // chat alive.
     $stmt = $pdo->prepare(
         "SELECT id, order_number, service_type, email_sent_at
            FROM orders
           WHERE user_id = :uid
             AND payment_confirmed = 1
-            AND service_mode <> 'FREE_BETA'
             AND status IN ('COMPLETED', 'PROCESSING')
             AND (refund_status IS NULL OR refund_status = 'NONE')
             AND email_status = 'SENT'
@@ -148,15 +151,14 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$order) {
-        // Either no paid order at all, or one that has not been delivered yet.
-        // Distinguishing them only for the server log - the customer sees the
-        // same message either way, so the endpoint never leaks which it was.
+        // Either no qualifying order at all, or one that has not been delivered
+        // yet. Distinguishing them only for the server log - the customer sees
+        // the same message either way, so the endpoint never leaks which it was.
         $countStmt = $pdo->prepare(
             "SELECT COUNT(*) AS c
                FROM orders
               WHERE user_id = :uid
                 AND payment_confirmed = 1
-                AND service_mode <> 'FREE_BETA'
                 AND status IN ('COMPLETED', 'PROCESSING')
                 AND (refund_status IS NULL OR refund_status = 'NONE')"
         );
@@ -221,11 +223,11 @@ function astro_ai_entitlement_copy(string $code, array $entitlement): array
     }
 
     return [
-        'en' => 'The AI Astrologer is available to customers with a completed paid report. '
+        'en' => 'The AI Astrologer is available to customers with a completed report. '
             . 'Once your order is complete, I will be here.',
-        'ta' => 'AI ஜோதிடர், முடிந்த கட்டண அறிக்கை உள்ள வாடிக்கையாளர்களுக்கு மட்டுமே. '
+        'ta' => 'AI ஜோதிடர், முடிந்த அறிக்கை உள்ள வாடிக்கையாளர்களுக்கு மட்டுமே. '
             . 'உங்கள் ஆர்டர் முடிந்ததும் நான் இங்கே இருப்பேன்.',
-        'hi' => 'AI ज्योतिषी उन ग्राहकों के लिए उपलब्ध है जिनकी भुगतान की गई रिपोर्ट पूरी हो चुकी है। '
+        'hi' => 'AI ज्योतिषी उन ग्राहकों के लिए उपलब्ध है जिनकी रिपोर्ट पूरी हो चुकी है। '
             . 'आपका ऑर्डर पूरा होते ही मैं यहाँ रहूँगा।',
     ];
 }
@@ -392,12 +394,12 @@ function astro_ai_action_session(PDO $pdo, array $user, array $body): void
     $serviceType = null;
 
     if ($orderId !== '') {
-        // A report-specific chat can only bind to this account's paid, delivered report.
+        // A report-specific chat can only bind to this account's delivered
+        // report (paid or free-beta first report).
         $stmt = $pdo->prepare(
             "SELECT id, order_number, service_type, email_sent_at
                FROM orders
               WHERE id = ? AND user_id = ? AND payment_confirmed = 1
-                AND service_mode <> 'FREE_BETA'
                 AND status IN ('COMPLETED', 'PROCESSING')
                 AND (refund_status IS NULL OR refund_status = 'NONE')
                 AND email_status = 'SENT'

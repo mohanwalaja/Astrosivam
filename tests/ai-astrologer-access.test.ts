@@ -89,7 +89,8 @@ check('the paid-order gate is strict for customers and admins bypass it by datab
   );
   assert.match(entitlement, /NO_PAID_ORDER/, 'customers must receive a distinct refusal code');
   assert.match(entitlement, /payment_confirmed\s*=\s*1/, 'customers must require confirmed payment');
-  assert.match(entitlement, /service_mode <> 'FREE_BETA'/, 'free beta orders must not qualify');
+  assert.doesNotMatch(entitlement, /FREE_BETA/,
+    'free-beta first reports must qualify for chat exactly like paid orders');
   assert.match(entitlement, /status IN \('COMPLETED', 'PROCESSING'\)/, 'must restrict to real statuses');
   assert.match(entitlement, /refund_status/, 'a refunded order must not qualify');
   assert.match(entitlement, /email_status = 'SENT'/, 'chat access must wait for successful email delivery');
@@ -312,7 +313,9 @@ check('the old floating-chat position now hosts the email-gated AI Astrologer fo
   assert.match(dashboard, /Ask about this report/);
   assert.match(dashboard, /order\.emailSentAt/,
     'the report-specific dashboard action must wait for email delivery');
-  assert.match(dashboard, /status === 'COMPLETED' && order\.hasPdf && order\.serviceMode !== 'FREE_BETA'/);
+  assert.match(dashboard, /status === 'COMPLETED' && order\.hasPdf && order\.emailStatus === 'SENT'/);
+  assert.doesNotMatch(dashboard, /serviceMode !== 'FREE_BETA'/,
+    'the dashboard chat shortcut must also appear on delivered free-beta first reports');
   assert.match(panel, /\[customerId, orderId\]/);
   const session = sliceText(
     endpoint, 'function astro_ai_action_session', 'function astro_ai_action_history', 'session handler'

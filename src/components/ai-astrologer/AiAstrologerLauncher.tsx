@@ -6,8 +6,9 @@ import AiAstrologerPanel from './AiAstrologerPanel';
 
 /**
  * Site-wide AI Astrologer launcher, replacing the retired canned support chat.
- * Customers only see it while the server confirms a recently delivered paid
- * report. Administrators always see it while signed in.
+ * Customers only see it while the server confirms a recently delivered report
+ * (paid or free-beta first report). Administrators always see it while signed
+ * in.
  */
 export const AiAstrologerLauncher: React.FC = () => {
   const { user, isAdmin } = useAuth();
