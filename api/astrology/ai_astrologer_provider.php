@@ -1081,7 +1081,15 @@ class AstroAiProvider
 
         $prompt = self::fillPrompt(self::systemPrompt(), [
             'RETRIEVED_RULES' => $rulesBlock,
-            'SOURCE_LINE' => $sourceLine,
+            // Never leave this placeholder empty. The prompt says "use exactly the
+            // source labels you were given", so an empty SOURCE_LINE reads as an
+            // instruction with nothing to follow and invites the model to invent
+            // one - which the guard then rejects. Say what to do instead.
+            'SOURCE_LINE' => $sourceLine !== ''
+                ? $sourceLine
+                : '(No retrieved rule matched this question, so there is no given source label. '
+                    . 'Name a source only if one from the TAMIL SOURCES list genuinely supports what '
+                    . 'you are saying; otherwise give no source line at all. Do not invent an id.)',
             'REMEDIES' => self::remedyBlock($chart),
             'CHART_HEADER' => $context['chartHeader'] ?? '(no chart attached to this conversation yet)',
             'CUSTOMER_NAME' => $context['customerName'] ?? 'there',

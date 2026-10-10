@@ -35,21 +35,28 @@ if (!runtimeInstalled) {
   process.exit(0);
 }
 
-fs.rmSync(OUT, { force: true });
-const run = spawnSync(
-  process.execPath,
-  [path.join(root, 'scripts', 'php-ai-provider-check.mjs'), PROBE, '--emit', OUT],
-  { cwd: root, encoding: 'utf8', timeout: 180000 }
-);
-
-if (run.status !== 0) {
-  console.error(run.stdout);
-  console.error(run.stderr);
-  throw new Error(`the PHP probe exited with status ${run.status}`);
+/** Runs one probe under the wasm PHP runtime and returns its structured output. */
+function runProbe(probe: string, outFile: string): any {
+  fs.rmSync(outFile, { force: true });
+  const run = spawnSync(
+    process.execPath,
+    [path.join(root, 'scripts', 'php-ai-provider-check.mjs'), probe, '--emit', outFile],
+    { cwd: root, encoding: 'utf8', timeout: 180000 }
+  );
+  if (run.status !== 0) {
+    console.error(run.stdout);
+    console.error(run.stderr);
+    throw new Error(`${probe} exited with status ${run.status}`);
+  }
+  assert.ok(fs.existsSync(outFile), `${probe} must write its output file`);
+  return JSON.parse(fs.readFileSync(outFile, 'utf8'));
 }
 
-assert.ok(fs.existsSync(OUT), 'the probe must write out.json');
-const out = JSON.parse(fs.readFileSync(OUT, 'utf8'));
+const out = runProbe(PROBE, OUT);
+const coverage = runProbe(
+  'tests/fixtures/php-ai-probes/sources-coverage.php',
+  path.join(root, 'tests', 'fixtures', 'php-ai-probes', 'out-coverage.json')
+);
 
 let passed = 0;
 function check(name: string, fn: () => void) {
@@ -108,6 +115,33 @@ check('the guard names each fault exactly once', () => {
 
 check('a ---BUBBLE--- reply splits into the bubbles the UI shows', () => {
   assert.equal(out.bubbleCount, 2);
+});
+
+check('the curated source library actually reaches a customer reply', () => {
+  // Executed proof of the invariant the registry test checks statically: when a
+  // card's rules fire, the source line that survives the Tamil-only filter must
+  // be non-empty. Before the Tamil editions were cited alongside the English
+  // ones this was 0 of 8 - the chat answered with no attribution at all while
+  // 139 citable Tamil sources sat unused.
+  assert.ok(coverage.cardsFired >= 8, `expected all 8 cards to fire, only ${coverage.cardsFired} did`);
+  assert.equal(
+    coverage.cardsCited,
+    coverage.cardsFired,
+    `${coverage.cardsFired - coverage.cardsCited} card(s) fired but produced no citable source line`
+  );
+  assert.ok(
+    coverage.citableCount > 100,
+    `only ${coverage.citableCount} citable Tamil sources - the library should be far larger`
+  );
+});
+
+check('the sources the rules cite in English are not the ones shown to customers', () => {
+  // This is expected, not a bug: the English editions stay as internal
+  // reference and the Tamil edition of the same work carries the citation. What
+  // would be a bug is a rule citing ONLY an English id - the registry test
+  // catches that, and cardsCited above catches it at runtime.
+  assert.ok(coverage.citedNotCitable.length > 0, 'the registry keeps English editions as internal reference');
+  assert.ok(coverage.citedIds.length >= 16, `expected the rules to cite the library, found ${coverage.citedIds.length} ids`);
 });
 
 console.log(`\n[OK] ai-astrologer php runtime: ${passed} checks passed`);

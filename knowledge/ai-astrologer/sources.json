@@ -20,22 +20,22 @@
     }
   },
   "sourceCount": {
-    "_note": "Counted by category. Hindi books are NOT counted here - see excludedSources.",
-    "classicalTextsEnglish": 9,
+    "_note": "Counted by category. Hindi books are NOT counted here - see excludedSources. Chandravakya / Suryavakya (Vakya Panchangam) are deliberately absent: no digitised edition could be verified on 2026-10-10, and an unverifiable text is not listed.",
+    "classicalTextsEnglish": 12,
     "hindiBooks": 0,
-    "tamilBooks": 194,
+    "tamilBooks": 195,
     "navagrahaSthalamAndTemples": 12,
     "reference": 5,
-    "total": 220,
+    "total": 224,
     "excluded": 13,
     "byLanguageField": {
-      "en": 22,
-      "sa": 1,
-      "ta": 197
+      "en": 24,
+      "sa": 2,
+      "ta": 198
     },
     "byVerificationLevel": {
       "content-read": 11,
-      "metadata-verified": 140,
+      "metadata-verified": 144,
       "catalogue-verified": 1,
       "linked-not-opened": 67,
       "dead": 1
@@ -4224,6 +4224,86 @@
       "verificationNote": "Listed on the tamilnavarasam.in astrology index (opened and read 2026-10-10). The PDF itself was NOT opened: fetching this file failed on 2026-10-10. linked-not-opened - NOT citable as an authority until the PDF is opened and read. Subject: astrology.",
       "usefulFor": [
         "Lead only - open and read this PDF before citing it"
+      ]
+    },
+    {
+      "id": "EN-10",
+      "group": "classical-english",
+      "title": "Brihat Jataka of Varaha Mihira (1885 translation)",
+      "titleNative": "बृहज्जातक",
+      "author": "Varahamihira",
+      "translator": "N. Chidambaram Iyer",
+      "language": "en",
+      "year": 1885,
+      "url": "https://archive.org/details/wg1079",
+      "publisher": "Internet Archive",
+      "licence": "Not stated on the item page; treat as an old translation whose underlying Sanskrit text is public domain. Do not reproduce long passages without checking the item's own usage terms.",
+      "verification": "metadata-verified",
+      "verificationNote": "Verified 2026-10-10 through the archive.org advancedsearch API, which returned this exact identifier with its title, language and creator. Body text was not read page by page, so this is metadata-verified only.",
+      "usefulFor": [
+        "Graha strength, dignity and aspect",
+        "Rashi and navamsa results",
+        "Longevity and arishta classification",
+        "Cross-checking a Parashara reading against the Varahamihira tradition"
+      ]
+    },
+    {
+      "id": "EN-11",
+      "group": "classical-english",
+      "title": "Prasna Marga (English translation and notes, 2 volumes)",
+      "titleNative": "प्रश्नमार्ग",
+      "author": "Attributed to a Kerala Nambudiri tradition, composed c. 1649 CE",
+      "translator": "Dr. B. V. Raman",
+      "language": "en",
+      "year": null,
+      "url": "https://archive.org/details/PrasnaMargaBVR",
+      "publisher": "The Astrological Magazine (Internet Archive, opensource collection)",
+      "licence": "No licence declared on the item. The translation is a 20th-century work, so it is NOT public domain - reference it, do not reproduce it.",
+      "verification": "metadata-verified",
+      "verificationNote": "Verified 2026-10-10 through the archive.org advancedsearch API, which returned this exact identifier with its title, language and creator. Body text was not read page by page, so this is metadata-verified only. A Sanskrit edition of the same work is also catalogued as prasnamarga-035823mbp-1 under CC BY-NC-ND 4.0.",
+      "usefulFor": [
+        "Horary (prasna) method - answering a question asked at a moment rather than from a birth chart",
+        "Ashtamangala prasna practice as used in Kerala and Tamil Nadu",
+        "Arudha lagna and the moment-of-question chart",
+        "Badhaka sthana derivation by sign modality"
+      ]
+    },
+    {
+      "id": "EN-12",
+      "group": "classical-english",
+      "title": "Muhurta Chintamani of Daivagya Ramacharya",
+      "titleNative": "मुहूर्तचिन्तामणि",
+      "author": "Daivagya Ramacharya",
+      "language": "sa",
+      "year": null,
+      "url": "https://archive.org/details/muhurta-chintamani-of-daivagya-ramacharya-mahidhar-sharma",
+      "publisher": "Internet Archive (Mahidhar Sharma edition)",
+      "licence": "CC0 1.0 Universal - the manuscript scan is dedicated to the public domain.",
+      "verification": "metadata-verified",
+      "verificationNote": "Verified 2026-10-10 through the archive.org advancedsearch API, which returned this exact identifier with its title, language and creator. Body text was not read page by page, so this is metadata-verified only. Several further CC0 manuscripts of the same work were returned by the same query, including MuhurtaChintamaniVenkateshwarPress1906ShriKrishnaMuseumKurukshetra (Venkateshwar Press, 1906).",
+      "usefulFor": [
+        "Muhurtha selection - the classical chapters on marriage, journey, house entry and beginning work",
+        "Panchanga limbs used to reject a muhurtha (tithi, vara, nakshatra, yoga, karana)",
+        "Cross-checking the muhurtham rules this service already applies"
+      ]
+    },
+    {
+      "id": "TA-196",
+      "group": "classical-tamil",
+      "title": "Pulippani Jothidam 300 (Pulippani Siddhar)",
+      "titleNative": "புலிப்பாணி ஜோதிடம் 300",
+      "author": "Attributed to Pulippani Siddhar; published by B. R. Balakrishna Nayakar",
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/XjKB_pulippani-jothidam-300-pulippani-siddhar-tamil-b-r-balakrishna-nayakar",
+      "publisher": "Internet Archive",
+      "licence": "CC0 1.0 Universal on the scan. The verses are attributed to a Siddhar and circulated in palm-leaf tradition; the printed edition's own attribution should not be treated as settled.",
+      "verification": "metadata-verified",
+      "verificationNote": "Verified 2026-10-10 through the archive.org advancedsearch API, which returned this exact identifier with its title, language and creator. Body text was not read page by page, so this is metadata-verified only. Note: the catalogue records the language field as 'san' although the title and the text are Tamil - the language metadata on this item is wrong and was corrected here.",
+      "usefulFor": [
+        "Siddhar-tradition Tamil jyotisha verse, alongside the Bogar work already registered",
+        "Plain-language Tamil readings of graha placement",
+        "Remedy and parihara phrasing in the Tamil idiom"
       ]
     }
   ],

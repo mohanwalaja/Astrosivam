@@ -26,7 +26,7 @@ Totals: 11 + 32 + 1 + 10 + 1 = **55 active**. Plus 13 excluded (§2).
 
 ---
 
-## 1. English — classical texts (9)
+## 1. English — classical texts (12)
 
 | ID | Title | Lang | URL / Publisher | Useful for | Verified |
 |---|---|---|---|---|---|
@@ -39,6 +39,9 @@ Totals: 11 + 32 + 1 + 10 + 1 = **55 active**. Plus 13 excluded (§2).
 | EN-07 | **Jataka Parijata, Vol. II** — same author/translator | en | [archive.org](https://archive.org/details/JatakaParijataVolIIOfIIByVSubrahmanyaSastri) | Ayurdaya; ashtakavarga; kalachakra dasha; **gochara** | metadata-verified |
 | EN-08 | **Brihat Parashara Hora Shastra** — simplified English edition (Public Domain Mark 1.0) | en | [archive.org](https://archive.org/details/brihat-parashara-hora-sastra) | Plain-language cross-check only — *never* the primary citation | metadata-verified |
 | EN-09 | **Uttara Kalamrita** — attributed to Kalidasa; tr. **Prof. P. S. Sastri**, **Ranjan Publications**, ISBN 9788188230402 | en | [bagchee](https://www.bagchee.com/books/BB38082/uttara-kalamrita-by-kalidasa) · [occultnthings](https://occultnthings.com/products/uttara-kalamrita-kalidas-nar417) | Karaka lists; **yoga karaka per lagna**; elaborate **Rahu–Ketu**; retrogrades; Guru–Shani together | catalogue-verified (print only) |
+| EN-10 | **Brihat Jataka of Varaha Mihira** — tr. **N. Chidambaram Iyer**, **1885** | en | [archive.org/details/wg1079](https://archive.org/details/wg1079) | Graha strength, dignity and aspect; rashi & navamsa results; longevity / arishta. Cross-checks a Parashara reading against the Varahamihira tradition. **Internal reference — not citable to a customer** (see §8) | metadata-verified |
+| EN-11 | **Prasna Marga** (2 vols) — Kerala tradition, c. **1649 CE**; English tr. and notes **Dr. B. V. Raman** | en | [archive.org/details/PrasnaMargaBVR](https://archive.org/details/PrasnaMargaBVR) | **Horary (prasna) method** — answering a question asked at a moment rather than from a birth chart; ashtamangala prasna; arudha lagna; badhaka sthana by sign modality. **Internal reference — the 20th-century translation is not public domain, so reference it, never reproduce it** | metadata-verified |
+| EN-12 | **Muhurta Chintamani** — Daivagya Ramacharya (Mahidhar Sharma ed.) | sa | [archive.org](https://archive.org/details/muhurta-chintamani-of-daivagya-ramacharya-mahidhar-sharma) | Muhurtha selection; the panchanga limbs used to reject a muhurtha. Cross-checks the muhurtham rules this service already applies. **CC0 1.0** on the scan | metadata-verified |
 
 > **Verified chapter anchors from the EN-02 printed index** — the only chapter-level citations
 > the agent may make: ninth house — XXVI-2…8, 11, 15, 20, 21, 23 · **penance — XXVI-50** ·
@@ -100,7 +103,7 @@ All 30 come from the **தமிழ் இணையக் கல்விக் 
 **Two are now read to passage level: TA-02 and TA-07.** Those two, and only those two, may be
 cited to a verse or page. See §3i for the passages.
 
-### 3a. Tamil translations of the classical texts (6)
+### 3a. Tamil translations of the classical texts (7)
 
 | ID | நூல் / Title | URL | Useful for | Verified |
 |---|---|---|---|---|
@@ -110,6 +113,7 @@ cited to a verse or page. See §3i for the passages.
 | TA-05 | **நூல் – சாதக சிந்தாமணி : கால நிகண்டு, காரக நிகண்டு – பாகம் 1** | [tdl.8529](https://archive.org/details/tdl.8529-nuul-caatk-cintaamnni-kaal-niknnttu-kaark-niknnttu-muulmum-uraiyum-paakm-1) | **Tamil karaka tables** | metadata-verified |
 | TA-29 | **நூல் – மகாகவி காளிதாஸன் இயற்றிய ஜாதகசந்திரிகை** | [tdl.8341](https://archive.org/details/tdl.8341-nuul-mkaakvi-kaallitaasnnn-iyrrrriy-jaatkcntirikai) | Tamil Kalidasa-attributed Jataka Chandrika | metadata-verified |
 | TA-21 | **குமாரசுவாமியம் (சோதிட நூல்)** — சரசுவதி மகால் நூலகம், தஞ்சாவூர், **2007** | [TVA_BOK_0008544](https://archive.org/details/dli.jZY9lup2kZl6TuXGlZQdjZM3kZpy.TVA_BOK_0008544) | Library-catalogued Tamil sothida text | metadata-verified |
+| TA-196 | **புலிப்பாணி ஜோதிடம் 300** — attributed to **Pulippani Siddhar**, published by B. R. Balakrishna Nayakar | [archive.org](https://archive.org/details/XjKB_pulippani-jothidam-300-pulippani-siddhar-tamil-b-r-balakrishna-nayakar) | Siddhar-tradition Tamil jyotisha verse, alongside the Bogar work at TA-16; plain-language graha-placement readings; parihara phrasing in the Tamil idiom. **CC0 1.0** on the scan, but the palm-leaf attribution is traditional rather than settled — cite the text, do not assert the authorship. Note the catalogue's language field wrongly says `san` for this Tamil item. | metadata-verified |
 
 ### 3b. நவக்கிரகம் (3)
 

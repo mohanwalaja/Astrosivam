@@ -88,6 +88,16 @@
             {
               "id": "EN-06",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": [
@@ -118,6 +128,11 @@
               "id": "EN-02",
               "level": "chapter",
               "note": "Adhyaya VIII - debility and disease indications."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -153,6 +168,11 @@
               "id": "EN-02",
               "level": "chapter",
               "note": "Adhyaya XIV - Moon-related indications."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -229,6 +249,16 @@
             {
               "id": "EN-06",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": [
@@ -344,6 +374,11 @@
             {
               "id": "EN-01",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -464,6 +499,11 @@
             {
               "id": "EN-01",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -630,6 +670,16 @@
             {
               "id": "EN-06",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": [
@@ -674,6 +724,11 @@
             {
               "id": "EN-04",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -703,6 +758,11 @@
             {
               "id": "EN-09",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -736,6 +796,11 @@
               "level": "passage",
               "page": "15-16",
               "note": "Guru Bhukti under Surya Dasha - the Dasha/Bhukti pairing shape."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -824,6 +889,16 @@
             {
               "id": "EN-06",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": [
@@ -865,6 +940,11 @@
             {
               "id": "EN-01",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -903,6 +983,11 @@
               "id": "EN-02",
               "level": "chapter",
               "note": "Adhyaya VII - kalatra bhava."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -933,6 +1018,16 @@
             {
               "id": "EN-07",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": [
@@ -966,6 +1061,11 @@
               "level": "passage",
               "page": "15-18",
               "note": "Dasha/Bhukti remedy pairing for Budha, Guru and Sukra."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -1057,6 +1157,11 @@
               "id": "EN-02",
               "level": "chapter",
               "note": "Adhyaya VII - kalatra bhava; Phaladeepika X-15 on loss of wife is NOT relayed."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -1110,6 +1215,16 @@
               "id": "TA-19",
               "level": "book",
               "note": "Tamil nadi treatment of Sukra and marriage."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": [
@@ -1138,6 +1253,11 @@
             {
               "id": "EN-09",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -1175,6 +1295,16 @@
             {
               "id": "EN-06",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": []
@@ -1216,6 +1346,11 @@
               "level": "passage",
               "page": "18",
               "note": "Sukra Bhukti effects rewritten - the source text's loss-of-wife wording is dropped."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -1299,6 +1434,16 @@
             {
               "id": "EN-06",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": [
@@ -1340,6 +1485,11 @@
             {
               "id": "EN-04",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -1424,6 +1574,11 @@
             {
               "id": "EN-09",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -1467,6 +1622,11 @@
             {
               "id": "EN-01",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -1494,6 +1654,16 @@
             {
               "id": "EN-06",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
+            },
+            {
+              "id": "TA-02",
+              "level": "book",
+              "note": "Sadhaka Parisatham - the Tamil Jataka Parijata this rule is read from."
             }
           ],
           "practical": []
@@ -1515,6 +1685,11 @@
             {
               "id": "EN-01",
               "level": "book"
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": [
@@ -1602,6 +1777,11 @@
               "level": "passage",
               "page": "15-18",
               "note": "The whole book is organised Dasha -> Bhukti -> remedy, which is the shape this rule follows."
+            },
+            {
+              "id": "TA-01",
+              "level": "book",
+              "note": "Poorva Parasariyam - the Tamil rendering of the Parashara Hora Shastra this rule is read from."
             }
           ],
           "practical": []
