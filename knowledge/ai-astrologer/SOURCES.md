@@ -226,6 +226,16 @@ Thirunallar Sambandar pathigam the temple itself names.
 
 ---
 
+### 3k. Added 2026-10-10 - verified Tamil sources (3)
+
+Each was added only after its page was opened. The new rows keep the registry levels exactly.
+
+| ID | நூல் / Title | URL | Useful for | Verified |
+|---|---|---|---|---|
+| TA-31 | **ஜோதிஷசாஸ்திரம்** (மார்க்கலிங்க ஜோதிடர், 1938) | [dli.rmrl.008825](https://archive.org/details/dli.rmrl.008825) | Early Tamil jothisha text; book-level citation only | metadata-verified |
+| TA-32 | **ஜோதிட புத்தகம்** (author not catalogued) | [20200421_20200421_1209](https://archive.org/details/20200421_20200421_1209) | General Tamil astrology reference; OCR unreliable, book-level only | metadata-verified |
+| TA-33 | **தமிழ்நவரசம் ஜோதிட நூல்கள்** (listing page) | [tamilnavarasam.in](https://tamilnavarasam.in/astrologybook.aspx) | Lead list only. The PDFs are not opened, so this is NOT citable | linked-not-opened |
+
 ## 4. நவக்கிரக ஸ்தலங்கள் — Navagraha temple remedies (12)
 
 Mapping **content-read** from TP-01:

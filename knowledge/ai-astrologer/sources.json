@@ -1,7 +1,7 @@
 {
   "$schema": "./sources.schema.json",
   "registryVersion": "1.0.0",
-  "generatedOn": "2026-10-09",
+  "generatedOn": "2026-10-10",
   "project": "ASTRO SIVAM AI Astrologer",
   "verificationPolicy": {
     "rule": "A source is listed here ONLY if the URL was actually opened during verification, or its existence and metadata were returned by the publisher's own catalogue API.",
@@ -23,21 +23,21 @@
     "_note": "Counted by category. Hindi books are NOT counted here - see excludedSources.",
     "classicalTextsEnglish": 9,
     "hindiBooks": 0,
-    "tamilBooks": 30,
+    "tamilBooks": 32,
     "navagrahaSthalamAndTemples": 12,
-    "reference": 4,
-    "total": 55,
+    "reference": 5,
+    "total": 58,
     "excluded": 13,
     "byLanguageField": {
       "en": 22,
       "sa": 1,
-      "ta": 32
+      "ta": 35
     },
     "byVerificationLevel": {
       "content-read": 11,
-      "metadata-verified": 32,
+      "metadata-verified": 34,
       "catalogue-verified": 1,
-      "linked-not-opened": 10,
+      "linked-not-opened": 11,
       "dead": 1
     },
     "passageLevelSources": [
@@ -1255,6 +1255,60 @@
       "verification": "dead",
       "verificationNote": "Attempted 2026-10-09. WordPress returns 'this site has been archived or suspended for a violation of our Terms of Service'. The Gita Press titles it used to list (Arogya Ank code 1592, Kalyan Jyotish Tattva Ank code 1980) could NOT be verified and are therefore NOT in this registry. Logged here so nobody re-adds the dead link.",
       "usefulFor": []
+    },
+    {
+      "id": "TA-31",
+      "group": "classical-tamil",
+      "tamilSection": true,
+      "title": "Jothisha Sasthiram (Marana Kandi Sasthiram)",
+      "titleNative": "ஜோதிஷசாஸ்திரம்",
+      "author": "Markalinga Jothishar (Pitchaipakkam), a disciple of Kuzhanthaiyananda Swamigal",
+      "translator": null,
+      "language": "ta",
+      "year": 1938,
+      "url": "https://archive.org/details/dli.rmrl.008825",
+      "publisher": "Chennai: Thirumagal Vilasa Press (Roja Muthiah Research Library scan)",
+      "verification": "metadata-verified",
+      "verificationNote": "Verified 2026-10-10: detail page opened and read. Catalogue fields: identifier dli.rmrl.008825, Tamil, 1938, 82 pages, OCR language ta. Body text not read - book-level citation only.",
+      "usefulFor": [
+        "Early Tamil jothisha text on mundane and natal prediction; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-32",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Jothida Nool (Tamil astrology book, uncatalogued author)",
+      "titleNative": "ஜோதிட புத்தகம்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/20200421_20200421_1209",
+      "publisher": "Internet Archive, booksbylanguage_tamil collection",
+      "verification": "metadata-verified",
+      "verificationNote": "Verified 2026-10-10: detail page opened and read. Language Tamil, topic ஜோதிடம். OCR script detection was unreliable (Han, conf 0.48) and the body text was not read - book-level citation only; do not quote passages.",
+      "usefulFor": [
+        "General Tamil astrology reference; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-33",
+      "group": "reference",
+      "tamilSection": true,
+      "title": "Tamil astrology book collection (Tamilnavarasam, Jothidam section)",
+      "titleNative": "தமிழ்நவரசம் ஜோதிட நூல்கள்",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://tamilnavarasam.in/astrologybook.aspx",
+      "publisher": "Tamilnavarasam",
+      "verification": "linked-not-opened",
+      "verificationNote": "Verified 2026-10-10: detail page opened and read. The listing page was opened and read (about 60 Tamil PDF titles). The individual PDFs were NOT opened, so this entry is a catalogue pointer only and is NOT citable as an authority until a specific PDF is opened.",
+      "usefulFor": [
+        "Lead list only - open a specific PDF before citing it"
+      ]
     }
   ],
   "excludedSources": [
