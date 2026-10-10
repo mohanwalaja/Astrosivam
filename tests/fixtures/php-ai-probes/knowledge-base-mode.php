@@ -14,12 +14,14 @@ require_once '/repo/api/astrology/engine.php';
 
 // Load only astro_ai_chart_facts() from the endpoint; including the full endpoint
 // would start its normal session/CORS/database dispatch in this isolated probe.
+// astro_ai_chart_facts() reads the shared, memoised rebuild helper, so that
+// helper has to be loaded with it.
 $endpoint = file_get_contents('/repo/api/ai_astrologer.php');
-$start = strpos($endpoint, 'function astro_ai_chart_facts(');
-$end = strpos($endpoint, '/* ================================================================== */', $start);
 if (!function_exists('astro_normalize_report_language')) {
     function astro_normalize_report_language($l) { return in_array($l, ['en', 'ta', 'hi'], true) ? $l : 'ta'; }
 }
+$start = strpos($endpoint, 'function astro_ai_report_result(');
+$end = strpos($endpoint, '/* ================================================================== */', $start);
 eval(str_replace('__DIR__', "'/repo/api'", substr($endpoint, $start, $end - $start)));
 
 $diagnostics = AstroAiProvider::diagnostics(false);

@@ -136,6 +136,12 @@ class AstroAiOffline
         if ($guidedKind === 'dosha') {
             return self::finish(self::doshaBubbles($guided, $lang, $chart, $name), '', null, false, $lang);
         }
+        if ($guidedKind === 'service') {
+            // The customer's own Wedding Matching / Baby Naming / Subha
+            // Muhurtham report. Read from it, never re-judged.
+            $route = self::serviceRoute($guided, $lang, $context, $name);
+            return self::finish($route['bubbles'], '', null, (bool) ($route['handoff'] ?? false), $lang);
+        }
         if ($guidedKind === 'remedy') {
             $planet = (isset($guided['planet']) && is_string($guided['planet']) && isset(self::PLANET_NAMES[$guided['planet']]))
                 ? $guided['planet'] : null;
@@ -492,6 +498,575 @@ class AstroAiOffline
             ]) . "\n" . $remedy;
         }
         return $bubbles;
+    }
+
+    // ------------------------------------------------------------------
+    // Guided service chapters: the customer's own Wedding Matching,
+    // Baby Naming and Subha Muhurtham reports
+    // ------------------------------------------------------------------
+
+    /** Plain names of the service reports a guided chapter can discuss. */
+    private static function serviceLabel(string $service, string $lang): string
+    {
+        $names = [
+            'BIRTH_JATHAGAM' => ['en' => 'Birth Jathagam report', 'ta' => 'ஜன்ம ஜாதக அறிக்கை', 'hi' => 'जन्म कुंडली रिपोर्ट'],
+            'MARRIAGE_COMPATIBILITY' => ['en' => 'Wedding Matching report', 'ta' => 'திருமணப் பொருத்த அறிக்கை', 'hi' => 'विवाह मिलान रिपोर्ट'],
+            'BABY_NAMING' => ['en' => 'Baby Naming report', 'ta' => 'பெயர் சூட்டும் அறிக்கை', 'hi' => 'नामकरण रिपोर्ट'],
+            'MUHURTHAM' => ['en' => 'Subha Muhurtham report', 'ta' => 'சுப முகூர்த்த அறிக்கை', 'hi' => 'शुभ मुहूर्त रिपोर्ट'],
+            'MULTI_PERSON' => ['en' => 'Family report', 'ta' => 'குடும்ப அறிக்கை', 'hi' => 'पारिवारिक रिपोर्ट'],
+        ];
+        return self::t($lang, $names[$service] ?? $names['MUHURTHAM']);
+    }
+
+    /**
+     * Routes a guided service option. The answer is read out of the customer's
+     * own report (the porutham table, the birth-pada syllables, the muhurtham
+     * calendar) - the chat never re-judges a match, never invents a syllable
+     * and never names a date the report does not carry.
+     *
+     * @return array{bubbles:array, handoff:bool}
+     */
+    private static function serviceRoute(array $guided, string $lang, array $context, string $name): array
+    {
+        $service = strtoupper(trim((string) ($guided['service'] ?? '')));
+        $topic = (string) ($guided['topic'] ?? '');
+        $facts = (isset($context['serviceFacts']) && is_array($context['serviceFacts'])) ? $context['serviceFacts'] : null;
+        $bound = strtoupper(trim((string) ($context['boundServiceType'] ?? '')));
+
+        if ($facts === null || (string) ($facts['serviceType'] ?? '') !== $service) {
+            // The right report is attached but could not be rebuilt here (an
+            // old stored result, or a failed calculation): that is a question
+            // for a person, not a nudge to attach something already attached.
+            if ($bound === $service) {
+                return ['bubbles' => [self::serviceUnreadableText($service, $lang, $name)], 'handoff' => true];
+            }
+            // Otherwise the report is not attached (or a different one is):
+            // say which report is needed instead of answering from nothing.
+            return ['bubbles' => self::serviceAttachBubbles($service, $bound, $lang, $name), 'handoff' => false];
+        }
+        if ($service === 'MARRIAGE_COMPATIBILITY' && is_array($facts['matching'] ?? null)) {
+            return ['bubbles' => self::matchingBubbles($topic, $facts['matching'], $lang, $name), 'handoff' => false];
+        }
+        if ($service === 'BABY_NAMING' && is_array($facts['naming'] ?? null)) {
+            return ['bubbles' => self::namingBubbles($topic, $facts['naming'], $lang, $name), 'handoff' => false];
+        }
+        if ($service === 'MUHURTHAM' && is_array($facts['muhurtham'] ?? null)) {
+            return ['bubbles' => self::muhurthamBubbles($topic, $facts['muhurtham'], $lang, $name), 'handoff' => false];
+        }
+        // The report is attached and of the right service, but its readings
+        // could not be rebuilt here (an old stored result, or a failed server
+        // calculation). That is a question for a person, not for a guess.
+        return ['bubbles' => [self::serviceUnreadableText($service, $lang, $name)], 'handoff' => true];
+    }
+
+    /** Asks for the report to be attached, naming the one this chat is on. */
+    private static function serviceAttachBubbles(string $service, string $bound, string $lang, string $name): array
+    {
+        $who = $name !== '' ? $name . ', ' : '';
+        $label = self::serviceLabel($service, $lang);
+        $bubbles = [];
+        if ($bound !== '' && $bound !== $service) {
+            $bubbles[] = self::t($lang, [
+                'en' => $who . 'this conversation is attached to your ' . self::serviceLabel($bound, $lang)
+                    . '. To ask about your ' . $label . ', attach that report with the picker above, or open this chat from that report in My Dashboard.',
+                'ta' => $who . 'இந்த உரையாடல் உங்கள் ' . self::serviceLabel($bound, $lang) . ' உடன் இணைக்கப்பட்டுள்ளது. உங்கள் '
+                    . $label . ' பற்றி கேட்க, மேலே உள்ள தேர்விலிருந்து அந்த அறிக்கையை இணைக்கவும், அல்லது என் டாஷ்போர்டில் அந்த அறிக்கையிலிருந்து இந்த உரையாடலைத் திறக்கவும்.',
+                'hi' => $who . 'यह बातचीत आपकी ' . self::serviceLabel($bound, $lang) . ' से जुड़ी है। अपनी ' . $label
+                    . ' के बारे में पूछने के लिए ऊपर दिए चयनकर्ता से वह रिपोर्ट जोड़ें, या मेरे डैशबोर्ड में उस रिपोर्ट से यह चैट खोलें।',
+            ]);
+            return $bubbles;
+        }
+        $bubbles[] = self::t($lang, [
+            'en' => $who . 'I answer this from your own ' . $label . '. Attach it with the report picker above, or open this chat from that report in My Dashboard, and I will read it for you.',
+            'ta' => $who . 'இதற்கு உங்கள் சொந்த ' . $label . ' இருந்தே பதில் சொல்கிறேன். மேலே உள்ள அறிக்கைத் தேர்விலிருந்து அதை இணைக்கவும், அல்லது என் டாஷ்போர்டில் அந்த அறிக்கையிலிருந்து இந்த உரையாடலைத் திறக்கவும்.',
+            'hi' => $who . 'मैं इसका उत्तर आपकी अपनी ' . $label . ' से दूँगा। ऊपर दिए चयनकर्ता से उसे जोड़ें, या मेरे डैशबोर्ड में उस रिपोर्ट से यह चैट खोलें; फिर मैं उसे पढ़कर बताऊँगा।',
+        ]);
+        return $bubbles;
+    }
+
+    private static function serviceUnreadableText(string $service, string $lang, string $name): string
+    {
+        $who = $name !== '' ? $name . ', ' : '';
+        return self::t($lang, [
+            'en' => $who . 'I could not read your ' . self::serviceLabel($service, $lang)
+                . ' on the server just now, and I will not guess at its numbers. Please tap "Talk to our astrologer" and our astrologer will read it with you.',
+            'ta' => $who . 'உங்கள் ' . self::serviceLabel($service, $lang)
+                . ' இப்போது சர்வரில் என்னால் படிக்க முடியவில்லை; அதன் எண்களை ஊகித்து சொல்ல மாட்டேன். "எங்கள் ஜோதிடருடன் பேசுங்கள்" என்பதை அழுத்தினால் எங்கள் ஜோதிடர் உங்களுடன் சேர்ந்து பார்ப்பார்கள்.',
+            'hi' => $who . 'मैं अभी आपकी ' . self::serviceLabel($service, $lang)
+                . ' को सर्वर पर नहीं पढ़ सका, और उसके अंकों का अनुमान नहीं लगाऊँगा। "हमारे ज्योतिषी से बात करें" दबाएँ; हमारे ज्योतिषी आपके साथ उसे देखेंगे।',
+        ]);
+    }
+
+    /** Uthamam / Mathimam / Porundhadhu, in the customer's language. */
+    private static function poruthamStatusLabel(string $status, string $lang): string
+    {
+        if ($status === 'UTTHAMAM') {
+            return self::t($lang, ['en' => 'Uthamam (full marks)', 'ta' => 'உத்தமம் (முழு மதிப்பெண்)', 'hi' => 'उत्तम (पूर्ण अंक)']);
+        }
+        if ($status === 'MADHYAMAM') {
+            return self::t($lang, ['en' => 'Mathimam (partial)', 'ta' => 'மத்திமம் (பகுதி மதிப்பெண்)', 'hi' => 'मध्यम (आंशिक अंक)']);
+        }
+        return self::t($lang, ['en' => 'Porundhadhu (no marks)', 'ta' => 'பொருந்தாது (மதிப்பெண் இல்லை)', 'hi' => 'पोरुंदधु (अंक नहीं)']);
+    }
+
+    /** Picks the language entry of a {en,ta,hi} map built by the endpoint. */
+    private static function pick($map, string $lang): string
+    {
+        if (!is_array($map)) {
+            return trim((string) $map);
+        }
+        return trim((string) ($map[$lang] ?? ($map['en'] ?? '')));
+    }
+
+    /** "Chennai, Tamil Nadu, India" + "India" must not print the country twice. */
+    private static function placeWithCountry(string $place, string $country): string
+    {
+        $place = trim($place);
+        $country = trim($country);
+        if ($place === '') {
+            return $country;
+        }
+        if ($country === '' || mb_stripos($place, $country) !== false) {
+            return $place;
+        }
+        return $place . ', ' . $country;
+    }
+
+    /** 2026-11-05 -> 05 Nov 2026, the way the report prints it. */
+    private static function prettyDate(string $iso): string
+    {
+        if (!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $iso, $m)) {
+            return $iso;
+        }
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return $m[3] . ' ' . $months[((int) $m[2]) - 1] . ' ' . $m[1];
+    }
+
+    /**
+     * Wedding Matching answers. Every number, name and verdict below is the
+     * report's own: the chat repeats it, explains it, and never decides again.
+     */
+    private static function matchingBubbles(string $topic, array $m, string $lang, string $name): array
+    {
+        $who = $name !== '' ? $name . ', ' : '';
+        $poruthams = array_values(array_filter((array) ($m['poruthams'] ?? []), 'is_array'));
+        $groom = (string) ($m['groom']['name'] ?? '');
+        $bride = (string) ($m['bride']['name'] ?? '');
+        $pairLine = self::t($lang, [
+            'en' => 'Read from both charts: ' . $groom . ' (' . self::pick($m['groom']['rasi'] ?? '', $lang) . ', '
+                . self::pick($m['groom']['nakshatra'] ?? '', $lang) . ') and ' . $bride . ' ('
+                . self::pick($m['bride']['rasi'] ?? '', $lang) . ', ' . self::pick($m['bride']['nakshatra'] ?? '', $lang) . ').',
+            'ta' => 'இரு ஜாதகங்களிலிருந்தும் வாசிக்கப்பட்டது: ' . $groom . ' (' . self::pick($m['groom']['rasi'] ?? '', $lang) . ', '
+                . self::pick($m['groom']['nakshatra'] ?? '', $lang) . ') மற்றும் ' . $bride . ' ('
+                . self::pick($m['bride']['rasi'] ?? '', $lang) . ', ' . self::pick($m['bride']['nakshatra'] ?? '', $lang) . ').',
+            'hi' => 'दोनों कुंडलियों से पढ़ा गया: ' . $groom . ' (' . self::pick($m['groom']['rasi'] ?? '', $lang) . ', '
+                . self::pick($m['groom']['nakshatra'] ?? '', $lang) . ') और ' . $bride . ' ('
+                . self::pick($m['bride']['rasi'] ?? '', $lang) . ', ' . self::pick($m['bride']['nakshatra'] ?? '', $lang) . ')।',
+        ]);
+
+        if ($topic === 'verdict') {
+            $bubbles = [$who . self::t($lang, [
+                'en' => 'the overall verdict in your Wedding Matching report:',
+                'ta' => 'உங்கள் திருமணப் பொருத்த அறிக்கையின் ஒட்டுமொத்த முடிவு:',
+                'hi' => 'आपकी विवाह मिलान रिपोर्ट का समग्र निर्णय:',
+            ]) . "\n" . self::pick($m['verdict'] ?? '', $lang), $pairLine];
+            if ((string) ($m['verdictStatus'] ?? '') !== 'UTTHAMAM') {
+                $bubbles[] = self::t($lang, [
+                    'en' => 'A porutham reading is guidance for both families to weigh together, not a judgement on either person. Our astrologer can go through it with you - tap "Talk to our astrologer".',
+                    'ta' => 'பொருத்தப் பார்வை இரு குடும்பங்களும் சேர்ந்து எடைபோட வேண்டிய வழிகாட்டுதல்; இருவரில் யாருக்குமான தீர்ப்பு அல்ல. இதை எங்கள் ஜோதிடர் உங்களுடன் பார்க்கலாம் - "எங்கள் ஜோதிடருடன் பேசுங்கள்" என்பதை அழுத்தவும்.',
+                    'hi' => 'पोरुतम पाठ दोनों परिवारों के लिए मिल-जुलकर विचारने की सलाह है, किसी व्यक्ति पर फैसला नहीं। हमारे ज्योतिषी इसे आपके साथ देख सकते हैं - "हमारे ज्योतिषी से बात करें" दबाएँ।',
+                ]);
+            }
+            return $bubbles;
+        }
+
+        if ($topic === 'score') {
+            $head = $who . self::t($lang, [
+                'en' => 'your report scores this match:',
+                'ta' => 'உங்கள் அறிக்கை இந்தப் பொருத்தத்திற்கு அளிக்கும் மதிப்பெண்:',
+                'hi' => 'आपकी रिपोर्ट इस मिलान को दिए गए अंक:',
+            ]) . "\n" . self::t($lang, [
+                'en' => (string) ($m['matched'] ?? 0) . ' of ' . (string) ($m['total'] ?? 10)
+                    . ' poruthams matched — ' . (string) ($m['score'] ?? 0) . ' / ' . (string) ($m['maxScore'] ?? 0)
+                    . ' points (' . (string) round((float) ($m['percentage'] ?? 0)) . '%).',
+                'ta' => (string) ($m['total'] ?? 10) . ' பொருத்தங்களில் ' . (string) ($m['matched'] ?? 0)
+                    . ' பொருந்தியுள்ளன — ' . (string) ($m['score'] ?? 0) . ' / ' . (string) ($m['maxScore'] ?? 0)
+                    . ' மதிப்பெண்கள் (' . (string) round((float) ($m['percentage'] ?? 0)) . '%).',
+                'hi' => (string) ($m['total'] ?? 10) . ' में से ' . (string) ($m['matched'] ?? 0)
+                    . ' पोरुतम मिले — ' . (string) ($m['score'] ?? 0) . ' / ' . (string) ($m['maxScore'] ?? 0)
+                    . ' अंक (' . (string) round((float) ($m['percentage'] ?? 0)) . '%)।',
+            ]);
+            $lines = [];
+            foreach ($poruthams as $p) {
+                $lines[] = '• ' . self::pick($p['name'] ?? '', $lang) . ' — ' . (int) ($p['points'] ?? 0)
+                    . '/' . (int) ($p['maxPoints'] ?? 0);
+            }
+            $bubbles = [$head];
+            if ($lines !== []) {
+                $bubbles[] = implode("\n", $lines);
+            }
+            return $bubbles;
+        }
+
+        if ($topic === 'poruthams') {
+            $lines = [];
+            foreach ($poruthams as $p) {
+                if (empty($p['matched'])) {
+                    continue;
+                }
+                $lines[] = '• ' . self::pick($p['name'] ?? '', $lang) . ' — ' . self::poruthamStatusLabel((string) ($p['status'] ?? ''), $lang)
+                    . ' (' . (int) ($p['points'] ?? 0) . '/' . (int) ($p['maxPoints'] ?? 0) . ')';
+            }
+            if ($lines === []) {
+                return [self::t($lang, [
+                    'en' => 'No porutham earned marks in this match. Your report sets out each one and its remedy - our astrologer can go through it with you.',
+                    'ta' => 'இந்தப் பொருத்தத்தில் எந்தப் பொருத்தமும் மதிப்பெண் பெறவில்லை. உங்கள் அறிக்கை ஒவ்வொன்றையும் அதன் பரிகாரத்துடன் காட்டுகிறது - எங்கள் ஜோதிடர் உங்களுடன் பார்க்கலாம்.',
+                    'hi' => 'इस मिलान में किसी भी पोरुतम को अंक नहीं मिले। आपकी रिपोर्ट हर एक और उसका उपाय बताती है - हमारे ज्योतिषी आपके साथ देख सकते हैं।',
+                ])];
+            }
+            return [
+                $who . self::t($lang, [
+                    'en' => 'these poruthams matched in your report:',
+                    'ta' => 'உங்கள் அறிக்கையில் இந்தப் பொருத்தங்கள் பொருந்தின:',
+                    'hi' => 'आपकी रिपोर्ट में ये पोरुतम मिले:',
+                ]) . "\n" . implode("\n", $lines),
+                self::t($lang, [
+                    'en' => 'Uthamam means the classical condition is met in full; Mathimam means it is met in part. Your report explains each porutham in its own words.',
+                    'ta' => 'உத்தமம் என்றால் அந்தச் சாஸ்திர நிபந்தனை முழுமையாக நிறைவேறியுள்ளது; மத்திமம் என்றால் பகுதியளவே. ஒவ்வொரு பொருத்தத்தையும் உங்கள் அறிக்கை அதன் சொந்த வார்த்தைகளில் விளக்குகிறது.',
+                    'hi' => 'उत्तम का अर्थ है शास्त्रीय शर्त पूरी तरह पूरी हुई; मध्यम का अर्थ है आंशिक रूप से। हर पोरुतम को आपकी रिपोर्ट अपने शब्दों में समझाती है।',
+                ]),
+            ];
+        }
+
+        if ($topic === 'unmatched') {
+            $lines = [];
+            foreach ($poruthams as $p) {
+                if (!empty($p['full'])) {
+                    continue;
+                }
+                $note = self::pick($p['note'] ?? '', $lang);
+                $lines[] = '• ' . self::pick($p['name'] ?? '', $lang) . ' — ' . self::poruthamStatusLabel((string) ($p['status'] ?? ''), $lang)
+                    . ($note !== '' ? ': ' . $note : '');
+            }
+            if ($lines === []) {
+                return [self::t($lang, [
+                    'en' => 'Every porutham in your report earned full marks (Uthamam) for this match.',
+                    'ta' => 'உங்கள் அறிக்கையில் இந்தப் பொருத்தத்திற்கு எல்லாப் பொருத்தங்களும் முழு மதிப்பெண் (உத்தமம்) பெற்றுள்ளன.',
+                    'hi' => 'आपकी रिपोर्ट में इस मिलान के लिए हर पोरुतम को पूर्ण अंक (उत्तम) मिले हैं।',
+                ])];
+            }
+            return [
+                $who . self::t($lang, [
+                    'en' => 'these poruthams did not earn full marks:',
+                    'ta' => 'இந்தப் பொருத்தங்கள் முழு மதிப்பெண் பெறவில்லை:',
+                    'hi' => 'इन पोरुतम को पूर्ण अंक नहीं मिले:',
+                ]) . "\n" . implode("\n", $lines),
+                self::t($lang, [
+                    'en' => 'A shortfall is an indication to weigh with care, not a bar to the marriage - the classical texts give remedies for exactly this. Our astrologer can read it with both charts.',
+                    'ta' => 'குறைபாடு என்பது கவனமாக எடைபோட வேண்டிய அறிகுறி, திருமணத்திற்குத் தடை அல்ல - இதற்கான பரிகாரங்களைச் சாஸ்திரங்கள் கூறுகின்றன. இரு ஜாதகங்களுடனும் எங்கள் ஜோதிடர் இதைப் பார்க்கலாம்.',
+                    'hi' => 'कमी सावधानी से विचारने का संकेत है, विवाह में बाधा नहीं - शास्त्रों में इसी के लिए उपाय बताए गए हैं। हमारे ज्योतिषी दोनों कुंडलियों के साथ इसे देख सकते हैं।',
+                ]),
+            ];
+        }
+
+        if ($topic === 'sevvai') {
+            $sevvai = is_array($m['sevvai'] ?? null) ? $m['sevvai'] : [];
+            return [
+                $who . self::t($lang, [
+                    'en' => 'Kuja (Sevvai) Dosha in your match:',
+                    'ta' => 'உங்கள் பொருத்தத்தில் செவ்வாய் தோஷம்:',
+                    'hi' => 'आपके मिलान में कुज (मंगल) दोष:',
+                ]) . "\n" . self::pick($sevvai['samyamLabel'] ?? '', $lang),
+                self::pick($sevvai['advice'] ?? '', $lang),
+            ];
+        }
+
+        // remedy
+        $sevvai = is_array($m['sevvai'] ?? null) ? $m['sevvai'] : [];
+        $status = (string) ($sevvai['samyamStatus'] ?? '');
+        if ($status === 'BALANCED') {
+            return [
+                self::t($lang, [
+                    'en' => 'Your report records Dosha Samyam as balanced for this match, so it advises no Kuja remedy on this count.',
+                    'ta' => 'உங்கள் அறிக்கை இந்தப் பொருத்தத்திற்கு தோஷ சம்யம் சமநிலையில் உள்ளதாகப் பதிவு செய்கிறது; எனவே இந்தக் காரணத்திற்கு செவ்வாய் பரிகாரம் பரிந்துரைக்கவில்லை.',
+                    'hi' => 'आपकी रिपोर्ट इस मिलान के लिए दोष साम्य संतुलित दर्ज करती है, इसलिए इस कारण से कोई मंगल उपाय नहीं बताया गया।',
+                ]),
+                self::t($lang, [
+                    'en' => 'If you would still like to observe one, the traditional Sevvai (Angaraka) pariharam is:',
+                    'ta' => 'இருந்தாலும் ஒரு பரிகாரம் செய்ய விரும்பினால், மரபான செவ்வாய் (அங்காரக) பரிகாரம்:',
+                    'hi' => 'फिर भी कोई उपाय करना चाहें तो पारंपरिक मंगल (अंगारक) उपाय यह है:',
+                ]) . "\n" . self::remedyText('Sevvai', $lang),
+            ];
+        }
+        return [
+            $who . self::t($lang, [
+                'en' => 'your report advises these remedies for the match:',
+                'ta' => 'இந்தப் பொருத்தத்திற்கு உங்கள் அறிக்கை பரிந்துரைக்கும் பரிகாரங்கள்:',
+                'hi' => 'इस मिलान के लिए आपकी रिपोर्ट ये उपाय बताती है:',
+            ]),
+            self::pick($sevvai['advice'] ?? '', $lang),
+            self::t($lang, [
+                'en' => 'The traditional Sevvai (Angaraka) pariharam:',
+                'ta' => 'மரபான செவ்வாய் (அங்காரக) பரிகாரம்:',
+                'hi' => 'पारंपरिक मंगल (अंगारक) उपाय:',
+            ]) . "\n" . self::remedyText('Sevvai', $lang),
+        ];
+    }
+
+    /** Baby Naming answers: the baby's own birth star, pada sounds and names. */
+    private static function namingBubbles(string $topic, array $n, string $lang, string $name): array
+    {
+        $who = $name !== '' ? $name . ', ' : '';
+        $baby = is_array($n['baby'] ?? null) ? $n['baby'] : [];
+        $babyName = trim((string) ($baby['name'] ?? ''));
+        $star = self::pick($n['star'] ?? '', $lang);
+        $pada = (int) ($n['pada'] ?? 0);
+        $rasi = self::pick($n['rasi'] ?? '', $lang);
+        $lagna = self::pick($n['lagna'] ?? '', $lang);
+        $primary = self::pick($n['primarySound'] ?? '', $lang);
+
+        if ($topic === 'star') {
+            $who2 = $babyName !== '' ? $babyName . ' — ' : $who;
+            return [
+                $who2 . self::t($lang, [
+                    'en' => 'the birth details your Namakaran report was calculated from give:',
+                    'ta' => 'உங்கள் நாமகரண அறிக்கை கணிக்கப்பட்ட பிறப்பு விவரங்கள் தருவது:',
+                    'hi' => 'आपकी नामकरण रिपोर्ट जिन जन्म विवरणों से बनी, वे यह बताते हैं:',
+                ]) . "\n" . self::t($lang, [
+                    'en' => 'Janma Nakshatra (birth star): ' . $star . "\n" . 'Pada (quarter): ' . ($pada > 0 ? (string) $pada : '—')
+                        . "\n" . 'Chandra Rasi (Moon sign): ' . $rasi . "\n" . 'Lagna (ascendant): ' . $lagna,
+                    'ta' => 'ஜன்ம நட்சத்திரம்: ' . $star . "\n" . 'பாதம்: ' . ($pada > 0 ? (string) $pada : '—')
+                        . "\n" . 'சந்திர ராசி: ' . $rasi . "\n" . 'லக்னம்: ' . $lagna,
+                    'hi' => 'जन्म नक्षत्र: ' . $star . "\n" . 'पाद (चरण): ' . ($pada > 0 ? (string) $pada : '—')
+                        . "\n" . 'चंद्र राशि: ' . $rasi . "\n" . 'लग्न: ' . $lagna,
+                ]),
+                self::t($lang, [
+                    'en' => 'The birth star and its pada decide the sounds a name may begin with.',
+                    'ta' => 'பிறந்த நட்சத்திரமும் அதன் பாதமும் பெயர் தொடங்க வேண்டிய எழுத்துகளைத் தீர்மானிக்கின்றன.',
+                    'hi' => 'जन्म नक्षत्र और उसका पाद तय करते हैं कि नाम किन अक्षरों से शुरू होना चाहिए।',
+                ]),
+            ];
+        }
+
+        if ($topic === 'letters') {
+            $padas = array_values(array_filter((array) ($n['padas'] ?? []), 'is_array'));
+            $lines = [];
+            foreach ($padas as $p) {
+                $sound = self::pick($p['sound'] ?? '', $lang);
+                if ($sound === '') {
+                    continue;
+                }
+                $rasiName = self::pick($p['rasi'] ?? '', $lang);
+                $lines[] = '• ' . self::t($lang, ['en' => 'Pada ', 'ta' => 'பாதம் ', 'hi' => 'पाद '])
+                    . (int) ($p['pada'] ?? 0) . ' — ' . $sound . ($rasiName !== '' ? ' (' . $rasiName . ')' : '');
+            }
+            $bubbles = [$who . self::t($lang, [
+                'en' => 'the sounds of ' . $star . ' for your baby (pada ' . ($pada > 0 ? (string) $pada : '—') . ' is the birth pada):',
+                'ta' => 'உங்கள் குழந்தைக்கு ' . $star . ' நட்சத்திரத்தின் எழுத்துகள் (பிறந்த பாதம் ' . ($pada > 0 ? (string) $pada : '—') . '):',
+                'hi' => 'आपके शिशु के लिए ' . $star . ' नक्षत्र के अक्षर (जन्म पाद ' . ($pada > 0 ? (string) $pada : '—') . '):',
+            ])];
+            if ($lines !== []) {
+                $bubbles[] = implode("\n", $lines);
+            }
+            $bubbles[] = self::t($lang, [
+                'en' => 'The sound to use: ' . $primary . '. A name beginning with it is the traditional choice for this birth star.',
+                'ta' => 'பயன்படுத்த வேண்டிய ஒலி: ' . $primary . '. இந்த எழுத்தில் தொடங்கும் பெயர் இந்த ஜன்ம நட்சத்திரத்திற்கு மரபான தேர்வு.',
+                'hi' => 'जिस ध्वनि का उपयोग करना है: ' . $primary . '. इसी से शुरू होने वाला नाम इस जन्म नक्षत्र के लिए पारंपरिक विकल्प है।',
+            ]);
+            return $bubbles;
+        }
+
+        if ($topic === 'suggestions' || $topic === 'meaning') {
+            $names = array_values(array_filter((array) ($n['names'] ?? []), 'is_array'));
+            $lines = [];
+            foreach (array_slice($names, 0, 6) as $entry) {
+                $nm = trim((string) ($entry['name'] ?? ''));
+                $meaning = self::pick($entry['meaning'] ?? '', $lang);
+                if ($nm === '') {
+                    continue;
+                }
+                $lines[] = '• ' . $nm . ($meaning !== '' ? ' — ' . $meaning : '');
+            }
+            if ($lines === []) {
+                return [self::t($lang, [
+                    'en' => 'Your report lists the name bank for ' . $primary . ' on page 2 - it carries far more names than fit in a chat message.',
+                    'ta' => 'உங்கள் அறிக்கையின் பக்கம் 2-ல் ' . $primary . ' எழுத்துக்கான பெயர்ப் பட்டியல் உள்ளது - உரையாடலில் அடங்குவதை விட பல பெயர்கள் அதில் உள்ளன.',
+                    'hi' => 'आपकी रिपोर्ट के पृष्ठ 2 पर ' . $primary . ' अक्षर के लिए नाम-सूची है - चैट में समाने से कहीं अधिक नाम उसमें हैं।',
+                ])];
+            }
+            $head = $topic === 'meaning'
+                ? self::t($lang, [
+                    'en' => 'the meanings your report gives for these names:',
+                    'ta' => 'இந்தப் பெயர்களுக்கு உங்கள் அறிக்கை தரும் பொருள்கள்:',
+                    'hi' => 'इन नामों के अर्थ आपकी रिपोर्ट में:',
+                ])
+                : self::t($lang, [
+                    'en' => 'names from your report for the sound ' . $primary . ':',
+                    'ta' => $primary . ' எழுத்துக்கு உங்கள் அறிக்கையிலிருந்து பெயர்கள்:',
+                    'hi' => $primary . ' ध्वनि के लिए आपकी रिपोर्ट से नाम:',
+                ]);
+            return [$who . $head . "\n" . implode("\n", $lines)];
+        }
+
+        // our-name: the name recorded on the order, honestly stated.
+        $provenance = is_array($n['provenance'] ?? null) ? $n['provenance'] : [];
+        $supplied = trim((string) ($provenance['suppliedName'] ?? ''));
+        if ($supplied === '') {
+            return [self::t($lang, [
+                'en' => 'No name was recorded on your order, so your report certifies none. The sound to match is ' . $primary
+                    . '; your report lists names beginning with it.',
+                'ta' => 'உங்கள் ஆர்டரில் பெயர் பதிவு செய்யப்படவில்லை; எனவே உங்கள் அறிக்கை எந்தப் பெயரையும் சான்றளிக்கவில்லை. பொருத்த வேண்டிய ஒலி '
+                    . $primary . '; அந்த எழுத்தில் தொடங்கும் பெயர்களை உங்கள் அறிக்கை பட்டியலிடுகிறது.',
+                'hi' => 'आपके ऑर्डर में कोई नाम दर्ज नहीं था, इसलिए आपकी रिपोर्ट किसी नाम को प्रमाणित नहीं करती। मिलने वाली ध्वनि '
+                    . $primary . ' है; इसी से शुरू होने वाले नाम आपकी रिपोर्ट में सूचीबद्ध हैं।',
+            ])];
+        }
+        return [
+            self::t($lang, [
+                'en' => 'Your order records the name "' . $supplied . '". Your report certifies names that begin with the birth-pada sound ' . $primary . '.',
+                'ta' => 'உங்கள் ஆர்டரில் "' . $supplied . '" என்ற பெயர் பதிவாகியுள்ளது. பிறந்த பாத ஒலியான ' . $primary . ' இல் தொடங்கும் பெயர்களை உங்கள் அறிக்கை சான்றளிக்கிறது.',
+                'hi' => 'आपके ऑर्डर में "' . $supplied . '" नाम दर्ज है। आपकी रिपोर्ट उन्हीं नामों को प्रमाणित करती है जो जन्म-पाद की ध्वनि ' . $primary . ' से शुरू हों।',
+            ]),
+            self::pick($provenance['note'] ?? '', $lang),
+        ];
+    }
+
+    /** Subha Muhurtham answers: the report's own dates, windows and reasons. */
+    private static function muhurthamBubbles(string $topic, array $mu, string $lang, string $name): array
+    {
+        $who = $name !== '' ? $name . ', ' : '';
+        $months = array_values(array_filter((array) ($mu['months'] ?? []), 'is_array'));
+        $recommended = array_values(array_filter((array) ($mu['recommended'] ?? []), 'is_array'));
+        $event = self::pick($mu['event'] ?? '', $lang);
+        $window = self::pick($mu['window'] ?? '', $lang);
+
+        if ($topic === 'place') {
+            $both = (string) ($mu['personalCheckMode'] ?? '') === 'both';
+            return [
+                $who . self::t($lang, [
+                    'en' => 'yes - your dates were calculated for:',
+                    'ta' => 'ஆம் - உங்கள் நாட்கள் இந்த இடத்திற்காக கணிக்கப்பட்டவை:',
+                    'hi' => 'हाँ - आपकी तिथियाँ इसी स्थान के लिए गणना की गई हैं:',
+                ]) . "\n" . self::placeWithCountry((string) ($mu['place'] ?? ''), (string) ($mu['country'] ?? '')),
+                self::t($lang, [
+                    'en' => 'The calendar covers ' . $window . ' and every time is local to that place. The dates were also checked against '
+                        . ($both ? 'both charts (groom and bride).' : 'your chart (Janma Nakshatra).'),
+                    'ta' => 'இந்தக் காலண்டர் ' . $window . ' வரை உள்ளது; எல்லா நேரங்களும் அந்த இடத்தின் உள்ளூர் நேரம். நாட்கள் '
+                        . ($both ? 'இரு ஜாதகங்களோடும் (மணமகன் மற்றும் மணமகள்)' : 'உங்கள் ஜாதகத்தோடு (ஜன்ம நட்சத்திரம்)') . ' ஒப்பிடப்பட்டன.',
+                    'hi' => 'यह कैलेंडर ' . $window . ' तक है; सभी समय उसी स्थान के स्थानीय समय में हैं। तिथियाँ '
+                        . ($both ? 'दोनों कुंडलियों (वर और वधू)' : 'आपकी कुंडली (जन्म नक्षत्र)') . ' से भी जाँची गईं।',
+                ]),
+            ];
+        }
+
+        if ($topic === 'dates') {
+            $lines = [];
+            foreach (array_slice($recommended, 0, 6) as $d) {
+                $lines[] = '• ' . self::prettyDate((string) ($d['date'] ?? '')) . ' (' . self::pick($d['weekday'] ?? '', $lang) . ') — '
+                    . self::pick($d['nakshatra'] ?? '', $lang) . ' — ' . (string) ($d['grade'] ?? '');
+            }
+            $bubbles = [$who . self::t($lang, [
+                'en' => 'your ' . $event . ' calendar covers ' . $window . ':',
+                'ta' => 'உங்கள் ' . $event . ' காலண்டர் ' . $window . ' வரை:',
+                'hi' => 'आपका ' . $event . ' कैलेंडर ' . $window . ' तक है:',
+            ])];
+            if ($lines !== []) {
+                $bubbles[] = self::t($lang, [
+                    'en' => 'Recommended dates:',
+                    'ta' => 'பரிந்துரைக்கப்பட்ட நாட்கள்:',
+                    'hi' => 'अनुशंसित तिथियाँ:',
+                ]) . "\n" . implode("\n", $lines);
+            }
+            foreach (array_slice($months, 0, 3) as $m) {
+                $bubbles[] = self::pick($m['name'] ?? '', $lang) . ' — ' . self::t($lang, [
+                    'en' => (string) ((int) ($m['bestCount'] ?? 0)) . ' best, ' . (string) ((int) ($m['goodCount'] ?? 0)) . ' good',
+                    'ta' => 'சிறந்தவை ' . (string) ((int) ($m['bestCount'] ?? 0)) . ', நல்லவை ' . (string) ((int) ($m['goodCount'] ?? 0)),
+                    'hi' => 'सर्वोत्तम ' . (string) ((int) ($m['bestCount'] ?? 0)) . ', शुभ ' . (string) ((int) ($m['goodCount'] ?? 0)),
+                ]);
+            }
+            return $bubbles;
+        }
+
+        // best / why / avoid all read the strongest recommended date.
+        $day = $recommended[0] ?? null;
+        if (!is_array($day)) {
+            return [self::t($lang, [
+                'en' => 'Your report marks no date in this window as recommended for ' . $event
+                    . '. Please ask our astrologer to look at the calendar with you.',
+                'ta' => 'இந்தக் காலத்தில் ' . $event . ' க்கு பரிந்துரைக்கப்பட்ட நாளாக உங்கள் அறிக்கை எந்த நாளையும் குறிக்கவில்லை. '
+                    . 'எங்கள் ஜோதிடரிடம் இந்தக் காலண்டரைப் பார்க்கச் சொல்லுங்கள்.',
+                'hi' => 'इस अवधि में ' . $event . ' के लिए आपकी रिपोर्ट किसी तिथि को अनुशंसित नहीं करती। कृपया हमारे ज्योतिषी से इस कैलेंडर को साथ देखने को कहें।',
+            ])];
+        }
+        $dateLine = self::prettyDate((string) ($day['date'] ?? '')) . ' (' . self::pick($day['weekday'] ?? '', $lang) . ')';
+        $dayLine = $dateLine . ' — ' . self::pick($day['nakshatra'] ?? '', $lang) . ' / ' . self::pick($day['tithi'] ?? '', $lang)
+            . ' (' . (string) ($day['grade'] ?? '') . ')';
+
+        if ($topic === 'best') {
+            $bubbles = [$who . self::t($lang, [
+                'en' => 'the strongest date in your report:',
+                'ta' => 'உங்கள் அறிக்கையில் வலுவான நாள்:',
+                'hi' => 'आपकी रिपोर्ट में सबसे शुभ तिथि:',
+            ]) . "\n" . $dayLine];
+            $nalla = array_values(array_filter((array) ($day['nallaNeram'] ?? []), static function ($w) { return trim((string) $w) !== ''; }));
+            if ($nalla !== []) {
+                $bubbles[] = self::t($lang, [
+                    'en' => 'Nalla Neram (auspicious window):',
+                    'ta' => 'நல்ல நேரம்:',
+                    'hi' => 'नल्ल नेरम (शुभ समय):',
+                ]) . "\n" . implode("\n", array_map(static function ($w) { return '• ' . $w; }, $nalla));
+            }
+            return $bubbles;
+        }
+
+        if ($topic === 'why') {
+            $reasons = self::pick($day['reasons'] ?? '', $lang);
+            return [
+                $who . self::t($lang, [
+                    'en' => 'why your report marks this date auspicious:',
+                    'ta' => 'உங்கள் அறிக்கை இந்த நாளை ஏன் சுபமாகக் குறிக்கிறது:',
+                    'hi' => 'आपकी रिपोर्ट इस तिथि को शुभ क्यों बताती है:',
+                ]) . "\n" . $dayLine . ($reasons !== '' ? "\n" . $reasons : ''),
+                self::t($lang, [
+                    'en' => 'Every date in your report carries its own star, tithi and window - open the calendar page to compare them side by side.',
+                    'ta' => 'உங்கள் அறிக்கையில் ஒவ்வொரு நாளும் அதன் நட்சத்திரம், திதி மற்றும் நேரத்துடன் உள்ளது - அவற்றை ஒப்பிட காலண்டர் பக்கத்தைத் திறக்கவும்.',
+                    'hi' => 'आपकी रिपोर्ट में हर तिथि के साथ उसका नक्षत्र, तिथि और समय है - उनकी तुलना के लिए कैलेंडर पृष्ठ खोलें।',
+                ]),
+            ];
+        }
+
+        // avoid
+        $lines = [];
+        foreach (array_slice($recommended, 0, 4) as $d) {
+            $rahu = trim((string) ($d['rahuKalam'] ?? ''));
+            if ($rahu === '') {
+                continue;
+            }
+            $lines[] = '• ' . self::prettyDate((string) ($d['date'] ?? '')) . ' — ' . self::t($lang, [
+                'en' => 'Rahu Kalam ',
+                'ta' => 'ராகு காலம் ',
+                'hi' => 'राहु काल ',
+            ]) . $rahu;
+        }
+        if ($lines === []) {
+            return [self::t($lang, [
+                'en' => 'Your report lists no avoidance window for these dates. The graded dates and their Nalla Neram windows are on the calendar page.',
+                'ta' => 'இந்த நாட்களுக்கு தவிர்க்க வேண்டிய நேரம் உங்கள் அறிக்கையில் இல்லை. தரம் பிரிக்கப்பட்ட நாட்களும் அவற்றின் நல்ல நேரங்களும் காலண்டர் பக்கத்தில் உள்ளன.',
+                'hi' => 'इन तिथियों के लिए आपकी रिपोर्ट में कोई वर्जित समय नहीं है। ग्रेड की गई तिथियाँ और उनके शुभ समय कैलेंडर पृष्ठ पर हैं।',
+            ])];
+        }
+        return [
+            $who . self::t($lang, [
+                'en' => 'the windows your report marks to avoid on the recommended dates:',
+                'ta' => 'பரிந்துரைக்கப்பட்ட நாட்களில் தவிர்க்க வேண்டிய நேரங்கள்:',
+                'hi' => 'अनुशंसित तिथियों पर जिन समयों से बचना है:',
+            ]) . "\n" . implode("\n", $lines),
+            self::t($lang, [
+                'en' => 'These are the traditional inauspicious windows; the auspicious Nalla Neram windows are listed beside each date in your report.',
+                'ta' => 'இவை மரபான அசுப நேரங்கள்; சுபமான நல்ல நேரங்கள் உங்கள் அறிக்கையில் ஒவ்வொரு நாளுக்கும் அருகில் உள்ளன.',
+                'hi' => 'ये पारंपरिक अशुभ समय हैं; शुभ नल्ल नेरम समय आपकी रिपोर्ट में हर तिथि के साथ दिए गए हैं।',
+            ]),
+        ];
     }
 
     /** The temple guidance behind the "Which temple should I visit?" option. */

@@ -55,12 +55,30 @@ const allQuestions = (): any[] =>
     (c.questions as any[]).map((q) => ({ ...q, _category: c.id }))
   );
 
-check('the menu has the eight page-2 life topics plus dosha, remedy, order and complaint topics', () => {
+check('the menu has the eight page-2 life topics, the three service reports, and dosha, remedy, order and complaint topics', () => {
   const ids = (guided.categories as any[]).map((c) => c.id);
   assert.deepEqual(ids, [
     'health', 'wealth', 'education', 'career', 'marriage', 'property',
-    'travel-foreign', 'current-guidance', 'doshas', 'remedies', 'order', 'support',
+    'travel-foreign', 'current-guidance',
+    'wedding-match', 'baby-naming', 'muhurtham',
+    'doshas', 'remedies', 'order', 'support',
   ]);
+});
+
+check('the three service chapters are gated on a delivered report of that service', () => {
+  const gated = (guided.categories as any[]).filter((c) => Array.isArray(c.services));
+  assert.deepEqual(gated.map((c) => c.id), ['wedding-match', 'baby-naming', 'muhurtham']);
+  const services = new Set(['BIRTH_JATHAGAM', 'MARRIAGE_COMPATIBILITY', 'BABY_NAMING', 'MUHURTHAM']);
+  for (const category of gated) {
+    assert.equal(category.services.length, 1, `${category.id} must name the one service it reads`);
+    for (const service of category.services) {
+      assert.ok(services.has(service), `${category.id} names an unknown service ${service}`);
+    }
+    // Every question in the chapter reads the same service.
+    for (const q of category.questions as any[]) {
+      assert.equal(q.service, category.services[0], `${q.id} must read the chapter's service`);
+    }
+  }
 });
 
 check('the eight life topics mirror the page-2 life cards in order, with the same icons', () => {
@@ -97,16 +115,28 @@ check('every topic and option is trilingual, non-empty and unique', () => {
   }
 });
 
+/** The topic each service chapter may be asked about, per service. */
+const SERVICE_TOPICS: Record<string, string[]> = {
+  MARRIAGE_COMPATIBILITY: ['verdict', 'score', 'poruthams', 'unmatched', 'sevvai', 'remedy'],
+  BABY_NAMING: ['star', 'letters', 'suggestions', 'meaning', 'our-name'],
+  MUHURTHAM: ['dates', 'best', 'why', 'avoid', 'place'],
+};
+
 check('every option routes to exactly one supported answer path', () => {
   const areaIds = new Set((lifeAreas.areas as any[]).map((a) => a.id));
   const grahas = new Set((remedies.grahas as any[]).map((g) => g.graha));
   for (const q of allQuestions()) {
     assert.ok(
-      ['area', 'dosha', 'remedy', 'order', 'complaint'].includes(q.kind),
+      ['area', 'service', 'dosha', 'remedy', 'order', 'complaint'].includes(q.kind),
       `option ${q.id} has an unknown kind ${q.kind}`
     );
     if (q.kind === 'area') {
       assert.ok(areaIds.has(q.area), `option ${q.id} names an unknown life area ${q.area}`);
+    }
+    if (q.kind === 'service') {
+      const topics = SERVICE_TOPICS[q.service] ?? [];
+      assert.ok(topics.length > 0, `option ${q.id} names an unknown service ${q.service}`);
+      assert.ok(topics.includes(q.topic), `option ${q.id} names an unknown ${q.service} topic ${q.topic}`);
     }
     if (q.kind === 'dosha') {
       assert.ok(
@@ -197,13 +227,20 @@ check('the chart facts carry the full dosha block for guided dosha answers', () 
 
 check('the local reply builder routes every guided kind without re-matching', () => {
   assert.match(offline, /\$context\['guided'\]/);
-  for (const kind of ['order', 'complaint', 'dosha', 'remedy']) {
+  for (const kind of ['order', 'complaint', 'dosha', 'remedy', 'service']) {
     assert.match(offline, new RegExp(`\\$guidedKind === '${kind}'`));
   }
   assert.match(offline, /private static function orderBubbles\(/);
   assert.match(offline, /private static function doshaBubbles\(/);
   assert.match(offline, /private static function complaintAck\(/);
   assert.match(offline, /private static function templeText\(/);
+  // The three service chapters read the customer's own report readings.
+  for (const fn of ['serviceRoute', 'serviceAttachBubbles', 'matchingBubbles', 'namingBubbles', 'muhurthamBubbles']) {
+    assert.match(offline, new RegExp(`private static function ${fn}\\(`));
+  }
+  assert.match(offline, /\$context\['serviceFacts'\]/);
+  // A service question about a report that is not attached asks for it.
+  assert.match(offline, /serviceAttachBubbles\(\$service, \$bound, \$lang, \$name\)/);
   // Forced-card path: a guided area option names its card directly.
   assert.match(offline, /\$guidedKind === 'area' && is_string\(\$guided\['area'\]/);
 });
@@ -219,6 +256,58 @@ check('the browser client fetches the menu and sends option ids', () => {
   assert.match(client, /questionId\?: string/);
   assert.match(client, /complaintDetails\?: string/);
   assert.match(client, /GuidedCategory/);
+  // The client renders the chapters the server allows, and can attach a report.
+  assert.match(client, /entitledServices: string\[\]/);
+  assert.match(client, /orders: AttachableOrder\[\]/);
+  assert.match(client, /async bind\(sessionId: string, orderNumber: string\)/);
+  assert.match(client, /call\('bind', \{ sessionId, orderNumber \}\)/);
+});
+
+check('the endpoint serves the gated menu, the entitlement list and the attachable reports', () => {
+  const options = sliceText(endpoint, 'function astro_ai_action_options', 'function astro_ai_service_title', 'options handler body');
+  assert.match(options, /astro_ai_entitled_service_types\(\$pdo, \(string\) \$user\['id'\]\)/);
+  assert.match(options, /astro_ai_attachable_orders\(\$pdo, \(string\) \$user\['id'\]\)/);
+  assert.match(options, /astro_ai_guided_menu\(\$language, \$services, \$isAdmin\)/);
+  assert.match(options, /'entitledServices' => \$services/);
+  assert.match(options, /'orders' => \$orders/);
+  // An administrator sees every chapter; a customer only their own.
+  assert.match(options, /\$services = \$isAdmin \? \[\] : astro_ai_entitled_service_types/);
+
+  // The gating itself: a chapter that names services needs one of them.
+  const menu = sliceText(endpoint, 'function astro_ai_guided_menu', 'function astro_ai_action_options', 'menu builder body');
+  assert.match(menu, /\$allowedServices = null/);
+  assert.match(menu, /\$needs !== \[\] && !\$isAdmin/);
+});
+
+check('the endpoint attaches only a delivered report that belongs to the customer', () => {
+  assert.match(endpoint, /function astro_ai_action_bind\(/);
+  assert.match(endpoint, /case 'bind':\s*\n\s*astro_ai_action_bind\(\$pdo, \$user, \$body\);/);
+  const bind = sliceText(endpoint, 'function astro_ai_action_bind', '/* ================================================================== */', 'bind handler body');
+  // Ownership AND delivery in the query itself - never a client-supplied fact.
+  assert.match(bind, /WHERE order_number = :num/);
+  assert.match(bind, /AND user_id = :uid/);
+  assert.match(bind, /payment_confirmed = 1/);
+  assert.match(bind, /email_status = 'SENT'/);
+  assert.match(bind, /email_sent_at IS NOT NULL/);
+  assert.match(bind, /'code' => 'ORDER_NOT_FOUND'/);
+  // The session being bound must belong to the same account.
+  assert.match(bind, /astro_ai_load_session\(\$pdo, \$sessionId, \$user\['id'\]\)/);
+});
+
+check('a guided service option is refused when the account holds no such report', () => {
+  const ask = sliceText(endpoint, 'function astro_ai_action_ask', 'function astro_ai_action_upload', 'ask handler body');
+  assert.match(ask, /astro_ai_guided_required_services\(\$guided\)/);
+  assert.match(ask, /\$required !== \[\] && !\$isAdmin/);
+});
+
+check('the reply context carries the bound report, so a service answer can read it', () => {
+  const reply = sliceText(endpoint, 'function astro_ai_generate_reply', 'function astro_ai_escalation_reason', 'reply builder body');
+  assert.match(reply, /astro_ai_service_facts\(\$order\)/);
+  assert.match(reply, /\$context\['boundServiceType'\]/);
+  assert.match(reply, /\$context\['serviceFacts'\]/);
+  // One engine run per order per request, shared by both readings.
+  assert.match(endpoint, /function astro_ai_report_result\(array \$order\)/);
+  assert.match(reply, /astro_ai_chart_facts\(\$order\)/);
 });
 
 check('the panel offers topics and options, with no free question box for customers', () => {
@@ -234,6 +323,17 @@ check('the panel offers topics and options, with no free question box for custom
   // No generic "ask anything" prompt survives for customers.
   assert.doesNotMatch(panel, /Ask about your chart\.\.\./);
   assert.doesNotMatch(panel, /உங்கள் கேள்வியை இங்கே எழுதுங்கள்/);
+});
+
+check('the panel can attach one of the customer reports, so the service chapters can answer', () => {
+  assert.match(panel, /REPORT_LABEL/);
+  assert.match(panel, /NO_REPORT/);
+  assert.match(panel, /ATTACHED_NOTE/);
+  assert.match(panel, /aiAstrologer\.bind\(sessionId, orderNumber\)/);
+  assert.match(panel, /setOrders\(menu\.orders \?\? \[\]\)/);
+  // Only the customer's own reports, offered by the server, are listed.
+  assert.match(panel, /orders\.map\(\(o\) =>/);
+  assert.doesNotMatch(panel, /orders\.push\(/);
 });
 
 console.log(`\n[OK] ai-astrologer guided: ${passed} checks passed`);

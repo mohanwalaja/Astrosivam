@@ -26,11 +26,15 @@ $evalFromEndpoint = function (string $from, string $to) use ($endpoint) {
     eval(str_replace('__DIR__', "'/repo/api'", substr($endpoint, $start, $end - $start)));
 };
 $evalFromEndpoint('function astro_ai_guided_path(', '/* ================================================================== */');
+// astro_ai_chart_facts() now reads the shared, memoised rebuild helper, so
+// that helper has to be in scope too.
+$evalFromEndpoint('function astro_ai_report_result(', 'function astro_ai_chart_facts(');
 $evalFromEndpoint('function astro_ai_chart_facts(', '/* ================================================================== */');
 
-$out = ['menu' => null, 'replies' => []];
+$out = ['menu' => null, 'gatedMenu' => null, 'replies' => []];
 
-// 1. The guided menu resolves in all three languages.
+// 1. The guided menu resolves in all three languages. With no delivered
+// service report on the account, the three service chapters stay hidden.
 foreach (['en', 'ta', 'hi'] as $menuLang) {
     $menu = astro_ai_guided_menu($menuLang);
     $out['menu'][$menuLang] = [
@@ -38,8 +42,25 @@ foreach (['en', 'ta', 'hi'] as $menuLang) {
         'options' => array_sum(array_map(function ($c) { return count($c['questions'] ?? []); }, $menu)),
         'firstTopic' => $menu[0]['id'] ?? null,
         'firstOption' => $menu[0]['questions'][0]['text'] ?? null,
+        'ids' => array_map(function ($c) { return $c['id']; }, $menu),
     ];
 }
+
+// The service chapters appear only for the reports the account holds, and an
+// administrator (who may test any path) always sees the whole menu.
+$count = function (array $menu): array {
+    return [
+        'categories' => count($menu),
+        'options' => array_sum(array_map(function ($c) { return count($c['questions'] ?? []); }, $menu)),
+        'ids' => array_map(function ($c) { return $c['id']; }, $menu),
+    ];
+};
+$out['gatedMenu'] = [
+    'none' => $count(astro_ai_guided_menu('en', [], false)),
+    'weddingAndMuhurtham' => $count(astro_ai_guided_menu('en', ['MARRIAGE_COMPATIBILITY', 'MUHURTHAM'], false)),
+    'allThree' => $count(astro_ai_guided_menu('en', ['MARRIAGE_COMPATIBILITY', 'BABY_NAMING', 'MUHURTHAM'], false)),
+    'admin' => $count(astro_ai_guided_menu('en', [], true)),
+];
 // Every option id resolves back to a routed option server-side.
 $out['unknownQuestionId'] = astro_ai_guided_find('no-such-option');
 $out['knownQuestionId'] = (function () {
