@@ -35,7 +35,10 @@ class AstroAiProvider
 
     /** One retry on a guard failure, then a safe fallback. Never a third try. */
     const MAX_GENERATION_ATTEMPTS = 2;
-    const CURL_TIMEOUT_SECONDS = 45;
+    // Keep the model call well under the browser's abort (30s) and the host's
+    // proxy limit, so a slow model fails fast with the retry message instead
+    // of leaving the customer staring at a dead connection.
+    const CURL_TIMEOUT_SECONDS = 25;
 
     private static $promptCache = null;
     private static $kbCache = [];
