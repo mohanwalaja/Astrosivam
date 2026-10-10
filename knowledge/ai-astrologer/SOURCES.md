@@ -253,6 +253,49 @@ Catalogue-verified via the Archive.org advancedsearch API (identifier, title, la
 | TA-42 | **நூல் - சோதிட ஆராய்ச்சி : சோதிடப் புறட்டு பாட்டுகளும் சேர்ந்தது** | [tdl.41069-nuul-cootitt-aaraaycci-cootittp-purrttttu-paattttukllum-ceernttu](https://archive.org/details/tdl.41069-nuul-cootitt-aaraaycci-cootittp-purrttttu-paattttukllum-ceernttu) | Tamil sothidam text; book-level citation only | metadata-verified |
 | TA-43 | **நூல் - உலோககுரு ஆதி சங்கராச்சாரிய சுவாமிகள் சோதிடம் பன்னீராயிரத்தில் சகோதரபாவகம்** | [tdl.21938-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-c](https://archive.org/details/tdl.21938-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-c) | Tamil sothidam text; book-level citation only | metadata-verified |
 
+### 3m. Added 2026-10-10 - TVA catalogue, astrology titles (36)
+
+Identifiers from the Archive.org advancedsearch API. Titles are not decoded and the bodies were not read, so these are book-level pointers only.
+
+| ID | Title | URL | Useful for | Verified |
+|---|---|---|---|---|
+| TA-44 | Tamil astrology text (`tdl.tdl_51d28e-mruttuvm-cootittm`) | [link](https://archive.org/details/tdl.tdl_51d28e-mruttuvm-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-45 | Tamil astrology text (`tdl.23508-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-p`) | [link](https://archive.org/details/tdl.23508-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-p) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-46 | Tamil astrology text (`tdl.4659-cootittm`) | [link](https://archive.org/details/tdl.4659-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-47 | Tamil astrology text (`tdl.22653-nuul-caatk-alngkaarm-cootittm-caattirm-ceyyull-tokuppurai-villkkttuttnnn`) | [link](https://archive.org/details/tdl.22653-nuul-caatk-alngkaarm-cootittm-caattirm-ceyyull-tokuppurai-villkkttuttnnn) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-48 | Tamil astrology text (`tdl.49928-nuul-pulippaannimkaamunnnivr-tiruvaaymlrntrulliy-cootittm-munnuurru`) | [link](https://archive.org/details/tdl.49928-nuul-pulippaannimkaamunnnivr-tiruvaaymlrntrulliy-cootittm-munnuurru) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-49 | Tamil astrology text (`tdl.56658-nuul-cukkirnaatti-cootittm-aannnntkllippum-tirvukoolum-immuunnnrrum-attngkiy`) | [link](https://archive.org/details/tdl.56658-nuul-cukkirnaatti-cootittm-aannnntkllippum-tirvukoolum-immuunnnrrum-attngkiy) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-50 | Tamil astrology text (`tdl.tdl_17c15a-cootittm`) | [link](https://archive.org/details/tdl.tdl_17c15a-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-51 | Tamil astrology text (`tdl.tdl_69b242-cootittm`) | [link](https://archive.org/details/tdl.tdl_69b242-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-52 | Tamil astrology text (`tdl.tdl_f38662-cootittm-25`) | [link](https://archive.org/details/tdl.tdl_f38662-cootittm-25) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-53 | Tamil astrology text (`tdl.tdl_760b07-cootittm`) | [link](https://archive.org/details/tdl.tdl_760b07-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-54 | Tamil astrology text (`tdl.5072-cootittm`) | [link](https://archive.org/details/tdl.5072-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-55 | Tamil astrology text (`tdl.1185-nuul-ilkkiyttil-cootittm`) | [link](https://archive.org/details/tdl.1185-nuul-ilkkiyttil-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-56 | Tamil astrology text (`tdl.1589-cootittm`) | [link](https://archive.org/details/tdl.1589-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-57 | Tamil astrology text (`tdl.49931-nuul-akstiyr-arulliy-mnniknntt-keerll-cootittm-muulmum-uraiyum`) | [link](https://archive.org/details/tdl.49931-nuul-akstiyr-arulliy-mnniknntt-keerll-cootittm-muulmum-uraiyum) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-58 | Tamil astrology text (`tdl.5057-cootittm`) | [link](https://archive.org/details/tdl.5057-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-59 | Tamil astrology text (`tdl.tdl_ff8539-cootittm`) | [link](https://archive.org/details/tdl.tdl_ff8539-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-60 | Tamil astrology text (`tdl.3128-cootittm`) | [link](https://archive.org/details/tdl.3128-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-61 | Tamil astrology text (`tdl.tdl_dedfaf-cootittm`) | [link](https://archive.org/details/tdl.tdl_dedfaf-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-62 | Tamil astrology text (`tdl.tdl_e30436-cootittm-tcaap-puttipplnnnkll`) | [link](https://archive.org/details/tdl.tdl_e30436-cootittm-tcaap-puttipplnnnkll) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-63 | Tamil astrology text (`tdl.006345-jootittm-tottrpaak`) | [link](https://archive.org/details/tdl.006345-jootittm-tottrpaak) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-64 | Tamil astrology text (`tdl.tdl_244bba-cootittm`) | [link](https://archive.org/details/tdl.tdl_244bba-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-65 | Tamil astrology text (`tdl.tdl_54f220-cootittm`) | [link](https://archive.org/details/tdl.tdl_54f220-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-66 | Tamil astrology text (`tdl.23591-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-k`) | [link](https://archive.org/details/tdl.23591-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-k) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-67 | Tamil astrology text (`tdl.tdl_addcca-cootittm`) | [link](https://archive.org/details/tdl.tdl_addcca-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-68 | Tamil astrology text (`tdl.tdl_ce7adb-cootittm`) | [link](https://archive.org/details/tdl.tdl_ce7adb-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-69 | Tamil astrology text (`tdl.tdl_3c221e-cootittm`) | [link](https://archive.org/details/tdl.tdl_3c221e-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-70 | Tamil astrology text (`tdl.tdl_bbd27c-cootittm`) | [link](https://archive.org/details/tdl.tdl_bbd27c-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-71 | Tamil astrology text (`tdl.tdl_7ba91d-cootittm`) | [link](https://archive.org/details/tdl.tdl_7ba91d-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-72 | Tamil astrology text (`tdl.28098-nuul-akstiyr-arullicceyt-mnniknntt-keerll-cootittm`) | [link](https://archive.org/details/tdl.28098-nuul-akstiyr-arullicceyt-mnniknntt-keerll-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-73 | Tamil astrology text (`tdl.21939-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-y`) | [link](https://archive.org/details/tdl.21939-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-y) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-74 | Tamil astrology text (`tdl.22650-nuul-caatk-alngkaarm-cootittm-caattirm-ceyyull-tokuppurai-villkkttuttnnn`) | [link](https://archive.org/details/tdl.22650-nuul-caatk-alngkaarm-cootittm-caattirm-ceyyull-tokuppurai-villkkttuttnnn) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-75 | Tamil astrology text (`tdl.49994-nuul-pulippaanni-mkaamunnnivr-tiruvaaymlrntrulliy-cootittm-munnuurru`) | [link](https://archive.org/details/tdl.49994-nuul-pulippaanni-mkaamunnnivr-tiruvaaymlrntrulliy-cootittm-munnuurru) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-76 | Tamil astrology text (`tdl.5066-akttiyr-cootittm`) | [link](https://archive.org/details/tdl.5066-akttiyr-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-77 | Tamil astrology text (`tdl.tdl_a35035-cootittm-mnnnaiylngkaarm`) | [link](https://archive.org/details/tdl.tdl_a35035-cootittm-mnnnaiylngkaarm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-78 | Tamil astrology text (`tdl.3127-cootittm`) | [link](https://archive.org/details/tdl.3127-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-79 | Tamil astrology text (`tdl.4979-cootittm`) | [link](https://archive.org/details/tdl.4979-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+
 ## 4. நவக்கிரக ஸ்தலங்கள் — Navagraha temple remedies (12)
 
 Mapping **content-read** from TP-01:
