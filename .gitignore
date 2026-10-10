@@ -36,3 +36,8 @@ api/astrology/tmp/*
 # Regenerable TypeScript/PHP parity output (the committed contract is in fixtures).
 tests/fixtures/parity-node.json
 tests/fixtures/parity-php.json
+
+# Written on every run of tests/ai-astrologer-php-runtime.test.ts by the wasm PHP
+# probe. The probe itself is tracked; its output is not.
+tests/fixtures/php-ai-probes/out.json
+tests/fixtures/php-ai-probes/out-coverage.json

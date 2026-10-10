@@ -407,4 +407,55 @@ check('SOURCES.md quarantines the excluded Hindi ids inside one clearly-marked s
   }
 });
 
+check('every rule cites at least one source a customer may actually be shown', () => {
+  // THE INVARIANT THAT MAKES THE LIBRARY USABLE.
+  //
+  // The registry holds 220+ sources, but a customer reply may only name a Tamil
+  // one at an accepted verification level - AstroAiProvider::tamilOnlySourceLine()
+  // strips everything else. Until 2026-10-10 nearly every rule cited only its
+  // English edition (EN-01 was cited 27 times), so the filter stripped the whole
+  // line and the chat answered with NO source at all on five of the eight cards,
+  // while 139 citable Tamil sources sat unused. Executing the provider proved it:
+  // 0 of 8 questions kept a source line.
+  //
+  // The fix was to cite the Tamil edition of the SAME work alongside the English
+  // one - TA-01 is the Tamil Parashara, TA-02 the Tamil Jataka Parijata - so the
+  // reading is unchanged and the citation survives. This check is what stops a
+  // new rule being added with only an English citation and silently going mute.
+  const lifeAreas = JSON.parse(
+    fs.readFileSync(path.join(projectRoot, KB_DIR, 'rules', 'life-areas.json'), 'utf8')
+  ) as { areas: { id: string; rules?: any[] }[] };
+
+  const citable = (id: string) => {
+    const s = byId.get(id);
+    return Boolean(s && s.language === 'ta' && CITABLE.has(s.verification));
+  };
+
+  let rules = 0;
+  const mute: string[] = [];
+  const unknown: string[] = [];
+  for (const area of lifeAreas.areas) {
+    for (const rule of area.rules ?? []) {
+      rules += 1;
+      const cites = (rule.source ?? [])
+        .filter((s: any) => s.level !== 'suppressed')
+        .map((s: any) => String(s.id));
+      for (const id of cites) {
+        if (!byId.has(id)) unknown.push(`${area.id}/${rule.id} -> ${id}`);
+      }
+      if (!cites.some(citable)) {
+        mute.push(`${area.id}/${rule.id} [${cites.join(', ') || 'no source'}]`);
+      }
+    }
+  }
+
+  assert.deepEqual(unknown, [], 'a rule cites an id that is not in the registry');
+  assert.ok(rules > 30, `expected the full rule base, found ${rules} rules`);
+  assert.deepEqual(
+    mute,
+    [],
+    `these rules can never show the customer a source, so their answer arrives unattributed:\n    ${mute.join('\n    ')}`
+  );
+});
+
 console.log(`\n[OK] ai-astrologer source registry: ${passed} checks passed`);
