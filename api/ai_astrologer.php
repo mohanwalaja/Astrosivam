@@ -7,11 +7,21 @@
  * ACTIONS
  *   session            create a conversation, optionally bound to an order
  *   history            the messages of the signed-in account's own sessions
- *   ask                send a question, get an answer
+ *   options            the guided question menu (categories + curated options)
+ *   ask                send a questionId picked from options, get an answer
  *   upload             attach an ASTRO SIVAM report PDF (Part 3 gate)
  *   handoff            "Talk to our astrologer"
  *   usage              today's customer allowance (admins are unlimited)
  *   diagnose           admin-only: check the local source-based reply path
+ *
+ * GUIDED MODE
+ * Customers never type a question: the client fetches `options` and sends
+ * `ask` with a questionId from that menu. The server resolves the canonical
+ * wording and routes it to one supported answer path (life-area card, dosha,
+ * remedy, order fact, or the human complaint queue). Free-text `question` is
+ * accepted from administrators only, for testing. The only free text a
+ * customer can send is the short `complaintDetails` line on complaint
+ * options, which is queued to the human team and never answered by rules.
  *
  * IF THE CHAT NEVER REPLIES, READ THIS FIRST
  * Replies are local-only: this endpoint never calls an external AI service
@@ -548,15 +558,11 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
     }
 
     $sessionId = trim((string) ($body['sessionId'] ?? ''));
-    $question = trim((string) ($body['question'] ?? ''));
+    $guidedId = trim((string) ($body['questionId'] ?? ''));
 
-    if ($sessionId === '' || $question === '') {
+    if ($sessionId === '') {
         jsonResponse(['success' => false, 'code' => 'MISSING_FIELDS',
-            'message' => 'sessionId and question are both required.'], 400);
-    }
-    if (mb_strlen($question, 'UTF-8') > 2000) {
-        jsonResponse(['success' => false, 'code' => 'TOO_LONG',
-            'message' => 'Please keep the question under 2000 characters.'], 400);
+            'message' => 'sessionId is required.'], 400);
     }
 
     $session = astro_ai_load_session($pdo, $sessionId, $user['id']);
@@ -568,10 +574,66 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
             'message' => 'That conversation is closed. Please start a new one.'], 409);
     }
 
-    // Customers use the existing sliding-window limiter, keyed on their user id.
-    // Authenticated admins are permanently exempt from the paid-order gate and
-    // the daily question allowance so they can evaluate the assistant at any time.
+    // GUIDED MODE — customers pick a curated option, they never type a
+    // question. The allowlist lives in
+    // knowledge/ai-astrologer/rules/guided-questions.json. Administrators keep
+    // free text so they can test the reply path; customers without a valid
+    // questionId are refused, which is what makes unrelated questions
+    // impossible rather than merely discouraged.
     $isAdmin = astro_ai_is_admin($user);
+    $guided = null;
+    if ($guidedId !== '') {
+        $guided = astro_ai_guided_find($guidedId);
+        if ($guided === null) {
+            jsonResponse(['success' => false, 'code' => 'UNKNOWN_QUESTION',
+                'message' => 'That option is not available. Please pick a question from the list.',
+                'message_ta' => 'அந்த விருப்பம் இல்லை. பட்டியலிலிருந்து ஒரு கேள்வியை தேர்வு செய்யவும்.',
+                'message_hi' => 'वह विकल्प उपलब्ध नहीं है। कृपया सूची से कोई प्रश्न चुनें।'], 400);
+        }
+    }
+
+    $language = astro_normalize_report_language((string) ($body['language'] ?? $session['language']));
+
+    if ($guided !== null) {
+        // The canonical wording of the option, in the customer's language.
+        // This is what retrieval matches on, so every guided question carries
+        // the keywords of its own answer path in all three languages.
+        $question = trim((string) ($guided['text'][$language] ?? ($guided['text']['en'] ?? '')));
+        if ($question === '') {
+            jsonResponse(['success' => false, 'code' => 'UNKNOWN_QUESTION',
+                'message' => 'That option is not available. Please pick a question from the list.'], 400);
+        }
+    } else {
+        if (!$isAdmin) {
+            jsonResponse(['success' => false, 'code' => 'GUIDED_ONLY',
+                'message' => 'Please pick a question from the list — typing your own question is not available.',
+                'message_ta' => 'பட்டியலிலிருந்து ஒரு கேள்வியை தேர்வு செய்யவும் — நீங்களே கேள்வி எழுதும் வசதி இல்லை.',
+                'message_hi' => 'कृपया सूची से कोई प्रश्न चुनें — अपना प्रश्न लिखने की सुविधा नहीं है।'], 400);
+        }
+        $question = trim((string) ($body['question'] ?? ''));
+        if ($question === '') {
+            jsonResponse(['success' => false, 'code' => 'MISSING_FIELDS',
+                'message' => 'questionId or question is required.'], 400);
+        }
+    }
+    if (mb_strlen($question, 'UTF-8') > 2000) {
+        jsonResponse(['success' => false, 'code' => 'TOO_LONG',
+            'message' => 'Please keep the question under 2000 characters.'], 400);
+    }
+
+    // Complaint options may carry a short detail line (the ONLY free text a
+    // customer can send). It is stored with the message and queued to the
+    // human team; the rule engine never sees it, so it cannot become an
+    // unrelated astrology question by the back door.
+    $complaintDetails = trim((string) ($body['complaintDetails'] ?? ''));
+    if (mb_strlen($complaintDetails, 'UTF-8') > 500) {
+        jsonResponse(['success' => false, 'code' => 'TOO_LONG',
+            'message' => 'Please keep the details under 500 characters.'], 400);
+    }
+    $storedQuestion = $question;
+    if ($guided !== null && ($guided['kind'] ?? '') === 'complaint' && $complaintDetails !== '') {
+        $storedQuestion = $question . "\n" . $complaintDetails;
+    }
     $limit = astro_ai_daily_limit();
     if (!$isAdmin) {
         astro_rate_limit_enforce(
@@ -584,16 +646,15 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
         );
     }
 
-    $language = astro_normalize_report_language((string) ($body['language'] ?? $session['language']));
     $startedAt = microtime(true);
 
     // 1. Store the question before building a reply, so the customer's words are safe.
-    $questionId = astro_ai_save_message($pdo, $sessionId, (string) $user['id'], 'customer', $language, $question);
+    $questionId = astro_ai_save_message($pdo, $sessionId, (string) $user['id'], 'customer', $language, $storedQuestion);
 
     try {
         // 2. Retrieve the local rules and build a deterministic reply. No external
         //    provider, model call or API key is involved.
-        $reply = astro_ai_generate_reply($pdo, $user, $session, $language, $question);
+        $reply = astro_ai_generate_reply($pdo, $user, $session, $language, $question, $guided);
 
         // NOTE: no astro_rate_limit_bump() here. For customers,
         // astro_rate_limit_enforce() above already counted this request
@@ -613,10 +674,17 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
         //    accepts via the "Talk to our astrologer" button, so the queue
         //    is never flooded with offers nobody confirmed.
         $escalation = astro_ai_escalation_reason($question);
+        // Guided complaint/support options (and the birth-detail correction
+        // option) always reach the human queue, even when their wording
+        // contains none of the complaint keywords above.
+        if ($escalation === null && $guided !== null
+            && (($guided['escalate'] ?? false) === true || ($guided['kind'] ?? '') === 'complaint')) {
+            $escalation = 'complaint';
+        }
         $escalated = false;
         $bubbles = $reply['bubbles'] ?? [];
         if ($escalation !== null) {
-            astro_ai_record_escalation($pdo, $user, $session, $question, $escalation, $language);
+            astro_ai_record_escalation($pdo, $user, $session, $storedQuestion, $escalation, $language);
             $notice = astro_ai_escalation_notice($language);
             astro_ai_save_message($pdo, $sessionId, (string) $user['id'], 'system', $language, $notice, [
                 'status' => 'SENT',
@@ -629,6 +697,7 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
             'success' => true,
             'sessionId' => $sessionId,
             'questionId' => $questionId,
+            'guidedId' => $guidedId !== '' ? $guidedId : null,
             'messageId' => $replyId,
             'language' => $language,
             'content' => $reply['content'],
@@ -920,6 +989,106 @@ function astro_ai_action_diagnose(PDO $pdo, array $user, array $body): void
 }
 
 /* ================================================================== */
+/* Guided questions — customers pick, never type                       */
+/* ================================================================== */
+
+/**
+ * Locates the guided menu. knowledge/ lives at the repository root in
+ * development and at the document root on cPanel, with api/knowledge/ as a
+ * fallback for manual uploads (same convention as AstroAiProvider::kbPath).
+ */
+function astro_ai_guided_path(): string
+{
+    foreach ([
+        dirname(__DIR__) . '/knowledge/ai-astrologer/rules/guided-questions.json',
+        __DIR__ . '/knowledge/ai-astrologer/rules/guided-questions.json',
+    ] as $candidate) {
+        if (is_file($candidate)) {
+            return $candidate;
+        }
+    }
+    return dirname(__DIR__) . '/knowledge/ai-astrologer/rules/guided-questions.json';
+}
+
+function astro_ai_guided_data(): array
+{
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
+    $path = astro_ai_guided_path();
+    $contents = is_file($path) ? @file_get_contents($path) : false;
+    $decoded = is_string($contents) ? json_decode($contents, true) : null;
+    $cache = is_array($decoded) ? $decoded : [];
+    return $cache;
+}
+
+/**
+ * Finds one curated option by id, or null. This is the server-side
+ * allowlist: a questionId that is not in this file is rejected in ask().
+ */
+function astro_ai_guided_find(string $questionId): ?array
+{
+    foreach ((astro_ai_guided_data()['categories'] ?? []) as $category) {
+        foreach (($category['questions'] ?? []) as $q) {
+            if ((string) ($q['id'] ?? '') === $questionId) {
+                $q['_category'] = (string) ($category['id'] ?? '');
+                return $q;
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * The menu the client renders: categories with their options in the
+ * customer's language. Routing metadata (area, dosha, planet, topic) stays
+ * on the server — the client only ever sends the id back.
+ */
+function astro_ai_guided_menu(string $language): array
+{
+    $lang = in_array($language, ['en', 'ta', 'hi'], true) ? $language : 'en';
+    $menu = [];
+    foreach ((astro_ai_guided_data()['categories'] ?? []) as $category) {
+        $questions = [];
+        foreach (($category['questions'] ?? []) as $q) {
+            $questions[] = [
+                'id' => (string) ($q['id'] ?? ''),
+                'kind' => (string) ($q['kind'] ?? 'area'),
+                'text' => (string) ($q['text'][$lang] ?? ($q['text']['en'] ?? '')),
+                'needsDetails' => (bool) ($q['needsDetails'] ?? false),
+            ];
+        }
+        $menu[] = [
+            'id' => (string) ($category['id'] ?? ''),
+            'icon' => (string) ($category['icon'] ?? ''),
+            'title' => (string) ($category['title'][$lang] ?? ($category['title']['en'] ?? '')),
+            'hint' => (string) ($category['hint'][$lang] ?? ($category['hint']['en'] ?? '')),
+            'questions' => $questions,
+        ];
+    }
+    return $menu;
+}
+
+function astro_ai_action_options(PDO $pdo, array $user, array $body): void
+{
+    $language = astro_normalize_report_language((string) ($body['language'] ?? ($_GET['language'] ?? 'ta')));
+    $menu = astro_ai_guided_menu($language);
+    if (empty($menu)) {
+        error_log('AI Astrologer: guided-questions.json is missing or empty at ' . astro_ai_guided_path());
+        jsonResponse(['success' => false, 'code' => 'GUIDED_UNAVAILABLE',
+            'message' => 'The question list is not available right now. Please try again in a moment.',
+            'message_ta' => 'கேள்விப் பட்டியல் இப்போது இல்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.',
+            'message_hi' => 'प्रश्न-सूची अभी उपलब्ध नहीं है। कृपया कुछ देर बाद फिर कोशिश करें।'], 503);
+    }
+    jsonResponse([
+        'success' => true,
+        'language' => $language,
+        'categories' => $menu,
+    ]);
+}
+
+/* ================================================================== */
 /* Generation — deterministic local knowledge-base reply               */
 /* ================================================================== */
 
@@ -928,9 +1097,11 @@ function astro_ai_action_diagnose(PDO $pdo, array $user, array $body): void
  * only local rules, report readings and remedies to assemble the reply. Throws
  * on a real local setup/runtime failure so the caller records a FAILED row.
  *
+ * @param array|null $guided the curated option the customer picked (kind, area,
+ *                             dosha, planet, topic), or null for an admin free-text question.
  * @return array{content:string, bubbles:array, sourceLine:?string, areaId:?string, handoff:bool}
  */
-function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $language, string $question): array
+function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $language, string $question, ?array $guided = null): array
 {
     // The chart comes from the order bound to this session, rebuilt from the
     // saved inputs - never from a cached calculated_result.
@@ -966,6 +1137,10 @@ function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $
                 : 'No chart is attached to this conversation yet.');
     }
 
+    // The guided option travels inside the context so the local answer
+    // builder can route to the right path (area, dosha, remedy, order fact
+    // or complaint acknowledgement) without re-guessing from wording.
+    $context['guided'] = $guided;
     return AstroAiProvider::answerFromKnowledgeBase($question, $language, $chart, $context);
 }
 
@@ -1066,6 +1241,47 @@ function astro_ai_order_details_text(array $order): string
         $parts[] = 'Report emailed on: ' . $delivered;
     }
     $parts[] = 'Order status: ' . (string) ($order['status'] ?? '');
+
+    // The birth facts the chart was calculated from, for the "which birth
+    // details were used" guided option. Parsed from this order's own saved
+    // inputs only; marriage orders carry a bride and a groom instead of one
+    // person.
+    $rawInput = $order['input_payload'] ?? null;
+    $input = is_array($rawInput) ? $rawInput : (is_string($rawInput) ? json_decode($rawInput, true) : null);
+    if (is_array($input)) {
+        $birthBits = [];
+        $single = static function (array $p): string {
+            $bits = [];
+            foreach (['name' => 'Name', 'dob' => 'Date of birth', 'tob' => 'Time of birth',
+                       'birthPlace' => 'Birth place', 'birth_place' => 'Birth place'] as $key => $label) {
+                $value = trim((string) ($p[$key] ?? ''));
+                if ($value !== '') {
+                    $bits[] = $label . ': ' . $value;
+                }
+            }
+            return implode(', ', $bits);
+        };
+        $one = $single($input);
+        if ($one !== '') {
+            $birthBits[] = $one;
+        }
+        foreach (['groom' => 'Groom', 'bride' => 'Bride', 'boy' => 'Boy', 'girl' => 'Girl'] as $key => $label) {
+            if (is_array($input[$key] ?? null)) {
+                $two = $single($input[$key]);
+                if ($two !== '') {
+                    $birthBits[] = $label . ' (' . $two . ')';
+                }
+            }
+        }
+        if (!empty($birthBits)) {
+            $parts[] = 'Birth details used: ' . implode(' | ', $birthBits);
+        }
+        $reportLang = trim((string) ($order['language'] ?? ''));
+        if ($reportLang !== '') {
+            $parts[] = 'Report language: ' . $reportLang;
+        }
+    }
+
     return implode(' | ', $parts);
 }
 
@@ -1157,6 +1373,62 @@ function astro_ai_chart_facts(array $order): ?array
     $kuja = $result['sevvaiDosha'] ?? [];
     $kujaPresent = ($kuja['hasDosha'] ?? null) === true && ($kuja['status'] ?? '') !== 'DOSHA_CANCELLED';
 
+    // The full engine dosha block (page-1 Dosha Analysis), flattened for the
+    // guided dosha options. Each entry keeps the engine's own verdict,
+    // description and traditional remedy in all three languages, so the chat
+    // repeats the report instead of re-judging the chart.
+    // Maps an engine dosha name ("Mars (Kuja) Dosha", ...) to the short key
+    // the guided dosha options use. Inline closure, not a helper: the WASM
+    // probe evals this function alone, so it must not call siblings.
+    $doshaKey = static function (string $nameEn): string {
+        $name = strtolower($nameEn);
+        if (strpos($name, 'kuja') !== false || strpos($name, 'mangal') !== false || strpos($name, 'sevvai') !== false) {
+            return 'kuja';
+        }
+        if (strpos($name, 'kala sarpa') !== false || strpos($name, 'kalasarpa') !== false) {
+            return 'kalasarpa';
+        }
+        if (strpos($name, 'pitru') !== false) {
+            return 'pitru';
+        }
+        if (strpos($name, 'guru chandala') !== false || strpos($name, 'chandala') !== false) {
+            return 'guruchandala';
+        }
+        return '';
+    };
+    $doshaDetails = [];
+    if (is_array($result['doshas'] ?? null)) {
+        foreach ($result['doshas'] as $d) {
+            if (!is_array($d) || trim((string) ($d['nameEn'] ?? '')) === '') {
+                continue;
+            }
+            $key = $doshaKey((string) $d['nameEn']);
+            if ($key === '') {
+                continue;
+            }
+            $doshaDetails[] = [
+                'key' => $key,
+                'present' => $d['isPresent'] ?? null,
+                'status' => (string) ($d['status'] ?? ''),
+                'name' => [
+                    'en' => (string) ($d['nameEn'] ?? ''),
+                    'ta' => (string) ($d['nameTa'] ?? ($d['nameEn'] ?? '')),
+                    'hi' => (string) ($d['nameHi'] ?? ($d['nameEn'] ?? '')),
+                ],
+                'description' => [
+                    'en' => (string) ($d['descriptionEn'] ?? ''),
+                    'ta' => (string) ($d['descriptionTa'] ?? ''),
+                    'hi' => (string) ($d['descriptionHi'] ?? ''),
+                ],
+                'remedy' => [
+                    'en' => (string) ($d['traditionalRemedyEn'] ?? ''),
+                    'ta' => (string) ($d['traditionalRemedyTa'] ?? ''),
+                    'hi' => (string) ($d['traditionalRemedyHi'] ?? ''),
+                ],
+            ];
+        }
+    }
+
     $chart = [
         'lagna' => (string) ($result['lagna']['rasi'] ?? ''),
         'moonSign' => (string) ($result['rasi']['name'] ?? ''),
@@ -1170,6 +1442,7 @@ function astro_ai_chart_facts(array $order): ?array
         'dignity' => $dignity,
         'saniTransitFromMoon' => (int) ($result['saniTransit']['house'] ?? 0),
         'doshas' => $kujaPresent ? ['kujaDosha'] : [],
+        'doshaDetails' => $doshaDetails,
         // The customer's own report readings per life area, in en/ta/hi -
         // the same text as their PDF. Knowledge-base mode answers from these.
         'summary' => is_array($result['summary'] ?? null) ? $result['summary'] : [],
@@ -1242,6 +1515,9 @@ try {
             break;
         case 'diagnose':
             astro_ai_action_diagnose($pdo, $user, $body);
+            break;
+        case 'options':
+            astro_ai_action_options($pdo, $user, $body);
             break;
         default:
             jsonResponse(['success' => false, 'message' => 'Unknown action.'], 400);

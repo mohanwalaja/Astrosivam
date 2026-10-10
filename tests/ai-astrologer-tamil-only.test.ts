@@ -53,7 +53,11 @@ check('the PHP filters the citation line to citable Tamil ids', () => {
   assert.match(php, /function citableTamilSources\(\)/);
   assert.match(php, /function tamilOnlySourceLine\(/);
   assert.match(php, /\$s\['language'\] \?\? ''\) === 'ta'/, 'citable set must check language === ta');
-  assert.match(php, /tamilOnlySourceLine\(\(string\) \$retrieved\['sourceLine'\]\)/, 'answer() must filter the source line');
+  // The active local answer() lives in the offline builder (the provider only
+  // defines the filter); every rule-sourced reply path there must filter.
+  const offline = read('api/astrology/ai_astrologer_offline.php');
+  assert.match(offline, /tamilOnlySourceLine\(\(string\) \(\$retrieved\['sourceLine'\]/, 'answer() must filter the source line');
+  assert.match(offline, /tamilOnlySourceLine\(\(string\) \(\$forced\['sourceLine'\]/, 'guided answers must filter the source line too');
 });
 
 check('the output guard rejects any non-Tamil or unverified source id', () => {
