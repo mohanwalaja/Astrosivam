@@ -58,17 +58,36 @@ export class AiAstrologerError extends Error {
   }
 }
 
-async function call(action: string, body: Record<string, unknown> = {}, method: 'POST' | 'GET' = 'POST') {
+/** Browser-side abort for a request. Sits above the server's 25s model timeout. */
+const ASK_TIMEOUT_MS = 30000;
+
+async function call(
+  action: string,
+  body: Record<string, unknown> = {},
+  method: 'POST' | 'GET' = 'POST',
+  timeoutMs?: number,
+) {
   const url = method === 'GET'
     ? `${ENDPOINT}?action=${action}&${new URLSearchParams(body as any).toString()}`
     : `${ENDPOINT}?action=${action}`;
 
-  const res = await fetch(url, {
-    method,
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: method === 'POST' ? JSON.stringify(body) : undefined,
-  });
+  const controller = timeoutMs ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method,
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: method === 'POST' ? JSON.stringify(body) : undefined,
+      signal: controller?.signal,
+    });
+  } catch (e) {
+    // A timed-out or dropped connection gets the same retryable error as a 503.
+    throw new AiAstrologerError(503, { code: 'NETWORK_TIMEOUT', retry: true });
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 
   const data = await safeJson<any>(res);
   if (!res.ok || data?.success === false) {
@@ -99,7 +118,7 @@ export const aiAstrologer = {
     /** True when the question was forwarded to the admin escalation queue. */
     escalated?: boolean;
   }> {
-    return call('ask', { sessionId, question, language });
+    return call('ask', { sessionId, question, language }, 'POST', ASK_TIMEOUT_MS);
   },
 
   async usage(): Promise<{

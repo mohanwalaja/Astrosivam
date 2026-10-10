@@ -32,13 +32,18 @@ class AstroAiProvider
     const GUARDRAILS_PATH = '/knowledge/ai-astrologer/rules/guardrails.json';
     const LIFE_AREAS_PATH = '/knowledge/ai-astrologer/rules/life-areas.json';
     const REMEDIES_PATH = '/knowledge/ai-astrologer/rules/remedies.json';
+    const SOURCES_PATH = '/knowledge/ai-astrologer/sources.json';
 
     /** One retry on a guard failure, then a safe fallback. Never a third try. */
     const MAX_GENERATION_ATTEMPTS = 2;
-    const CURL_TIMEOUT_SECONDS = 45;
+    // Keep the model call well under the browser's abort (30s) and the host's
+    // proxy limit, so a slow model fails fast with the retry message instead
+    // of leaving the customer staring at a dead connection.
+    const CURL_TIMEOUT_SECONDS = 25;
 
     private static $promptCache = null;
     private static $kbCache = [];
+    private static $tamilSourcesCache = null;
 
     // ------------------------------------------------------------------
     // Configuration
@@ -92,6 +97,63 @@ class AstroAiProvider
             self::$kbCache[$rel] = json_decode((string) file_get_contents(self::kbPath($rel)), true) ?: [];
         }
         return self::$kbCache[$rel];
+    }
+
+    // ------------------------------------------------------------------
+    // Tamil-only citations
+    // ------------------------------------------------------------------
+
+    /**
+     * Verified Tamil-language sources, keyed by id. English, Sanskrit and
+     * Hindi entries never reach a customer reply, even when an English text
+     * informed a rule (the English is kept as internal reference only).
+     */
+    public static function citableTamilSources(): array
+    {
+        if (self::$tamilSourcesCache !== null) {
+            return self::$tamilSourcesCache;
+        }
+        $reg = json_decode((string) file_get_contents(self::kbPath(self::SOURCES_PATH)), true);
+        $out = [];
+        foreach (($reg['sources'] ?? []) as $s) {
+            if (($s['language'] ?? '') === 'ta'
+                && in_array($s['verification'] ?? '', ['content-read', 'metadata-verified', 'catalogue-verified'], true)) {
+                $out[(string) $s['id']] = $s;
+            }
+        }
+        self::$tamilSourcesCache = $out;
+        return $out;
+    }
+
+    public static function isCitableId(string $id): bool
+    {
+        return isset(self::citableTamilSources()[$id]);
+    }
+
+    /** Keeps only the citable Tamil ids in a "Source: ..." line. */
+    public static function tamilOnlySourceLine(string $line): string
+    {
+        if (strncmp($line, 'Source: ', 8) !== 0) {
+            return '';
+        }
+        $kept = [];
+        foreach (explode(' · ', substr($line, 8)) as $token) {
+            $id = trim(explode(',', $token)[0]);
+            if ($id !== '' && self::isCitableId($id)) {
+                $kept[] = trim($token);
+            }
+        }
+        return $kept ? 'Source: ' . implode(' · ', $kept) : '';
+    }
+
+    /** The list the model may name, one line per citable Tamil source. */
+    public static function tamilSourceList(): string
+    {
+        $lines = [];
+        foreach (self::citableTamilSources() as $id => $s) {
+            $lines[] = '- ' . $id . ' — ' . (string) ($s['title'] ?? '');
+        }
+        return implode("\n", $lines);
     }
 
     // ------------------------------------------------------------------
@@ -323,7 +385,7 @@ class AstroAiProvider
 
         if (empty($lines)) {
             return [
-                'rulesBlock' => "(Consulted every life-area card, the remedies registry and the customer's chart period; none covers this question directly. Give an honest general reading from their chart period if you can, say plainly that your knowledge base has no specific rule for it, and offer the astrologer handoff.)",
+                'rulesBlock' => "(No curated rule matches this question. Answer it from general Tamil astrology (Jyotisha) knowledge, in the customer's language. Say plainly that this is general guidance, not a reading of their chart. Be honest about anything uncertain. Name only sources from the TAMIL SOURCES list, at book level, or name none. Never quote a verse. Keep every health, legal, financial and prediction rule. If the question is not about astrology, say so politely and offer to help with an astrology question.)",
                 'sourceLine' => '',
             ];
         }
@@ -512,6 +574,15 @@ class AstroAiProvider
             $violations[] = 'health topic without advising a qualified doctor';
         }
 
+        // Tamil-only citations: a reply may name only citable Tamil sources.
+        if (preg_match_all('/\b(?:EN|SA|HI|TP|TA|REF)-\d{2,3}\b/u', $reply, $cites)) {
+            foreach (array_unique($cites[0]) as $cited) {
+                if (!self::isCitableId($cited)) {
+                    $violations[] = 'names a source that is not an allowed Tamil source: ' . $cited;
+                }
+            }
+        }
+
         // No sales talk inside an answer.
         if (preg_match('/\b(discount|offer price|only today|buy now)\b/iu', $reply) === 1) {
             $violations[] = 'sales language inside an answer';
@@ -648,6 +719,9 @@ class AstroAiProvider
         }
 
         $retrieved = self::retrieve($question, $language, $chart);
+        // Tamil-only citations: drop any English, Sanskrit or unverified id before
+        // it reaches the prompt or the customer.
+        $retrieved['sourceLine'] = self::tamilOnlySourceLine((string) $retrieved['sourceLine']);
 
         // A refusal route short-circuits: no chart reading, offer the handoff.
         if (!empty($retrieved['refusal'])) {
@@ -690,6 +764,7 @@ class AstroAiProvider
             'LANGUAGE' => $language,
             'CHAT_HISTORY' => $context['chatHistory'] ?? '(this is the first message)',
             'DASHA_END_DATE' => $context['dashaEndDate'] ?? 'the date shown on your report',
+            'TAMIL_SOURCES' => self::tamilSourceList(),
         ]);
 
         $draft = null;
