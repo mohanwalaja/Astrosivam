@@ -167,6 +167,29 @@ check('the migration is idempotent and creates all three tables', () => {
   assert.match(migration, /ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci/g);
 });
 
+check('runtime schema bootstrap strips SQL comments before splitting on semicolons', () => {
+  const splitter = sliceText(
+    endpoint, 'function astro_ai_migration_statements', 'function astro_ai_ensure_tables', 'migration statement splitter'
+  );
+  const stripCommentsAt = splitter.indexOf('preg_replace');
+  const splitStatementsAt = splitter.indexOf("explode(';', $sql)");
+  assert.ok(stripCommentsAt >= 0 && splitStatementsAt > stripCommentsAt,
+    'full-line comments must be stripped before splitting; the migration documentation contains semicolons');
+  const ensureTables = sliceText(
+    endpoint, 'function astro_ai_ensure_tables', 'function astro_ai_new_session_id', 'schema bootstrap'
+  );
+  assert.match(ensureTables, /foreach \(astro_ai_migration_statements\(\$sql\) as \$statement\)/,
+    'table setup must use the tested splitter');
+
+  // Exercise the migration through the same two parsing steps. If a future
+  // comment adds a semicolon, it must not break a CREATE TABLE statement.
+  const executableSql = migration.replace(/^[ \t]*--.*$/gm, '');
+  const statements = executableSql.split(';').map((s) => s.trim()).filter(Boolean);
+  const createdTables = statements.map((s) => s.match(/^CREATE TABLE IF NOT EXISTS `(\w+)`/)?.[1]);
+  assert.deepEqual(createdTables, ['ai_chat_sessions', 'ai_chat_messages', 'ai_chat_handoffs']);
+  assert.match(endpoint, /\$pdo->exec\(\$statement\)/);
+});
+
 check('every message is stored with a timestamp and a status', () => {
   assert.match(migration, /`created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP/);
   assert.match(migration, /`role` ENUM\('customer', 'assistant', 'system', 'handoff'\)/);
@@ -222,7 +245,7 @@ check('the endpoint only calls functions that exist somewhere in api/', () => {
     mb_strpos microtime round max min is_string is_array is_uploaded_file file_get_contents json_decode
     random_bytes bin2hex header error_log time date count in_array isset empty class_exists file_exists
     is_readable strpos substr array_keys array_values intval number_format htmlspecialchars http_response_code
-    exit dirname preg_split str_replace file`.split(/\s+/));
+    exit dirname preg_split preg_replace str_replace file`.split(/\s+/));
 
   const called = new Set([...codeNoStrings(endpoint).matchAll(/(?<![->:\w$])([a-z_][a-z0-9_]*)\s*\(/g)].map((m) => m[1]));
   const tableNames = /^(ai_chat_\w+|orders|users|api_rate_limits)$/;
