@@ -67,7 +67,7 @@ export const AiAstrologerConfigPanel: React.FC<AiAstrologerConfigPanelProps> = (
       return;
     }
     if (!stored.apiKeyConfigured && apiKey.trim().length < 8) {
-      setFormError('Paste the API key from your AI provider first.');
+      setFormError('Paste an API key to switch to AI-written replies. Without a key the chat already answers from your own sources - nothing to save.');
       return;
     }
     setIsSaving(true);
@@ -110,30 +110,30 @@ export const AiAstrologerConfigPanel: React.FC<AiAstrologerConfigPanelProps> = (
             <Bot className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">AI Astrologer Chat Model</h2>
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">AI Astrologer Chat</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              The chat needs an API key from an OpenAI-compatible AI provider. Paste it here and save &mdash; no
-              server or cPanel changes are needed. The key is stored on the server and never shown again.
+              <strong>No API key is needed.</strong> Without one, the chat answers from ASTRO SIVAM&rsquo;s own sources
+              only: the customer&rsquo;s report readings, the curated Tamil astrology rules and the remedies registry.
+              Adding a key from an OpenAI-compatible provider is optional; it makes replies AI-written, and the chat
+              falls back to your own sources if that service fails.
             </p>
           </div>
         </div>
 
         <div className={`mb-5 p-3 rounded-2xl border text-xs flex items-center gap-2 ${
-          stored.apiKeyConfigured
-            ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
-            : 'bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300'
+          'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
         }`}>
-          {stored.apiKeyConfigured ? <ShieldCheck className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
+          <ShieldCheck className="w-4 h-4 shrink-0" />
           <span>
             {stored.apiKeyConfigured
               ? <>An API key is saved (ending <strong className="font-mono">{stored.apiKeyHint}</strong>). Leave the key field blank to keep it.</>
-              : <>No API key is saved in the Admin Portal. Unless one is set in the server environment, customers will see &ldquo;The AI Astrologer model is not configured&rdquo;.</>}
+              : <>Knowledge-base mode is active: the chat replies from your own sources. You can leave this as it is &mdash; the key below is optional.</>}
           </span>
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <span className={labelCls}>AI provider</span>
+            <span className={labelCls}>AI provider (optional)</span>
             <div className="flex flex-wrap gap-2">
               {PROVIDER_PRESETS.map(p => (
                 <button
@@ -158,7 +158,7 @@ export const AiAstrologerConfigPanel: React.FC<AiAstrologerConfigPanelProps> = (
           </div>
 
           <div>
-            <label className={labelCls} htmlFor="ai-api-key"><KeyRound className="w-3.5 h-3.5 inline mr-1" />API key</label>
+            <label className={labelCls} htmlFor="ai-api-key"><KeyRound className="w-3.5 h-3.5 inline mr-1" />API key (optional)</label>
             <input
               id="ai-api-key"
               type="password"
@@ -213,7 +213,9 @@ export const AiAstrologerConfigPanel: React.FC<AiAstrologerConfigPanelProps> = (
             <>
               <div className={`flex items-center gap-2 text-sm font-bold ${check.ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                 {check.ok ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-                {check.ok ? 'The AI Astrologer is working. Customers will get replies.' : `Not working yet — blocked by: ${check.blocking.join(', ') || 'unknown'}`}
+                {check.ok
+                  ? `The AI Astrologer is working. Customers will get replies (${check.mode === 'model' ? 'AI model' : 'knowledge-base mode - your own sources'}).`
+                  : `Not working yet — blocked by: ${check.blocking.join(', ') || 'unknown'}`}
               </div>
               <ul className="space-y-1 text-xs font-mono">
                 {check.checks.map(c => (

@@ -53,6 +53,10 @@ function runProbe(probe: string, outFile: string): any {
 }
 
 const out = runProbe(PROBE, OUT);
+const kb = runProbe(
+  'tests/fixtures/php-ai-probes/knowledge-base-mode.php',
+  path.join(root, 'tests', 'fixtures', 'php-ai-probes', 'out-kb.json')
+);
 const coverage = runProbe(
   'tests/fixtures/php-ai-probes/sources-coverage.php',
   path.join(root, 'tests', 'fixtures', 'php-ai-probes', 'out-coverage.json')
@@ -74,9 +78,10 @@ check('the knowledge base loads and the system prompt extracts', () => {
   assert.ok(out.systemPromptBytes > 10000, `the prompt extracted only ${out.systemPromptBytes} bytes`);
 });
 
-check('no key anywhere means the provider reports itself unconfigured', () => {
+check('no key anywhere means no AI model - but nothing blocks the chat', () => {
   assert.equal(out.configuredWithoutKey, false);
-  assert.deepEqual(out.blockingWithoutKey, ['apiKey'], 'the blocking check must be named, not guessed');
+  // The key is optional: without it the chat answers in knowledge-base mode.
+  assert.deepEqual(out.blockingWithoutKey, [], 'a missing API key must not block replies');
 });
 
 check('a placeholder key is refused rather than sent to the model', () => {
@@ -142,6 +147,64 @@ check('the sources the rules cite in English are not the ones shown to customers
   // catches that, and cardsCited above catches it at runtime.
   assert.ok(coverage.citedNotCitable.length > 0, 'the registry keeps English editions as internal reference');
   assert.ok(coverage.citedIds.length >= 16, `expected the rules to cite the library, found ${coverage.citedIds.length} ids`);
+});
+
+/* ------------------------------------------------------------------ */
+/* Knowledge-base mode: no API key, own sources only                   */
+/* ------------------------------------------------------------------ */
+
+check('with no API key the chat is in knowledge-base mode and can answer', () => {
+  assert.equal(kb.configured, false);
+  assert.equal(kb.mode, 'knowledge-base');
+  assert.equal(kb.canAnswer, true);
+  assert.deepEqual(kb.diagBlocking, []);
+});
+
+check('every question gets a guard-clean reply without a model', () => {
+  for (const r of [...kb.general, ...kb.personal]) {
+    assert.ok(!r.error, `${r.lang} "${r.q}" threw: ${r.error}`);
+    assert.equal(r.mode, 'knowledge-base', `${r.q} must be answered in knowledge-base mode`);
+    assert.ok(r.bubbles.length >= 1 && r.bubbles.length <= 4, `${r.q} returned ${r.bubbles.length} bubbles`);
+    assert.equal(r.guardOk, true, `${r.lang} "${r.q}" failed the guard: ${r.violations?.join('; ')}`);
+  }
+});
+
+check('questions route to the right card in all three languages', () => {
+  const area = (q: string) => [...kb.general, ...kb.personal].find((r: any) => r.q === q)?.areaId;
+  assert.equal(area('When will I get a job?'), 'career');
+  assert.equal(area('how much money will I earn this year'), 'wealth', 'a money question is not a price question');
+  assert.equal(area('Can I settle abroad in Australia?'), 'travel-foreign');
+  assert.equal(area('என் திருமணம் எப்போது நடக்கும்?'), 'marriage');
+  assert.equal(area('मेरा करियर कैसा रहेगा?'), 'career');
+  assert.equal(area('What is my current dasha?'), 'current-guidance', '"current" must not match the property word "rent"');
+});
+
+check('refusal routes and the unknown-question path offer the astrologer', () => {
+  const byQ = (q: string) => kb.general.find((r: any) => r.q === q);
+  for (const q of ['Will I die soon?', 'Should I buy shares in crypto?', 'What is the best phone to buy?']) {
+    assert.equal(byQ(q).handoff, true, `${q} must offer the human astrologer`);
+  }
+  assert.match(byQ('Should I buy shares in crypto?').bubbles.join(' '), /financial adviser/);
+  const health = byQ('I have chest pain, is it dangerous?');
+  assert.match(health.bubbles.join(' '), /qualified doctor/, 'a health answer must point to a doctor');
+});
+
+check('the endpoint maps a real AstroEngine chart into rule facts', () => {
+  const c = kb.chartFacts;
+  assert.ok(c, 'astro_ai_chart_facts must return facts for a Birth Jathagam');
+  assert.ok(c.lagna && c.moonSign && c.moonNakshatra, 'lagna, rasi and star must be filled');
+  assert.ok(c.currentDasha && c.currentAntardasha, 'the running dasha must be filled');
+  assert.match(c.dashaEndDate, /^\d{4}-\d{2}-\d{2}$/);
+  assert.equal(Object.keys(c.planetHouse).length >= 9, true, 'every graha needs a house');
+  assert.equal(Object.keys(c.lordHouse).length, 12, 'every house needs its lord placed');
+  assert.ok(kb.summaryKeys.includes('careerTa'), 'the report readings must ride along for every language');
+});
+
+check('a personal answer quotes the customer\'s own report reading', () => {
+  const career = kb.personal.find((r: any) => r.q === 'How is my career?');
+  assert.ok(career.bubbles[0].includes(kb.careerSummaryEn), 'the career answer must carry the report\'s career text');
+  const dasha = kb.personal.find((r: any) => r.q === 'What is my current dasha?');
+  assert.match(dasha.bubbles[0], /Mahadasha/);
 });
 
 console.log(`\n[OK] ai-astrologer php runtime: ${passed} checks passed`);

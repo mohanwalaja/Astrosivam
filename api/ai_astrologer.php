@@ -568,28 +568,23 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
 {
     astro_ai_ensure_tables($pdo);
 
-    // Fail fast on a server setup problem instead of letting the model call
-    // throw deep inside generation: a missing API key or a missing curl
-    // extension is an admin-facing configuration error, and this message is
-    // what tells the admin exactly what to fix.
-    //
-    // The blocking check id is logged too, so the server log says which one it
-    // was instead of leaving the owner to guess between "no key", "no curl" and
-    // "a placeholder key copied from .env.example".
-    if (!AstroAiProvider::isConfigured()) {
+    // Fail fast only when the chat truly cannot answer. An AI API key is
+    // OPTIONAL: without one the chat answers in knowledge-base mode from
+    // ASTRO SIVAM's own sources (see api/astrology/ai_astrologer_offline.php).
+    // What does stop every answer is a missing knowledge/ directory, so that
+    // is the setup problem this refusal names.
+    if (!AstroAiProvider::canAnswer()) {
         $diag = AstroAiProvider::diagnostics(false);
-        error_log('AI Astrologer: ask refused - provider not configured. Blocking: '
+        error_log('AI Astrologer: ask refused - knowledge base unavailable. Blocking: '
             . (implode(', ', $diag['blocking']) ?: 'unknown')
             . '. Run /api/ai_astrologer.php?action=diagnose as an admin for the full report.');
         jsonResponse(['success' => false, 'code' => 'AI_NOT_CONFIGURED',
-            'message' => 'The AI Astrologer model is not configured on this server yet. '
-                . 'An administrator can add the API key in Admin Portal > AI Astrologer, '
-                . 'or set the AI_ASTROLOGER_API_KEY environment variable (optionally '
-                . 'AI_ASTROLOGER_BASE_URL and AI_ASTROLOGER_MODEL), then try again.',
-            'message_ta' => 'AI ஜோதிடர் இந்த சர்வரில் இன்னும் அமைக்கப்படவில்லை. '
-                . 'நிர்வாகி AI_ASTROLOGER_API_KEY-ஐ அமைக்க வேண்டும்.',
-            'message_hi' => 'AI ज्योतिषी इस सर्वर पर अभी कॉन्फ़िगर नहीं है। '
-                . 'एडमिन को AI_ASTROLOGER_API_KEY सेट करना होगा।',
+            'message' => 'The AI Astrologer knowledge base is missing on this server. '
+                . 'Upload the knowledge/ folder to the website root (see deploy_cpanel.sh), then try again.',
+            'message_ta' => 'AI ஜோதிடரின் அறிவுத் தளம் இந்த சர்வரில் இல்லை. '
+                . 'நிர்வாகி knowledge/ கோப்புறையை பதிவேற்ற வேண்டும்.',
+            'message_hi' => 'AI ज्योतिषी का ज्ञान-आधार इस सर्वर पर नहीं है। '
+                . 'एडमिन को knowledge/ फ़ोल्डर अपलोड करना होगा।',
             'blocking' => $diag['blocking'],
             // Only an administrator can do anything with this, and the client
             // only shows it to one. The customer keeps seeing the short retry
@@ -688,6 +683,7 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
             'sources' => $reply['sourceLine'] ?? '',
             'areaId' => $reply['areaId'] ?? null,
             'handoff' => (bool) ($reply['handoff'] ?? false) || $escalated,
+            'mode' => (string) ($reply['mode'] ?? AstroAiProvider::mode()),
             'escalated' => $escalated,
             'latencyMs' => (int) round((microtime(true) - $startedAt) * 1000),
             'remainingToday' => $isAdmin ? null : max(0, $limit - astro_ai_usage_count($pdo, (string) $user['id'])),
@@ -1032,7 +1028,21 @@ function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $
         }, $history))
         : '(this is the first message)';
 
-    return AstroAiProvider::answer($question, $language, $history, $chart, $context);
+    if (!AstroAiProvider::isConfigured()) {
+        // No API key: our own sources only.
+        return AstroAiProvider::answerFromKnowledgeBase($question, $language, $chart, $context);
+    }
+    try {
+        $reply = AstroAiProvider::answer($question, $language, $history, $chart, $context);
+        $reply['mode'] = 'model';
+        return $reply;
+    } catch (Throwable $e) {
+        // A configured model that is down, out of credit or misconfigured must
+        // not leave the customer without an answer: fall back to the
+        // knowledge base and log why, so the admin can still fix the key.
+        error_log('AI Astrologer: model call failed, answering from the knowledge base instead: ' . $e->getMessage());
+        return AstroAiProvider::answerFromKnowledgeBase($question, $language, $chart, $context);
+    }
 }
 
 /** Trilingual complaint/escalation keywords. Deliberately broad: missing a
@@ -1159,30 +1169,100 @@ function astro_ai_chart_facts(array $order): ?array
         return null;
     }
 
-    // Only the handful of facts the rule conditions read are needed. Anything
-    // absent stays absent, which is what stops a partial chart from inventing a
-    // finding. Field names are read defensively because the engine's result is
-    // shaped for the report, not for this layer.
+    // A Birth Jathagam result is the only shape that carries a natal chart.
+    // Other services (matching, naming, muhurtham) answer from the general
+    // knowledge base instead of inventing chart facts.
+    if (!is_array($result['planetPositions'] ?? null) || !is_array($result['dasha'] ?? null)) {
+        return null;
+    }
+
+    // AstroEngine::calculateHoroscope() keys, mapped to the vocabulary the
+    // rule conditions in knowledge/ai-astrologer/rules/life-areas.json use.
+    // (This used to read keys such as 'lagnaSign' and 'planetHouses' that the
+    // engine never returns, so every chart reached the rules empty.)
+    $grahaVocab = [
+        'sun' => 'Surya', 'moon' => 'Chandra', 'mars' => 'Sevvai', 'mercury' => 'Budha',
+        'jupiter' => 'Guru', 'venus' => 'Sukra', 'saturn' => 'Sani', 'rahu' => 'Rahu', 'ketu' => 'Ketu',
+    ];
+    $englishLord = [
+        'Sun' => 'Surya', 'Moon' => 'Chandra', 'Mars' => 'Sevvai', 'Mercury' => 'Budha',
+        'Jupiter' => 'Guru', 'Venus' => 'Sukra', 'Saturn' => 'Sani', 'Rahu' => 'Rahu', 'Ketu' => 'Ketu',
+    ];
+    // Sign lords, Aries (1) .. Pisces (12).
+    $signLord = [1 => 'Sevvai', 2 => 'Sukra', 3 => 'Budha', 4 => 'Chandra', 5 => 'Surya', 6 => 'Budha',
+        7 => 'Sukra', 8 => 'Sevvai', 9 => 'Guru', 10 => 'Sani', 11 => 'Sani', 12 => 'Guru'];
+
+    $planetHouse = [];
+    $dignity = [];
+    foreach ($result['planetPositions'] as $p) {
+        $g = $grahaVocab[strtolower((string) ($p['graha'] ?? ''))] ?? null;
+        $house = (int) ($p['house'] ?? ($p['bhavaNumber'] ?? 0));
+        if ($g === null || $house < 1 || $house > 12) {
+            continue;
+        }
+        $planetHouse[$g] = $house;
+        $d = is_array($p['dignity'] ?? null) ? $p['dignity'] : [];
+        if (!empty($d['isExalted']) || !empty($d['isOwnSign'])) {
+            $dignity[$g] = 'strong';
+        } elseif (!empty($d['isDebilitated']) && empty($d['isNeechaBhanga'])) {
+            $dignity[$g] = 'weak';
+        } else {
+            $dignity[$g] = 'neutral';
+        }
+    }
+    if (isset($planetHouse['Chandra'])) {
+        $planetHouse['Moon'] = $planetHouse['Chandra']; // one rule names the Moon in English
+    }
+
+    $lagnaRasi = (int) ($result['lagnaRasi'] ?? 0);
+    $lordHouse = [];
+    if ($lagnaRasi >= 1 && $lagnaRasi <= 12) {
+        for ($h = 1; $h <= 12; $h++) {
+            $lord = $signLord[(($lagnaRasi - 1 + $h - 1) % 12) + 1];
+            if (isset($planetHouse[$lord])) {
+                $lordHouse[$h] = $planetHouse[$lord];
+            }
+        }
+        $lagnaLord = $signLord[$lagnaRasi];
+        $dignity['lagnaLord'] = $dignity[$lagnaLord] ?? 'neutral';
+    }
+
+    $dasha = $result['dasha'];
+    $antarPeriod = (string) ($dasha['antarPeriod'] ?? '');
+    $dashaEnd = strpos($antarPeriod, ' - ') !== false ? trim(substr($antarPeriod, strrpos($antarPeriod, ' - ') + 3)) : '';
+    $kuja = $result['sevvaiDosha'] ?? [];
+    $kujaPresent = ($kuja['hasDosha'] ?? null) === true && ($kuja['status'] ?? '') !== 'DOSHA_CANCELLED';
+
     $chart = [
-        'lagna' => (string) ($result['lagnaSign'] ?? ''),
-        'moonSign' => (string) ($result['chandraRasi'] ?? ($result['moonSign'] ?? '')),
-        'moonNakshatra' => (string) ($result['janmaNakshatra'] ?? ''),
-        'moonNakshatraLord' => (string) ($result['nakshatraLord'] ?? ''),
-        'currentDasha' => (string) ($result['currentDasha'] ?? ''),
-        'currentAntardasha' => (string) ($result['currentBhukti'] ?? ($result['currentAntardasha'] ?? '')),
-        'dashaEndDate' => (string) ($result['dashaEndDate'] ?? ''),
-        'planetHouse' => is_array($result['planetHouses'] ?? null) ? $result['planetHouses'] : [],
-        'lordHouse' => is_array($result['houseLords'] ?? null) ? $result['houseLords'] : [],
-        'dignity' => is_array($result['dignities'] ?? null) ? $result['dignities'] : [],
-        'saniTransitFromMoon' => (int) ($result['saniFromMoon'] ?? 0),
-        'doshas' => is_array($result['doshas'] ?? null) ? array_keys(array_filter($result['doshas'])) : [],
+        'lagna' => (string) ($result['lagna']['rasi'] ?? ''),
+        'moonSign' => (string) ($result['rasi']['name'] ?? ''),
+        'moonNakshatra' => (string) ($result['nakshatram']['name'] ?? ($result['janmaNakshatraEn'] ?? '')),
+        'moonNakshatraLord' => '',
+        'currentDasha' => $englishLord[(string) ($dasha['currentLord'] ?? '')] ?? (string) ($dasha['currentLord'] ?? ''),
+        'currentAntardasha' => $englishLord[(string) ($dasha['subLord'] ?? '')] ?? (string) ($dasha['subLord'] ?? ''),
+        'dashaEndDate' => $dashaEnd,
+        'planetHouse' => $planetHouse,
+        'lordHouse' => $lordHouse,
+        'dignity' => $dignity,
+        'saniTransitFromMoon' => (int) ($result['saniTransit']['house'] ?? 0),
+        'doshas' => $kujaPresent ? ['kujaDosha'] : [],
+        // The customer's own report readings per life area, in en/ta/hi -
+        // the same text as their PDF. Knowledge-base mode answers from these.
+        'summary' => is_array($result['summary'] ?? null) ? $result['summary'] : [],
+        'labels' => [
+            'lagna' => ['en' => (string) ($result['lagna']['rasi'] ?? ''), 'ta' => (string) ($result['lagna']['rasiTa'] ?? ''), 'hi' => (string) ($result['lagna']['rasi'] ?? '')],
+            'rasi' => ['en' => (string) ($result['rasi']['name'] ?? ''), 'ta' => (string) ($result['rasi']['nameTa'] ?? ''), 'hi' => (string) ($result['rasi']['name'] ?? '')],
+            'nakshatra' => ['en' => (string) ($result['nakshatram']['name'] ?? ''), 'ta' => (string) ($result['nakshatram']['nameTa'] ?? ''), 'hi' => (string) ($result['nakshatram']['name'] ?? '')],
+            'dasha' => ['en' => (string) ($dasha['currentLord'] ?? ''), 'ta' => (string) ($dasha['currentLordTa'] ?? ''), 'hi' => (string) ($dasha['currentLordHi'] ?? '')],
+            'bhukti' => ['en' => (string) ($dasha['subLord'] ?? ''), 'ta' => (string) ($dasha['subLordTa'] ?? ''), 'hi' => (string) ($dasha['subLordHi'] ?? '')],
+        ],
     ];
 
     $lang = astro_normalize_report_language((string) ($order['language'] ?? 'ta'));
     $label = $lang === 'ta' ? 'உங்கள் ஜாதகம்' : ($lang === 'hi' ? 'आपकी कुंडली' : 'Your chart');
     $header = $label . ': ' . $chart['lagna'] . ' / ' . $chart['moonSign'] . ' / ' . $chart['moonNakshatra'] . "\n"
-        . ($lang === 'ta' ? 'தசை' : ($lang === 'hi' ? 'दशा' : 'Dasha')) . ' ' . $chart['currentDasha']
-        . ' / ' . $chart['currentAntardasha']
+        . ($lang === 'ta' ? 'தசை' : ($lang === 'hi' ? 'दशा' : 'Dasha')) . ' ' . (string) ($dasha['currentLord'] ?? '')
+        . ' / ' . (string) ($dasha['subLord'] ?? '')
         . ($chart['dashaEndDate'] !== '' ? ' (' . $chart['dashaEndDate'] . ')' : '');
 
     return ['chart' => $chart, 'header' => $header, 'dashaEndDate' => $chart['dashaEndDate'] ?: null];

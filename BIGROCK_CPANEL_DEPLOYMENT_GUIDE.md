@@ -187,7 +187,7 @@ is only *active* when its variable is present.
 | `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TEMPLATE_NAME` | WhatsApp order alerts | alerts stay off |
 | `VIBER_AUTH_TOKEN`, `VIBER_SENDER_NAME` | Viber order alerts | alerts stay off |
 | `ASTROSIVAM_DIAGNOSTICS` | enables `/api/check_mpdf.php` (prints server paths) | page answers 404 |
-| `AI_ASTROLOGER_API_KEY` | API key for the AI Astrologer chat model | chat replies with 503 `AI_NOT_CONFIGURED` |
+| `AI_ASTROLOGER_API_KEY` | OPTIONAL API key for AI-written chat replies (also settable in Admin Portal → AI Astrologer) | chat answers in knowledge-base mode from ASTRO SIVAM's own sources |
 | `AI_ASTROLOGER_BASE_URL` | OpenAI-compatible endpoint for the chat model | `https://api.openai.com/v1` |
 | `AI_ASTROLOGER_MODEL` | model name used by the chat | `gpt-4o-mini` |
 | `AI_ASTROLOGER_MAX_TOKENS` | reply length cap | `900` |
