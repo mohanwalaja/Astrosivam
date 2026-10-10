@@ -11,6 +11,16 @@
  *   upload             attach an ASTRO SIVAM report PDF (Part 3 gate)
  *   handoff            "Talk to our astrologer"
  *   usage              today's customer allowance (admins are unlimited)
+ *   diagnose           admin-only: why the chat is not answering, step by step
+ *
+ * IF THE CHAT NEVER REPLIES, READ THIS FIRST
+ * Every failure the customer can see renders as the same one line - "Please
+ * give me a moment, I am checking again." A missing model key, a missing
+ * knowledge/ directory, a blocked outbound connection and a slow model all look
+ * identical in the chat window. Open
+ *   /api/ai_astrologer.php?action=diagnose&ping=1
+ * while signed in as an admin: it walks the reply path and names the first
+ * thing that is wrong. See AI_CHAT_NOT_REPLYING_FIX.md.
  *
  * ACCESS GATES — READ BEFORE EDITING
  * Authentication and entitlement checks run in PHP on EVERY action, including
@@ -27,11 +37,13 @@
  * PENDING, PROCESSING, REJECTED or CANCELLED does not qualify. A refunded order
  * does not qualify. Admin access is based only on the persisted database role.
  *
- * VERIFICATION STATUS: PHP cannot be installed in the build sandbox (the Debian
- * apt repositories are unreachable; only github.com, registry.npmjs.org and
- * pypi.org are allowed), so this file has NOT been executed. The retrieval and
- * report-gate logic it calls IS covered by tests/ai-astrologer-knowledge.test.ts
- * and tests/ai-astrologer-report.test.ts. Smoke-test this file on the server
+ * VERIFICATION STATUS: this file's HTTP dispatch is still not executed in the
+ * build sandbox (there is no `php` binary and no database here). What IS
+ * executed is the generation layer it calls — AstroAiProvider runs for real
+ * under the wasm PHP runtime:
+ *   node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/reply-path.php
+ * and the gates, migration and schema contracts are checked by
+ * tests/ai-astrologer-access.test.ts. Smoke-test the dispatch on the server
  * before relying on it — see BIGROCK_CPANEL_DEPLOYMENT_GUIDE.md.
  */
 
@@ -243,6 +255,45 @@ function astro_ai_gate(PDO $pdo): array
 function astro_ai_daily_limit(): int
 {
     return astro_env_int('AI_ASTROLOGER_DAILY_LIMIT', AI_ASTROLOGER_DAILY_LIMIT_DEFAULT, 1, 1000);
+}
+
+/**
+ * Hands the provider the admin-saved model configuration, if there is any.
+ *
+ * WHY THIS EXISTS: the key was previously readable ONLY through getenv(). On
+ * cPanel under LiteSpeed/PHP-FPM a value set with SetEnv in .htaccess lands in
+ * $_SERVER instead of the process environment, so the endpoint reported itself
+ * unconfigured and every question came back "Please give me a moment, I am
+ * checking again." - with nothing on screen to say why. The Admin Portal can
+ * now store the same three values in system_settings.general_settings
+ * .aiAstrologerSettings, the same way payment and chat-alert credentials are
+ * stored, and the environment still wins when it has a real value.
+ *
+ * Best-effort by design: a settings read failure must never stop a chat that
+ * could otherwise answer from the environment.
+ */
+function astro_ai_load_provider_settings(PDO $pdo): void
+{
+    try {
+        $stmt = $pdo->query("SELECT general_settings FROM system_settings ORDER BY id ASC LIMIT 1");
+        $row = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : false;
+        if (!$row) {
+            return;
+        }
+        $general = json_decode((string) ($row['general_settings'] ?? '{}'), true) ?: [];
+        $ai = is_array($general['aiAstrologerSettings'] ?? null) ? $general['aiAstrologerSettings'] : [];
+        if (!$ai) {
+            return;
+        }
+        AstroAiProvider::configure([
+            'apiKey' => (string) ($ai['apiKey'] ?? ''),
+            'baseUrl' => (string) ($ai['baseUrl'] ?? ''),
+            'model' => (string) ($ai['model'] ?? ''),
+            'maxTokens' => (string) ($ai['maxTokens'] ?? ''),
+        ]);
+    } catch (Throwable $e) {
+        error_log('AI Astrologer: could not read saved model settings: ' . $e->getMessage());
+    }
 }
 
 /**
@@ -521,13 +572,29 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
     // throw deep inside generation: a missing API key or a missing curl
     // extension is an admin-facing configuration error, and this message is
     // what tells the admin exactly what to fix.
+    //
+    // The blocking check id is logged too, so the server log says which one it
+    // was instead of leaving the owner to guess between "no key", "no curl" and
+    // "a placeholder key copied from .env.example".
     if (!AstroAiProvider::isConfigured()) {
-        error_log('AI Astrologer: ask refused - provider not configured '
-            . '(set AI_ASTROLOGER_API_KEY; curl extension required).');
+        $diag = AstroAiProvider::diagnostics(false);
+        error_log('AI Astrologer: ask refused - provider not configured. Blocking: '
+            . (implode(', ', $diag['blocking']) ?: 'unknown')
+            . '. Run /api/ai_astrologer.php?action=diagnose as an admin for the full report.');
         jsonResponse(['success' => false, 'code' => 'AI_NOT_CONFIGURED',
             'message' => 'The AI Astrologer model is not configured on this server yet. '
                 . 'Set the AI_ASTROLOGER_API_KEY environment variable (optionally '
-                . 'AI_ASTROLOGER_BASE_URL and AI_ASTROLOGER_MODEL), then try again.'], 503);
+                . 'AI_ASTROLOGER_BASE_URL and AI_ASTROLOGER_MODEL), then try again.',
+            'message_ta' => 'AI ஜோதிடர் இந்த சர்வரில் இன்னும் அமைக்கப்படவில்லை. '
+                . 'நிர்வாகி AI_ASTROLOGER_API_KEY-ஐ அமைக்க வேண்டும்.',
+            'message_hi' => 'AI ज्योतिषी इस सर्वर पर अभी कॉन्फ़िगर नहीं है। '
+                . 'एडमिन को AI_ASTROLOGER_API_KEY सेट करना होगा।',
+            'blocking' => $diag['blocking'],
+            // Only an administrator can do anything with this, and the client
+            // only shows it to one. The customer keeps seeing the short retry
+            // wording, never a setup instruction.
+            'diagnose' => astro_ai_is_admin($user) ? $diag : null,
+        ], 503);
     }
 
     $sessionId = trim((string) ($body['sessionId'] ?? ''));
@@ -830,6 +897,86 @@ function astro_ai_action_usage(PDO $pdo, array $user): void
     ]);
 }
 
+/**
+ * WHY THE CHAT IS NOT ANSWERING — the one request that says so.
+ *
+ * Admin-only. Every failure a customer can experience looks identical from the
+ * chat window ("Please give me a moment, I am checking again."), so this walks
+ * the whole reply path and names the first thing that is wrong: no curl, no key
+ * visible to PHP, a placeholder key, a missing knowledge/ directory, an
+ * unparseable prompt, or a model endpoint that refuses the call.
+ *
+ * Pass ping=1 to also make one real (1-token) model call and report its HTTP
+ * status and latency. Without it the action makes no outbound request and costs
+ * nothing, so it is safe to poll.
+ *
+ * It never returns a credential: the key is reported as a source plus its last
+ * four characters, which is enough to confirm which key PHP is holding.
+ */
+function astro_ai_action_diagnose(PDO $pdo, array $user, array $body): void
+{
+    if (!astro_ai_is_admin($user)) {
+        jsonResponse(['success' => false, 'code' => 'ADMIN_ONLY',
+            'message' => 'Admin privileges are required to run the AI Astrologer check.'], 403);
+    }
+
+    $livePing = !empty($body['ping']) || !empty($_GET['ping']);
+    $diagnostics = AstroAiProvider::diagnostics((bool) $livePing);
+
+    // The customer-facing view of the same problem: what the last few attempts
+    // actually did. A wall of FAILED rows with the same error message is the
+    // signature of a configuration problem rather than a slow model.
+    $recentFailures = [];
+    try {
+        astro_ai_ensure_tables($pdo);
+        $stmt = $pdo->query(
+            "SELECT status, error_message, latency_ms, created_at
+               FROM ai_chat_messages
+              WHERE role = 'assistant'
+              ORDER BY id DESC
+              LIMIT 50"
+        );
+        $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+        $failed = 0;
+        $sent = 0;
+        $lastError = null;
+        $slowest = 0;
+        foreach ($rows as $row) {
+            if (($row['status'] ?? '') === 'FAILED') {
+                $failed++;
+                if (!empty($row['error_message'])) {
+                    $lastError = (string) $row['error_message'];
+                }
+            } else if (($row['status'] ?? '') === 'SENT') {
+                $sent++;
+            }
+            $slowest = max($slowest, (int) ($row['latency_ms'] ?? 0));
+        }
+        $recentFailures = [
+            'window' => count($rows),
+            'failed' => $failed,
+            'sent' => $sent,
+            'lastError' => $lastError,
+            'slowestLatencyMs' => $slowest,
+        ];
+    } catch (Throwable $e) {
+        // The chat tables may not exist yet on a fresh install; that is itself
+        // worth reporting, but it must not hide the model diagnostics.
+        $recentFailures = ['error' => $e->getMessage()];
+    }
+
+    jsonResponse([
+        'success' => true,
+        'ok' => $diagnostics['ok'],
+        'configured' => $diagnostics['configured'],
+        'blocking' => $diagnostics['blocking'],
+        'checks' => $diagnostics['checks'],
+        'ping' => $diagnostics['ping'],
+        'recentMessages' => $recentFailures,
+        'generatedAt' => $diagnostics['generatedAt'],
+    ]);
+}
+
 /* ================================================================== */
 /* Generation — the only place a model is called                      */
 /* ================================================================== */
@@ -1054,6 +1201,11 @@ try {
     // BOTH GATES, on every action, before anything else.
     $user = astro_ai_gate($pdo);
 
+    // Model configuration saved in the Admin Portal, applied before any action
+    // can ask isConfigured(). The environment still wins when it holds a real
+    // value, so nothing that works today changes.
+    astro_ai_load_provider_settings($pdo);
+
     $action = strtolower((string) ($_GET['action'] ?? ($_POST['action'] ?? '')));
     $rawBody = file_get_contents('php://input');
     $body = [];
@@ -1087,6 +1239,9 @@ try {
             break;
         case 'usage':
             astro_ai_action_usage($pdo, $user);
+            break;
+        case 'diagnose':
+            astro_ai_action_diagnose($pdo, $user, $body);
             break;
         default:
             jsonResponse(['success' => false, 'message' => 'Unknown action.'], 400);

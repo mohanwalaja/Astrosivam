@@ -14,11 +14,14 @@
  * against OpenAI, Groq, Together, OpenRouter or a self-hosted endpoint by
  * changing AI_ASTROLOGER_BASE_URL and AI_ASTROLOGER_MODEL.
  *
- * VERIFICATION STATUS: PHP cannot be installed in the build sandbox (the Debian
- * apt repositories are unreachable; only github.com, registry.npmjs.org and
- * pypi.org are allowed), so this file has NOT been executed. The guard rules it
- * enforces are the same ones checked by tests/ai-astrologer-knowledge.test.ts
- * against rules/guardrails.json. Smoke-test on the server before relying on it.
+ * VERIFICATION STATUS: this file IS executed in the sandbox — the wasm PHP
+ * runtime runs the real retrieval, prompt-assembly, guard and bubble logic
+ * against the committed knowledge base:
+ *   node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/reply-path.php
+ * What that cannot do is reach a live model, so the curl round trip itself is
+ * still unverified here; `?action=diagnose&ping=1` checks it on the server.
+ * The guard rules it enforces are the same ones checked by
+ * tests/ai-astrologer-knowledge.test.ts against rules/guardrails.json.
  */
 
 // config.php lives one directory up in api/. Requiring '/config.php' here
@@ -36,28 +39,162 @@ class AstroAiProvider
 
     /** One retry on a guard failure, then a safe fallback. Never a third try. */
     const MAX_GENERATION_ATTEMPTS = 2;
-    // Keep the model call well under the browser's abort (30s) and the host's
-    // proxy limit, so a slow model fails fast with the retry message instead
-    // of leaving the customer staring at a dead connection.
-    const CURL_TIMEOUT_SECONDS = 25;
+    // THE WHOLE ANSWER MUST FIT INSIDE THE BROWSER'S 30s ABORT.
+    // The client gives up at 30s (ASK_TIMEOUT_MS in src/services/aiAstrologerApi.ts).
+    // A guard-rejected draft costs a SECOND model call, so the budget is split:
+    // 20s for the first call and 8s for the retry, worst case 28s - inside the
+    // abort, with the host's proxy limit to spare. 25s x 2 = 50s was not: the
+    // browser disconnected first, the customer saw a network error, and the
+    // server kept working on an answer nobody would ever receive.
+    const CURL_TIMEOUT_SECONDS = 20;
+    const CURL_RETRY_TIMEOUT_SECONDS = 8;
+    /** The diagnostic ping must never hold an admin request open. */
+    const CURL_PING_TIMEOUT_SECONDS = 15;
 
     private static $promptCache = null;
     private static $kbCache = [];
     private static $tamilSourcesCache = null;
+    /**
+     * Configuration the endpoint resolved from the database, applied with
+     * configure() before any model call. Empty means "use the environment".
+     */
+    private static $overrides = [];
 
     // ------------------------------------------------------------------
     // Configuration
     // ------------------------------------------------------------------
 
+    /**
+     * Applies admin-saved configuration (system_settings.general_settings
+     * .aiAstrologerSettings). The endpoint calls this once per request, before
+     * isConfigured() is asked anything, so a key saved in the Admin Portal is
+     * honoured exactly like one set in the environment.
+     */
+    public static function configure(array $overrides): void
+    {
+        self::$overrides = $overrides;
+        // A different key can mean a different provider with a different prompt
+        // contract; the caches hold no per-key state, but resetting keeps a
+        // later reconfigure predictable.
+        self::$promptCache = null;
+    }
+
+    /**
+     * A value that is not a credential. cPanel hosts and the Admin Portal both
+     * echo masked secrets back, and a literal "your_api_key_here" from a copied
+     * .env.example is the single most common reason a chat silently never
+     * answers - so it is treated as "not set", never as a key to try.
+     */
+    private static function isPlaceholder(string $value): bool
+    {
+        if (trim($value) === '' || strpos($value, '•') !== false) {
+            return true;
+        }
+        return preg_match('/^\*+$/', $value) === 1
+            || preg_match('/^(?:change[-_ ]?me|replace[-_ ]?me|paste[-_ ]?|your[-_ ]?(?:secret|token|api[-_ ]?key|key)|placeholder|sk-xxx|xxx)/i', $value) === 1;
+    }
+
+    /**
+     * Reads one environment variable from every place a shared host can put it.
+     *
+     * getenv() alone is NOT enough on cPanel: under LiteSpeed/PHP-FPM a value
+     * set with SetEnv in .htaccess lands in $_SERVER, not in the process
+     * environment, so getenv() returns false and the chat reports itself
+     * unconfigured while the owner is looking at a key they did set.
+     */
+    private static function envValue(string $name): string
+    {
+        $candidates = [getenv($name), $_SERVER[$name] ?? null, $_ENV[$name] ?? null];
+        foreach ($candidates as $candidate) {
+            if ($candidate === false || $candidate === null) {
+                continue;
+            }
+            $value = trim((string) $candidate);
+            if ($value === '' || self::isPlaceholder($value)) {
+                continue;
+            }
+            return $value;
+        }
+        return '';
+    }
+
+    /** First non-placeholder value wins. */
+    private static function pick(string ...$values): string
+    {
+        foreach ($values as $value) {
+            $value = trim((string) $value);
+            if ($value !== '' && !self::isPlaceholder($value)) {
+                return $value;
+            }
+        }
+        return '';
+    }
+
     public static function config(): array
     {
+        $o = self::$overrides;
+
+        $maxTokens = (int) self::pick((string) ($o['maxTokens'] ?? ''), self::envValue('AI_ASTROLOGER_MAX_TOKENS'), '900');
+        // Clamped: a typo must not request a completion the host will refuse.
+        if ($maxTokens < 100) {
+            $maxTokens = 900;
+        }
+        if ($maxTokens > 4000) {
+            $maxTokens = 4000;
+        }
+
         return [
-            'baseUrl' => rtrim((string) (getenv('AI_ASTROLOGER_BASE_URL') ?: 'https://api.openai.com/v1'), '/'),
-            'apiKey' => (string) (getenv('AI_ASTROLOGER_API_KEY') ?: ''),
-            'model' => (string) (getenv('AI_ASTROLOGER_MODEL') ?: 'gpt-4o-mini'),
-            'maxTokens' => (int) (getenv('AI_ASTROLOGER_MAX_TOKENS') ?: 900),
+            'baseUrl' => rtrim(self::pick(
+                (string) ($o['baseUrl'] ?? ''),
+                self::envValue('AI_ASTROLOGER_BASE_URL'),
+                'https://api.openai.com/v1'
+            ), '/'),
+            'apiKey' => self::pick((string) ($o['apiKey'] ?? ''), self::envValue('AI_ASTROLOGER_API_KEY')),
+            'model' => self::pick(
+                (string) ($o['model'] ?? ''),
+                self::envValue('AI_ASTROLOGER_MODEL'),
+                'gpt-4o-mini'
+            ),
+            'maxTokens' => $maxTokens,
             'temperature' => 0.4,
         ];
+    }
+
+    /**
+     * Where the active configuration came from, without ever returning the
+     * secret itself. This is the first thing an admin needs to know: "I set the
+     * key" and "PHP can see the key" are two different statements on a shared
+     * host, and the difference is the whole bug.
+     *
+     * @return array{source:string, keyHint:string}
+     */
+    public static function configSource(): array
+    {
+        $fromAdmin = trim((string) (self::$overrides['apiKey'] ?? ''));
+        if ($fromAdmin !== '' && !self::isPlaceholder($fromAdmin)) {
+            return ['source' => 'admin-settings', 'keyHint' => self::mask($fromAdmin)];
+        }
+        $fromEnv = self::envValue('AI_ASTROLOGER_API_KEY');
+        if ($fromEnv !== '') {
+            return ['source' => 'environment', 'keyHint' => self::mask($fromEnv)];
+        }
+        $raw = getenv('AI_ASTROLOGER_API_KEY');
+        if (is_string($raw) && trim($raw) !== '') {
+            // Set, but rejected as a placeholder. Say so rather than "not set".
+            return ['source' => 'placeholder-only', 'keyHint' => self::mask(trim($raw))];
+        }
+        return ['source' => 'none', 'keyHint' => ''];
+    }
+
+    /** Shows only enough of a key to recognise it: sk-...abcd. */
+    private static function mask(string $secret): string
+    {
+        $secret = trim($secret);
+        if ($secret === '') {
+            return '';
+        }
+        $prefix = preg_match('/^([a-z0-9]{2,6}-)/i', $secret, $m) === 1 ? $m[1] : '';
+        return $prefix . '...' . substr($secret, -4);
     }
 
     /** True when the endpoint can call a model at all. Checked before promising an answer. */
@@ -550,9 +687,12 @@ class AstroAiProvider
             $g['predictions']['noGuarantees']['banned']['en'] ?? [],
             $g['predictions']['noFrighteningLanguage']['banned'] ?? []
         );
-        foreach ($lists as $banned) {
-            $banned = trim((string) $banned);
-            if ($banned !== '' && mb_strpos($lower, mb_strtolower($banned, 'UTF-8'), 0, 'UTF-8') !== false) {
+        // Unique: when $language IS 'en' the same list is merged twice, and the
+        // retry instruction the model receives must name each fault once.
+        foreach (array_unique(array_map(static function ($b) {
+            return mb_strtolower(trim((string) $b), 'UTF-8');
+        }, $lists)) as $banned) {
+            if ($banned !== '' && mb_strpos($lower, $banned, 0, 'UTF-8') !== false) {
                 $violations[] = 'banned phrase: "' . $banned . '"';
             }
         }
@@ -609,12 +749,20 @@ class AstroAiProvider
     /**
      * One chat/completions call. Throws on any failure so the caller records a
      * FAILED message row and returns the friendly retry text.
+     *
+     * @param int|null $timeoutSeconds Null means the normal budget; the guard
+     *                                 retry passes a short one so the whole
+     *                                 answer still fits inside the browser's
+     *                                 30s abort.
      */
-    public static function complete(string $system, array $history, string $question): string
+    public static function complete(string $system, array $history, string $question, ?int $timeoutSeconds = null): string
     {
         $cfg = self::config();
         if ($cfg['apiKey'] === '') {
             throw new RuntimeException('AI_ASTROLOGER_API_KEY is not set on this server.');
+        }
+        if (!function_exists('curl_init')) {
+            throw new RuntimeException('The PHP curl extension is not loaded on this server.');
         }
 
         $messages = [['role' => 'system', 'content' => $system]];
@@ -633,12 +781,15 @@ class AstroAiProvider
             'temperature' => $cfg['temperature'],
             'max_tokens' => $cfg['maxTokens'],
         ], JSON_UNESCAPED_UNICODE);
+        if (!is_string($payload)) {
+            throw new RuntimeException('The prompt could not be encoded as JSON.');
+        }
 
         $ch = curl_init($cfg['baseUrl'] . '/chat/completions');
         curl_setopt_array($ch, [
             CURLOPT_POST => true,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => self::CURL_TIMEOUT_SECONDS,
+            CURLOPT_TIMEOUT => $timeoutSeconds ?? self::CURL_TIMEOUT_SECONDS,
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_POSTFIELDS => $payload,
             CURLOPT_HTTPHEADER => [
@@ -649,15 +800,30 @@ class AstroAiProvider
 
         $raw = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $errno = (int) curl_errno($ch);
         $err = curl_error($ch);
         curl_close($ch);
 
         if ($raw === false) {
-            throw new RuntimeException('Model request failed: ' . $err);
+            // Name the likely cause: on shared hosting a curl error here is
+            // almost always outbound HTTPS being blocked, or no CA bundle.
+            throw new RuntimeException(sprintf(
+                'Model request to %s failed (curl %d: %s). If this repeats, the host is '
+                . 'probably blocking outbound HTTPS to that address.',
+                $cfg['baseUrl'],
+                $errno,
+                $err !== '' ? $err : 'no transport error reported'
+            ));
         }
         if ($status < 200 || $status >= 300) {
             // Log the status only. The response body can echo prompt fragments.
-            throw new RuntimeException('Model returned HTTP ' . $status);
+            throw new RuntimeException(sprintf(
+                'Model returned HTTP %d from %s for model "%s". 401/403 means the API key is '
+                . 'wrong or not enabled; 404 means that model name is not served at that base URL.',
+                $status,
+                $cfg['baseUrl'],
+                $cfg['model']
+            ));
         }
 
         $data = json_decode((string) $raw, true);
@@ -666,6 +832,166 @@ class AstroAiProvider
             throw new RuntimeException('Model returned an empty completion.');
         }
         return trim($content);
+    }
+
+    /**
+     * A live, minimal model call used only by the admin diagnostics action.
+     * Never throws: it reports what happened, because the whole point is to
+     * explain a failure rather than produce one.
+     *
+     * @return array{attempted:bool, ok:bool, httpStatus:int, latencyMs:int, error:string}
+     */
+    public static function ping(): array
+    {
+        $notAttempted = ['attempted' => false, 'ok' => false, 'httpStatus' => 0, 'latencyMs' => 0, 'error' => ''];
+        $cfg = self::config();
+        if (!function_exists('curl_init')) {
+            return $notAttempted + ['error' => 'The PHP curl extension is not loaded.'];
+        }
+        if ($cfg['apiKey'] === '') {
+            return $notAttempted + ['error' => 'No API key is visible to PHP, so there was nothing to call.'];
+        }
+
+        $payload = json_encode([
+            'model' => $cfg['model'],
+            'messages' => [['role' => 'user', 'content' => 'ping']],
+            'max_tokens' => 1,
+        ], JSON_UNESCAPED_UNICODE);
+
+        $started = microtime(true);
+        $ch = curl_init($cfg['baseUrl'] . '/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => self::CURL_PING_TIMEOUT_SECONDS,
+            CURLOPT_CONNECTTIMEOUT => 8,
+            CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $cfg['apiKey'],
+            ],
+        ]);
+        $raw = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $errno = (int) curl_errno($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+        $latency = (int) round((microtime(true) - $started) * 1000);
+
+        if ($raw === false) {
+            return [
+                'attempted' => true, 'ok' => false, 'httpStatus' => 0, 'latencyMs' => $latency,
+                'error' => sprintf('curl %d: %s', $errno, $err !== '' ? $err : 'no transport error reported'),
+            ];
+        }
+        $ok = $status >= 200 && $status < 300;
+        return [
+            'attempted' => true,
+            'ok' => $ok,
+            'httpStatus' => $status,
+            'latencyMs' => $latency,
+            // A provider's error body is safe to show an admin and is the fastest
+            // route to the fix ("model not found", "invalid api key", "quota").
+            'error' => $ok ? '' : substr((string) $raw, 0, 400),
+        ];
+    }
+
+    /**
+     * Every reason this endpoint could fail to answer, checked in the order the
+     * reply path hits them. Powers `?action=diagnose`, so "the chat never
+     * replies" becomes a named cause in one request instead of a guess.
+     *
+     * @return array{ok:bool, checks:array, blocking:array}
+     */
+    public static function diagnostics(bool $livePing = false): array
+    {
+        $cfg = self::config();
+        $source = self::configSource();
+        $checks = [];
+        $blocking = [];
+
+        $add = function (string $id, string $label, bool $ok, string $detail, bool $blocks = true) use (&$checks, &$blocking) {
+            $checks[] = ['id' => $id, 'label' => $label, 'ok' => $ok, 'detail' => $detail];
+            if (!$ok && $blocks) {
+                $blocking[] = $id;
+            }
+        };
+
+        // 1. The runtime the model call needs.
+        $add('curl', 'PHP curl extension', function_exists('curl_init'),
+            function_exists('curl_init') ? 'loaded' : 'NOT loaded - the model call cannot be made at all.');
+        $add('mbstring', 'PHP mbstring extension', function_exists('mb_strlen'),
+            function_exists('mb_strlen') ? 'loaded' : 'NOT loaded - Tamil/Hindi text handling would fail.');
+
+        // 2. The credential, and WHERE PHP found it.
+        $add('apiKey', 'Model API key visible to PHP', $source['source'] === 'environment' || $source['source'] === 'admin-settings',
+            $source['source'] === 'none'
+                ? 'Not set. Set AI_ASTROLOGER_API_KEY, or paste the key into Admin Portal > Setup > AI Astrologer.'
+                : ($source['source'] === 'placeholder-only'
+                    ? 'A placeholder value (' . $source['keyHint'] . ') is set, which is treated as unset. Replace it with a real key.'
+                    : 'found in ' . $source['source'] . ' (' . $source['keyHint'] . ')'));
+        $add('baseUrl', 'Base URL', $cfg['baseUrl'] !== '', $cfg['baseUrl'] . '/chat/completions', false);
+        $add('model', 'Model', $cfg['model'] !== '', $cfg['model'] . ' (max_tokens ' . $cfg['maxTokens'] . ')', false);
+
+        // 3. The knowledge base. A missing prompt file is a hard stop: systemPrompt()
+        //    throws, so EVERY question fails identically.
+        foreach ([
+            'prompt' => [self::PROMPT_PATH, false],
+            'guardrails' => [self::GUARDRAILS_PATH, true],
+            'lifeAreas' => [self::LIFE_AREAS_PATH, true],
+            'remedies' => [self::REMEDIES_PATH, true],
+            'sources' => [self::SOURCES_PATH, true],
+        ] as $id => [$rel, $isJson]) {
+            $path = self::kbPath($rel);
+            $exists = is_file($path);
+            $parsed = null;
+            if ($exists && $isJson) {
+                $parsed = json_decode((string) file_get_contents($path), true);
+            }
+            $detail = !$exists
+                ? 'MISSING at ' . $path . ' - deploy knowledge/ to the document root (see deploy_cpanel.sh).'
+                : basename($path) . ' (' . number_format((float) filesize($path)) . ' bytes)'
+                    . ($isJson ? (is_array($parsed) ? ', valid JSON' : ', INVALID JSON') : '');
+            $ok = $exists && (!$isJson || is_array($parsed));
+            // An empty remedies or sources file degrades the answer; a missing
+            // prompt or life-area file stops every answer.
+            $add('kb-' . $id, 'Knowledge base: ' . $id, $ok, $detail, in_array($id, ['prompt', 'lifeAreas', 'guardrails'], true));
+        }
+
+        // 4. The prompt actually extracts, and the retrieval layer has areas to match.
+        try {
+            $prompt = self::systemPrompt();
+            $add('systemPrompt', 'System prompt extracts', strlen($prompt) > 1000,
+                strlen($prompt) . ' bytes extracted from the ```text block.', true);
+        } catch (Throwable $e) {
+            $add('systemPrompt', 'System prompt extracts', false, 'THREW: ' . $e->getMessage(), true);
+        }
+
+        $kb = self::kb(self::LIFE_AREAS_PATH);
+        $add('lifeAreaCount', 'Life-area cards loaded', count($kb['areas'] ?? []) > 0,
+            count($kb['areas'] ?? []) . ' card(s) available for retrieval.');
+        $add('tamilSources', 'Citable Tamil sources', count(self::citableTamilSources()) > 0,
+            count(self::citableTamilSources()) . ' verified Tamil source(s) may be cited.');
+
+        // 5. The live call. Only when asked for: it spends a real request.
+        $pingResult = ['attempted' => false, 'ok' => false, 'httpStatus' => 0, 'latencyMs' => 0, 'error' => 'not requested'];
+        if ($livePing) {
+            $pingResult = self::ping();
+            $add('modelPing', 'Live model call', $pingResult['ok'],
+                $pingResult['ok']
+                    ? 'HTTP ' . $pingResult['httpStatus'] . ' in ' . $pingResult['latencyMs'] . 'ms'
+                    : ($pingResult['error'] !== '' ? $pingResult['error'] : 'no response'),
+                true);
+        }
+
+        return [
+            'ok' => empty($blocking) && (!$livePing || $pingResult['ok']),
+            'configured' => self::isConfigured(),
+            'blocking' => $blocking,
+            'checks' => $checks,
+            'ping' => $pingResult,
+            'generatedAt' => gmdate('Y-m-d\TH:i:s\Z'),
+        ];
     }
 
     /**
@@ -770,7 +1096,15 @@ class AstroAiProvider
         $draft = null;
         $violations = [];
         for ($attempt = 1; $attempt <= self::MAX_GENERATION_ATTEMPTS; $attempt++) {
-            $candidate = self::complete($prompt, $history, $question);
+            // The guard retry gets the short budget: two full-timeout calls would
+            // outlast the browser's 30s abort and the answer would be written to
+            // a conversation the customer had already given up on.
+            $candidate = self::complete(
+                $prompt,
+                $history,
+                $question,
+                $attempt === 1 ? null : self::CURL_RETRY_TIMEOUT_SECONDS
+            );
             $check = self::checkReply($candidate, $language);
             if ($check['ok']) {
                 $draft = $candidate;

@@ -30,6 +30,8 @@ const testFiles = [
   'tests/ai-astrologer-access.test.ts',
   'tests/ai-astrologer-provider.test.ts',
   'tests/ai-astrologer-consistency.test.ts',
+  'tests/ai-astrologer-failure-path.test.ts',
+  'tests/ai-astrologer-php-runtime.test.ts',
   'tests/jathagam-page2-wiring.test.ts',
   'tests/jathagam-page2-php-parity.test.ts',
   'tests/lockfile-drift.test.ts'

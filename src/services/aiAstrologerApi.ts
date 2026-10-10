@@ -45,6 +45,13 @@ export class AiAstrologerError extends Error {
   messageHi?: string;
   retryAfterSeconds?: number;
   retryable: boolean;
+  /**
+   * Which server-side check failed, when the server knows (configuration
+   * problems only). Never contains a credential.
+   */
+  blocking?: string[];
+  /** Full admin diagnostic report, present only for an administrator. */
+  diagnostics?: any;
 
   constructor(status: number, body: any) {
     super(body?.message || 'Something went wrong. Please try again.');
@@ -55,6 +62,19 @@ export class AiAstrologerError extends Error {
     this.messageHi = body?.message_hi;
     this.retryAfterSeconds = body?.retryAfterSeconds;
     this.retryable = body?.retry === true || status === 503 || status === 429;
+    this.blocking = Array.isArray(body?.blocking) ? body.blocking : undefined;
+    this.diagnostics = body?.diagnose ?? undefined;
+  }
+
+  /**
+   * True when the failure is a server setup problem rather than a slow or
+   * flaky model. Those never fix themselves by retrying, so hiding them behind
+   * "I am checking again" is what left the chat looking broken with nothing on
+   * screen to explain it: the customer waited, retried, and got the same line
+   * forever while the real cause sat in a server log nobody was reading.
+   */
+  get isSetupProblem(): boolean {
+    return this.code === 'AI_NOT_CONFIGURED';
   }
 }
 
@@ -125,6 +145,27 @@ export const aiAstrologer = {
     used: number | null; limit: number | null; remaining: number | null; unlimited: boolean;
   }> {
     return call('usage', {}, 'GET');
+  },
+
+  /**
+   * Admin-only: walks the reply path and reports the first thing that is wrong.
+   * `ping` also makes one real (1-token) model call, which is the only way to
+   * prove the host can actually reach the model. Without it the call makes no
+   * outbound request.
+   */
+  async diagnose(ping = false): Promise<{
+    ok: boolean;
+    configured: boolean;
+    blocking: string[];
+    checks: { id: string; label: string; ok: boolean; detail: string }[];
+    ping: { attempted: boolean; ok: boolean; httpStatus: number; latencyMs: number; error: string };
+    recentMessages: {
+      window?: number; failed?: number; sent?: number; lastError?: string | null;
+      slowestLatencyMs?: number; error?: string;
+    };
+    generatedAt: string;
+  }> {
+    return call('diagnose', { ping: ping ? '1' : '' }, 'GET', 40000);
   },
 
   /** Attaches an ASTRO SIVAM report PDF. The server proves ownership. */

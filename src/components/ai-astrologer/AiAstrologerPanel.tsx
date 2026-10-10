@@ -102,8 +102,10 @@ export default function AiAstrologerPanel({
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
-  const [phase, setPhase] = useState<'idle' | 'status' | 'typing' | 'failed'>('idle');
+  const [phase, setPhase] = useState<'idle' | 'status' | 'typing'>('idle');
   const [error, setError] = useState<string | null>(null);
+  /** The question that got no answer, so "Retry" resends it instead of nothing. */
+  const [failedQuestion, setFailedQuestion] = useState<string | null>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [sessionOrderLabel, setSessionOrderLabel] = useState<string | undefined>(orderLabel);
   const timers = useRef<number[]>([]);
@@ -167,6 +169,7 @@ export default function AiAstrologerPanel({
 
     setInput('');
     setError(null);
+    setFailedQuestion(null);
     push({ role: 'customer', language, content: question });
     setPhase('status');
 
@@ -208,17 +211,47 @@ export default function AiAstrologerPanel({
       setRemaining(reply.remainingToday);
     } catch (e) {
       clearTimers();
-      setPhase('failed');
+      setFailedQuestion(question);
       const err = e as AiAstrologerError;
       if (err.status === 403) {
         setError(language === 'ta' ? err.messageTa : language === 'hi' ? err.messageHi : err.message);
       } else if (err.status === 429) {
         setError(err.message + (err.retryAfterSeconds ? ` (${err.retryAfterSeconds}s)` : ''));
         setRemaining(0);
+      } else if (err.isSetupProblem) {
+        // A server setup problem does not fix itself by retrying, so it is
+        // named rather than hidden. The wording is the server's own: for an
+        // administrator it says what to configure, for a customer it says the
+        // assistant is not available yet. Both are more useful than a line
+        // that reads as a temporary delay and never resolves.
+        setError(err.message);
       } else {
         setError(RETRY_TEXT[language]);
       }
+      // Back to idle, always. Leaving the phase at 'failed' disabled the send
+      // button and made Enter do nothing, so one bad reply froze the whole
+      // panel: every later question was silently dropped and the chat looked
+      // permanently dead. The error bar above still offers the explicit retry.
+      setPhase('idle');
     }
+  };
+
+  /**
+   * Resends the question that got no answer. The bubble that never received a
+   * reply is removed first, so a retry replaces it rather than asking twice.
+   */
+  const retry = () => {
+    const question = failedQuestion;
+    setError(null);
+    setFailedQuestion(null);
+    if (!question) return;
+    setMessages((prev) => {
+      for (let i = prev.length - 1; i >= 0; i--) {
+        if (prev[i].role === 'customer') return [...prev.slice(0, i), ...prev.slice(i + 1)];
+      }
+      return prev;
+    });
+    void send(question);
   };
 
   const handoff = async () => {
@@ -303,7 +336,7 @@ export default function AiAstrologerPanel({
         <div className="px-4 py-2 bg-rose-50 dark:bg-rose-950/40 border-t border-rose-200 dark:border-rose-900 text-xs text-rose-700 dark:text-rose-300 flex items-center justify-between gap-2">
           <span>{error}</span>
           <button
-            onClick={() => { setError(null); setPhase('idle'); }}
+            onClick={retry}
             className="shrink-0 inline-flex items-center gap-1 font-semibold cursor-pointer"
           >
             <RefreshCw className="w-3 h-3" /> {language === 'ta' ? 'மீண்டும்' : language === 'hi' ? 'फिर से' : 'Retry'}

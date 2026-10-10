@@ -123,8 +123,27 @@ check('the API key never leaves the server', () => {
   assert.match(provider, /Log the status only/);
   // the key is sent only to the provider as an Authorization header
   assert.match(provider, /'Authorization: Bearer ' \. \$cfg\['apiKey'\]/);
+
+  // The diagnostics endpoint reports WHERE the key came from, which is what
+  // makes a misconfigured host debuggable - so the exposure has to be provably
+  // partial. These three are what keeps that safe, and they matter more than a
+  // raw count of how often the word appears does.
+  assert.match(provider, /'keyHint' => self::mask\(/, 'diagnostics must expose a mask, never the value');
+  assert.match(provider, /substr\(\$secret, -4\)/, 'the mask must reveal only the last four characters');
+  assert.ok(
+    !/'apiKey'\s*=>\s*\$cfg\['apiKey'\]/.test(provider),
+    'the resolved config array must never be embedded in a response body'
+  );
+  assert.ok(
+    !/jsonResponse\([^)]*apiKey/.test(codeNoStrings(endpoint)),
+    'the endpoint must never put the key in a JSON response'
+  );
+
+  // A tripwire, not the guarantee: the key is legitimately read in more places
+  // now (config, configSource, the empty-key guards in complete() and ping()),
+  // but each new reference should be a deliberate one.
   const occurrences = [...provider.matchAll(/apiKey/g)].length;
-  assert.ok(occurrences <= 4, `apiKey appears ${occurrences} times - more than config + header + check`);
+  assert.ok(occurrences <= 10, `apiKey appears ${occurrences} times - every read should be deliberate`);
 });
 
 check('the reply is split into at most four bubbles', () => {
