@@ -21,6 +21,7 @@ import {
   Check
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { api } from '../services/api';
 import { generateOrderPdfsBase64, prepareFamilyFulfilPayload, deliverOrderPdfPayload } from '../services/jathagamPdfExporter';
 import { Order, BirthProfile } from '../types';
@@ -47,6 +48,7 @@ interface CustomerDashboardProps {
 
 export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate }) => {
   const { user, isAdmin, birthProfile, updateBirthProfile, refreshProfile } = useAuth();
+  const { language: appLanguage } = useLanguage();
   // The name saved in the website profile is authoritative — never a stale
   // name or one with a "(Google)" tag attached.
   const displayName = user ? resolveDisplayName(birthProfile?.name, user.name, user.email) : 'User';
@@ -285,7 +287,8 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
     );
   }
 
-  const aiLanguage = (user?.country === 'India' ? 'hi' : 'ta') as 'ta' | 'hi' | 'en';
+  // Chat language follows the site's language picker (en/ta/hi).
+  const aiLanguage = appLanguage;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
