@@ -583,7 +583,8 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
             . '. Run /api/ai_astrologer.php?action=diagnose as an admin for the full report.');
         jsonResponse(['success' => false, 'code' => 'AI_NOT_CONFIGURED',
             'message' => 'The AI Astrologer model is not configured on this server yet. '
-                . 'Set the AI_ASTROLOGER_API_KEY environment variable (optionally '
+                . 'An administrator can add the API key in Admin Portal > AI Astrologer, '
+                . 'or set the AI_ASTROLOGER_API_KEY environment variable (optionally '
                 . 'AI_ASTROLOGER_BASE_URL and AI_ASTROLOGER_MODEL), then try again.',
             'message_ta' => 'AI ஜோதிடர் இந்த சர்வரில் இன்னும் அமைக்கப்படவில்லை. '
                 . 'நிர்வாகி AI_ASTROLOGER_API_KEY-ஐ அமைக்க வேண்டும்.',
