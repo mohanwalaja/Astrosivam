@@ -23,19 +23,19 @@
     "_note": "Counted by category. Hindi books are NOT counted here - see excludedSources.",
     "classicalTextsEnglish": 9,
     "hindiBooks": 0,
-    "tamilBooks": 78,
+    "tamilBooks": 138,
     "navagrahaSthalamAndTemples": 12,
     "reference": 5,
-    "total": 104,
+    "total": 164,
     "excluded": 13,
     "byLanguageField": {
       "en": 22,
       "sa": 1,
-      "ta": 81
+      "ta": 141
     },
     "byVerificationLevel": {
       "content-read": 11,
-      "metadata-verified": 80,
+      "metadata-verified": 140,
       "catalogue-verified": 1,
       "linked-not-opened": 11,
       "dead": 1
@@ -2136,6 +2136,1086 @@
       "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, title contains சோதிடம் or ஜோதிடம்) returned this identifier. Title not decoded and body not read; book-level citation only.",
       "usefulFor": [
         "Tamil sothidam/jothidam text; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-80",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.5105)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.5105-nuul-tiruvtikai-apprcuvaamikllennnnnnum-tirunaavukkrcu-cuvaamikll-pillllaitt",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-81",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.25389)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.25389-nuul-roomrissi-arullicceyt-vinaatti-pnycpttci-muulmum-tnycai-krunnaaniti-pil",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-82",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.48639)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.48639-nuul-potiymlaiyi-leluntrulliy-akttiymunnnivr-tiruvaaymlrntrulliy-pnycpttci-c",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-83",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.6055)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.6055-1980-2005",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-84",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.24741)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.24741-nuul-roomrissi-arullicceyt-vinaatti-pnycpttci-muulmum-tnycai-krunnaaniti-pil",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-85",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50083)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50083-nuul-cittr-rhsymennnnnnum-aaruutt-alngkaarm-muulmum-uraiyum",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-86",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.49955)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.49955-nuul-srii-nntikeecuvrr-prikssittu-mkiptikkut-tiruvaaymlrntrulliy-nntivaakkiy",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-87",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.23435)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.23435-nuul-cuntrceekrttirrku-irnnttaampaakmaakiy-tiyaakraaj-ceekrm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-88",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.28123)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.28123-603",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-89",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8328)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8328-nuul-vaalaiyrull-ptinnnenn-cittrkll-pnycpttci-crittirm-uraiyum-villkkmum",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-90",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8557)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8557",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-91",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.28312)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.28312-nuul-mrnnknntti-yennnnnnum-jootisscaastirm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-92",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.tdl_3e0f25)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.tdl_3e0f25-nuul-praacrmunnnivr-vttmollliyil-iyrrrriy-ticaaputtiplnnn-attngkiy-paaraacaa",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-93",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50012)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50012-nuul-periy-cootitt-jaatk-knnit-paalcikssai",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-94",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50110)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50110-12000",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-95",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50073)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50073-nuul-sriiptiyinnn-annnupv-jaatkm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-96",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.tdl_792d77)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.tdl_792d77-nuul-taannttvraayr-arullicceyt-taannttvmaalai",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-97",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.24690)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.24690-nuul-akstiyr-arullicceyt-mnniknntt-keerllcootittm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-98",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.24528)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.24528-nuul-akttiyr-aayurveet-caattirm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-99",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.34970)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.34970-nuul-aatisaamuttirikm-ennnnnnum-avyvlkssnncaastirm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-100",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.33041)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.33041-astronomy-and-astrology-eclipses-of-the-sun",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-101",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.44804)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.44804-nuul-akstiyr-arullicceyt-mnniknntt-keerllcootittm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-102",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.39433)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.39433-nuul-tuhpttul-hintu-mutrr-pirivum-irnnttaam-pirivum",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-103",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.27860)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.27860-nuul-nvkkirk-cintaamnni-ennnnnnum-caatkcuuttaamnni-muulmum-uraiyum",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-104",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8544)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8544",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-105",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.9365)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.9365-nuul-cootittk-kllnyciym-paattlkllaakvum-vaakkiyngkllaakvum-attngkiyirukkinnn",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-106",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.tdl_f3726c)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.tdl_f3726c-nuul-caamuttirikaa-lttcnnm-ennnnnnum-kmlmaamunnnivr-ireekai-caastirm-muulmum",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-107",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.24734)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.24734-nuul-ptinnnennpeyrkll-tiruvaaymlrntrulliy-naatticaastirm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-108",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8349)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8349-nuul-caatk-alngkaarm-cootitt-caattirm-ceyyull-tokuppurai-villkkttuttnnn",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-109",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8537)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8537",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-110",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.25282)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.25282-108",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-111",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8532)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8532",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-112",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.51650)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.51650-nuul-cntaannnmnni",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-113",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.tdl_0c88eb)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.tdl_0c88eb-nuul-knnnvukllinnn-plaaplnnnkll",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-114",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.24915)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.24915-603",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-115",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.23439)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.23439-nuul-kmlmaamunnnivr-arullicceyt-caamuttirikaa-lkssnnm-ennnnnnum-hst-ireekai-",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-116",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.24654)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.24654-nuul-nttcttir-cintaamnni-uttiraattm-mutl-reevti-muttiy-paakm-3",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-117",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.39446)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.39446-nuul-tmilllc-cuvttikllinnn-villkkm-ptinnnaarraavtu-tokuppu-ilkkiyp-pkuti",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-118",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50017)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50017-nuul-tiruvlllluvnaaynnnaar-eeleelcingkrukkupteecitt-cootitt-villkkvinnnaavit",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-119",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.5682)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.5682-nuul-tmilllkklai-nuurrrrokai",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-120",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.7247)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.7247-nuul-prmcivnnn-paarvtikkupteecitt-viimkvi-muulmum-uraiyum",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-121",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.48660)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.48660-nuul-potiymlaiyilellluntrulliy-akttiymkaamunnnivr-arullicceyt-pnycpttcicaast",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-122",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50003)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50003-nuul-jyootiss-srv-vissyaamrutm",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-123",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50005)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50005-3",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-124",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50011)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50011-nuul-jaatk-knnitaa-rmpm-ennnnnnum-cootitt-aacaannn-cootittr-utviyinnnrri-krr",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-125",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8554)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8554",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-126",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.27746)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.27746-nuul-annnupv-nsstt-jaatkcintaamnni",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-127",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.tdl_f1c88a)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.tdl_f1c88a-nuul-uroomrissi-arullicceyt-vinaatti-pnycpttci-muulmum-tnycai-krunnaanitippi",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-128",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.tdl_3492ed)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.tdl_3492ed-nuul-tiru-aruttpirkaac-vlllllaar-jaatkm-_-kntrnaatti-kaakkeeyr-mkaavaakkiym",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-129",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.28328)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.28328-nuul-cootittkirkcintaamnni-ennnnnnum-periy-vrussaati-nuul",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-130",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.6137)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.6137-4",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-131",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.000103)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.000103-tirupputtkullli-srii-nrcimm-taattaaccaaryr",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-132",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.34873)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.34873-nuul-nv-naattikllilonnnrraakiy-cootittcntir-naatti",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-133",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.52511)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.52511-nuul-cootitt-vinnnaavittai",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-134",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.21734)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.21734-nuul-ticaa-putti-antr-plnnn-ennnnnnum-cukr-peru-naatti",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-135",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.25255)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.25255-nuul-tiruccinnnaapplllli-aannttaarviitiyil-vcittirunt-cootitt-tinnnpl-knnitv",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-136",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8550)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8550",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-137",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.50077)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.50077-nuul-sriipti-annnupv-jaatkm-paakm-2",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-138",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8545)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8545-nuul-vaastuvityai",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
+      ]
+    },
+    {
+      "id": "TA-139",
+      "group": "method-tamil",
+      "tamilSection": true,
+      "title": "Tamil jothidam/sothidam text (catalogue title not decoded: tdl.8548)",
+      "titleNative": "",
+      "author": null,
+      "translator": null,
+      "language": "ta",
+      "year": null,
+      "url": "https://archive.org/details/tdl.8548-nuul-ilingknnn-iyrrrriy-vraakr-ooraa-caattirm-plllaiy-uraiyuttnnn",
+      "publisher": "Tamil Digital Library (TamilVirtualAcademy collection, Internet Archive)",
+      "verification": "metadata-verified",
+      "verificationNote": "Catalogue verified 2026-10-10: Archive.org advancedsearch (collection TamilVirtualAcademy, body-text match on jothidam/sothidam). Title not decoded, body not read, and the subject is NOT confirmed as astrology - book-level citation only; check before quoting.",
+      "usefulFor": [
+        "Tamil jothidam/sothidam text; subject to be confirmed; book-level citation only"
       ]
     }
   ],

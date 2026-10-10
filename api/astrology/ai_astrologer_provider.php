@@ -575,7 +575,7 @@ class AstroAiProvider
         }
 
         // Tamil-only citations: a reply may name only citable Tamil sources.
-        if (preg_match_all('/\b(?:EN|SA|HI|TP|TA|REF)-\d{2}\b/u', $reply, $cites)) {
+        if (preg_match_all('/\b(?:EN|SA|HI|TP|TA|REF)-\d{2,3}\b/u', $reply, $cites)) {
             foreach (array_unique($cites[0]) as $cited) {
                 if (!self::isCitableId($cited)) {
                     $violations[] = 'names a source that is not an allowed Tamil source: ' . $cited;

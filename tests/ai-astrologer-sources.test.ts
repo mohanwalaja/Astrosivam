@@ -74,7 +74,7 @@ check('every id is unique and matches the EN|HI|TA|TP|REF-<n> scheme', () => {
   for (const s of sources) {
     assert.ok(!seen.has(s.id), `duplicate id ${s.id}`);
     seen.add(s.id);
-    assert.match(s.id, /^(EN|HI|TA|TP|REF)-\d{2}$/, `bad id shape: ${s.id}`);
+    assert.match(s.id, /^(EN|HI|TA|TP|REF)-\d{2,3}$/, `bad id shape: ${s.id}`);
   }
 });
 
