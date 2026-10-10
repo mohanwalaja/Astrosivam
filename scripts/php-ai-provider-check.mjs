@@ -48,6 +48,11 @@ const MOUNT_FILES = [
   'api/astrology/namakaran_name_bank.php',
   'api/astrology/tz_lookup_data.php',
   'api/astrology/ai_report_extract.php',
+  // Data files the engine reads for the non-Jathagam services, so a probe can
+  // build a real Wedding Matching / Baby Naming / Subha Muhurtham result.
+  'api/astrology/rajju.json',
+  'api/astrology/baby_nakshatra_letters.json',
+  'src/lib/muhurtham/rules.json',
   'api/migrations/007_ai_astrologer_chat.sql',
 ];
 

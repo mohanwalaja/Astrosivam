@@ -33,6 +33,7 @@ const testFiles = [
   'tests/ai-astrologer-failure-path.test.ts',
   'tests/ai-astrologer-guided.test.ts',
   'tests/ai-astrologer-guided-runtime.test.ts',
+  'tests/ai-astrologer-service-runtime.test.ts',
   'tests/ai-astrologer-php-runtime.test.ts',
   'tests/jathagam-page2-wiring.test.ts',
   'tests/jathagam-page2-php-parity.test.ts',

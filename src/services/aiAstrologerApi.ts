@@ -21,7 +21,7 @@ export type MessageRole = 'customer' | 'assistant' | 'system' | 'handoff';
  * they never type a question. Only complaint options with `needsDetails`
  * accept a short detail line, which is queued to the human team.
  */
-export type GuidedKind = 'area' | 'dosha' | 'remedy' | 'order' | 'complaint';
+export type GuidedKind = 'area' | 'service' | 'dosha' | 'remedy' | 'order' | 'complaint';
 
 export interface GuidedQuestion {
   id: string;
@@ -36,6 +36,19 @@ export interface GuidedCategory {
   title: string;
   hint: string;
   questions: GuidedQuestion[];
+}
+
+/**
+ * One of the customer's own delivered reports, which this conversation can be
+ * attached to. Only the Wedding Matching / Baby Naming / Subha Muhurtham
+ * chapters need it — they are answered by reading the attached report.
+ */
+export interface AttachableOrder {
+  orderNumber: string;
+  serviceType: string;
+  deliveredAt: string | null;
+  /** Service name in the customer's language, supplied by the server. */
+  title: string;
 }
 
 export interface ChatMessage {
@@ -147,11 +160,28 @@ export const aiAstrologer = {
     return call('history', { sessionId }, 'GET');
   },
 
-  /** The guided menu: categories with curated options in the customer's language. */
+  /**
+   * The guided menu: categories with curated options in the customer's
+   * language. The server decides which chapters this account is entitled to
+   * (the three service chapters need a delivered report of that service) and
+   * returns the reports this conversation may be attached to.
+   */
   async options(language: ChatLanguage): Promise<{
     language: ChatLanguage; categories: GuidedCategory[];
+    entitledServices: string[]; orders: AttachableOrder[];
   }> {
     return call('options', { language }, 'GET');
+  },
+
+  /**
+   * Attaches one of the customer's own delivered reports to this
+   * conversation, so the service chapters read from it. Pass an empty
+   * orderNumber to detach. The server re-checks ownership and delivery.
+   */
+  async bind(sessionId: string, orderNumber: string): Promise<{
+    sessionId: string; orderNumber: string | null; serviceType: string | null; serviceTitle: string | null;
+  }> {
+    return call('bind', { sessionId, orderNumber });
   },
 
   /**

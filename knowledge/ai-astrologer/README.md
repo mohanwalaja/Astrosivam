@@ -14,7 +14,7 @@ knowledge/ai-astrologer/
 ├── rules/
 │   ├── life-areas.json
 │   ├── remedies.json
-│   ├── guided-questions.json  # curated option menu shown to customers (12 topics, 49 questions)
+│   ├── guided-questions.json  # curated option menu shown to customers (15 topics, 65 questions)
 │   └── guardrails.json
 └── prompt/
     └── system-prompt.md  # retained reference; not used to generate customer replies
@@ -52,7 +52,24 @@ Topic selection uses curated phrase/rule matching; it is not a general language 
 - `rules/life-areas.json` contains the eight report areas and reviewed chart conditions, wording, practical steps, and source references.
 - `rules/remedies.json` contains the limited remedies the chat may offer.
 - `rules/guardrails.json` defines refusal routes, prediction limits, health wording, and safety language in all supported languages.
-- `rules/guided-questions.json` is the customer-facing menu: life areas mirroring Birth Jathagam page 2, doshas, remedies, order help, and complaints. Customers tap an option id; free text is admin-testing only.
+- `rules/guided-questions.json` is the customer-facing menu: life areas mirroring Birth Jathagam page 2, the three other service reports (Wedding Matching, Baby Naming, Subha Muhurtham), doshas, remedies, order help, and complaints. Customers tap an option id; free text is admin-testing only.
+
+## The three service reports in the chat
+
+`rules/guided-questions.json` carries a chapter for each non-Jathagam service:
+
+| Chapter | Service | Answered from |
+| --- | --- | --- |
+| `wedding-match` | `MARRIAGE_COMPATIBILITY` | the report's 10-Porutham table: score, verdict, matched/unmatched poruthams and their explanations, Rajju/Vedha, Sevvai (Kuja) Dosha samyam and its remedy |
+| `baby-naming` | `BABY_NAMING` | the report's birth star, pada, the four pada sounds, the name list for the birth-pada sound, and the provenance of the name recorded on the order |
+| `muhurtham` | `MUHURTHAM` | the report's own calendar: recommended dates, the strongest date and its Nalla Neram window, why a date is auspicious, the Rahu Kalam windows to avoid, and the place the dates were calculated for |
+
+Two rules keep these honest:
+
+1. **A chapter is shown only for a report the account already holds** (`astro_ai_entitled_service_types()`), and the same check runs again in `ask()`. The server decides; the client only renders what it is sent.
+2. **The chat reads the report, it never re-judges it.** `astro_ai_service_facts()` copies the engine's own values out of the order's rebuilt result; a question about a report that is not attached to the conversation is answered with a request to attach it, never with an invented number.
+
+The customer attaches a report with the `bind` action (`ai_astrologer.bind(sessionId, orderNumber)`), which re-checks ownership and delivery in SQL before the conversation reads from it.
 - Suppressed and excluded references cannot be shown to customers. Citation level must not exceed the registry's verification level; a book-level bibliographic record does not justify a chapter/verse claim.
 - Health replies must not diagnose or prescribe and must direct the customer to a qualified doctor.
 

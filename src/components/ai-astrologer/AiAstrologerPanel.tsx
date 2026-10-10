@@ -22,6 +22,7 @@ import { Bot, Send, RefreshCw, UserRound, X, ChevronLeft } from 'lucide-react';
 import {
   aiAstrologer,
   AiAstrologerError,
+  type AttachableOrder,
   type ChatLanguage,
   type ChatMessage,
   type GuidedCategory,
@@ -123,6 +124,31 @@ const MENU_LOADING: Record<ChatLanguage, string> = {
   hi: 'प्रश्न-सूची लोड हो रही है...',
 };
 
+const REPORT_LABEL: Record<ChatLanguage, string> = {
+  en: 'Report',
+  ta: 'அறிக்கை',
+  hi: 'रिपोर्ट',
+};
+
+const NO_REPORT: Record<ChatLanguage, string> = {
+  en: 'No report attached',
+  ta: 'அறிக்கை இணைக்கப்படவில்லை',
+  hi: 'कोई रिपोर्ट नहीं जुड़ी',
+};
+
+/** Shown after the customer moves the chat to one of their own reports. */
+const ATTACHED_NOTE: Record<ChatLanguage, (title: string) => string> = {
+  en: (t) => `Now reading your ${t} report.`,
+  ta: (t) => `இப்போது உங்கள் ${t} அறிக்கையைப் படிக்கிறேன்.`,
+  hi: (t) => `अब मैं आपकी ${t} रिपोर्ट पढ़ रहा हूँ।`,
+};
+
+const BIND_FAILED: Record<ChatLanguage, string> = {
+  en: 'That report could not be attached to this conversation.',
+  ta: 'அந்த அறிக்கையை இந்த உரையாடலுடன் இணைக்க முடியவில்லை.',
+  hi: 'वह रिपोर्ट इस बातचीत से नहीं जोड़ी जा सकी।',
+};
+
 const MENU_FAILED: Record<ChatLanguage, string> = {
   en: 'The question list is not available right now. Please close and reopen the chat.',
   ta: 'கேள்விப் பட்டியல் இப்போது இல்லை. உரையாடலை மூடி மீண்டும் திறக்கவும்.',
@@ -182,6 +208,15 @@ export default function AiAstrologerPanel({
   /** Guided menu state: the topic list, the open topic, and an option awaiting details. */
   const [categories, setCategories] = useState<GuidedCategory[] | null>(null);
   const [menuFailed, setMenuFailed] = useState(false);
+  /**
+   * The customer's own delivered reports, and the one this conversation is
+   * reading. The floating launcher opens with no report attached, so the
+   * Wedding Matching / Baby Naming / Subha Muhurtham chapters need a way to
+   * attach one here.
+   */
+  const [orders, setOrders] = useState<AttachableOrder[]>([]);
+  const [boundOrderNumber, setBoundOrderNumber] = useState<string | null>(null);
+  const [binding, setBinding] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [pendingOption, setPendingOption] = useState<GuidedQuestion | null>(null);
   const pendingAsk = useRef<PendingAsk>(EMPTY_ASK);
@@ -208,6 +243,7 @@ export default function AiAstrologerPanel({
         const s = await aiAstrologer.createSession({ orderId, language });
         if (cancelled) return;
         setSessionId(s.sessionId);
+        setBoundOrderNumber(s.orderNumber ?? null);
         setSessionOrderLabel(orderLabel || (s.orderNumber ? `Report #${s.orderNumber}` : undefined));
         const h = await aiAstrologer.history(s.sessionId);
         if (cancelled) return;
@@ -228,7 +264,9 @@ export default function AiAstrologerPanel({
         if (!cancelled) setRemaining(u.remaining);
         try {
           const menu = await aiAstrologer.options(language);
-          if (!cancelled) setCategories(menu.categories);
+          if (cancelled) return;
+          setCategories(menu.categories);
+          setOrders(menu.orders ?? []);
         } catch {
           if (!cancelled) setMenuFailed(true);
         }
@@ -370,6 +408,31 @@ export default function AiAstrologerPanel({
     }
   };
 
+  /**
+   * Moves the conversation onto one of the customer's own delivered reports
+   * (or off it, with an empty orderNumber). The server re-checks that the
+   * report belongs to this account before the chat will read from it.
+   */
+  const attachReport = async (orderNumber: string) => {
+    if (!sessionId || binding) return;
+    setBinding(true);
+    setError(null);
+    try {
+      const res = await aiAstrologer.bind(sessionId, orderNumber);
+      setBoundOrderNumber(res.orderNumber);
+      setSessionOrderLabel(res.orderNumber ? `Report #${res.orderNumber}` : undefined);
+      push({
+        role: 'system',
+        language,
+        content: res.serviceTitle ? ATTACHED_NOTE[language](res.serviceTitle) : NO_REPORT[language],
+      });
+    } catch {
+      setError(BIND_FAILED[language]);
+    } finally {
+      setBinding(false);
+    }
+  };
+
   /** A menu option was tapped: options that need details open the detail box, the rest send at once. */
   const tapOption = (option: GuidedQuestion) => {
     if (phase !== 'idle' || !sessionId) return;
@@ -483,6 +546,30 @@ export default function AiAstrologerPanel({
           never get a free question box; complaint options get one short
           detail line for the human team. */}
       <div className="p-3 border-t border-slate-200 dark:border-slate-800 shrink-0 max-h-[38%] overflow-y-auto">
+        {/* The report this conversation is reading. The service chapters
+            (Wedding Matching, Baby Naming, Subha Muhurtham) are answered from
+            the attached report, and the floating launcher starts with none. */}
+        {orders.length > 0 && (
+          <div className="flex items-center gap-2 pb-2">
+            <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+              {REPORT_LABEL[language]}
+            </span>
+            <select
+              value={boundOrderNumber ?? ''}
+              onChange={(e) => void attachReport(e.target.value)}
+              disabled={binding || menuBusy}
+              aria-label={REPORT_LABEL[language]}
+              className="min-w-0 flex-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40 disabled:opacity-40"
+            >
+              <option value="">{NO_REPORT[language]}</option>
+              {orders.map((o) => (
+                <option key={o.orderNumber} value={o.orderNumber}>
+                  {o.title} · #{o.orderNumber}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         {pendingOption ? (
           <div className="space-y-2">
             <div className="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-snug">

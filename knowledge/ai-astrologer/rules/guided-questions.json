@@ -1,10 +1,11 @@
 {
   "$schema": "./guided-questions.schema.json",
-  "version": "1.0.0",
-  "generatedOn": "2026-10-10",
-  "_purpose": "Guided AI-astrologer menu. Customers do NOT type their own questions: they pick one of these curated options. Every question maps to a supported answer path (life-area card, dosha, remedy, order fact, or human complaint queue), so no unrelated question can be asked.",
-  "_page2Anchors": "Categories 1-8 mirror the eight page-2 life cards of the Birth Jathagam in order (src/services/jathagamHtmlBuilder.ts buildJathagamLifeCards), with the same icons and titles, so the chat and the PDF agree. Categories 9-12 cover doshas (page 1), remedies (remedies.json registry), order facts (the customer's own order row), and complaints (human handoff queue).",
-  "_kinds": "area = answered from the customer's chart + life-areas.json rules for that card. dosha = answered from the engine dosha block of the bound order. remedy = answered from remedies.json only. order = answered from the customer's own order row only. complaint = never answered by rules; always queued to the human team with a fixed acknowledgement.",
+  "version": "1.1.0",
+  "generatedOn": "2026-10-11",
+  "_purpose": "Guided AI-astrologer menu. Customers do NOT type their own questions: they pick one of these curated options. Every question maps to a supported answer path (life-area card, service report reading, dosha, remedy, order fact, or human complaint queue), so no unrelated question can be asked.",
+  "_page2Anchors": "Categories 1-8 mirror the eight page-2 life cards of the Birth Jathagam in order (src/services/jathagamHtmlBuilder.ts buildJathagamLifeCards), with the same icons and titles, so the chat and the PDF agree. The next three categories are the other three services: Wedding Matching (the 10 Poruthams report), Baby Naming (the Namakaran certificate) and Subha Muhurtham (the auspicious-date calendar). The remaining four cover doshas (page 1), remedies (remedies.json registry), order facts (the customer's own order row), and complaints (human handoff queue).",
+  "_serviceGating": "A category that carries a `services` list is shown only to a customer who has a delivered report of one of those service types (or to an administrator). The server decides; the client only renders what it is given.",
+  "_kinds": "area = answered from the customer's chart + life-areas.json rules for that card. service = answered by reading the customer's own report for that service (porutham table, birth-pada syllables, muhurtham calendar) - never re-judged by the chat. dosha = answered from the engine dosha block of the bound order. remedy = answered from remedies.json only. order = answered from the customer's own order row only. complaint = never answered by rules; always queued to the human team with a fixed acknowledgement.",
   "categories": [
     {
       "id": "health",
@@ -403,6 +404,209 @@
             "en": "Am I in Sade Sati (Ezharai Sani)?",
             "ta": "நான் ஏழரைச் சனியில் இருக்கிறேனா?",
             "hi": "क्या मैं साढ़ेसाती में हूँ?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wedding-match",
+      "icon": "💞",
+      "services": ["MARRIAGE_COMPATIBILITY"],
+      "title": { "en": "Wedding Matching", "ta": "திருமணப் பொருத்தம்", "hi": "विवाह मिलान" },
+      "hint": { "en": "Your 10 Poruthams report", "ta": "உங்கள் 10 பொருத்த அறிக்கை", "hi": "आपकी 10 पोरुतम रिपोर्ट" },
+      "questions": [
+        {
+          "id": "match-verdict",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "verdict",
+          "text": {
+            "en": "Is our match recommended?",
+            "ta": "எங்கள் பொருத்தம் பரிந்துரைக்கப்படுகிறதா?",
+            "hi": "क्या हमारा मिलान अनुशंसित है?"
+          }
+        },
+        {
+          "id": "match-score",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "score",
+          "text": {
+            "en": "How many poruthams matched, and what is our score?",
+            "ta": "எத்தனை பொருத்தங்கள் பொருந்தின? எங்கள் மதிப்பெண் என்ன?",
+            "hi": "कितने पोरुतम मिले, और हमारा स्कोर क्या है?"
+          }
+        },
+        {
+          "id": "match-poruthams",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "poruthams",
+          "text": {
+            "en": "Which poruthams matched for us?",
+            "ta": "எந்தப் பொருத்தங்கள் எங்களுக்குப் பொருந்தின?",
+            "hi": "हमें कौन से पोरुतम मिले?"
+          }
+        },
+        {
+          "id": "match-unmatched",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "unmatched",
+          "text": {
+            "en": "Which poruthams did not match, and what does that mean?",
+            "ta": "எந்தப் பொருத்தங்கள் பொருந்தவில்லை? அதன் பொருள் என்ன?",
+            "hi": "कौन से पोरुतम नहीं मिले, और इसका क्या अर्थ है?"
+          }
+        },
+        {
+          "id": "match-sevvai",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "sevvai",
+          "text": {
+            "en": "Is there Sevvai (Kuja) Dosha in our match?",
+            "ta": "எங்கள் பொருத்தத்தில் செவ்வாய் தோஷம் உள்ளதா?",
+            "hi": "क्या हमारे मिलान में मंगल (कुज) दोष है?"
+          }
+        },
+        {
+          "id": "match-remedy",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "remedy",
+          "text": {
+            "en": "What remedies are advised for our match?",
+            "ta": "எங்கள் பொருத்தத்திற்கு என்ன பரிகாரங்கள் பரிந்துரைக்கப்படுகின்றன?",
+            "hi": "हमारे मिलान के लिए कौन से उपाय सुझाए गए हैं?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "baby-naming",
+      "icon": "👶",
+      "services": ["BABY_NAMING"],
+      "title": { "en": "Baby Naming", "ta": "குழந்தை பெயர்", "hi": "शिशु नामकरण" },
+      "hint": { "en": "Birth star, syllables and names", "ta": "ஜன்ம நட்சத்திரம், எழுத்துகள், பெயர்கள்", "hi": "जन्म नक्षत्र, अक्षर और नाम" },
+      "questions": [
+        {
+          "id": "naming-star",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "star",
+          "text": {
+            "en": "What is my baby's birth star and rasi?",
+            "ta": "என் குழந்தையின் ஜன்ம நட்சத்திரம் மற்றும் ராசி என்ன?",
+            "hi": "मेरे शिशु का जन्म नक्षत्र और राशि क्या है?"
+          }
+        },
+        {
+          "id": "naming-letters",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "letters",
+          "text": {
+            "en": "Which letters should my baby's name start with?",
+            "ta": "என் குழந்தையின் பெயர் எந்த எழுத்தில் தொடங்க வேண்டும்?",
+            "hi": "मेरे शिशु का नाम किस अक्षर से शुरू होना चाहिए?"
+          }
+        },
+        {
+          "id": "naming-suggestions",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "suggestions",
+          "text": {
+            "en": "Can you suggest names for my baby?",
+            "ta": "என் குழந்தைக்கு பெயர்கள் பரிந்துரைக்க முடியுமா?",
+            "hi": "क्या आप मेरे शिशु के लिए नाम सुझा सकते हैं?"
+          }
+        },
+        {
+          "id": "naming-meaning",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "meaning",
+          "text": {
+            "en": "What do the suggested names mean?",
+            "ta": "பரிந்துரைக்கப்பட்ட பெயர்களின் பொருள் என்ன?",
+            "hi": "सुझाए गए नामों का क्या अर्थ है?"
+          }
+        },
+        {
+          "id": "naming-our-name",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "our-name",
+          "text": {
+            "en": "Does the name we have chosen suit my baby?",
+            "ta": "நாங்கள் தேர்வு செய்த பெயர் என் குழந்தைக்கு பொருந்துமா?",
+            "hi": "क्या हमने जो नाम चुना है वह मेरे शिशु के अनुकूल है?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "muhurtham",
+      "icon": "🗓️",
+      "services": ["MUHURTHAM"],
+      "title": { "en": "Subha Muhurtham", "ta": "சுப முகூர்த்தம்", "hi": "शुभ मुहूर्त" },
+      "hint": { "en": "Auspicious dates and times", "ta": "சுப நாட்கள் மற்றும் நேரங்கள்", "hi": "शुभ तिथियाँ और समय" },
+      "questions": [
+        {
+          "id": "muhurtham-dates",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "dates",
+          "text": {
+            "en": "Which are my auspicious dates?",
+            "ta": "எனக்கு சுபமான நாட்கள் எவை?",
+            "hi": "मेरे लिए शुभ तिथियाँ कौन सी हैं?"
+          }
+        },
+        {
+          "id": "muhurtham-best",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "best",
+          "text": {
+            "en": "Which is the best date and time for my ceremony?",
+            "ta": "என் நிகழ்ச்சிக்கு சிறந்த நாளும் நேரமும் எது?",
+            "hi": "मेरे कार्य के लिए सर्वोत्तम तिथि और समय कौन सा है?"
+          }
+        },
+        {
+          "id": "muhurtham-why",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "why",
+          "text": {
+            "en": "Why is that date auspicious?",
+            "ta": "அந்த நாள் ஏன் சுபமானது?",
+            "hi": "वह तिथि शुभ क्यों है?"
+          }
+        },
+        {
+          "id": "muhurtham-avoid",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "avoid",
+          "text": {
+            "en": "Are there times we should avoid?",
+            "ta": "நாம் தவிர்க்க வேண்டிய நேரங்கள் உள்ளனவா?",
+            "hi": "क्या ऐसे समय हैं जिनसे बचना चाहिए?"
+          }
+        },
+        {
+          "id": "muhurtham-place",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "place",
+          "text": {
+            "en": "Were these dates calculated for our place?",
+            "ta": "இந்த நாட்கள் எங்கள் இடத்திற்காக கணிக்கப்பட்டவையா?",
+            "hi": "क्या ये तिथियाँ हमारे स्थान के लिए गणना की गई हैं?"
           }
         }
       ]

@@ -8,6 +8,8 @@
  *   session            create a conversation, optionally bound to an order
  *   history            the messages of the signed-in account's own sessions
  *   options            the guided question menu (categories + curated options)
+ *   bind               attach one of the customer's own delivered reports to
+ *                      this conversation (or detach it)
  *   ask                send a questionId picked from options, get an answer
  *   upload             attach an ASTRO SIVAM report PDF (Part 3 gate)
  *   handoff            "Talk to our astrologer"
@@ -17,11 +19,18 @@
  * GUIDED MODE
  * Customers never type a question: the client fetches `options` and sends
  * `ask` with a questionId from that menu. The server resolves the canonical
- * wording and routes it to one supported answer path (life-area card, dosha,
- * remedy, order fact, or the human complaint queue). Free-text `question` is
- * accepted from administrators only, for testing. The only free text a
- * customer can send is the short `complaintDetails` line on complaint
- * options, which is queued to the human team and never answered by rules.
+ * wording and routes it to one supported answer path (life-area card, the
+ * customer's own service report, dosha, remedy, order fact, or the human
+ * complaint queue). Free-text `question` is accepted from administrators
+ * only, for testing. The only free text a customer can send is the short
+ * `complaintDetails` line on complaint options, which is queued to the human
+ * team and never answered by rules.
+ *
+ * The Wedding Matching, Baby Naming and Subha Muhurtham chapters are served
+ * only to a customer who already holds a delivered report of that service,
+ * and they are answered by reading that report (never re-judging it). The
+ * customer attaches the report with `bind`; a question about a report that is
+ * not attached says so plainly instead of inventing an answer.
  *
  * IF THE CHAT NEVER REPLIES, READ THIS FIRST
  * Replies are local-only: this endpoint never calls an external AI service
@@ -590,6 +599,26 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
                 'message_ta' => 'அந்த விருப்பம் இல்லை. பட்டியலிலிருந்து ஒரு கேள்வியை தேர்வு செய்யவும்.',
                 'message_hi' => 'वह विकल्प उपलब्ध नहीं है। कृपया सूची से कोई प्रश्न चुनें।'], 400);
         }
+        // The three service chapters are only for customers who hold that
+        // report. The menu already hides them; this keeps a hand-built request
+        // from asking about a report the account does not have.
+        $required = astro_ai_guided_required_services($guided);
+        if ($required !== [] && !$isAdmin) {
+            $held = astro_ai_entitled_service_types($pdo, (string) $user['id']);
+            $allowed = false;
+            foreach ($required as $service) {
+                if (in_array(strtoupper(trim($service)), $held, true)) {
+                    $allowed = true;
+                    break;
+                }
+            }
+            if (!$allowed) {
+                jsonResponse(['success' => false, 'code' => 'UNKNOWN_QUESTION',
+                    'message' => 'That option is not available. Please pick a question from the list.',
+                    'message_ta' => 'அந்த விருப்பம் இல்லை. பட்டியலிலிருந்து ஒரு கேள்வியை தேர்வு செய்யவும்.',
+                    'message_hi' => 'वह विकल्प उपलब्ध नहीं है। कृपया सूची से कोई प्रश्न चुनें।'], 400);
+            }
+        }
     }
 
     $language = astro_normalize_report_language((string) ($body['language'] ?? $session['language']));
@@ -1033,6 +1062,7 @@ function astro_ai_guided_find(string $questionId): ?array
         foreach (($category['questions'] ?? []) as $q) {
             if ((string) ($q['id'] ?? '') === $questionId) {
                 $q['_category'] = (string) ($category['id'] ?? '');
+                $q['_services'] = array_values(array_filter(array_map('strval', (array) ($category['services'] ?? []))));
                 return $q;
             }
         }
@@ -1041,15 +1071,118 @@ function astro_ai_guided_find(string $questionId): ?array
 }
 
 /**
- * The menu the client renders: categories with their options in the
- * customer's language. Routing metadata (area, dosha, planet, topic) stays
- * on the server — the client only ever sends the id back.
+ * The service types a curated option needs a delivered report for, or [] when
+ * the option is open to every entitled customer (life areas, doshas, remedies,
+ * order facts, complaints).
+ *
+ * @return string[]
  */
-function astro_ai_guided_menu(string $language): array
+function astro_ai_guided_required_services(array $guided): array
+{
+    return array_values(array_filter(array_map('strval', (array) ($guided['_services'] ?? []))));
+}
+
+/**
+ * The service types this customer already has a delivered report for.
+ *
+ * This is what decides whether the Wedding Matching, Baby Naming and Subha
+ * Muhurtham chapters appear in the menu: a chapter about a report the
+ * customer has never received would only invite a question the chat cannot
+ * answer from their own data. The same query as the entitlement gate, minus
+ * the 7-day window — a chapter is about the report, not about the chat window.
+ *
+ * @return string[] e.g. ['BIRTH_JATHAGAM', 'MUHURTHAM']
+ */
+function astro_ai_entitled_service_types(PDO $pdo, string $userId): array
+{
+    $stmt = $pdo->prepare(
+        "SELECT DISTINCT service_type
+           FROM orders
+          WHERE user_id = :uid
+            AND payment_confirmed = 1
+            AND status IN ('COMPLETED', 'PROCESSING')
+            AND (refund_status IS NULL OR refund_status = 'NONE')
+            AND email_status = 'SENT'
+            AND email_sent_at IS NOT NULL"
+    );
+    $stmt->execute([':uid' => $userId]);
+    $types = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
+        $t = strtoupper(trim((string) ($row['service_type'] ?? '')));
+        if ($t !== '') {
+            $types[] = $t;
+        }
+    }
+    return array_values(array_unique($types));
+}
+
+/**
+ * The reports this conversation may be attached to: the customer's own
+ * delivered orders, newest first. Used by the panel's report picker so a
+ * customer can move the chat to the report they want to ask about.
+ *
+ * @return array<int, array{orderNumber:string, serviceType:string, deliveredAt:?string}>
+ */
+function astro_ai_attachable_orders(PDO $pdo, string $userId): array
+{
+    $stmt = $pdo->prepare(
+        "SELECT order_number, service_type, email_sent_at
+           FROM orders
+          WHERE user_id = :uid
+            AND payment_confirmed = 1
+            AND status IN ('COMPLETED', 'PROCESSING')
+            AND (refund_status IS NULL OR refund_status = 'NONE')
+            AND email_status = 'SENT'
+            AND email_sent_at IS NOT NULL
+          ORDER BY email_sent_at DESC
+          LIMIT 50"
+    );
+    $stmt->execute([':uid' => $userId]);
+    $orders = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: [] as $row) {
+        $orders[] = [
+            'orderNumber' => (string) ($row['order_number'] ?? ''),
+            'serviceType' => strtoupper(trim((string) ($row['service_type'] ?? ''))),
+            'deliveredAt' => $row['email_sent_at'] !== null ? (string) $row['email_sent_at'] : null,
+        ];
+    }
+    return $orders;
+}
+
+/**
+ * The menu the client renders: categories with their options in the
+ * customer's language. Routing metadata (area, service, dosha, planet, topic)
+ * stays on the server — the client only ever sends the id back.
+ *
+ * A category that names `services` (the three service chapters) is served only
+ * when the customer holds a delivered report of one of those service types,
+ * or to an administrator. The client is never the one that decides: it simply
+ * receives fewer chapters.
+ */
+function astro_ai_guided_menu(string $language, ?array $allowedServices = null, bool $isAdmin = false): array
 {
     $lang = in_array($language, ['en', 'ta', 'hi'], true) ? $language : 'en';
+    $allowed = [];
+    if (is_array($allowedServices)) {
+        foreach ($allowedServices as $s) {
+            $allowed[strtoupper(trim((string) $s))] = true;
+        }
+    }
     $menu = [];
     foreach ((astro_ai_guided_data()['categories'] ?? []) as $category) {
+        $needs = array_values(array_filter(array_map('strval', (array) ($category['services'] ?? []))));
+        if ($needs !== [] && !$isAdmin) {
+            $visible = false;
+            foreach ($needs as $service) {
+                if (isset($allowed[strtoupper(trim($service))])) {
+                    $visible = true;
+                    break;
+                }
+            }
+            if (!$visible) {
+                continue;
+            }
+        }
         $questions = [];
         foreach (($category['questions'] ?? []) as $q) {
             $questions[] = [
@@ -1072,8 +1205,12 @@ function astro_ai_guided_menu(string $language): array
 
 function astro_ai_action_options(PDO $pdo, array $user, array $body): void
 {
+    // Read-only: the menu and the report list are answered from the knowledge
+    // files and the orders table, so there is nothing to bootstrap here.
     $language = astro_normalize_report_language((string) ($body['language'] ?? ($_GET['language'] ?? 'ta')));
-    $menu = astro_ai_guided_menu($language);
+    $isAdmin = astro_ai_is_admin($user);
+    $services = $isAdmin ? [] : astro_ai_entitled_service_types($pdo, (string) $user['id']);
+    $menu = astro_ai_guided_menu($language, $services, $isAdmin);
     if (empty($menu)) {
         error_log('AI Astrologer: guided-questions.json is missing or empty at ' . astro_ai_guided_path());
         jsonResponse(['success' => false, 'code' => 'GUIDED_UNAVAILABLE',
@@ -1081,10 +1218,111 @@ function astro_ai_action_options(PDO $pdo, array $user, array $body): void
             'message_ta' => 'கேள்விப் பட்டியல் இப்போது இல்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.',
             'message_hi' => 'प्रश्न-सूची अभी उपलब्ध नहीं है। कृपया कुछ देर बाद फिर कोशिश करें।'], 503);
     }
+    // The reports this conversation can be attached to. The service chapters
+    // are only useful once the matching report is attached, and the floating
+    // launcher opens with no report bound.
+    $orders = $isAdmin ? [] : astro_ai_attachable_orders($pdo, (string) $user['id']);
+    foreach ($orders as &$o) {
+        $o['title'] = astro_ai_service_title((string) $o['serviceType'], $language);
+    }
+    unset($o);
+
     jsonResponse([
         'success' => true,
         'language' => $language,
         'categories' => $menu,
+        /** Service types the customer holds a delivered report for (drives the gated chapters). */
+        'entitledServices' => $services,
+        /** The customer's own delivered reports, attachable to this conversation. */
+        'orders' => $orders,
+    ]);
+}
+
+/** Plain service names for the report picker, in the customer's language. */
+function astro_ai_service_title(string $serviceType, string $language): string
+{
+    $names = [
+        'BIRTH_JATHAGAM' => ['en' => 'Birth Jathagam', 'ta' => 'ஜன்ம ஜாதகம்', 'hi' => 'जन्म कुंडली'],
+        'MARRIAGE_COMPATIBILITY' => ['en' => 'Wedding Matching', 'ta' => 'திருமணப் பொருத்தம்', 'hi' => 'विवाह मिलान'],
+        'BABY_NAMING' => ['en' => 'Baby Naming', 'ta' => 'குழந்தைப் பெயர்', 'hi' => 'नामकरण'],
+        'MUHURTHAM' => ['en' => 'Subha Muhurtham', 'ta' => 'சுப முகூர்த்தம்', 'hi' => 'शुभ मुहूर्त'],
+        'MULTI_PERSON' => ['en' => 'Family Report', 'ta' => 'குடும்ப அறிக்கை', 'hi' => 'पारिवारिक रिपोर्ट'],
+    ];
+    $lang = in_array($language, ['en', 'ta', 'hi'], true) ? $language : 'en';
+    $map = $names[$serviceType] ?? null;
+    return $map ? (string) ($map[$lang] ?? $map['en']) : $serviceType;
+}
+
+/**
+ * Attaches one of the customer's own delivered reports to this conversation
+ * (or detaches it with an empty orderNumber). Nothing here trusts the client:
+ * the order must belong to this account and must already have been delivered.
+ */
+function astro_ai_action_bind(PDO $pdo, array $user, array $body): void
+{
+    astro_ai_ensure_tables($pdo);
+
+    $sessionId = trim((string) ($body['sessionId'] ?? ''));
+    if ($sessionId === '') {
+        jsonResponse(['success' => false, 'code' => 'MISSING_FIELDS',
+            'message' => 'sessionId is required.'], 400);
+    }
+    $session = astro_ai_load_session($pdo, $sessionId, $user['id']);
+    if (!$session) {
+        jsonResponse(['success' => false, 'code' => 'SESSION_NOT_FOUND', 'message' => 'That conversation was not found.'], 404);
+    }
+    if ($session['status'] === 'CLOSED') {
+        jsonResponse(['success' => false, 'code' => 'SESSION_CLOSED',
+            'message' => 'That conversation is closed. Please start a new one.'], 409);
+    }
+
+    $orderNumber = trim((string) ($body['orderNumber'] ?? ''));
+    $serviceType = null;
+    $orderId = null;
+
+    if ($orderNumber !== '') {
+        // Ownership AND delivery, in the query itself - an undelivered or
+        // someone else's order cannot become the chart this chat discusses.
+        $stmt = $pdo->prepare(
+            "SELECT id, service_type, order_number
+               FROM orders
+              WHERE order_number = :num
+                AND user_id = :uid
+                AND payment_confirmed = 1
+                AND status IN ('COMPLETED', 'PROCESSING')
+                AND (refund_status IS NULL OR refund_status = 'NONE')
+                AND email_status = 'SENT'
+                AND email_sent_at IS NOT NULL
+              LIMIT 1"
+        );
+        $stmt->execute([':num' => $orderNumber, ':uid' => $user['id']]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        if (!$order) {
+            jsonResponse(['success' => false, 'code' => 'ORDER_NOT_FOUND',
+                'message' => 'That report is not available for this conversation.'], 404);
+        }
+        $orderId = (string) ($order['id'] ?? '');
+        $serviceType = strtoupper(trim((string) ($order['service_type'] ?? '')));
+        $orderNumber = (string) ($order['order_number'] ?? $orderNumber);
+    }
+
+    $bind = $pdo->prepare(
+        "UPDATE ai_chat_sessions SET order_id = ?, order_number = ?, service_type = ? WHERE id = ? AND user_id = ?"
+    );
+    $bind->execute([
+        $orderId !== '' ? $orderId : null,
+        $orderNumber !== '' ? $orderNumber : null,
+        $serviceType,
+        $sessionId,
+        $user['id'],
+    ]);
+
+    jsonResponse([
+        'success' => true,
+        'sessionId' => $sessionId,
+        'orderNumber' => $orderNumber !== '' ? $orderNumber : null,
+        'serviceType' => $serviceType,
+        'serviceTitle' => $serviceType ? astro_ai_service_title($serviceType, (string) ($session['language'] ?? 'ta')) : null,
     ]);
 }
 
@@ -1120,6 +1358,14 @@ function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $
         if ($order) {
             $context['orderTitle'] = (string) ($order['service_type'] ?? 'your report');
             $context['orderDetails'] = astro_ai_order_details_text($order);
+            // The bound report's own readings, whichever service it is: a
+            // natal chart for a Birth Jathagam, the porutham table / birth-pada
+            // syllables / muhurtham calendar for the other three.
+            $context['boundServiceType'] = strtoupper(trim((string) ($order['service_type'] ?? '')));
+            $serviceFacts = astro_ai_service_facts($order);
+            if ($serviceFacts !== null) {
+                $context['serviceFacts'] = $serviceFacts;
+            }
             $facts = astro_ai_chart_facts($order);
             if ($facts !== null) {
                 $chart = $facts['chart'];
@@ -1292,19 +1538,308 @@ function astro_ai_order_details_text(array $order): string
  *
  * @return array{chart:array, header:string, dashaEndDate:?string}|null
  */
-function astro_ai_chart_facts(array $order): ?array
+/**
+ * The order's own report result, rebuilt from its saved inputs.
+ *
+ * ONE rebuild per order per request: the natal chart facts and the service
+ * readings (matching / naming / muhurtham) both read this, so asking a
+ * question never makes the engine calculate the same report twice.
+ */
+function astro_ai_report_result(array $order): ?array
 {
+    static $cache = [];
+    $key = (string) ($order['id'] ?? '') . '|' . (string) ($order['order_number'] ?? '');
+
+    if (array_key_exists($key, $cache)) {
+        return $cache[$key];
+    }
     try {
         require_once __DIR__ . '/astrology/engine.php';
         if (!class_exists('AstroEngine')) {
-            return null;
+            return $cache[$key] = null;
         }
         $result = AstroEngine::rebuildReportResultFromSavedInputs($order);
     } catch (Throwable $e) {
-        error_log('AI Astrologer: chart rebuild failed for order '
+        error_log('AI Astrologer: report rebuild failed for order '
             . ($order['order_number'] ?? '?') . ': ' . $e->getMessage());
+        return $cache[$key] = null;
+    }
+
+    return $cache[$key] = is_array($result) ? $result : null;
+}
+
+/**
+ * The readings of the three non-Jathagam services, read out of the customer's
+ * own report result so the chat repeats the report instead of re-judging it.
+ *
+ * Every value is copied from the engine result in all three languages; nothing
+ * here is invented, and nothing is recalculated. A service whose result does
+ * not carry its own shape (an old stored result, a failed rebuild, a service
+ * type with no chat chapter) returns null, and the answer route then says it
+ * cannot read the report instead of guessing.
+ *
+ * @return array{serviceType:string, matching:?array, naming:?array, muhurtham:?array}|null
+ */
+function astro_ai_service_facts(array $order): ?array
+{
+    $service = (string) ($order['service_type'] ?? '');
+    if (!in_array($service, ['MARRIAGE_COMPATIBILITY', 'BABY_NAMING', 'MUHURTHAM'], true)) {
         return null;
     }
+    $result = astro_ai_report_result($order);
+    if (!is_array($result)) {
+        return null;
+    }
+
+    // Some engine fields are strings, others (reasons, doshas) are lists of
+    // strings; both flatten to one readable line per language.
+    $tri = static function (array $r, string $base): array {
+        $flat = static function ($value): string {
+            if (is_array($value)) {
+                return implode('; ', array_values(array_filter(array_map('strval', $value),
+                    static function (string $s): bool { return trim($s) !== ''; })));
+            }
+            return trim((string) $value);
+        };
+        $en = $flat($r[$base . 'En'] ?? '');
+        return [
+            'en' => $en,
+            'ta' => $flat($r[$base . 'Ta'] ?? $en),
+            'hi' => $flat($r[$base . 'Hi'] ?? $en),
+        ];
+    };
+
+    if ($service === 'MARRIAGE_COMPATIBILITY') {
+        if (!is_array($result['poruthams'] ?? null) || !isset($result['score'], $result['maxScore'])) {
+            return null;
+        }
+        $poruthams = [];
+        foreach ($result['poruthams'] as $p) {
+            if (!is_array($p)) {
+                continue;
+            }
+            $status = strtoupper((string) ($p['status'] ?? ''));
+            if (!in_array($status, ['UTTHAMAM', 'MADHYAMAM', 'PORUNDHADHU'], true)) {
+                $status = 'PORUNDHADHU';
+            }
+            $poruthams[] = [
+                'key' => (string) ($p['poruthamKey'] ?? ($p['id'] ?? '')),
+                'name' => $tri($p, 'name'),
+                'points' => (int) ($p['points'] ?? 0),
+                'maxPoints' => (int) ($p['maxPoints'] ?? 0),
+                'status' => $status,
+                'matched' => $status !== 'PORUNDHADHU',
+                'full' => $status === 'UTTHAMAM',
+                'crucial' => !empty($p['isCrucial']),
+                'note' => $tri($p, 'explanation'),
+            ];
+        }
+        $sevvai = is_array($result['sevvayDosham'] ?? null) ? $result['sevvayDosham'] : [];
+        return [
+            'serviceType' => 'MARRIAGE_COMPATIBILITY',
+            'matching' => [
+                'groom' => [
+                    'name' => (string) ($result['groomName'] ?? ''),
+                    'rasi' => $tri($result, 'groomRasiName'),
+                    'nakshatra' => $tri($result, 'groomNakshatraName'),
+                    'pada' => (int) ($result['groomPada'] ?? 0),
+                ],
+                'bride' => [
+                    'name' => (string) ($result['brideName'] ?? ''),
+                    'rasi' => $tri($result, 'brideRasiName'),
+                    'nakshatra' => $tri($result, 'brideNakshatraName'),
+                    'pada' => (int) ($result['bridePada'] ?? 0),
+                ],
+                'score' => (int) ($result['score'] ?? 0),
+                'maxScore' => (int) ($result['maxScore'] ?? 0),
+                'percentage' => (float) ($result['percentage'] ?? 0),
+                'matched' => (int) ($result['totalPoruthamsMatched'] ?? 0),
+                'total' => count($poruthams),
+                'verdictStatus' => (string) ($result['verdictStatus'] ?? ''),
+                'verdict' => $tri($result, 'overallVerdict'),
+                'rajjuOk' => !empty($result['rajjuMatch']),
+                'vedhaOk' => !empty($result['vedhaMatch']),
+                'poruthams' => $poruthams,
+                'sevvai' => [
+                    'brideStatus' => (string) ($sevvai['brideDoshaStatus'] ?? ''),
+                    'groomStatus' => (string) ($sevvai['groomDoshaStatus'] ?? ''),
+                    'samyamStatus' => $sevvai['doshaSamyamStatus'] ?? null,
+                    'samyamLabel' => $tri($sevvai, 'doshaSamyamStatus'),
+                    'advice' => $tri($sevvai, 'recommendation'),
+                ],
+            ],
+            'naming' => null,
+            'muhurtham' => null,
+        ];
+    }
+
+    if ($service === 'BABY_NAMING') {
+        if ((int) ($result['janmaNakshatraIndex'] ?? 0) < 1 || !is_array($result['primaryPadaInfo'] ?? null)) {
+            return null;
+        }
+        $letters = is_array($result['nakshatraLetters'] ?? null) ? $result['nakshatraLetters'] : [];
+        $padas = [];
+        foreach ((array) ($letters['padas'] ?? []) as $p) {
+            if (!is_array($p)) {
+                continue;
+            }
+            $padas[] = [
+                'pada' => (int) ($p['padaNumber'] ?? 0),
+                'sound' => $tri($p, 'letter'),
+                'rasi' => $tri($p, 'rasi'),
+            ];
+        }
+        $primary = is_array($result['primaryPadaInfo'] ?? null) ? $result['primaryPadaInfo'] : [];
+        $pada = (int) ($result['janmaPada'] ?? 0);
+        $names = [];
+        $addName = static function (array $n) use (&$names): void {
+            if (!is_array($n)) {
+                return;
+            }
+            $name = trim((string) ($n['nameEn'] ?? ($n['name'] ?? '')));
+            if ($name === '') {
+                return;
+            }
+            $meanEn = (string) ($n['meaningEn'] ?? ($n['meaning'] ?? ''));
+            $names[] = [
+                'name' => $name,
+                'meaning' => [
+                    'en' => $meanEn,
+                    'ta' => (string) ($n['meaningTa'] ?? $meanEn),
+                    'hi' => (string) ($n['meaningHi'] ?? $meanEn),
+                ],
+            ];
+        };
+        // Page-1 suggestions first (they are the report's own short list for
+        // the birth-pada sound). Some sounds carry none, because the curated
+        // examples cover only a few syllables - in that case the names come
+        // from the report's page-2 name bank for this very pada.
+        foreach ((array) ($result['suggestedNames'] ?? []) as $n) {
+            $addName(is_array($n) ? $n : []);
+        }
+        if ($names === []) {
+            foreach ((array) ($result['nameSuggestions'] ?? []) as $column) {
+                if (!is_array($column) || (int) ($column['padaNumber'] ?? 0) !== $pada) {
+                    continue;
+                }
+                foreach (['south', 'north'] as $side) {
+                    foreach ((array) ($column[$side] ?? []) as $n) {
+                        $addName(is_array($n) ? $n : []);
+                    }
+                }
+            }
+        }
+        $provenance = is_array($result['nameProvenance'] ?? null) ? $result['nameProvenance'] : [];
+        return [
+            'serviceType' => 'BABY_NAMING',
+            'matching' => null,
+            'naming' => [
+                'baby' => [
+                    'name' => (string) ($result['babyName'] ?? ''),
+                    'gender' => (string) ($result['gender'] ?? ''),
+                    'dob' => (string) ($result['dob'] ?? ''),
+                    'tob' => (string) ($result['tob'] ?? ''),
+                    'place' => (string) ($result['birthPlace'] ?? ''),
+                ],
+                'star' => [
+                    'en' => (string) ($result['janmaNakshatraEn'] ?? ''),
+                    'ta' => (string) ($result['janmaNakshatraTa'] ?? ($result['janmaNakshatraEn'] ?? '')),
+                    'hi' => (string) ($result['janmaNakshatraEn'] ?? ''),
+                ],
+                'pada' => $pada,
+                'rasi' => $tri($result, 'chandraRasiName'),
+                'lagna' => $tri($result, 'lagnaRasiName'),
+                'primarySound' => [
+                    'en' => (string) ($primary['letterEn'] ?? ($result['primaryStartingSyllable'] ?? '')),
+                    'ta' => (string) ($primary['letterTa'] ?? ($result['primaryStartingSyllable'] ?? '')),
+                    'hi' => (string) ($primary['letterHi'] ?? ($result['primaryStartingSyllable'] ?? '')),
+                ],
+                'padas' => $padas,
+                'names' => array_slice($names, 0, 8),
+                'provenance' => [
+                    'suppliedName' => (string) ($provenance['suppliedName'] ?? ''),
+                    'status' => (string) ($provenance['status'] ?? ''),
+                    'note' => $tri($provenance, 'note'),
+                ],
+            ],
+            'muhurtham' => null,
+        ];
+    }
+
+    // MUHURTHAM - the six-month auspicious-date calendar.
+    if (!is_array($result['months'] ?? null) || count($result['months']) === 0) {
+        return null;
+    }
+    $months = [];
+    $recommended = [];
+    $dayCount = 0;
+    foreach ($result['months'] as $m) {
+        if (!is_array($m)) {
+            continue;
+        }
+        $days = [];
+        foreach ((array) ($m['days'] ?? []) as $d) {
+            if (!is_array($d)) {
+                continue;
+            }
+            $day = [
+                'date' => (string) ($d['date'] ?? ''),
+                'weekday' => $tri($d, 'dayOfWeekName'),
+                'nakshatra' => $tri($d, 'nakshatraName'),
+                'tithi' => $tri($d, 'tithiName'),
+                'grade' => (string) ($d['grade'] ?? 'FAIR'),
+                'score' => (int) ($d['score'] ?? 0),
+                'recommended' => !empty($d['isRecommended']),
+                'nallaNeram' => array_values(array_filter(array_map('strval', (array) ($d['nallaNeram'] ?? [])))),
+                'rahuKalam' => (string) ($d['rahuKalam'] ?? ''),
+                'yamagandam' => (string) ($d['yamagandam'] ?? ''),
+                'gulikai' => (string) ($d['gulikai'] ?? ''),
+                'reasons' => $tri($d, 'reasons'),
+                'doshas' => $tri($d, 'doshas'),
+            ];
+            $days[] = $day;
+            $dayCount++;
+            if ($day['recommended'] || $day['grade'] === 'BEST') {
+                $recommended[] = $day;
+            }
+        }
+        if ($days === []) {
+            continue;
+        }
+        $months[] = [
+            'key' => (string) ($m['monthKey'] ?? ''),
+            'name' => $tri($m, 'monthName'),
+            'bestCount' => (int) ($m['bestCount'] ?? 0),
+            'goodCount' => (int) ($m['goodCount'] ?? 0),
+            'days' => $days,
+        ];
+    }
+    usort($recommended, static function (array $a, array $b): int {
+        return $b['score'] <=> $a['score'];
+    });
+
+    return [
+        'serviceType' => 'MUHURTHAM',
+        'matching' => null,
+        'naming' => null,
+        'muhurtham' => [
+            'event' => $tri($result, 'eventTitle'),
+            'window' => $tri($result, 'windowLabel'),
+            'place' => (string) ($result['muhurthamPlace'] ?? ''),
+            'country' => (string) ($result['muhurthamCountry'] ?? ''),
+            'personalCheckMode' => (string) ($result['personalCheckMode'] ?? 'single'),
+            'dayCount' => $dayCount,
+            'months' => $months,
+            'recommended' => array_slice($recommended, 0, 6),
+        ],
+    ];
+}
+
+function astro_ai_chart_facts(array $order): ?array
+{
+    // Shared with astro_ai_service_facts(): one engine run per order per
+    // request, whichever reading asks first.
+    $result = astro_ai_report_result($order);
     if (!is_array($result)) {
         return null;
     }
@@ -1518,6 +2053,9 @@ try {
             break;
         case 'options':
             astro_ai_action_options($pdo, $user, $body);
+            break;
+        case 'bind':
+            astro_ai_action_bind($pdo, $user, $body);
             break;
         default:
             jsonResponse(['success' => false, 'message' => 'Unknown action.'], 400);

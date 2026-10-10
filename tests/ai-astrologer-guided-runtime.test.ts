@@ -55,11 +55,29 @@ const reply = (id: string) => out.replies.find((r: any) => r.id === id);
 
 check('the guided menu resolves in all three languages', () => {
   for (const lang of ['en', 'ta', 'hi']) {
-    assert.equal(out.menu[lang].categories, 12);
-    assert.equal(out.menu[lang].options, 49);
     assert.equal(out.menu[lang].firstTopic, 'health');
     assert.ok((out.menu[lang].firstOption as string).length > 10);
   }
+});
+
+check('the three service chapters appear only for a report the account holds', () => {
+  // No delivered service report: the menu is the twelve general chapters.
+  assert.equal(out.gatedMenu.none.categories, 12);
+  assert.equal(out.gatedMenu.none.options, 49);
+  assert.ok(!(out.gatedMenu.none.ids as string[]).includes('wedding-match'));
+
+  // A Wedding Matching + Subha Muhurtham report: those two chapters join.
+  assert.equal(out.gatedMenu.weddingAndMuhurtham.categories, 14);
+  assert.equal(out.gatedMenu.weddingAndMuhurtham.options, 60);
+  const entitled = out.gatedMenu.weddingAndMuhurtham.ids as string[];
+  assert.ok(entitled.includes('wedding-match') && entitled.includes('muhurtham'));
+  assert.ok(!entitled.includes('baby-naming'), 'a Baby Naming chapter needs a Baby Naming report');
+
+  // All three, and the administrator view, see the whole menu.
+  assert.equal(out.gatedMenu.allThree.categories, 15);
+  assert.equal(out.gatedMenu.allThree.options, 65);
+  assert.equal(out.gatedMenu.admin.categories, 15);
+  assert.equal(out.gatedMenu.admin.options, 65);
 });
 
 check('option ids resolve server-side and unknown ids do not', () => {
