@@ -1,0 +1,354 @@
+{
+  "$schema": "./report-sections.schema.json",
+  "version": "1.0.0",
+  "generatedOn": "2026-10-09",
+  "_purpose": "Part 3 of the ASTRO SIVAM AI Astrologer. Lets the agent identify an uploaded ASTRO SIVAM report, prove it belongs to the customer's paid order, and explain any section - or any single quoted line - in simple Tamil, English or Hindi, linked back to the chart positions that produced it.",
+
+  "ownership": {
+    "_why": "An uploaded PDF is untrusted input. It must be proved to be (a) an ASTRO SIVAM report and (b) this customer's, before a single word of it is discussed.",
+    "signals": [
+      {
+        "id": "order-number-in-header",
+        "strength": "authoritative",
+        "pattern": "#?\\b(ORD-[A-Z0-9-]{3,28})\\b",
+        "where": "the page header of every report page, rendered by AstroMpdfReports::topHeader as <span class=\"header-order-ref\">#ORD-...</span>",
+        "note": "ASCII only. This is the signal the design depends on, because it survives PDF text extraction even when the Tamil and Devanagari runs do not."
+      },
+      {
+        "id": "filename",
+        "strength": "supporting",
+        "pattern": "ASTRO_SIVAM_(Report|Invoice)_([A-Za-z0-9-]+)\\.pdf",
+        "where": "the uploaded filename. Set by api/admin/approve_order.php as ASTRO_SIVAM_Report_{order_number}.pdf",
+        "note": "A customer can rename a file, so this corroborates the header - it never replaces it."
+      },
+      {
+        "id": "branding",
+        "strength": "necessary-not-sufficient",
+        "patterns": ["ASTRO SIVAM", "ASTRO-MUH", "ASTRO SIVAM Vedic Research Desk", "ASTRO SIVAM - OFFICIAL VEDIC REPORT"],
+        "where": "page 1 of every report",
+        "note": "Proves the document is ours. Does NOT prove it is this customer's."
+      }
+    ],
+    "mustAllHold": [
+      "The extracted order number exists in the orders table.",
+      "That order belongs to the logged-in customer (orders.user_id matches the session user).",
+      "That order is PAID and approved - never an unpaid, pending or cancelled order.",
+      "The document carries ASTRO SIVAM branding."
+    ],
+    "onFailure": "Say so politely and stop. Never explain a document that failed the check, and never reveal why in detail - do not tell an uploader which order numbers are valid.",
+    "extractionPolicy": {
+      "primary": "Extract text in PHP with smalot/pdfparser and read the order number out of it.",
+      "whyNotTrustIndicText": "mPDF embeds subset fonts. Glyph-to-Unicode mapping for Tamil and Devanagari runs frequently does not survive extraction, so extracted Indic text can come back garbled or empty. This could not be tested in the build sandbox because PHP is not installable there.",
+      "consequence": "The design must not depend on Indic extraction succeeding. The PDF is treated as an OWNERSHIP TOKEN read for its ASCII order number; the content that gets explained is regenerated server-side from the order's saved inputs via AstroEngine::rebuildReportResultFromSavedInputs, which is already how official downloads are produced.",
+      "fallbackIfExtractionFails": "Ask the customer to pick the order from their own dashboard order list instead of uploading. Never guess an order from a birth date."
+    }
+  },
+
+  "rejection": {
+    "notAstroSivam": {
+      "en": "Thank you for sending this. I can only read reports that ASTRO SIVAM prepared, and this one does not look like ours - I cannot find our order reference on it. If you open your ASTRO SIVAM dashboard and choose the report you would like explained, I can walk you through any part of it.",
+      "ta": "அனுப்பியதற்கு நன்றி. ASTRO SIVAM தயாரித்த அறிக்கைகளை மட்டுமே என்னால் படிக்க முடியும்; இது எங்களுடையது போல் தெரியவில்லை - எங்கள் ஆர்டர் எண் இதில் இல்லை. உங்கள் ASTRO SIVAM டாஷ்போர்டை திறந்து, விளக்க வேண்டிய அறிக்கையை தேர்வு செய்தால், அதன் எந்த பகுதியையும் நான் விளக்குகிறேன்.",
+      "hi": "भेजने के लिए धन्यवाद। मैं केवल ASTRO SIVAM द्वारा तैयार की गई रिपोर्ट पढ़ सकता हूँ; यह हमारी नहीं लगती - इसमें हमारा ऑर्डर नंबर नहीं मिला। अपना ASTRO SIVAM डैशबोर्ड खोलकर जिस रिपोर्ट की व्याख्या चाहिए उसे चुनें, मैं उसका हर हिस्सा समझा दूँगा।"
+    },
+    "notYours": {
+      "en": "This looks like an ASTRO SIVAM report, but it is not linked to your account, so I am not able to open it. If it belongs to someone in your family, they can sign in and ask me directly. Would you like me to explain one of your own reports instead?",
+      "ta": "இது ASTRO SIVAM அறிக்கை போல் தெரிகிறது, ஆனால் இது உங்கள் கணக்குடன் இணைக்கப்படவில்லை; எனால் இதை திறக்க முடியாது. இது உங்கள் குடும்பத்தில் யாருடையதோ, அவர்கள் உள்நுழைந்து நேரடியாக கேட்கலாம். அதற்கு பதிலாக உங்கள் சொந்த அறிக்கைகளில் ஒன்றை விளக்கவா?",
+      "hi": "यह ASTRO SIVAM रिपोर्ट लगती है, लेकिन यह आपके खाते से जुड़ी नहीं है, इसलिए मैं इसे नहीं खोल सकता। यदि यह आपके परिवार में किसी की है, तो वे साइन इन करके सीधे पूछ सकते हैं। क्या इसके बजाय मैं आपकी अपनी रिपोर्ट समझाऊँ?"
+    },
+    "unreadable": {
+      "en": "I could not read that file clearly - it may be a scan or a photo of the report rather than the PDF itself. The easiest way is to open the report from your dashboard and ask me about the section you are looking at. Which part would you like to start with?",
+      "ta": "அந்த கோப்பை என்னால் தெளிவாக படிக்க முடியவில்லை - அது PDF-க்கு பதிலாக அறிக்கையின் ஸ்கேன் அல்லது புகைப்படமாக இருக்கலாம். எளிதான வழி: உங்கள் டாஷ்போர்டிலிருந்து அறிக்கையை திறந்து, நீங்கள் பார்க்கும் பகுதியை பற்றி கேளுங்கள். எந்த பகுதியிலிருந்து தொடங்கலாம்?",
+      "hi": "मैं उस फ़ाइल को साफ़ नहीं पढ़ सका - वह PDF के बजाय रिपोर्ट का स्कैन या फोटो हो सकती है। सबसे आसान तरीका: डैशबोर्ड से रिपोर्ट खोलें और जिस हिस्से को देख रहे हैं उसके बारे में पूछें। किस हिस्से से शुरू करें?"
+    },
+    "tooLarge": {
+      "en": "That file is larger than I can open. Our reports are usually a few pages - could you send the PDF you received by email rather than a photo of it?",
+      "ta": "அந்த கோப்பு என்னால் திறக்க முடியாத அளவுக்கு பெரியது. எங்கள் அறிக்கைகள் பொதுவாக சில பக்கங்கள் தான் - புகைப்படத்திற்கு பதிலாக மின்னஞ்சலில் வந்த PDF-ஐ அனுப்ப முடியுமா?",
+      "hi": "वह फ़ाइल मेरे खोलने से बड़ी है। हमारी रिपोर्ट आमतौर पर कुछ पृष्ठों की होती है - फोटो के बजाय ईमेल से मिला PDF भेज सकते हैं?"
+    }
+  },
+
+  "reportTypes": [
+    {
+      "id": "BIRTH_JATHAGAM",
+      "name": { "en": "Vedic Birth Jathagam", "ta": "வேத ஜனன ஜாதகம்", "hi": "वैदिक जन्म कुंडली" },
+      "pages": 3,
+      "fingerprints": ["Certified Vedic Horoscope & Ephemeris", "Astrological Life Predictions", "Janma Rasi", "Dosha Analysis", "Janma Nakshatra"],
+      "sections": [
+        {
+          "id": "user-particulars",
+          "title": { "en": "User Particulars", "ta": "ஜாதகர் விவரங்கள்", "hi": "जातक विवरण" },
+          "page": 1,
+          "means": {
+            "en": "The birth details the chart was calculated from: name, date of birth, time of birth, place of birth, time zone and the Ayanamsa used. Every other page follows from these five numbers.",
+            "ta": "ஜாதகம் கணிக்கப்பட்ட பிறப்பு விவரங்கள்: பெயர், பிறந்த தேதி, பிறந்த நேரம், பிறந்த இடம், நேர மண்டலம், பயன்படுத்தப்பட்ட அயனாம்சம். மீதமுள்ள அனைத்து பக்கங்களும் இந்த ஐந்து எண்களிலிருந்தே வருகின்றன.",
+            "hi": "वे जन्म विवरण जिनसे कुंडली बनाई गई: नाम, जन्म तिथि, जन्म समय, जन्म स्थान, समय क्षेत्र और प्रयुक्त अयनांश। बाकी हर पृष्ठ इन्हीं पाँच आँकड़ों से निकलता है।"
+          },
+          "chartLink": "Lagna (rising sign) and the Moon's sign and nakshatra are both fixed by birth time and place. A few minutes of birth time can move the Lagna, so this section is worth checking first.",
+          "askIfWrong": {
+            "en": "If any of these five is wrong, tell me which one - the whole reading changes with it, and our astrologer can recalculate.",
+            "ta": "இவற்றில் ஏதேனும் தவறு என்றால் எது என்று சொல்லுங்கள் - முழு கணிப்பும் அதனுடன் மாறும்; எங்கள் ஜோதிடர் மீண்டும் கணிக்க முடியும்.",
+            "hi": "इनमें से कोई गलत हो तो बताइए कौन सा - पूरी गणना उसके साथ बदल जाती है; हमारे ज्योतिषी फिर से बना सकते हैं।"
+          }
+        },
+        {
+          "id": "planetary-positions",
+          "title": { "en": "Navagraha Positions", "ta": "நவக்கிரக நிலைகள்", "hi": "नवग्रह स्थितियाँ" },
+          "page": 1,
+          "means": {
+            "en": "Where each of the nine grahas sits: its rasi (sign), its degree, the nakshatra it is in, which house that makes, and whether it is exalted, debilitated or in its own sign. This table is the raw material for everything on pages 2 and 3.",
+            "ta": "ஒன்பது கிரகங்கள் ஒவ்வொன்றும் எங்கு உள்ளன: ராசி, பாகை, எந்த நட்சத்திரத்தில், அது எந்த வீடு ஆகிறது, உச்சம்/நீச்சம்/சொந்த வீடா என்பது. 2 மற்றும் 3-ஆம் பக்கங்களில் உள்ள அனைத்திற்கும் இந்த அட்டவணையே மூலப்பொருள்.",
+            "hi": "नौ ग्रह प्रत्येक कहाँ हैं: राशि, अंश, कौन सा नक्षत्र, उससे कौन सा भाव बनता है, और उच्च/नीच/स्वराशि है या नहीं। पृष्ठ 2 और 3 की हर बात इसी तालिका से निकलती है।"
+          },
+          "chartLink": "Each row gives a planet, a sign and a house. The house decides which life area it touches; the dignity decides how well it can deliver.",
+          "source": [{ "id": "EN-01", "level": "book" }, { "id": "EN-06", "level": "book" }]
+        },
+        {
+          "id": "rasi-nakshatra",
+          "title": { "en": "Janma Rasi & Janma Nakshatra", "ta": "ஜன்ம ராசி & ஜன்ம நட்சத்திரம்", "hi": "जन्म राशि एवं जन्म नक्षत्र" },
+          "page": 1,
+          "means": {
+            "en": "Your Moon's sign is your Janma Rasi and the star it was in is your Janma Nakshatra. In Tamil practice these two - not the Sun sign - are what a panchangam and a temple priest will ask you for, and they set your starting point in the Vimshottari Dasha.",
+            "ta": "உங்கள் சந்திரன் உள்ள ராசி ஜன்ம ராசி; அது இருந்த நட்சத்திரம் ஜன்ம நட்சத்திரம். தமிழ் நடைமுறையில் பஞ்சாங்கமும் கோயில் அர்ச்சகரும் கேட்பது இந்த இரண்டையுமே - சூரிய ராசியை அல்ல. விம்சோத்தரி தசையின் தொடக்க புள்ளியையும் இவை தீர்மானிக்கின்றன.",
+            "hi": "आपके चंद्र की राशि जन्म राशि है और जिस नक्षत्र में वे थे वही जन्म नक्षत्र है। तमिल परंपरा में पंचांग और मंदिर के पुजारी यही दो पूछते हैं, सूर्य राशि नहीं। विंशोत्तरी दशा का प्रारंभ बिंदु भी इन्हीं से तय होता है।"
+          },
+          "chartLink": "The nakshatra's lord is the planet your first Mahadasha belongs to, which is why the Dasha sequence on page 3 starts where it does.",
+          "source": [{ "id": "TA-06", "level": "book" }, { "id": "TA-25", "level": "content" }]
+        },
+        {
+          "id": "dosha-analysis",
+          "title": { "en": "Dosha Analysis", "ta": "தோஷ பகுப்பாய்வு", "hi": "दोष विश्लेषण" },
+          "page": 1,
+          "means": {
+            "en": "A check for the combinations the tradition names as doshas - Kuja, Kala Sarpa, Guru Chandala, Pitru and others. A dosha is a configuration to be aware of and to work with, not a punishment. Many charts carry one and the person lives entirely normally.",
+            "ta": "மரபு தோஷம் என்று பெயரிடும் அமைப்புகளுக்கான பரிசோதனை - குஜ, கால சர்ப்ப, குரு சண்டால, பித்ரு மற்றும் பிற. தோஷம் என்பது தெரிந்துகொண்டு சமாளிக்க வேண்டிய அமைப்பே தவிர தண்டனை அல்ல. பல ஜாதகங்களில் தோஷம் இருந்தும் அந்த நபர் இயல்பான வாழ்க்கையே வாழ்கிறார்.",
+            "hi": "उन योगों की जाँच जिन्हें परंपरा दोष कहती है - कुज, काल सर्प, गुरु चांडाल, पितृ और अन्य। दोष सजा नहीं, बल्कि जानकर संभालने वाली स्थिति है। अनेक कुंडलियों में दोष होता है और व्यक्ति पूरी तरह सामान्य जीवन जीता है।"
+          },
+          "chartLink": "Each named dosha points at a specific planet in a specific house - Kuja at Mars, Kala Sarpa at the Rahu-Ketu axis. Say which one, and it stops being abstract.",
+          "guardrail": "Never present a dosha as a verdict. Never attach a frightening outcome to it.",
+          "source": [{ "id": "EN-01", "level": "book" }, { "id": "EN-09", "level": "book" }]
+        },
+        {
+          "id": "life-cards",
+          "title": { "en": "Astrological Life Predictions", "ta": "ஜோதிட வாழ்க்கை கணிப்புகள்", "hi": "ज्योतिष जीवन फलादेश" },
+          "page": 2,
+          "means": {
+            "en": "The eight life-area cards: Health & Vitality, Wealth & Finance, Education & Intellect, Career & Profession, Marriage & Relations, Property & Real Estate, Travel & Global Fortune, and Current Guidance. Each one is written from the lord of its house - the 1st for health, 2nd for wealth, 5th for education, 10th for career, 7th for marriage, 4th for property, 9th for travel - and each states a Benefit and a Caution.",
+            "ta": "எட்டு வாழ்க்கை துறை அட்டைகள்: ஆரோக்கியம் & நல்வாழ்வு, தனம் & நிதி நிலை, கல்வி & அறிவுத்திறன், தொழில் & உத்தியோகம், திருமணம் & உறவு, வீடு/நிலம் & சொத்து, பயணம் & அதிர்ஷ்டம், தற்போதைய வழிகாட்டல். ஒவ்வொன்றும் அதன் வீட்டின் அதிபதியிலிருந்து எழுதப்படுகிறது - ஆரோக்கியத்திற்கு 1, தனத்திற்கு 2, கல்விக்கு 5, தொழிலுக்கு 10, திருமணத்திற்கு 7, சொத்திற்கு 4, பயணத்திற்கு 9. ஒவ்வொன்றிலும் நன்மை மற்றும் கவனம் என்று இரண்டு பகுதிகள் உள்ளன.",
+            "hi": "आठ जीवन-क्षेत्र कार्ड: स्वास्थ्य एवं आरोग्य, धन एवं संपत्ति, शिक्षा एवं बौद्धिकता, व्यवसाय एवं आजीविका, विवाह एवं सम्बंध, भूमि/भवन एवं संपत्ति, विदेश यात्रा एवं भाग्य, और ज्योतिषीय मार्गदर्शन। हर कार्ड उस भाव के स्वामी से लिखा जाता है - स्वास्थ्य के लिए पहला, धन के लिए दूसरा, शिक्षा के लिए पाँचवाँ, कर्म के लिए दशम, विवाह के लिए सातवाँ, संपत्ति के लिए चौथा, यात्रा के लिए नवम। हर कार्ड में शुभ और सावधानी दो भाग हैं।"
+          },
+          "chartLink": "The card's house lord, the house it sits in, and its dignity. The Benefit comes from strength; the Caution comes from the same position read the other way.",
+          "guardrail": "The Caution text is a reason to plan, never a prediction of harm. The health card always carries the medical-safety rules.",
+          "source": [{ "id": "EN-01", "level": "book" }, { "id": "TA-02", "level": "book" }]
+        },
+        {
+          "id": "current-guidance",
+          "title": { "en": "Current Guidance", "ta": "தற்போதைய வழிகாட்டல்", "hi": "ज्योतिषीय मार्गदर्शन" },
+          "page": 2,
+          "means": {
+            "en": "The Dasha you are in now, what the coming year asks of you, and whether it reads as an opportunity or a period to be careful in. Dasha means the broad chapter of life a planet rules; Bhukti is the shorter section inside it.",
+            "ta": "நீங்கள் இப்போது இருக்கும் தசை, வரும் ஆண்டு உங்களிடம் என்ன கேட்கிறது, அது வாய்ப்பா அல்லது கவனமாக இருக்க வேண்டிய காலமா என்பது. தசை என்றால் ஒரு கிரகம் ஆளும் வாழ்வின் பெரிய அத்தியாயம்; புக்தி என்பது அதற்குள் உள்ள சிறு பகுதி.",
+            "hi": "आप अभी किस दशा में हैं, आगामी वर्ष आपसे क्या माँगता है, और वह अवसर है या सावधानी का काल। दशा का अर्थ है किसी ग्रह का शासित जीवन-अध्याय; भुक्ति उसके भीतर का छोटा हिस्सा।"
+          },
+          "chartLink": "The Vimshottari sequence starting from the birth nakshatra, and the transit position of Guru and Sani counted from the natal Moon.",
+          "source": [{ "id": "EN-01", "level": "book" }, { "id": "EN-02", "level": "chapter", "note": "Adhyaya XXVI - transits from the natal Moon." }]
+        },
+        {
+          "id": "remedies",
+          "title": { "en": "Parikaram / Remedies", "ta": "பரிகாரங்கள்", "hi": "उपाय / परिहार" },
+          "page": 3,
+          "means": {
+            "en": "The practices suggested for the doshas and afflictions found earlier: mantras and japa, the Navagraha temples to visit, charity, fasting days and simple lifestyle changes. They are meant to steady a period, not to avert a disaster.",
+            "ta": "முன்னர் கண்டறியப்பட்ட தோஷங்கள் மற்றும் பாதிப்புகளுக்கு பரிந்துரைக்கப்படும் ஆச்சாரங்கள்: மந்திரம் மற்றும் ஜபம், செல்ல வேண்டிய நவக்கிரக கோயில்கள், தானம், விரத நாட்கள், எளிய வாழ்க்கை முறை மாற்றங்கள். இவை ஒரு காலத்தை நிலைப்படுத்தவே தவிர, பேரிடரை தடுக்க அல்ல.",
+            "hi": "पहले पाए गए दोषों और कष्टों के लिए सुझाए गए आचरण: मंत्र और जप, जाने योग्य नवग्रह मंदिर, दान, व्रत के दिन और सरल जीवनशैली परिवर्तन। ये किसी काल को स्थिर करने के लिए हैं, विपत्ति टालने के लिए नहीं।"
+          },
+          "chartLink": "Each remedy is keyed to the graha that caused the affliction, so the remedy section and the Navagraha table on page 1 describe the same planet from two directions.",
+          "guardrail": "Only the remedies in rules/remedies.json may be discussed. No gemstones, no animal dana, no paid puja, no fear framing.",
+          "source": [{ "id": "TA-07", "level": "passage", "page": "15-18" }, { "id": "TP-03", "level": "content" }]
+        },
+        {
+          "id": "navagraha-page",
+          "title": { "en": "Navagraha Guidance", "ta": "நவக்கிரக வழிகாட்டல்", "hi": "नवग्रह मार्गदर्शन" },
+          "page": 3,
+          "means": {
+            "en": "Why the Navagrahas bring difficulties at all, and the ways to face planetary doshas - the two headings used on this page. It is the reasoning behind the remedies, not a separate set of predictions.",
+            "ta": "நவக்கிரகங்கள் ஏன் கஷ்டங்களை தருகின்றன, கிரக தோஷங்களை எதிர்கொள்ளும் வழிகள் எவை - இந்த பக்கத்தில் உள்ள இரண்டு தலைப்புகள். இது பரிகாரங்களுக்கு பின்னால் உள்ள விளக்கமே தவிர, தனியான கணிப்பு தொகுப்பு அல்ல.",
+            "hi": "नवग्रह कष्ट क्यों देते हैं, और ग्रह दोषों से निपटने के उपाय - इस पृष्ठ की दो शीर्षक पंक्तियाँ। यह उपायों के पीछे का तर्क है, अलग भविष्यवाणी-समूह नहीं।"
+          },
+          "chartLink": "The same grahas as the page 1 table, described by their nature rather than their position.",
+          "source": [{ "id": "EN-01", "level": "book" }, { "id": "TA-14", "level": "book" }]
+        }
+      ]
+    },
+    {
+      "id": "WEDDING_MATCHING",
+      "name": { "en": "Wedding Compatibility", "ta": "திருமண பொருத்தம்", "hi": "विवाह मिलान" },
+      "pages": 2,
+      "fingerprints": ["Bride Profile", "Groom Profile", "Dosha Balance", "FINAL RECOMMENDATION", "Auspicious Match"],
+      "sections": [
+        {
+          "id": "bride-groom-profiles",
+          "title": { "en": "Bride Profile & Groom Profile", "ta": "மணப்பெண் & மணமகன் விவரங்கள்", "hi": "वधू एवं वर विवरण" },
+          "page": 1,
+          "means": {
+            "en": "Both birth details side by side, and each person's Rasi, nakshatra and nakshatra lord. Matching starts from these two charts, never from names or family details.",
+            "ta": "இருவரின் பிறப்பு விவரங்களும் அருகருகே; ஒவ்வொருவரின் ராசி, நட்சத்திரம், நட்சத்திர அதிபதி. பொருத்தம் இந்த இரண்டு ஜாதகங்களிலிருந்தே தொடங்குகிறது - பெயர் அல்லது குடும்ப விவரங்களிலிருந்து அல்ல.",
+            "hi": "दोनों के जन्म विवरण साथ-साथ, और प्रत्येक की राशि, नक्षत्र एवं नक्षत्र स्वामी। मिलान इन्हीं दो कुंडलियों से शुरू होता है, नाम या पारिवारिक विवरण से नहीं।"
+          },
+          "chartLink": "Two Moon nakshatras. The porutham count is computed between these two."
+        },
+        {
+          "id": "kuta-matching",
+          "title": { "en": "Porutham / Kuta Matching", "ta": "பொருத்தம் (Kuta)", "hi": "पोरुतम / कूट मिलान" },
+          "page": 1,
+          "means": {
+            "en": "The ten poruthams scored one by one, with the total out of 36. Each porutham looks at a different thing - health, longevity, temperament, family harmony, progeny, prosperity - so a low total is not one failure but a set of specific points to look at.",
+            "ta": "பத்து பொருத்தங்களும் ஒவ்வொன்றாக மதிப்பிடப்பட்டு, 36-ல் மொத்தம். ஒவ்வொரு பொருத்தமும் வேறு ஒன்றை பார்க்கிறது - உடல்நலம், ஆயுள், குணம், குடும்ப ஒற்றுமை, சந்ததி, செல்வம். எனவே குறைந்த மொத்தம் என்பது ஒரு தோல்வி அல்ல; குறிப்பிட்ட சில புள்ளிகளை பார்க்க வேண்டும் என்பதே.",
+            "hi": "दस पोरुतम एक-एक करके अंकित, 36 में से कुल। हर पोरुतम अलग चीज़ देखता है - स्वास्थ्य, आयु, स्वभाव, पारिवारिक सद्भाव, संतान, समृद्धि। इसलिए कम कुल एक असफलता नहीं, बल्कि कुछ विशेष बिंदु देखने की बात है।"
+          },
+          "chartLink": "Nakshatra-to-nakshatra relationships between the two charts, plus Rasi lord compatibility.",
+          "source": [{ "id": "EN-01", "level": "book" }, { "id": "TA-16", "level": "book" }]
+        },
+        {
+          "id": "dosha-balance",
+          "title": { "en": "Dosha Balance", "ta": "தோஷ சமநிலை", "hi": "दोष संतुलन" },
+          "page": 1,
+          "means": {
+            "en": "Whether the doshas in the two charts balance each other. This is the section most often misread: a dosha in one chart is frequently offset by the other chart, which is exactly why both must be looked at together.",
+            "ta": "இரு ஜாதகங்களிலும் உள்ள தோஷங்கள் ஒன்றையொன்று சமன் செய்கின்றனவா என்பது. இதுவே மிகவும் தவறாக புரிந்துகொள்ளப்படும் பகுதி: ஒரு ஜாதகத்தில் உள்ள தோஷம் பெரும்பாலும் மற்ற ஜாதகத்தால் சமனாகிவிடும் - இரு ஜாதகங்களையும் சேர்த்து பார்க்க வேண்டிய காரணமும் இதுவே.",
+            "hi": "दोनों कुंडलियों के दोष एक-दूसरे को संतुलित करते हैं या नहीं। यही सबसे अधिक गलत समझा जाने वाला भाग है: एक कुंडली का दोष प्रायः दूसरी से संतुलित हो जाता है - इसलिए दोनों को साथ देखना ज़रूरी है।"
+          },
+          "chartLink": "Kuja dosha position in each chart, compared. Balanced / Afflicted / Imbalance are the three labels used.",
+          "guardrail": "Never say a match should not happen. Present the balance and let the family decide with a human astrologer.",
+          "source": [{ "id": "EN-01", "level": "book" }, { "id": "EN-09", "level": "book" }]
+        },
+        {
+          "id": "final-recommendation",
+          "title": { "en": "Final Recommendation", "ta": "இறுதி பரிந்துரை", "hi": "अंतिम सिफारिश" },
+          "page": 2,
+          "means": {
+            "en": "The overall reading of the match, plus the disclaimer page. It summarises the porutham score and the dosha balance; it does not decide the marriage for anyone.",
+            "ta": "பொருத்தத்தின் ஒட்டுமொத்த வாசிப்பு, மற்றும் பொறுப்புத் துறப்பு பக்கம். இது பொருத்த மதிப்பெண்ணையும் தோஷ சமநிலையையும் சுருக்கமாக கூறுகிறது; யாருடைய திருமணத்தையும் இது தீர்மானிக்கவில்லை.",
+            "hi": "मिलान का समग्र पाठ, साथ में अस्वीकरण पृष्ठ। यह पोरुतम अंक और दोष संतुलन का सारांश देता है; किसी का विवाह यह तय नहीं करता।"
+          },
+          "chartLink": "A summary of the two sections above.",
+          "guardrail": "Never state that a marriage will fail or succeed. Offer the astrologer handoff for a final human opinion."
+        }
+      ]
+    },
+    {
+      "id": "BABY_NAMING",
+      "name": { "en": "Baby Naming", "ta": "குழந்தை பெயர் சூட்டல்", "hi": "बाल नामकरण" },
+      "pages": 1,
+      "fingerprints": ["JANMA PADA", "Baby Name", "Deva Gana", "Janma Nakshatra", "CALCULATION VERIFIED"],
+      "sections": [
+        {
+          "id": "janma-pada",
+          "title": { "en": "Janma Nakshatra & Janma Pada", "ta": "ஜன்ம நட்சத்திரம் & ஜன்ம பாதம்", "hi": "जन्म नक्षत्र एवं जन्म पाद" },
+          "page": 1,
+          "means": {
+            "en": "The baby's birth star, and which of its four padams the Moon was in. Each nakshatra is divided into four padams, and each padam gives a different starting syllable - that is why two babies with the same birth star can have different recommended letters.",
+            "ta": "குழந்தையின் ஜன்ம நட்சத்திரம், மற்றும் சந்திரன் அதன் நான்கு பாதங்களில் எதில் இருந்தது. ஒவ்வொரு நட்சத்திரமும் நான்கு பாதங்களாக பிரிக்கப்படுகிறது; ஒவ்வொரு பாதமும் வேறு தொடக்க எழுத்தை தருகிறது - ஒரே நட்சத்திரத்தில் பிறந்த இரு குழந்தைகளுக்கு வேறு எழுத்து பரிந்துரைக்கப்படுவது இதனாலேயே.",
+            "hi": "शिशु का जन्म नक्षत्र, और चंद्र उसके चार पादों में से किसमें था। हर नक्षत्र चार पादों में बँटता है और हर पाद अलग आरंभिक अक्षर देता है - इसलिए एक ही नक्षत्र में जन्मे दो शिशुओं के लिए अलग अक्षर सुझाए जाते हैं।"
+          },
+          "chartLink": "The Moon's exact degree decides the padam. This is the single number the whole naming recommendation rests on.",
+          "source": [{ "id": "TA-06", "level": "book" }, { "id": "TA-11", "level": "book" }]
+        },
+        {
+          "id": "starting-syllables",
+          "title": { "en": "Recommended Starting Syllables", "ta": "பரிந்துரைக்கப்படும் தொடக்க எழுத்துக்கள்", "hi": "सुझाए गए आरंभिक अक्षर" },
+          "page": 1,
+          "means": {
+            "en": "The syllables the tradition gives for that padam, and names built from them. The syllable is the fixed part; the name around it is a suggestion.",
+            "ta": "அந்த பாதத்திற்கு மரபு தரும் எழுத்துக்கள், மற்றும் அவற்றிலிருந்து அமையும் பெயர்கள். எழுத்து என்பது நிலையான பகுதி; அதை சுற்றியுள்ள பெயர் ஒரு பரிந்துரை மட்டுமே.",
+            "hi": "उस पाद के लिए परंपरा जो अक्षर देती है, और उनसे बने नाम। अक्षर स्थिर भाग है; उसके आसपास का नाम केवल सुझाव है।"
+          },
+          "chartLink": "Directly from the janma pada above.",
+          "guardrail": "Present the syllable as the tradition's recommendation, not a requirement. The family chooses the name."
+        },
+        {
+          "id": "guna-and-nakshatra-lord",
+          "title": { "en": "Gana, Rasi and Nakshatra Lord", "ta": "கணம், ராசி, நட்சத்திர அதிபதி", "hi": "गण, राशि और नक्षत्र स्वामी" },
+          "page": 1,
+          "means": {
+            "en": "Supporting details: the gana (Deva, Manushya or Asura), the Moon's sign, and the planet that rules the birth star. These shape the character reading that accompanies the names.",
+            "ta": "துணை விவரங்கள்: கணம் (தேவ, மனுஷ்ய, அசுர), சந்திர ராசி, ஜன்ம நட்சத்திரத்தின் அதிபதி கிரகம். பெயர்களுடன் வரும் குண விளக்கத்தை இவை வடிவமைக்கின்றன.",
+            "hi": "सहायक विवरण: गण (देव, मनुष्य या असुर), चंद्र राशि, और जन्म नक्षत्र का स्वामी ग्रह। नामों के साथ आने वाला स्वभाव-पाठ इन्हीं से बनता है।"
+          },
+          "chartLink": "Gana comes from the nakshatra; the lord is that nakshatra's ruling planet.",
+          "source": [{ "id": "TA-11", "level": "book" }]
+        }
+      ]
+    },
+    {
+      "id": "MUHURTHAM",
+      "name": { "en": "Subha Muhurtham", "ta": "சுப முஹூர்த்தம்", "hi": "शुभ मुहूर्त" },
+      "pages": 2,
+      "fingerprints": ["ASTRO-MUH", "CALCULATION WINDOW", "DATE & DAY", "Chandrashtama", "BRIDE & GROOM PARTICULARS"],
+      "sections": [
+        {
+          "id": "calculation-window",
+          "title": { "en": "Calculation Window", "ta": "கணக்கீட்டு காலம்", "hi": "गणना अवधि" },
+          "page": 1,
+          "means": {
+            "en": "The date range the auspicious times were searched within, and the panchangam basis used. Muhurtham is always relative to a window - the same event asked for a different month gives different dates.",
+            "ta": "சுப நேரங்கள் தேடப்பட்ட தேதி வரம்பு, மற்றும் பயன்படுத்தப்பட்ட பஞ்சாங்க அடிப்படை. முஹூர்த்தம் எப்போதும் ஒரு கால வரம்பை பொறுத்ததே - அதே நிகழ்வை வேறு மாதத்திற்கு கேட்டால் வேறு தேதிகள் வரும்.",
+            "hi": "वह तिथि-सीमा जिसके भीतर शुभ समय खोजे गए, और प्रयुक्त पंचांग आधार। मुहूर्त सदैव किसी अवधि के सापेक्ष होता है - वही कार्यक्रम दूसरे महीने के लिए पूछने पर भिन्न तिथियाँ मिलती हैं।"
+          },
+          "chartLink": "The window plus the panchangam system. See the Drik vs Vakya explanation if the customer's temple calendar differs.",
+          "source": [{ "id": "TA-25", "level": "content" }, { "id": "TA-14", "level": "book" }]
+        },
+        {
+          "id": "particulars",
+          "title": { "en": "Bride & Groom Particulars", "ta": "மணப்பெண் & மணமகன் விவரங்கள்", "hi": "वधू एवं वर विवरण" },
+          "page": 1,
+          "means": {
+            "en": "The birth details of the people the muhurtham is being chosen for, and the birth place used for the Janma Nakshatra. A muhurtham is chosen for specific people, so these details matter.",
+            "ta": "யாருக்காக முஹூர்த்தம் தேர்வு செய்யப்படுகிறதோ அவர்களின் பிறப்பு விவரங்கள், மற்றும் ஜன்ம நட்சத்திரத்திற்கு பயன்படுத்தப்பட்ட பிறந்த இடம். முஹூர்த்தம் குறிப்பிட்ட நபர்களுக்காக தேர்வு செய்யப்படுவதால் இந்த விவரங்கள் முக்கியம்.",
+            "hi": "जिनके लिए मुहूर्त चुना जा रहा है उनका जन्म विवरण, और जन्म नक्षत्र के लिए प्रयुक्त जन्म स्थान। मुहूर्त विशिष्ट व्यक्तियों के लिए चुना जाता है, इसलिए ये विवरण महत्वपूर्ण हैं।"
+          },
+          "chartLink": "Both nakshatras, because Chandrashtama is checked against each."
+        },
+        {
+          "id": "dates-and-days",
+          "title": { "en": "Date & Day - Selected Auspicious Times", "ta": "தேதி & நாள் - தேர்ந்தெடுக்கப்பட்ட சுப நேரங்கள்", "hi": "तिथि एवं वार - चुने गए शुभ समय" },
+          "page": 2,
+          "means": {
+            "en": "The clean dates, each with its weekday, the auspicious time window, and what was checked for it. Only dates that pass every check are listed - that is why there may be fewer than you expected.",
+            "ta": "தூய்மையான தேதிகள்; ஒவ்வொன்றுக்கும் கிழமை, சுப நேர வரம்பு, என்னென்ன பரிசோதிக்கப்பட்டது என்ற விவரம். அனைத்து பரிசோதனைகளிலும் தேறிய தேதிகள் மட்டுமே பட்டியலிடப்படுகின்றன - எதிர்பார்த்ததை விட குறைவாக இருப்பது இதனாலேயே.",
+            "hi": "शुद्ध तिथियाँ; प्रत्येक के साथ वार, शुभ समय-सीमा और क्या-क्या जाँचा गया। केवल वही तिथियाँ सूचीबद्ध हैं जो हर जाँच में उत्तीर्ण हुईं - अपेक्षा से कम होने का कारण यही है।"
+          },
+          "chartLink": "Each date is tested against the panchangam and against both nakshatras.",
+          "source": [{ "id": "TA-14", "level": "book" }, { "id": "TA-24", "level": "book" }]
+        },
+        {
+          "id": "chandrashtama",
+          "title": { "en": "Chandrashtama Check", "ta": "சந்த்ராஷ்டம பரிசோதனை", "hi": "चंद्राष्टम जाँच" },
+          "page": 2,
+          "means": {
+            "en": "Whether the Moon was in the eighth sign from either person's birth star on that date. Dates where it is are left out. This is the check most often asked about, so it is stated explicitly rather than left implied.",
+            "ta": "அந்த தேதியில் சந்திரன் இருவரில் ஒருவரின் ஜன்ம நட்சத்திரத்திற்கு 8-ஆம் ராசியில் இருந்ததா என்பது. அப்படி இருந்த தேதிகள் விடப்படுகின்றன. இதுவே அதிகம் கேட்கப்படும் பரிசோதனை; எனால் இது மறைமுகமாக விடாமல் வெளிப்படையாக கூறப்படுகிறது.",
+            "hi": "उस तिथि को चंद्र किसी एक के जन्म नक्षत्र से आठवीं राशि में था या नहीं। जहाँ था वे तिथियाँ छोड़ दी जाती हैं। यह सबसे अधिक पूछी जाने वाली जाँच है, इसलिए इसे छिपाकर नहीं, स्पष्ट रूप से लिखा जाता है।"
+          },
+          "chartLink": "Moon's transit sign counted from each person's janma nakshatra rasi.",
+          "source": [{ "id": "TA-04", "level": "book" }, { "id": "TA-14", "level": "book" }]
+        }
+      ]
+    }
+  ],
+
+  "quotedLine": {
+    "_purpose": "Handling 'what does this line mean?' - the customer pastes or types a line from their report.",
+    "steps": [
+      "Match the quoted line against the section text of the report type that was verified. Match on normalised text, tolerating spacing, punctuation and case differences.",
+      "If it matches a section, explain that section using its means text, then link it to the chart positions in chartLink, using the customer's own chart values.",
+      "If it matches a life card title, hand the question to the matching area in rules/life-areas.json instead of the generic section text - the customer wants the depth, not the definition.",
+      "If it matches nothing, do not guess. Ask for the page number, which is printed on every page, and match on that."
+    ],
+    "styleRules": [
+      "Simple everyday language. The customer is reading their own report, not studying astrology.",
+      "Always end by connecting the line back to a position in THEIR chart, by name and value.",
+      "One line of jargon gets one line of plain explanation, in the same reply.",
+      "Never correct the report. If the customer thinks a line is wrong, offer the astrologer handoff."
+    ]
+  }
+}

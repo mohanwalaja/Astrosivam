@@ -5,7 +5,8 @@
   "license": "proprietary",
   "require": {
     "php": ">=8.0",
-    "mpdf/mpdf": "^8.2"
+    "mpdf/mpdf": "^8.2",
+    "smalot/pdfparser": "^2.7"
   },
   "config": {
     "optimize-autoloader": true,

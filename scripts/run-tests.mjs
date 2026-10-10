@@ -24,6 +24,14 @@ const testFiles = [
   'tests/muhurtham-astronomy-regression.test.ts',
   'tests/sample-engine-meaning.test.ts',
   'tests/report-dob-format.test.ts',
+  'tests/ai-astrologer-sources.test.ts',
+  'tests/ai-astrologer-knowledge.test.ts',
+  'tests/ai-astrologer-report.test.ts',
+  'tests/ai-astrologer-access.test.ts',
+  'tests/ai-astrologer-provider.test.ts',
+  'tests/ai-astrologer-consistency.test.ts',
+  'tests/jathagam-page2-wiring.test.ts',
+  'tests/jathagam-page2-php-parity.test.ts',
   'tests/lockfile-drift.test.ts'
 ];
 const tsxCli = resolve(projectRoot, 'node_modules/tsx/dist/cli.mjs');

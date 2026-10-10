@@ -105,6 +105,13 @@ function escapeHtml(str: string | undefined | null): string {
     .replace(/'/g, '&#039;');
 }
 
+import {
+  computeLifeCardPredictions,
+  type ChartFacts,
+  type LordFacts,
+  type PredLang,
+} from '../lib/astrology/lifeCardPredictions';
+
 export interface JathagamLifeCard {
   icon: string;
   badge: string;
@@ -320,13 +327,6 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
     : isHi
     ? 'वर्तमान दशा या चंद्र राशि उपलब्ध नहीं है; मार्गदर्शन नहीं बनाया गया।'
     : 'Current Dasha or Moon-sign data is unavailable; no guidance was generated.';
-  const badgeFor = (base: string, p: ReturnType<typeof getHousePlacement>) => {
-    if (!p) return `${base} · N/A`;
-    const suffix = p.isChallenging
-      ? (isTa ? ' ⚠ கவனம்' : isHi ? ' ⚠ सावधान' : ' ⚠ Caution')
-      : (isTa ? ' ✓ பலம்' : isHi ? ' ✓ बल' : ' ✓ Strength');
-    return `${base}${suffix}`;
-  };
   const status = (p: ReturnType<typeof getHousePlacement>) => !p
     ? unavailablePlacement
     : p.reason || (isTa ? `${p.lordName} ஆதரவு நிலையில்` : isHi ? `${p.lordName} सहायक स्थिति में` : `${p.lordName} in a supportive placement`);
@@ -452,10 +452,67 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
     ? Boolean([6, 8, 12].includes(Number(dashaPos!.bhavaNumber)) || dashaPos!.isCombust || dashaPos!.isRetrograde)
     : null;
 
+  /* ---------------------------------------------------------------
+   * THE PAGE-2 VERDICT COMES FROM THE SHARED MODULE.
+   *
+   * `badgeFor` used to recompute isChallenging here, duplicating the rule the
+   * AI Astrologer chat also implements. Now the verdict is computed once by
+   * computeLifeCardPredictions() - the same call the chat makes - and this
+   * function only reads it. Page 2 and the chat therefore cannot disagree,
+   * because neither of them decides anything any more.
+   *
+   * The report still prints both a Good and a Caution sentence below: the badge
+   * is the verdict, the prose is the explanation.
+   * --------------------------------------------------------------- */
+  const predLang: PredLang = isTa ? 'ta' : isHi ? 'hi' : 'en';
+  const sharedFacts: ChartFacts = {
+    lagnaRasi,
+    chandraRasi: chandraRasiValid ? Number(chandraRasi) : null,
+    lords: {} as Record<number, LordFacts>,
+    currentDashaLord: currentDashaGraha ?? null,
+    currentDashaLabel: null,
+    moonSignLabel: null,
+  };
+  const placementByCard: (ReturnType<typeof getHousePlacement> | null)[] = [h1, h2, h5, h10, h7, h4, h9];
+  const cardHouses = [1, 2, 5, 10, 7, 4, 9];
+  cardHouses.forEach((house, i) => {
+    const pl = placementByCard[i];
+    if (!pl) return;
+    sharedFacts.lords[house] = {
+      lordGraha: pl.lordGraha ?? '',
+      lordName: { en: pl.lordName, ta: pl.lordName, hi: pl.lordName },
+      bhava: pl.bhava,
+      rasi: pl.targetSign,
+      isOwnHouse: pl.isOwnHouse,
+      isDebilitated: pl.isDebilitated,
+      isCombust: pl.isCombust,
+      isRetrograde: pl.isRetrograde,
+      // The placement collapses malefic conjunctions into isChallenging, so
+      // recover exactly that bit: challenging for no other reason means a
+      // malefic conjunction was present. The shared verdict is
+      //   isDusthana || isDebilitated || isCombust || conjunctMalefics > 0
+      // so a one-element array reproduces the original result exactly.
+      conjunctMalefics:
+        pl.isChallenging && !pl.isDusthana && !pl.isDebilitated && !pl.isCombust
+          ? ['MALEFIC']
+          : [],
+    };
+  });
+  const sharedPredictions = computeLifeCardPredictions(sharedFacts);
+  const sharedByCard = new Map(sharedPredictions.map((p) => [p.cardIndex, p]));
+
+  const badgeFor = (cardIndex: number, base: string, p: ReturnType<typeof getHousePlacement>) => {
+    // The verdict is whatever the shared module returned - including the
+    // 'unavailable' badge when there is no placement.
+    const pred = sharedByCard.get(cardIndex);
+    if (pred) return pred.badge[predLang];
+    return p ? base : `${base} · N/A`;
+  };
+
   return [
     {
       icon: '🩺',
-      badge: badgeFor(isTa ? 'உடல் நலம்' : isHi ? 'आरोग्य' : 'Health', h1),
+      badge: badgeFor(1, isTa ? 'உடல் நலம்' : isHi ? 'आरोग्य' : 'Health', h1),
       title: isTa ? 'ஆரோக்கியம் & நல்வாழ்வு' : isHi ? 'स्वास्थ्य एवं आरोग्य' : 'Health & Vitality',
       desc: !h1 ? unavailablePlacement : isTa
         ? `நன்மை: லக்னாதிபதி ${posWord(h1)} இருப்பதால் உடல் சக்தி மேம்பட முயற்சி, உணவு ஒழுக்கம் உதவும். கவனம்: ${status(h1)}; பலவீனம் இருந்தால் உடல் வலி, சோர்வு, தோல்/வயிறு எரிச்சல் போன்ற சிறு தொந்தரவுகள் வரலாம். அறிகுறிகள் இருந்தால் மருத்துவரை அணுகவும்.${healthLordLine()}`
@@ -465,7 +522,7 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
     },
     {
       icon: '💰',
-      badge: badgeFor(isTa ? 'செல்வம்' : isHi ? 'धन' : 'Wealth', h2),
+      badge: badgeFor(2, isTa ? 'செல்வம்' : isHi ? 'धन' : 'Wealth', h2),
       title: isTa ? 'தனம் & நிதி நிலை' : isHi ? 'धन एवं संपत्ति' : 'Wealth & Finance',
       desc: !h2 ? unavailablePlacement : isTa
         ? `நன்மை: தனாதிபதி ${posWord(h2)} இருப்பதால் சேமிப்பு, குடும்ப ஆதரவு, வருமான திட்டம் பலன் தரலாம். கவனம்: ${status(h2)}; செலவு அதிகரிப்பு, கடன் அழுத்தம் அல்லது பணம் தாமதம் வரலாம். பட்ஜெட் அவசியம்.${jupiterLine()}${incomeLordLine()}`
@@ -475,7 +532,7 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
     },
     {
       icon: '📚',
-      badge: badgeFor(isTa ? 'கல்வி' : isHi ? 'विद्या' : 'Study', h5),
+      badge: badgeFor(3, isTa ? 'கல்வி' : isHi ? 'विद्या' : 'Study', h5),
       title: isTa ? 'கல்வி & அறிவுத்திறன்' : isHi ? 'शिक्षा एवं बौद्धिकता' : 'Education & Intellect',
       desc: !h5 ? unavailablePlacement : isTa
         ? `நன்மை: 5-ஆம் அதிபதி ${posWord(h5)} இருப்பதால் நினைவாற்றல், படைப்பாற்றல், தேர்வு தயாரிப்பு மேம்படலாம். கவனம்: ${status(h5)}; கவனம் சிதறல், மறதி, பாடத்தில் இடைவேளை வரலாம். தினசரி திட்டம் தேவை.`
@@ -485,7 +542,7 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
     },
     {
       icon: '💼',
-      badge: badgeFor(isTa ? 'தொழில்' : isHi ? 'कार्य' : 'Career', h10),
+      badge: badgeFor(4, isTa ? 'தொழில்' : isHi ? 'कार्य' : 'Career', h10),
       title: isTa ? 'தொழில் & உத்தியோகம்' : isHi ? 'व्यवसाय एवं आजीविका' : 'Career & Profession',
       desc: !h10 ? unavailablePlacement : isTa
         ? `நன்மை: 10-ஆம் அதிபதி ${posWord(h10)} இருப்பதால் பொறுப்பு, பெயர், திறன் வளர்ச்சி வாய்ப்பு உண்டு. கவனம்: ${status(h10)}; வேலை தாமதம், மேலதிகாரி உராய்வு, திட்ட மாற்றம் வரலாம். ஆவணங்களையும் காலக்கெடுவையும் கவனிக்கவும்.${kendraCareerText}`
@@ -495,7 +552,7 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
     },
     {
       icon: '💍',
-      badge: badgeFor(isTa ? 'உறவு' : isHi ? 'संबंध' : 'Relations', h7),
+      badge: badgeFor(5, isTa ? 'உறவு' : isHi ? 'संबंध' : 'Relations', h7),
       title: isTa ? 'திருமணம் & உறவு' : isHi ? 'विवाह एवं सम्बंध' : 'Marriage & Relations',
       desc: !h7 ? unavailablePlacement : isTa
         ? `நன்மை: 7-ஆம் அதிபதி ${posWord(h7)} இருப்பதால் துணை/கூட்டாண்மை ஆதரவு கிடைக்கலாம். கவனம்: ${status(h7)}; தவறான புரிதல், தாமதம், வாக்குவாதம் வரலாம். மெதுவாக பேசுவது நல்லது.${venusLine()}${kendraMarriageText}`
@@ -505,7 +562,7 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
     },
     {
       icon: '🏠',
-      badge: badgeFor(isTa ? 'சொத்து' : isHi ? 'संपत्ति' : 'Property', h4),
+      badge: badgeFor(6, isTa ? 'சொத்து' : isHi ? 'संपत्ति' : 'Property', h4),
       title: isTa ? 'வீடு, நிலம் & சொத்து' : isHi ? 'भूमि, भवन एवं संपत्ति' : 'Property & Real Estate',
       desc: !h4 ? unavailablePlacement : isTa
         ? `நன்மை: 4-ஆம் அதிபதி ${posWord(h4)} இருப்பதால் வீட்டு வசதி, வாகனம், மன அமைதி மேம்படலாம். கவனம்: ${status(h4)}; வீடு/நில ஆவண தாமதம், பழுது செலவு, குடும்ப மனஅழுத்தம் வரலாம். சரிபார்ப்பு அவசியம்.`
@@ -515,7 +572,7 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
     },
     {
       icon: '✈️',
-      badge: badgeFor(isTa ? 'பாக்கியம்' : isHi ? 'भाग्य' : 'Fortune', h9),
+      badge: badgeFor(7, isTa ? 'பாக்கியம்' : isHi ? 'भाग्य' : 'Fortune', h9),
       title: isTa ? 'பயணம் & அதிர்ஷ்டம்' : isHi ? 'विदेश यात्रा एवं भाग्य' : 'Travel & Global Fortune',
       desc: !h9 ? unavailablePlacement : isTa
         ? `${fortuneLead}: 9-ஆம் அதிபதி ${posWord(h9)} இருப்பதால் குரு அருள், பயணம், உயர் கற்றல் வாய்ப்பு கிடைக்கலாம். கவனம்: ${status(h9)}; பயண தாமதம், விசா/ஆவண பிரச்சனை, வழிகாட்டி மாற்றம் வரலாம். முன்கூட்டியே திட்டமிடவும்.${fortuneCaution}${yogaExtra}`

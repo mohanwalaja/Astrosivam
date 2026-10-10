@@ -29,6 +29,73 @@ if (!function_exists('astro_report_normalize_language')) {
         return in_array($language, ['en', 'ta', 'hi'], true) ? $language : 'en';
     }
 }
+/**
+ * THE SHARED LIFE-CARD RULES.
+ *
+ * Page 2 of the Birth Jathagam, the browser report and the AI Astrologer chat
+ * all read api/astrology/life_cards_rules.json. The TypeScript side calls
+ * computeLifeCardPredictions() from src/lib/astrology/lifeCardPredictions.ts;
+ * PHP cannot execute TypeScript, so this file re-expresses the same verdict
+ * expression - but the HOUSE LISTS and the BADGE WORDING below come from the
+ * JSON, so changing the rule in one place changes the PDF too.
+ *
+ * That is the honest limit of the sharing: data and wording are single-sourced,
+ * the ~1-line boolean expression is necessarily written twice.
+ * tests/jathagam-page2-php-parity.test.ts fails if the two drift.
+ *
+ * @return array{dusthanaHouses: int[], badgeChallenging: array<string,string>, badgeSupportive: array<string,string>, badgeUnavailable: string}
+ */
+function astro_life_card_rules()
+{
+    static $rules = null;
+    if ($rules !== null) {
+        return $rules;
+    }
+    $fallback = [
+        'dusthanaHouses' => [6, 8, 12],
+        'badgeChallenging' => ['ta' => ' ⚠ கவனம்', 'hi' => ' ⚠ सावधान', 'en' => ' ⚠ Caution'],
+        'badgeSupportive' => ['ta' => ' ✓ பலம்', 'hi' => ' ✓ बल', 'en' => ' ✓ Strength'],
+        'badgeUnavailable' => ' · N/A',
+    ];
+    $path = __DIR__ . '/life_cards_rules.json';
+    if (!is_file($path)) {
+        return $fallback;
+    }
+    $raw = file_get_contents($path);
+    if ($raw === false || $raw === '') {
+        return $fallback;
+    }
+    $decoded = json_decode($raw, true);
+    if (!is_array($decoded)) {
+        return $fallback;
+    }
+    $constants = is_array($decoded['constants'] ?? null) ? $decoded['constants'] : [];
+    $suffix = is_array($decoded['badgeSuffix'] ?? null) ? $decoded['badgeSuffix'] : [];
+    $dusthana = [];
+    foreach ((array) ($constants['dusthanaHouses'] ?? []) as $h) {
+        if (is_numeric($h)) {
+            $dusthana[] = (int) $h;
+        }
+    }
+    $pick = static function ($key) use ($suffix, $fallback) {
+        $entry = $suffix[$key] ?? null;
+        if (!is_array($entry)) {
+            return $key === 'unavailable' ? $fallback['badgeUnavailable'] : [];
+        }
+        return [
+            'ta' => (string) ($entry['ta'] ?? ''),
+            'hi' => (string) ($entry['hi'] ?? ''),
+            'en' => (string) ($entry['en'] ?? ''),
+        ];
+    };
+    return [
+        'dusthanaHouses' => $dusthana ?: [6, 8, 12],
+        'badgeChallenging' => $pick('challenging') ?: $fallback['badgeChallenging'],
+        'badgeSupportive' => $pick('supportive') ?: $fallback['badgeSupportive'],
+        'badgeUnavailable' => is_string($suffix['unavailable'] ?? null) ? $suffix['unavailable'] : $fallback['badgeUnavailable'],
+    ];
+}
+
 
 class AstroReportViews {
 
@@ -1271,7 +1338,8 @@ HTML;
                 return $unavailable;
             }
 
-            $isDusthana = in_array($bhava, [6, 8, 12], true);
+            // Dusthana houses come from the shared rules file, not a literal here.
+            $isDusthana = in_array($bhava, astro_life_card_rules()['dusthanaHouses'], true);
             $isDebilitated = $lifeIsDebilitated($lordGraha, $placedSign, $dignityByGrahaForLife[$lordGraha] ?? null);
             $isDignifiedLord = $lifeIsDignified($lordGraha, $placedSign, $dignityByGrahaForLife[$lordGraha] ?? null);
             $isCombust = !empty($flagsByGrahaForLife[$lordGraha]['isCombust']);
@@ -1333,7 +1401,11 @@ HTML;
             if (empty($placement['isAvailable'])) {
                 return $isTa ? ($houseNum . '-ஆம் அதிபதி → N/A') : ($isHi ? (self::houseOrdinalHi($houseNum) . ' भाव का स्वामी → N/A') : (self::houseOrdinalEn($houseNum) . ' lord → N/A'));
             }
-            $suffix = !empty($placement['isChallenging']) ? ($isTa ? ' ⚠ கவனம்' : ($isHi ? ' ⚠ सावधान' : ' ⚠ Caution')) : ($isTa ? ' ✓ பலம்' : ($isHi ? ' ✓ बल' : ' ✓ Strength'));
+            // The verdict wording comes from the shared rules file, so the PDF and
+            // the browser report cannot drift apart on how a verdict is phrased.
+            $lifeRules = astro_life_card_rules();
+            $suffixSet = !empty($placement['isChallenging']) ? $lifeRules['badgeChallenging'] : $lifeRules['badgeSupportive'];
+            $suffix = $isTa ? $suffixSet['ta'] : ($isHi ? $suffixSet['hi'] : $suffixSet['en']);
             return $isTa ? ($houseNum . '-ஆம் அதிபதி → ' . $placement['bhava'] . '-ஆம் பாவம்' . $suffix) : ($isHi ? (self::houseOrdinalHi($houseNum) . ' भाव का स्वामी → ' . self::houseOrdinalHi($placement['bhava']) . ' भाव' . $suffix) : (self::houseOrdinalEn($houseNum) . ' lord → ' . self::houseOrdinalEn($placement['bhava']) . ' house' . $suffix));
         };
         $lifeStatus = function ($placement) use ($isTa, $isHi, $lifeLordName) {

@@ -28,6 +28,7 @@ import { GooglePlacesPicker, LocationData } from '../components/common/GooglePla
 import { BirthDateField, BirthTimeField, BirthTimeZoneNotice } from '../components/common/BirthDateTimeFields';
 import { PersonNameField } from '../components/common/PersonNameField';
 import { resolveDisplayName } from '../utils/displayName';
+import AiAstrologerPanel from '../components/ai-astrologer/AiAstrologerPanel';
 import { SEO } from '../components/common/SEO';
 import { resolveLocationTimezone } from '../lib/timezone';
 import {
@@ -54,6 +55,10 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [activeTab, setActiveTab] = useState<'orders' | 'profile'>('orders');
+  // AI Astrologer entry point. `aiChatOrder` is null for a general chat, or the
+  // order whose report the customer wants explained.
+  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [aiChatOrder, setAiChatOrder] = useState<Order | null>(null);
 
   // Edit Profile State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -280,6 +285,13 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
     );
   }
 
+  // Client-side hint only. api/ai_astrologer.php re-checks this on EVERY request
+  // (requireAuth + requirePaidOrder), because the browser is not trustworthy.
+  const paidOrders = orders.filter(
+    (o) => o.status === 'COMPLETED' && o.hasPdf && o.serviceMode !== 'FREE_BETA'
+  );
+  const aiLanguage = (user?.country === 'India' ? 'hi' : 'ta') as 'ta' | 'hi' | 'en';
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <SEO
@@ -287,6 +299,21 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
         description="Track your astrology orders, email-delivery status, and saved birth profile."
         noindex={true}
       />
+
+      {aiChatOpen && user?.id && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/60 p-0 sm:p-4">
+          <div className="w-full sm:max-w-lg">
+            <AiAstrologerPanel
+              customerId={String(user.id)}
+              customerName={displayName || 'User'}
+              language={aiLanguage}
+              orderId={aiChatOrder?.id}
+              orderLabel={aiChatOrder ? `Report #${aiChatOrder.orderNumber}` : undefined}
+              onClose={() => setAiChatOpen(false)}
+            />
+          </div>
+        </div>
+      )}
       
       {/* Top Welcome Header */}
       <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
@@ -304,6 +331,15 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
 
         {/* Quick Service Ordering Buttons */}
         <div className="flex flex-wrap gap-2">
+          {paidOrders.length > 0 && (
+            <button
+              onClick={() => { setAiChatOrder(null); setAiChatOpen(true); }}
+              className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-950 text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Ask AI Astrologer</span>
+            </button>
+          )}
           <button
             onClick={() => onNavigate('birth-jathagam')}
             className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
@@ -560,6 +596,18 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
 
                         {getLangBadge()}
                       </div>
+
+                      {/* Part 4 entry point: ask about THIS report. Shown only for a
+                          completed paid order; the server re-checks on every request. */}
+                      {order.status === 'COMPLETED' && order.hasPdf && order.serviceMode !== 'FREE_BETA' && (
+                        <button
+                          onClick={() => { setAiChatOrder(order); setAiChatOpen(true); }}
+                          className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-600/40 text-amber-300 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          <span>Ask about this report</span>
+                        </button>
+                      )}
                     </div>
 
                     {/* Middle: Complete Order & User Details */}
