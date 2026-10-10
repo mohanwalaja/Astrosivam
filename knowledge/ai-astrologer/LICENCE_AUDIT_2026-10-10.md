@@ -62,3 +62,11 @@ Combined djvu.txt: about **0.56 MB**. The PDFs (13.6 MB and 33.4 MB) are not nee
 **Hosting.** One JSON file, loaded per request, expected to be a few hundred KB at most. No new server process, no external API calls, no secrets in the browser.
 
 Before I change any reply logic, please confirm the design above and answer §5.
+
+## 7. Confirmed decisions (owner, 2026-10-10)
+
+1. **Scope:** copyrighted (freely readable and unlicensed) books may be loaded for retrieval. The owner accepts the copyright risk.
+2. **Display rule:** the chat shows only short reviewed excerpts (one verse or a few lines), each with source ID and page or verse. It never shows a full page or chapter. Full texts stay in the search index only.
+3. **Unreviewed text:** stored for retrieval, never quoted to a customer until reviewed.
+4. **Storage:** collected text lives outside Git (`/home/user/astro-texts`). Only reviewed excerpts enter the repo.
+5. **Open items:** the 57 tamilnavarasam.in PDFs and any non-archive.org text need a separate collection step, to be decided with the owner.
