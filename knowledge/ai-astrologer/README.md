@@ -14,6 +14,7 @@ knowledge/ai-astrologer/
 ├── rules/
 │   ├── life-areas.json
 │   ├── remedies.json
+│   ├── guided-questions.json  # curated option menu shown to customers (12 topics, 49 questions)
 │   └── guardrails.json
 └── prompt/
     └── system-prompt.md  # retained reference; not used to generate customer replies
@@ -51,6 +52,7 @@ Topic selection uses curated phrase/rule matching; it is not a general language 
 - `rules/life-areas.json` contains the eight report areas and reviewed chart conditions, wording, practical steps, and source references.
 - `rules/remedies.json` contains the limited remedies the chat may offer.
 - `rules/guardrails.json` defines refusal routes, prediction limits, health wording, and safety language in all supported languages.
+- `rules/guided-questions.json` is the customer-facing menu: life areas mirroring Birth Jathagam page 2, doshas, remedies, order help, and complaints. Customers tap an option id; free text is admin-testing only.
 - Suppressed and excluded references cannot be shown to customers. Citation level must not exceed the registry's verification level; a book-level bibliographic record does not justify a chapter/verse claim.
 - Health replies must not diagnose or prescribe and must direct the customer to a qualified doctor.
 

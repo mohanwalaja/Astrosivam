@@ -42,3 +42,4 @@ tests/fixtures/parity-php.json
 tests/fixtures/php-ai-probes/out.json
 tests/fixtures/php-ai-probes/out-coverage.json
 tests/fixtures/php-ai-probes/out-kb.json
+tests/fixtures/php-ai-probes/out-guided.json

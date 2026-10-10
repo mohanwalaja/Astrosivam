@@ -120,6 +120,36 @@ class AstroAiOffline
             $name = '';
         }
 
+        // GUIDED MODE — the customer picked a curated option, so the answer
+        // path is fixed by the menu instead of guessed from wording. Order,
+        // complaint, dosha and remedy options never enter refusal or area
+        // matching; area options skip matching and go straight to their card.
+        $guided = (isset($context['guided']) && is_array($context['guided'])) ? $context['guided'] : null;
+        $guidedKind = $guided !== null ? (string) ($guided['kind'] ?? 'area') : null;
+        if ($guidedKind === 'order') {
+            $escalate = ($guided['escalate'] ?? false) === true;
+            return self::finish(self::orderBubbles($guided, $lang, $context, $chart, $name), '', null, $escalate, $lang);
+        }
+        if ($guidedKind === 'complaint') {
+            return self::finish([self::complaintAck($lang)], '', null, true, $lang);
+        }
+        if ($guidedKind === 'dosha') {
+            return self::finish(self::doshaBubbles($guided, $lang, $chart, $name), '', null, false, $lang);
+        }
+        if ($guidedKind === 'remedy') {
+            $planet = (isset($guided['planet']) && is_string($guided['planet']) && isset(self::PLANET_NAMES[$guided['planet']]))
+                ? $guided['planet'] : null;
+            $target = $planet ?? self::dashaPlanet($chart);
+            $bubbles = [self::remedyText($target, $lang)];
+            if (($guided['focus'] ?? '') === 'temple') {
+                $temple = self::templeText($lang);
+                if ($temple !== '') {
+                    $bubbles[] = $temple;
+                }
+            }
+            return self::finish($bubbles, self::remedySourceLine($target), null, false, $lang);
+        }
+
         // 1. Fixed refusal routes always win (legal, money, medicine, lifespan, curse, price).
         $retrieved = AstroAiProvider::retrieve($question, $lang, $chart);
         if (!empty($retrieved['refusal']) && ($retrieved['refusal']['route'] ?? '') === 'no-sales'
@@ -140,6 +170,23 @@ class AstroAiOffline
         }
         if ($talk !== []) {
             return self::finish($talk, '', null, false, $lang);
+        }
+
+        // A guided area option names its own card, so it skips matching
+        // entirely: the menu cannot miss, and a wording change in the menu
+        // can never route a customer to the wrong card.
+        if ($guidedKind === 'area' && is_string($guided['area'] ?? null) && ($guided['area'] ?? '') !== '') {
+            $forcedArea = (string) $guided['area'];
+            $forced = self::retrieveArea($forcedArea, $question, $lang, $chart);
+            $bubbles = self::areaBubbles($forcedArea, $forced, $question, $lang, $chart, $context, $name, !empty($guided['timing']));
+            if (!empty($guided['remedy'])) {
+                $bubbles[] = self::remedyText(self::dashaPlanet($chart), $lang);
+            }
+            if ($forcedArea === 'health') {
+                $bubbles[] = self::doctorLine($lang);
+            }
+            $sourceLine = AstroAiProvider::tamilOnlySourceLine((string) ($forced['sourceLine'] ?? ''));
+            return self::finish($bubbles, $sourceLine, $forcedArea, $forcedArea === 'health', $lang);
         }
 
         // Area choice on WHOLE words (the shared retrieve() matches substrings,
@@ -184,7 +231,7 @@ class AstroAiOffline
     // Life-area answers
     // ------------------------------------------------------------------
 
-    private static function areaBubbles(string $areaId, array $retrieved, string $question, string $lang, ?array $chart, array $context, string $name): array
+    private static function areaBubbles(string $areaId, array $retrieved, string $question, string $lang, ?array $chart, array $context, string $name, bool $forceTiming = false): array
     {
         $title = (string) ($retrieved['cardTitle'] ?? $areaId);
         $bubbles = [];
@@ -240,7 +287,7 @@ class AstroAiOffline
             $bubbles[] = 'Practical steps: ' . implode('; ', array_slice(array_values(array_unique($tips)), 0, 3)) . '.';
         }
 
-        if (self::containsAny(mb_strtolower($question, 'UTF-8'), self::TIMING_WORDS)) {
+        if ($forceTiming || self::containsAny(mb_strtolower($question, 'UTF-8'), self::TIMING_WORDS)) {
             $period = self::periodLine($chart, $lang);
             if ($period !== '') {
                 $bubbles[] = $period . ' ' . self::t($lang, [
@@ -291,6 +338,195 @@ class AstroAiOffline
             }
         }
         return $bubbles;
+    }
+
+    // ------------------------------------------------------------------
+    // Guided-only answers: order facts, doshas, temples, complaints
+    // ------------------------------------------------------------------
+
+    /**
+     * Answers the "My Order & Report" options from the customer's own order
+     * row only. Facts (order number, dates, amounts, birth details) are read
+     * from $context['orderDetails'], which the endpoint built from this
+     * customer's order — never from another account, never a price list.
+     */
+    private static function orderBubbles(array $guided, string $lang, array $context, ?array $chart, string $name): array
+    {
+        $details = (string) ($context['orderDetails'] ?? '');
+        if ($details === '' || strpos($details, 'no order attached') !== false) {
+            return [self::personalHint($lang)];
+        }
+        $who = $name !== '' ? $name . ', ' : '';
+        $topic = (string) ($guided['topic'] ?? 'status');
+
+        if ($topic === 'payment') {
+            $paid = '';
+            if (preg_match('/Amount paid: ([^|]+)/', $details, $m)) {
+                $paid = trim($m[1]);
+            }
+            $head = self::t($lang, [
+                'en' => $who . 'here is what our records show for this order:',
+                'ta' => $who . 'இந்த ஆர்டருக்கு எங்கள் பதிவுகள் சொல்வது:',
+                'hi' => $who . 'इस ऑर्डर के लिए हमारे रिकॉर्ड यह बताते हैं:',
+            ]);
+            $line = $paid !== ''
+                ? $paid
+                : self::t($lang, [
+                    'en' => 'No payment amount is recorded on this order (it may be your free first report).',
+                    'ta' => 'இந்த ஆர்டரில் கட்டணத் தொகை பதிவாகவில்லை (இது உங்கள் இலவச முதல் அறிக்கையாக இருக்கலாம்).',
+                    'hi' => 'इस ऑर्डर पर कोई भुगतान राशि दर्ज नहीं है (यह आपकी मुफ़्त पहली रिपोर्ट हो सकती है)।',
+                ]);
+            return [$head . "\n" . $line];
+        }
+
+        if ($topic === 'details') {
+            $birth = '';
+            if (preg_match('/Birth details used: (.+?)( \\| Report language:|$)/', $details, $m)) {
+                $birth = trim($m[1]);
+            }
+            if ($birth === '') {
+                return [self::t($lang, [
+                    'en' => $who . 'I could not read the birth details on this order. Please use the correction option below and our team will check them with you.',
+                    'ta' => $who . 'இந்த ஆர்டரில் பிறப்பு விவரங்களை என்னால் படிக்க முடியவில்லை. கீழே உள்ள திருத்த விருப்பத்தை பயன்படுத்தவும்; எங்கள் குழு உங்களுடன் சரிபார்க்கும்.',
+                    'hi' => $who . 'मैं इस ऑर्डर के जन्म विवरण नहीं पढ़ सका। कृपया नीचे सुधार विकल्प चुनें; हमारी टीम आपसे जाँच करेगी।',
+                ])];
+            }
+            return [self::t($lang, [
+                'en' => $who . 'your chart was calculated from these details:',
+                'ta' => $who . 'உங்கள் ஜாதகம் இந்த விவரங்களிலிருந்து கணிக்கப்பட்டது:',
+                'hi' => $who . 'आपकी कुंडली इन्हीं विवरणों से बनाई गई:',
+            ]) . "\n" . $birth];
+        }
+
+        if ($topic === 'correction') {
+            return [self::t($lang, [
+                'en' => $who . 'thank you for telling us. Birth details decide the whole chart, so corrections are made by our team, not in this chat. I have sent your request to them — they will contact you shortly. Please keep your correct date, time and place of birth ready.',
+                'ta' => $who . 'சொன்னதற்கு நன்றி. பிறப்பு விவரங்களே முழு ஜாதகத்தையும் தீர்மானிக்கின்றன; எனவே திருத்தங்களை எங்கள் குழுவே செய்யும். உங்கள் கோரிக்கையை அவர்களுக்கு அனுப்பிவிட்டேன் — விரைவில் தொடர்பு கொள்வார்கள். சரியான தேதி, நேரம், பிறந்த இடத்தை தயாராக வைத்திருங்கள்.',
+                'hi' => $who . 'बताने के लिए धन्यवाद। जन्म विवरण ही पूरी कुंडली तय करते हैं, इसलिए सुधार हमारी टीम करती है, इस चैट में नहीं। मैंने आपका अनुरोध उन्हें भेज दिया है — वे जल्द ही संपर्क करेंगे। सही तिथि, समय और जन्म स्थान तैयार रखें।',
+            ])];
+        }
+
+        // status (default): delivery state + where to look.
+        return [self::t($lang, [
+            'en' => $who . 'here is the delivery status of your report:',
+            'ta' => $who . 'உங்கள் அறிக்கையின் விநியோக நிலை:',
+            'hi' => $who . 'आपकी रिपोर्ट की डिलीवरी स्थिति:',
+        ]) . "\n" . $details . "\n" . self::t($lang, [
+            'en' => 'If the email is not in your inbox, please check the spam folder for mail from admin@astrosivam.com.',
+            'ta' => 'மின்னஞ்சல் உங்கள் இன்பாக்ஸில் இல்லையென்றால், admin@astrosivam.com-லிருந்து வந்த மெயிலுக்காக ஸ்பேம் கோப்புறையை பார்க்கவும்.',
+            'hi' => 'यदि ईमेल इनबॉक्स में नहीं है, तो admin@astrosivam.com के मेल के लिए स्पैम फ़ोल्डर देखें।',
+        ])];
+    }
+
+    /**
+     * Answers the "Doshas in My Chart" options from the engine dosha block of
+     * the bound order. The chat repeats the report's own verdict and remedy —
+     * it never re-judges the chart, never calls a dosha a punishment, and
+     * never attaches a frightening outcome to one.
+     */
+    private static function doshaBubbles(array $guided, string $lang, ?array $chart, string $name): array
+    {
+        $all = ($chart !== null && is_array($chart['doshaDetails'] ?? null)) ? $chart['doshaDetails'] : [];
+        $wanted = (string) ($guided['dosha'] ?? 'all');
+        if ($wanted !== 'all') {
+            $all = array_values(array_filter($all, static function ($d) use ($wanted) {
+                return ($d['key'] ?? '') === $wanted;
+            }));
+        }
+        if (empty($all)) {
+            return [
+                self::t($lang, [
+                    'en' => 'A dosha check needs your own chart. I could not read the dosha results for this conversation.',
+                    'ta' => 'தோஷ பரிசோதனைக்கு உங்கள் சொந்த ஜாதகம் தேவை. இந்த உரையாடலுக்கான தோஷ முடிவுகளை என்னால் படிக்க முடியவில்லை.',
+                    'hi' => 'दोष जाँच के लिए आपकी अपनी कुंडली चाहिए। इस बातचीत के दोष परिणाम मैं नहीं पढ़ सका।',
+                ]),
+                self::personalHint($lang),
+            ];
+        }
+
+        $verdict = static function ($present, string $lang): string {
+            if ($present === true) {
+                return $lang === 'ta' ? 'உங்கள் ஜாதகத்தில் உள்ளது' : ($lang === 'hi' ? 'आपकी कुंडली में है' : 'Present in your chart');
+            }
+            if ($present === false) {
+                return $lang === 'ta' ? 'உங்கள் ஜாதகத்தில் இல்லை' : ($lang === 'hi' ? 'आपकी कुंडली में नहीं है' : 'Not present in your chart');
+            }
+            return $lang === 'ta' ? 'மதிப்பிடப்படவில்லை' : ($lang === 'hi' ? 'आकलन नहीं हुआ' : 'Not assessed');
+        };
+
+        $who = $name !== '' ? $name . ', ' : '';
+        $bubbles = [];
+        if ($wanted === 'all') {
+            $lines = [];
+            foreach ($all as $d) {
+                $dName = (string) ($d['name'][$lang] ?? ($d['name']['en'] ?? ''));
+                $lines[] = '• ' . $dName . ' — ' . $verdict($d['present'] ?? null, $lang);
+            }
+            $bubbles[] = self::t($lang, [
+                'en' => $who . 'here is what page 1 of your report found:',
+                'ta' => $who . 'உங்கள் அறிக்கையின் பக்கம் 1 கண்டது:',
+                'hi' => $who . 'आपकी रिपोर्ट के पृष्ठ 1 में यह मिला:',
+            ]) . "\n" . implode("\n", $lines);
+            $bubbles[] = self::t($lang, [
+                'en' => 'A dosha is a configuration to be aware of and to work with, not a punishment. Tap one dosha above for its full explanation and remedy.',
+                'ta' => 'தோஷம் என்பது தெரிந்துகொண்டு சமாளிக்க வேண்டிய அமைப்பே தவிர தண்டனை அல்ல. முழு விளக்கம் மற்றும் பரிகாரத்திற்கு மேலே ஒரு தோஷத்தை தேர்வு செய்யவும்.',
+                'hi' => 'दोष सजा नहीं, बल्कि जानकर संभालने वाली स्थिति है। पूरे विवरण और उपाय के लिए ऊपर कोई एक दोष चुनें।',
+            ]);
+            return $bubbles;
+        }
+
+        $d = $all[0];
+        $dName = (string) ($d['name'][$lang] ?? ($d['name']['en'] ?? ''));
+        $desc = (string) ($d['description'][$lang] ?? ($d['description']['en'] ?? ''));
+        $remedy = (string) ($d['remedy'][$lang] ?? ($d['remedy']['en'] ?? ''));
+        $first = $who . $dName . ' — ' . $verdict($d['present'] ?? null, $lang) . '.';
+        if ($desc !== '') {
+            $first .= "\n" . $desc;
+        }
+        $bubbles[] = $first;
+        if ($remedy !== '') {
+            $bubbles[] = self::t($lang, [
+                'en' => 'Traditional remedy from your report:',
+                'ta' => 'உங்கள் அறிக்கையிலிருந்து பாரம்பரிய பரிகாரம்:',
+                'hi' => 'आपकी रिपोर्ट का पारंपरिक उपाय:',
+            ]) . "\n" . $remedy;
+        }
+        return $bubbles;
+    }
+
+    /** The temple guidance behind the "Which temple should I visit?" option. */
+    private static function templeText(string $lang): string
+    {
+        $reg = json_decode((string) file_get_contents(self::kbFile('/knowledge/ai-astrologer/rules/remedies.json')), true) ?: [];
+        $offer = '';
+        foreach (($reg['universal'] ?? []) as $u) {
+            if (($u['id'] ?? '') === 'navagraha-sthalam') {
+                $offer = (string) ($u['offer'] ?? '');
+                break;
+            }
+        }
+        if ($offer === '') {
+            return '';
+        }
+        return self::t($lang, [
+            'en' => 'Temple guidance:',
+            'ta' => 'கோயில் வழிகாட்டல்:',
+            'hi' => 'मंदिर मार्गदर्शन:',
+        ]) . "\n" . $offer;
+    }
+
+    /**
+     * Fixed acknowledgement for complaint options. Complaints are never
+     * answered by rules — the endpoint has already queued the message for
+     * the human team before this text is shown.
+     */
+    private static function complaintAck(string $lang): string
+    {
+        return self::t($lang, [
+            'en' => 'Thank you — your message has been sent to our team. They will contact you shortly. The question list below is still here if you need anything else.',
+            'ta' => 'நன்றி — உங்கள் செய்தி எங்கள் குழுவுக்கு அனுப்பப்பட்டுள்ளது. அவர்கள் விரைவில் தொடர்பு கொள்வார்கள். வேறு ஏதேனும் தேவையென்றால் கீழே உள்ள கேள்விப் பட்டியல் இங்கேயே உள்ளது.',
+            'hi' => 'धन्यवाद — आपका संदेश हमारी टीम को भेज दिया गया है। वे जल्द ही संपर्क करेंगे। और कुछ चाहिए तो नीचे प्रश्न-सूची यहीं है।',
+        ]);
     }
 
     /** Re-runs retrieval scoped to one area (used when only an extra phrase matched). */

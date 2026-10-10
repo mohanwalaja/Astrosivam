@@ -24,6 +24,7 @@ class AstroAiProvider
     const LIFE_AREAS_PATH = '/knowledge/ai-astrologer/rules/life-areas.json';
     const REMEDIES_PATH = '/knowledge/ai-astrologer/rules/remedies.json';
     const SOURCES_PATH = '/knowledge/ai-astrologer/sources.json';
+    const GUIDED_PATH = '/knowledge/ai-astrologer/rules/guided-questions.json';
 
     private static $promptCache = null;
     private static $kbCache = [];
@@ -47,14 +48,15 @@ class AstroAiProvider
 
     /**
      * True when local replies can be built. Only a missing knowledge file
-     * or the required mbstring extension stops the chat.
+     * or the required mbstring extension stops the chat. The guided menu is
+     * included: customers cannot ask anything without it.
      */
     public static function canAnswer(): bool
     {
         if (!function_exists('mb_strlen')) {
             return false;
         }
-        foreach ([self::LIFE_AREAS_PATH, self::GUARDRAILS_PATH, self::REMEDIES_PATH, self::SOURCES_PATH] as $rel) {
+        foreach ([self::LIFE_AREAS_PATH, self::GUARDRAILS_PATH, self::REMEDIES_PATH, self::SOURCES_PATH, self::GUIDED_PATH] as $rel) {
             $path = self::kbPath($rel);
             if (!is_file($path)) {
                 return false;
@@ -682,6 +684,7 @@ class AstroAiProvider
             'lifeAreas' => self::LIFE_AREAS_PATH,
             'remedies' => self::REMEDIES_PATH,
             'sources' => self::SOURCES_PATH,
+            'guided' => self::GUIDED_PATH,
         ] as $id => $rel) {
             $path = self::kbPath($rel);
             $exists = is_file($path);
@@ -700,6 +703,15 @@ class AstroAiProvider
         $kb = self::kb(self::LIFE_AREAS_PATH);
         $add('lifeAreaCount', 'Curated question topics', count($kb['areas'] ?? []) > 0,
             count($kb['areas'] ?? []) . ' locally reviewed topic cards available.');
+
+        $guided = self::kb(self::GUIDED_PATH);
+        $guidedOptions = 0;
+        foreach (($guided['categories'] ?? []) as $category) {
+            $guidedOptions += count($category['questions'] ?? []);
+        }
+        $add('guidedOptions', 'Guided question menu', $guidedOptions > 0,
+            count($guided['categories'] ?? []) . ' categories with ' . $guidedOptions
+            . ' curated options available for customers to pick.');
 
         $stats = self::sourceRegistryStats();
         $levels = $stats['byVerification'];

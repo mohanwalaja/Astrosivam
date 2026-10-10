@@ -1,6 +1,13 @@
 /**
  * ASTRO SIVAM source-based astrologer — the customer/admin chat panel.
  *
+ * GUIDED MODE: customers never type a question. They pick a topic (the eight
+ * page-2 life cards, doshas, remedies, order facts, or complaint/help) and
+ * then one curated option, which the server answers from the customer's own
+ * chart and local rules. The only free text a customer can send is a short
+ * detail line on complaint options, which goes to the human team.
+ * Administrators keep a test input so they can evaluate the reply path.
+ *
  * Part 4 scope: the entry point, customer paid-gate handling and the history.
  * The typing choreography (status text for 2-4s, then three dots, then
  * 2-4 bubbles 1-2s apart, capped at 12s) is tuned in Part 5; the hooks it needs
@@ -11,12 +18,14 @@
  * source-based knowledge base; the panel never claims to be a person.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Bot, Send, RefreshCw, UserRound, X } from 'lucide-react';
+import { Bot, Send, RefreshCw, UserRound, X, ChevronLeft } from 'lucide-react';
 import {
   aiAstrologer,
   AiAstrologerError,
   type ChatLanguage,
   type ChatMessage,
+  type GuidedCategory,
+  type GuidedQuestion,
 } from '../../services/aiAstrologerApi';
 
 /**
@@ -43,9 +52,9 @@ const STATUS: Record<ChatLanguage, string> = {
 };
 
 const GREETING: Record<ChatLanguage, (name: string) => string> = {
-  en: (n) => `Hello ${n} — welcome to ASTRO SIVAM. Ask me about your chart or report; I will answer using our own astrology rules and references.`,
-  ta: (n) => `வணக்கம் ${n} — ASTRO SIVAM-க்கு வரவேற்கிறோம். உங்கள் ஜாதகம் அல்லது அறிக்கை பற்றி கேளுங்கள்; எங்கள் சொந்த ஜோதிட விதிகளையும் ஆதாரங்களையும் கொண்டு பதிலளிக்கிறேன்.`,
-  hi: (n) => `नमस्ते ${n} — ASTRO SIVAM में आपका स्वागत है। अपनी कुंडली या रिपोर्ट के बारे में पूछें; मैं हमारे अपने ज्योतिष नियमों और संदर्भों से उत्तर दूँगा।`,
+  en: (n) => `Hello ${n} — welcome to ASTRO SIVAM. Pick a topic below and I will answer from your chart using our own astrology rules and references.`,
+  ta: (n) => `வணக்கம் ${n} — ASTRO SIVAM-க்கு வரவேற்கிறோம். கீழே ஒரு தலைப்பை தேர்வு செய்யுங்கள்; உங்கள் ஜாதகத்தை வைத்து எங்கள் சொந்த ஜோதிட விதிகளால் பதிலளிக்கிறேன்.`,
+  hi: (n) => `नमस्ते ${n} — ASTRO SIVAM में आपका स्वागत है। नीचे कोई विषय चुनें; मैं आपकी कुंडली से हमारे अपने ज्योतिष नियमों द्वारा उत्तर दूँगा।`,
 };
 
 /** Display names for the report the customer just received, per language. */
@@ -58,12 +67,12 @@ const SERVICE_TITLE: Record<string, Record<ChatLanguage, string>> = {
 
 /**
  * Welcome for a customer whose report was just delivered. Names the report and
- * its order number, and opens the floor to chart AND order questions.
+ * its order number, and opens the guided topic list.
  */
 const ORDER_GREETING: Record<ChatLanguage, (name: string, service: string, orderNo: string) => string> = {
-  en: (n, s, o) => `Hello ${n} — your ${s} report (#${o}) has been delivered. Ask me about your chart or report; replies use our own astrology rules and references.`,
-  ta: (n, s, o) => `வணக்கம் ${n} — உங்கள் ${s} அறிக்கை (#${o}) அனுப்பப்பட்டுள்ளது. உங்கள் ஜாதகம் அல்லது அறிக்கை பற்றி கேளுங்கள்; எங்கள் சொந்த ஜோதிட விதிகளையும் ஆதாரங்களையும் கொண்டு பதிலளிக்கிறேன்.`,
-  hi: (n, s, o) => `नमस्ते ${n} — आपकी ${s} रिपोर्ट (#${o}) भेज दी गई है। अपनी कुंडली या रिपोर्ट के बारे में पूछें; उत्तर हमारे अपने ज्योतिष नियमों और संदर्भों पर आधारित होंगे।`,
+  en: (n, s, o) => `Hello ${n} — your ${s} report (#${o}) has been delivered. Pick a topic below and I will answer from your chart using our own astrology rules and references.`,
+  ta: (n, s, o) => `வணக்கம் ${n} — உங்கள் ${s} அறிக்கை (#${o}) அனுப்பப்பட்டுள்ளது. கீழே ஒரு தலைப்பை தேர்வு செய்யுங்கள்; உங்கள் ஜாதகத்தை வைத்து எங்கள் சொந்த ஜோதிட விதிகளால் பதிலளிக்கிறேன்.`,
+  hi: (n, s, o) => `नमस्ते ${n} — आपकी ${s} रिपोर्ट (#${o}) भेज दी गई है। नीचे कोई विषय चुनें; मैं आपकी कुंडली से हमारे अपने ज्योतिष नियमों द्वारा उत्तर दूँगा।`,
 };
 
 const RETRY_TEXT: Record<ChatLanguage, string> = {
@@ -78,6 +87,60 @@ const HANDOFF_LABEL: Record<ChatLanguage, string> = {
   hi: 'हमारे ज्योतिषी से बात करें',
 };
 
+const MENU_TITLE: Record<ChatLanguage, string> = {
+  en: 'Choose a topic',
+  ta: 'ஒரு தலைப்பை தேர்வு செய்யவும்',
+  hi: 'एक विषय चुनें',
+};
+
+const ALL_TOPICS: Record<ChatLanguage, string> = {
+  en: 'All topics',
+  ta: 'அனைத்து தலைப்புகள்',
+  hi: 'सभी विषय',
+};
+
+const DETAILS_PLACEHOLDER: Record<ChatLanguage, string> = {
+  en: 'Add a short detail for our team (optional)...',
+  ta: 'எங்கள் குழுவுக்கு சிறு விவரம் சேர்க்கவும் (விருப்பம்)...',
+  hi: 'हमारी टीम के लिए संक्षिप्त विवरण जोड़ें (वैकल्पिक)...',
+};
+
+const DETAILS_SEND: Record<ChatLanguage, string> = {
+  en: 'Send to our team',
+  ta: 'குழுவுக்கு அனுப்பவும்',
+  hi: 'टीम को भेजें',
+};
+
+const CANCEL_TEXT: Record<ChatLanguage, string> = {
+  en: 'Cancel',
+  ta: 'ரத்து',
+  hi: 'रद्द करें',
+};
+
+const MENU_LOADING: Record<ChatLanguage, string> = {
+  en: 'Loading the question list...',
+  ta: 'கேள்விப் பட்டியல் ஏறுகிறது...',
+  hi: 'प्रश्न-सूची लोड हो रही है...',
+};
+
+const MENU_FAILED: Record<ChatLanguage, string> = {
+  en: 'The question list is not available right now. Please close and reopen the chat.',
+  ta: 'கேள்விப் பட்டியல் இப்போது இல்லை. உரையாடலை மூடி மீண்டும் திறக்கவும்.',
+  hi: 'प्रश्न-सूची अभी उपलब्ध नहीं है। कृपया चैट बंद करके फिर खोलें।',
+};
+
+const ADMIN_TEST_LABEL: Record<ChatLanguage, string> = {
+  en: 'Admin test input (customers never see this)',
+  ta: 'நிர்வாகி சோதனை உள்ளீடு (வாடிக்கையாளர்கள் பார்க்க மாட்டார்கள்)',
+  hi: 'एडमिन परीक्षण इनपुट (ग्राहक इसे कभी नहीं देखते)',
+};
+
+const ADMIN_TEST_PLACEHOLDER: Record<ChatLanguage, string> = {
+  en: 'Type a test question...',
+  ta: 'சோதனை கேள்வியை எழுதவும்...',
+  hi: 'परीक्षण प्रश्न लिखें...',
+};
+
 interface Props {
   customerId: string;
   customerName: string;
@@ -89,6 +152,14 @@ interface Props {
   isAdmin?: boolean;
   onClose?: () => void;
 }
+
+/** Routing for the next send: a curated option id, or nothing for admin free text. */
+interface PendingAsk {
+  questionId: string | null;
+  complaintDetails: string;
+}
+
+const EMPTY_ASK: PendingAsk = { questionId: null, complaintDetails: '' };
 
 export default function AiAstrologerPanel({
   customerId,
@@ -108,6 +179,13 @@ export default function AiAstrologerPanel({
   const [failedQuestion, setFailedQuestion] = useState<string | null>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [sessionOrderLabel, setSessionOrderLabel] = useState<string | undefined>(orderLabel);
+  /** Guided menu state: the topic list, the open topic, and an option awaiting details. */
+  const [categories, setCategories] = useState<GuidedCategory[] | null>(null);
+  const [menuFailed, setMenuFailed] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [pendingOption, setPendingOption] = useState<GuidedQuestion | null>(null);
+  const pendingAsk = useRef<PendingAsk>(EMPTY_ASK);
+  const failedAsk = useRef<PendingAsk | null>(null);
   const timers = useRef<number[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -120,8 +198,9 @@ export default function AiAstrologerPanel({
     timers.current = [];
   };
 
-  // Open (or rejoin) a session, then load history. A failed session open is not
-  // recoverable in the UI, so it is surfaced plainly rather than silently.
+  // Open (or rejoin) a session, then load history and the guided menu. A
+  // failed session open is not recoverable in the UI, so it is surfaced
+  // plainly rather than silently.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -147,6 +226,12 @@ export default function AiAstrologerPanel({
         }
         const u = await aiAstrologer.usage();
         if (!cancelled) setRemaining(u.remaining);
+        try {
+          const menu = await aiAstrologer.options(language);
+          if (!cancelled) setCategories(menu.categories);
+        } catch {
+          if (!cancelled) setMenuFailed(true);
+        }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Could not open the chat.');
       }
@@ -165,11 +250,15 @@ export default function AiAstrologerPanel({
 
   const send = async (text: string) => {
     const question = text.trim();
+    const ask = pendingAsk.current;
     if (!question || !sessionId || phase !== 'idle') return;
+    // Customers always send a curated option; only admins may send free text.
+    if (!ask.questionId && !isAdmin) return;
 
     setInput('');
     setError(null);
     setFailedQuestion(null);
+    failedAsk.current = null;
     push({ role: 'customer', language, content: question });
     setPhase('status');
 
@@ -184,7 +273,13 @@ export default function AiAstrologerPanel({
     );
 
     try {
-      const reply = await aiAstrologer.ask(sessionId, question, language);
+      const reply = await aiAstrologer.ask(
+        sessionId,
+        ask.questionId
+          ? { questionId: ask.questionId, ...(ask.complaintDetails ? { complaintDetails: ask.complaintDetails } : {}) }
+          : { question },
+        language,
+      );
       clearTimers();
 
       const bubbles = reply.bubbles?.length ? reply.bubbles : [reply.content];
@@ -212,6 +307,7 @@ export default function AiAstrologerPanel({
     } catch (e) {
       clearTimers();
       setFailedQuestion(question);
+      failedAsk.current = ask;
       const err = e as AiAstrologerError;
       if (err.status === 403) {
         setError(language === 'ta' ? err.messageTa : language === 'hi' ? err.messageHi : err.message);
@@ -245,6 +341,8 @@ export default function AiAstrologerPanel({
     setError(null);
     setFailedQuestion(null);
     if (!question) return;
+    pendingAsk.current = failedAsk.current ?? EMPTY_ASK;
+    failedAsk.current = null;
     setMessages((prev) => {
       for (let i = prev.length - 1; i >= 0; i--) {
         if (prev[i].role === 'customer') return [...prev.slice(0, i), ...prev.slice(i + 1)];
@@ -271,6 +369,39 @@ export default function AiAstrologerPanel({
       setError(e instanceof Error ? e.message : 'Could not send that.');
     }
   };
+
+  /** A menu option was tapped: options that need details open the detail box, the rest send at once. */
+  const tapOption = (option: GuidedQuestion) => {
+    if (phase !== 'idle' || !sessionId) return;
+    if (option.needsDetails) {
+      setPendingOption(option);
+      setInput('');
+      setError(null);
+      return;
+    }
+    pendingAsk.current = { questionId: option.id, complaintDetails: '' };
+    void send(option.text);
+  };
+
+  /** Sends a complaint/support option together with its optional detail line. */
+  const sendPendingOption = () => {
+    if (!pendingOption || phase !== 'idle' || !sessionId) return;
+    const details = input.trim();
+    pendingAsk.current = { questionId: pendingOption.id, complaintDetails: details };
+    const display = details ? `${pendingOption.text}\n${details}` : pendingOption.text;
+    setPendingOption(null);
+    void send(display);
+  };
+
+  /** Admin-only free-text test question. Customers never see this box. */
+  const sendAdminTest = () => {
+    if (!isAdmin || phase !== 'idle' || !sessionId || !input.trim()) return;
+    pendingAsk.current = EMPTY_ASK;
+    void send(input);
+  };
+
+  const openCategory = activeCategory ? (categories ?? []).find((c) => c.id === activeCategory) ?? null : null;
+  const menuBusy = phase !== 'idle' || !sessionId;
 
   return (
     <div className="flex flex-col h-[600px] max-h-[80vh] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xl">
@@ -348,30 +479,123 @@ export default function AiAstrologerPanel({
         {DISCLAIMER[language]}
       </div>
 
-      <div className="p-3 border-t border-slate-200 dark:border-slate-800 shrink-0">
-        <div className="flex items-end gap-2">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                void send(input);
-              }
-            }}
-            rows={1}
-            maxLength={2000}
-            placeholder={language === 'ta' ? 'உங்கள் கேள்வியை இங்கே எழுதுங்கள்...' : language === 'hi' ? 'अपना प्रश्न यहाँ लिखें...' : 'Ask about your chart...'}
-            className="flex-1 resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-          />
-          <button
-            onClick={() => void send(input)}
-            disabled={phase !== 'idle' || !input.trim() || !sessionId}
-            className="p-2.5 rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-400 disabled:opacity-40 cursor-pointer"
-          >
-            <Send className="w-4 h-4" />
-          </button>
-        </div>
+      {/* Guided menu: topics, then the options of the open topic. Customers
+          never get a free question box; complaint options get one short
+          detail line for the human team. */}
+      <div className="p-3 border-t border-slate-200 dark:border-slate-800 shrink-0 max-h-[38%] overflow-y-auto">
+        {pendingOption ? (
+          <div className="space-y-2">
+            <div className="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-snug">
+              {pendingOption.text}
+            </div>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows={2}
+              maxLength={500}
+              placeholder={DETAILS_PLACEHOLDER[language]}
+              className="w-full resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={sendPendingOption}
+                disabled={menuBusy}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 text-slate-950 text-sm font-bold hover:bg-amber-400 disabled:opacity-40 cursor-pointer"
+              >
+                <Send className="w-4 h-4" /> {DETAILS_SEND[language]}
+              </button>
+              <button
+                onClick={() => { setPendingOption(null); setInput(''); }}
+                disabled={menuBusy}
+                className="px-3 py-2 rounded-xl text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 disabled:opacity-40 cursor-pointer"
+              >
+                {CANCEL_TEXT[language]}
+              </button>
+            </div>
+          </div>
+        ) : openCategory ? (
+          <div className="space-y-2">
+            <button
+              onClick={() => setActiveCategory(null)}
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-amber-600 cursor-pointer"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> {ALL_TOPICS[language]}
+            </button>
+            <div className="text-xs font-bold text-slate-700 dark:text-slate-200">
+              {openCategory.icon} {openCategory.title}
+            </div>
+            <div className="space-y-1.5">
+              {openCategory.questions.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => tapOption(q)}
+                  disabled={menuBusy}
+                  className="w-full text-left px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-[13px] font-medium text-slate-800 dark:text-slate-100 hover:border-amber-500/60 hover:bg-amber-50 dark:hover:bg-amber-500/10 disabled:opacity-40 cursor-pointer"
+                >
+                  {q.text}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : categories ? (
+          <div className="space-y-2">
+            <div className="text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+              {MENU_TITLE[language]}
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setActiveCategory(c.id)}
+                  disabled={menuBusy}
+                  title={c.hint}
+                  className="flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-amber-500/60 hover:bg-amber-50 dark:hover:bg-amber-500/10 disabled:opacity-40 cursor-pointer"
+                >
+                  <span className="text-xl leading-none">{c.icon}</span>
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200 leading-tight text-center">
+                    {c.title}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : menuFailed ? (
+          <div className="text-xs text-rose-600 dark:text-rose-300 text-center py-2">{MENU_FAILED[language]}</div>
+        ) : (
+          <div className="text-xs text-slate-500 dark:text-slate-400 italic text-center py-2">{MENU_LOADING[language]}</div>
+        )}
+
+        {isAdmin && !pendingOption && (
+          <div className="mt-3 pt-2 border-t border-dashed border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+              {ADMIN_TEST_LABEL[language]}
+            </div>
+            <div className="flex items-end gap-2">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendAdminTest();
+                  }
+                }}
+                rows={1}
+                maxLength={2000}
+                placeholder={ADMIN_TEST_PLACEHOLDER[language]}
+                className="flex-1 resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+              />
+              <button
+                onClick={sendAdminTest}
+                disabled={menuBusy || !input.trim() || !sessionId}
+                className="p-2.5 rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-400 disabled:opacity-40 cursor-pointer"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={handoff}
           className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 hover:text-amber-600 cursor-pointer"

@@ -16,6 +16,28 @@ const ENDPOINT = `${API_BASE}/ai_astrologer.php`;
 export type ChatLanguage = 'en' | 'ta' | 'hi';
 export type MessageRole = 'customer' | 'assistant' | 'system' | 'handoff';
 
+/**
+ * GUIDED MODE — one curated question option. Customers pick an option id;
+ * they never type a question. Only complaint options with `needsDetails`
+ * accept a short detail line, which is queued to the human team.
+ */
+export type GuidedKind = 'area' | 'dosha' | 'remedy' | 'order' | 'complaint';
+
+export interface GuidedQuestion {
+  id: string;
+  kind: GuidedKind;
+  text: string;
+  needsDetails: boolean;
+}
+
+export interface GuidedCategory {
+  id: string;
+  icon: string;
+  title: string;
+  hint: string;
+  questions: GuidedQuestion[];
+}
+
 export interface ChatMessage {
   id: number;
   role: MessageRole;
@@ -125,14 +147,28 @@ export const aiAstrologer = {
     return call('history', { sessionId }, 'GET');
   },
 
-  async ask(sessionId: string, question: string, language: ChatLanguage): Promise<{
+  /** The guided menu: categories with curated options in the customer's language. */
+  async options(language: ChatLanguage): Promise<{
+    language: ChatLanguage; categories: GuidedCategory[];
+  }> {
+    return call('options', { language }, 'GET');
+  },
+
+  /**
+   * Sends one picked option. `questionId` is the curated option id;
+   * `complaintDetails` is the optional short line on complaint options.
+   * `question` (free text) is accepted from administrator sessions only.
+   */
+  async ask(sessionId: string, input: { questionId?: string; question?: string; complaintDetails?: string }, language: ChatLanguage): Promise<{
     messageId: number; content: string; bubbles: string[]; sources: string;
     areaId: string | null; handoff: boolean; latencyMs: number;
     remainingToday: number | null; unlimited: boolean;
+    /** The curated option id the server answered, when one was sent. */
+    guidedId?: string | null;
     /** True when the question was forwarded to the admin escalation queue. */
     escalated?: boolean;
   }> {
-    return call('ask', { sessionId, question, language }, 'POST', ASK_TIMEOUT_MS);
+    return call('ask', { sessionId, ...input, language }, 'POST', ASK_TIMEOUT_MS);
   },
 
   async usage(): Promise<{

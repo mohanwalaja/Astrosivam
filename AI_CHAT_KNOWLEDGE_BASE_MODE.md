@@ -9,6 +9,7 @@ The customer chat is now local-only. It does not use an API key, external AI ser
 | Customer's eligible report and chart rebuilt from saved order inputs | Personal chart facts and the report's per-area readings |
 | `knowledge/ai-astrologer/rules/life-areas.json` | Reviewed astrology rules, matched against chart facts, with practical steps and references |
 | `knowledge/ai-astrologer/rules/remedies.json` | The allowed local remedy suggestions |
+| `knowledge/ai-astrologer/rules/guided-questions.json` | The curated option menu (12 topics, 49 questions in en/ta/hi); customers tap options instead of typing free questions |
 | `knowledge/ai-astrologer/rules/guardrails.json` | Safety/refusal routes, medical caution, and wording limits |
 | `knowledge/ai-astrologer/sources.json` | Citation eligibility/metadata for references used by reviewed rules; not a full-text search index |
 
@@ -16,11 +17,14 @@ The source registry has 224 catalogue records, but only 11 are marked `content-r
 
 ## How a question is handled
 
-1. Fixed refusal/safety routes are checked first.
-2. Greetings and supported question areas are matched using curated phrases and rules.
-3. If a chart is attached, rule conditions use chart facts rebuilt from the customer's saved order; otherwise chart-dependent rules do not fire.
-4. Relevant report readings, reviewed rules, and/or allowed remedies are assembled into a short reply and checked by the local output guard.
-5. Unsupported questions receive an honest limitation and can be sent to a human astrologer.
+Customers do not type their own questions. The panel shows the guided menu from `guided-questions.json` (life areas mirroring Birth Jathagam page 2, doshas, remedies, order help, complaint), and each tap sends a curated option id that the endpoint resolves server-side. A free-text box exists only for administrators testing the legacy wording path.
+
+1. Guided option ids resolve to a fixed route (life area, dosha, remedy, order facts, complaint); unknown ids are rejected.
+2. Fixed refusal/safety routes are checked first.
+3. Legacy wording (admin testing) matches greetings and supported question areas using curated phrases and rules; anything else is refused rather than guessed.
+4. If a chart is attached, rule conditions use chart facts rebuilt from the customer's saved order; otherwise chart-dependent rules do not fire.
+5. Relevant report readings, reviewed rules, and/or allowed remedies are assembled into a short reply and checked by the local output guard.
+6. Complaints and correction requests are acknowledged and queued for the team via the escalation queue.
 
 This is rule matching, not open-ended model understanding. A topic outside the reviewed local data should not be guessed.
 
