@@ -236,6 +236,23 @@ Each was added only after its page was opened. The new rows keep the registry le
 | TA-32 | **ஜோதிட புத்தகம்** (author not catalogued) | [20200421_20200421_1209](https://archive.org/details/20200421_20200421_1209) | General Tamil astrology reference; OCR unreliable, book-level only | metadata-verified |
 | TA-33 | **தமிழ்நவரசம் ஜோதிட நூல்கள்** (listing page) | [tamilnavarasam.in](https://tamilnavarasam.in/astrologybook.aspx) | Lead list only. The PDFs are not opened, so this is NOT citable | linked-not-opened |
 
+### 3l. Added 2026-10-10 - Tamil Digital Library catalogue batch (10)
+
+Catalogue-verified via the Archive.org advancedsearch API (identifier, title, language). Book-level citation only; no body text read.
+
+| ID | நூல் / Title | URL | Useful for | Verified |
+|---|---|---|---|---|
+| TA-34 | **சோதிடம்** | [tdl.3332-cootittm](https://archive.org/details/tdl.3332-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-35 | **சோதிடம்** | [tdl.3400-cootittm](https://archive.org/details/tdl.3400-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-36 | **சோதிடம்** | [tdl.2481-cootittm](https://archive.org/details/tdl.2481-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-37 | **சோதிடம்** | [tdl.5071-cootittm](https://archive.org/details/tdl.5071-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-38 | **சோதிடம்** | [tdl.3526-cootittm](https://archive.org/details/tdl.3526-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-39 | **சோதிடம்** | [tdl.tdl_0a0ced-cootittm](https://archive.org/details/tdl.tdl_0a0ced-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-40 | **சோதிடம்** | [tdl.tdl_606b02-cootittm](https://archive.org/details/tdl.tdl_606b02-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-41 | **சோதிடம்** | [tdl.tdl_e15980-cootittm](https://archive.org/details/tdl.tdl_e15980-cootittm) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-42 | **நூல் - சோதிட ஆராய்ச்சி : சோதிடப் புறட்டு பாட்டுகளும் சேர்ந்தது** | [tdl.41069-nuul-cootitt-aaraaycci-cootittp-purrttttu-paattttukllum-ceernttu](https://archive.org/details/tdl.41069-nuul-cootitt-aaraaycci-cootittp-purrttttu-paattttukllum-ceernttu) | Tamil sothidam text; book-level citation only | metadata-verified |
+| TA-43 | **நூல் - உலோககுரு ஆதி சங்கராச்சாரிய சுவாமிகள் சோதிடம் பன்னீராயிரத்தில் சகோதரபாவகம்** | [tdl.21938-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-c](https://archive.org/details/tdl.21938-nuul-ulookkuru-aati-cngkraaccaariy-cuvaamikll-cootittm-pnnnnnniiraayirttil-c) | Tamil sothidam text; book-level citation only | metadata-verified |
+
 ## 4. நவக்கிரக ஸ்தலங்கள் — Navagraha temple remedies (12)
 
 Mapping **content-read** from TP-01:
