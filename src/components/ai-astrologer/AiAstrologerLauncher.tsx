@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Sparkles, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { aiAstrologer, type ChatLanguage } from '../../services/aiAstrologerApi';
 import AiAstrologerPanel from './AiAstrologerPanel';
 
 /**
  * Site-wide AI Astrologer launcher, replacing the retired canned support chat.
- * Customers only see it while the server confirms a recently delivered paid
- * report. Administrators always see it while signed in.
+ * Customers only see it while the server confirms a recently delivered report
+ * (paid or free-beta first report). Administrators always see it while signed
+ * in.
  */
 export const AiAstrologerLauncher: React.FC = () => {
   const { user, isAdmin } = useAuth();
+  const { language: appLanguage } = useLanguage();
   const [isAvailable, setIsAvailable] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -59,7 +62,11 @@ export const AiAstrologerLauncher: React.FC = () => {
 
   if (!user?.id || !isAvailable) return null;
 
-  const language: ChatLanguage = isAdmin ? 'en' : (user.country === 'India' ? 'hi' : 'ta');
+  // The chat follows the site's language picker (English / Tamil / Hindi), so
+  // customers and admins get the language they chose for the whole site. The
+  // server keeps its country-based default (India -> hi, else ta) only as a
+  // fallback for clients that create a session without sending a language.
+  const language: ChatLanguage = appLanguage;
 
   return (
     <>

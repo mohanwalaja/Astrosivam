@@ -81,6 +81,8 @@ export const aiAstrologer = {
   /** Opens a conversation. Pass orderId to bind it to a specific report. */
   async createSession(opts: { orderId?: string; language?: ChatLanguage } = {}): Promise<{
     sessionId: string; language: ChatLanguage; orderNumber: string | null; serviceType: string | null;
+    /** When the bound report was emailed (ISO string), for the welcome greeting. */
+    deliveredAt: string | null;
     dailyLimit: number | null; unlimited: boolean;
   }> {
     return call('session', opts);
@@ -94,6 +96,8 @@ export const aiAstrologer = {
     messageId: number; content: string; bubbles: string[]; sources: string;
     areaId: string | null; handoff: boolean; latencyMs: number;
     remainingToday: number | null; unlimited: boolean;
+    /** True when the question was forwarded to the admin escalation queue. */
+    escalated?: boolean;
   }> {
     return call('ask', { sessionId, question, language });
   },

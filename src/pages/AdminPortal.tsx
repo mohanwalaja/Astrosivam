@@ -57,7 +57,7 @@ import { describeFamilyRenderQuality } from '../services/formatUtils';
 // The simplified Surya + Chandra mark stays legible at avatar sizes; the full
 // 12-rasi emblem is used for the large brand moments (Navbar / Login / Footer).
 import logoImg from '../assets/astrosivam_appicon.png';
-import { Order, OrderItem, AppSettings, AdminStats, TeamMember, ContactMessage, BannedIpEntry } from '../types';
+import { Order, OrderItem, AppSettings, AdminStats, TeamMember, ContactMessage, BannedIpEntry, AiChatHandoff } from '../types';
 import { OrderReportModal } from '../components/common/OrderReportModal';
 import { LivePdfPreviewModal } from '../components/common/LivePdfPreviewModal';
 import { AdminLogin } from '../components/admin/AdminLogin';
@@ -151,8 +151,43 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
     setExpandedGroupIds(prev => ({ ...prev, [groupId]: !prev[groupId] }));
 
   const [activeSection, setActiveSection] = useState<
-    'orders' | 'analytics' | 'financial' | 'payments' | 'emails' | 'alerts' | 'database' | 'checklist' | 'messages' | 'team' | 'settings' | 'users' | 'logs' | 'google' | 'security' | 'errors'
+    'orders' | 'analytics' | 'financial' | 'payments' | 'emails' | 'alerts' | 'database' | 'checklist' | 'messages' | 'team' | 'settings' | 'users' | 'logs' | 'google' | 'security' | 'errors' | 'escalations'
   >('orders');
+
+  // AI Astrologer escalation queue: complaints forwarded from the AI chat and
+  // "Talk to our astrologer" handoffs waiting for a human reply.
+  const [aiHandoffs, setAiHandoffs] = useState<AiChatHandoff[]>([]);
+  const [aiHandoffNotes, setAiHandoffNotes] = useState<Record<number, string>>({});
+  const [aiHandoffBusy, setAiHandoffBusy] = useState<number | null>(null);
+
+  const loadAiHandoffs = async () => {
+    try {
+      const res = await api.getAiHandoffs();
+      if (res.success && Array.isArray(res.handoffs)) setAiHandoffs(res.handoffs);
+    } catch {
+      // The queue is best-effort on the admin screen; a fetch failure must not
+      // break the rest of the portal.
+    }
+  };
+
+  useEffect(() => {
+    loadAiHandoffs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const updateAiHandoff = async (id: number, status: 'NEW' | 'ACKNOWLEDGED' | 'RESOLVED') => {
+    setAiHandoffBusy(id);
+    try {
+      const notes = (aiHandoffNotes[id] || '').trim();
+      const res = await api.updateAiHandoff(id, status, notes || undefined);
+      if (res.success) {
+        setAiHandoffNotes((prev) => { const next = { ...prev }; delete next[id]; return next; });
+        await loadAiHandoffs();
+      }
+    } finally {
+      setAiHandoffBusy(null);
+    }
+  };
   const [filterStatus, setFilterStatus] = useState<string>('PENDING');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -1674,6 +1709,25 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
         >
           <FileText className="w-3.5 h-3.5" />
           <span>Orders & Approvals ({orders.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSection('escalations')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            activeSection === 'escalations'
+              ? 'bg-purple-600 text-white shadow-sm'
+              : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+          <span>
+            AI Chat Escalations
+            {aiHandoffs.filter((h) => h.status === 'NEW').length > 0 && (
+              <span className="ml-1 text-[10px] bg-rose-500 text-white rounded-full px-1.5 py-0.5">
+                {aiHandoffs.filter((h) => h.status === 'NEW').length} new
+              </span>
+            )}
+          </span>
         </button>
 
         <button
@@ -3782,6 +3836,123 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
       )}
 
       {/* SECTION: CONTACT INQUIRIES & MESSAGES */}
+      {activeSection === 'escalations' && (
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-rose-400" />
+                <span>AI Astrologer Escalations ({aiHandoffs.length})</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Customer complaints forwarded automatically from the AI Astrologer chat, plus &quot;Talk to our
+                astrologer&quot; handoffs. Reply to the customer directly by email or phone, then update the status.
+              </p>
+            </div>
+            <button
+              onClick={loadAiHandoffs}
+              className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-1.5 self-start sm:self-auto"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Refresh
+            </button>
+          </div>
+
+          {aiHandoffs.length === 0 ? (
+            <div className="text-center py-12 text-slate-400 space-y-2">
+              <Sparkles className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700" />
+              <p className="text-sm font-semibold">No escalations yet</p>
+              <p className="text-xs text-slate-500">
+                When a customer complains in the AI chat or asks for a human astrologer, the message lands in this queue.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {aiHandoffs.map((h) => (
+                <div
+                  key={h.id}
+                  className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-3 shadow-xs"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-700/60 pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center font-bold text-sm">
+                        {(h.user_name || '?').charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
+                          <span>{h.user_name}</span>
+                          <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                            h.status === 'NEW'
+                              ? 'bg-rose-500/20 text-rose-500 border border-rose-500/30'
+                              : h.status === 'ACKNOWLEDGED'
+                              ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
+                              : 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30'
+                          }`}>
+                            {h.status}
+                          </span>
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-500 border border-purple-500/30 uppercase">
+                            {h.reason}
+                          </span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200/70 dark:bg-slate-700 text-slate-600 dark:text-slate-300 uppercase">
+                            {h.language}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {[h.user_email, h.user_mobile, h.order_number ? `Order #${h.order_number}` : null]
+                            .filter(Boolean)
+                            .join(' · ') || 'No contact details'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-[11px] text-slate-400 whitespace-nowrap">
+                      {new Date(h.created_at).toLocaleString()}
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+                    {h.question}
+                  </p>
+
+                  {h.admin_notes && (
+                    <p className="text-xs text-slate-500 italic">Admin notes: {h.admin_notes}</p>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <textarea
+                      rows={1}
+                      value={aiHandoffNotes[h.id] || ''}
+                      onChange={(e) => setAiHandoffNotes((prev) => ({ ...prev, [h.id]: e.target.value }))}
+                      placeholder="Add a note (optional) — saved when you change the status"
+                      className="flex-1 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-slate-700 dark:text-slate-200 resize-y"
+                    />
+                    <div className="flex gap-2 shrink-0">
+                      {h.status === 'NEW' && (
+                        <button
+                          disabled={aiHandoffBusy === h.id}
+                          onClick={() => updateAiHandoff(h.id, 'ACKNOWLEDGED')}
+                          className="px-3 py-2 rounded-lg bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 disabled:opacity-50"
+                        >
+                          Acknowledge
+                        </button>
+                      )}
+                      {h.status !== 'RESOLVED' && (
+                        <button
+                          disabled={aiHandoffBusy === h.id}
+                          onClick={() => updateAiHandoff(h.id, 'RESOLVED')}
+                          className="px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 disabled:opacity-50"
+                        >
+                          Mark Resolved
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {activeSection === 'messages' && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">

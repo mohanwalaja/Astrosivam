@@ -1,8 +1,8 @@
 /**
  * ASTRO SIVAM AI Astrologer — the customer/admin chat panel.
  *
- * Part 4 scope: the entry point, customer paid-gate handling, the history and the
- * upload. The typing choreography (status text for 2-4s, then three dots, then
+ * Part 4 scope: the entry point, customer paid-gate handling and the history.
+ * The typing choreography (status text for 2-4s, then three dots, then
  * 2-4 bubbles 1-2s apart, capped at 12s) is tuned in Part 5; the hooks it needs
  * are already here as TIMING constants so the tuning is a numbers change, not a
  * rewrite.
@@ -11,7 +11,7 @@
  * to be a person - both are hard requirements.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Bot, Send, Paperclip, RefreshCw, UserRound, X } from 'lucide-react';
+import { Bot, Send, RefreshCw, UserRound, X } from 'lucide-react';
 import {
   aiAstrologer,
   AiAstrologerError,
@@ -43,9 +43,27 @@ const STATUS: Record<ChatLanguage, string> = {
 };
 
 const GREETING: Record<ChatLanguage, (name: string) => string> = {
-  en: (n) => `Hello ${n} — I am the ASTRO SIVAM AI Astrologer. Ask me anything about your chart, or upload the report we prepared for you and I will explain any part of it.`,
-  ta: (n) => `வணக்கம் ${n} — நான் ASTRO SIVAM AI ஜோதிடர். உங்கள் ஜாதகத்தை பற்றி எதுவும் கேளுங்கள், அல்லது நாங்கள் தயாரித்த அறிக்கையை இணையுங்கள்; அதன் எந்த பகுதியையும் விளக்குகிறேன்.`,
-  hi: (n) => `नमस्ते ${n} — मैं ASTRO SIVAM AI ज्योतिषी हूँ। अपनी कुंडली के बारे में कुछ भी पूछें, या हमारी बनाई रिपोर्ट जोड़ें और मैं उसका हर हिस्सा समझाऊँगा।`,
+  en: (n) => `Hello ${n} — I am the ASTRO SIVAM AI Astrologer. Ask me anything about your chart or your report, and I will explain it.`,
+  ta: (n) => `வணக்கம் ${n} — நான் ASTRO SIVAM AI ஜோதிடர். உங்கள் ஜாதகம் அல்லது அறிக்கை பற்றி எதுவும் கேளுங்கள் — நான் விளக்குகிறேன்.`,
+  hi: (n) => `नमस्ते ${n} — मैं ASTRO SIVAM AI ज्योतिषी हूँ। अपनी कुंडली या रिपोर्ट के बारे में कुछ भी पूछें — मैं हर हिस्सा समझाऊँगा।`,
+};
+
+/** Display names for the report the customer just received, per language. */
+const SERVICE_TITLE: Record<string, Record<ChatLanguage, string>> = {
+  BIRTH_JATHAGAM: { en: 'Birth Jathagam', ta: 'ஜன்ம ஜாதக', hi: 'जन्म कुंडली' },
+  MARRIAGE_COMPATIBILITY: { en: 'Marriage Compatibility', ta: 'திருமண பொருத்த', hi: 'विवाह मिलान' },
+  BABY_NAMING: { en: 'Baby Naming', ta: 'குழந்தை பெயர்', hi: 'नामकरण' },
+  MUHURTHAM: { en: 'Muhurtham', ta: 'முகூர்த்த', hi: 'मुहूर्त' },
+};
+
+/**
+ * Welcome for a customer whose report was just delivered. Names the report and
+ * its order number, and opens the floor to chart AND order questions.
+ */
+const ORDER_GREETING: Record<ChatLanguage, (name: string, service: string, orderNo: string) => string> = {
+  en: (n, s, o) => `Hello ${n} — thank you for your order. Your ${s} report (#${o}) has been delivered to your email. Ask me anything about your chart or your order — I am here to help.`,
+  ta: (n, s, o) => `வணக்கம் ${n} — உங்கள் ஆர்டருக்கு நன்றி. உங்கள் ${s} அறிக்கை (#${o}) உங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்டுள்ளது. உங்கள் ஜாதகம் அல்லது ஆர்டர் பற்றி எதுவும் கேளுங்கள் — நான் உதவ தயாராக இருக்கிறேன்.`,
+  hi: (n, s, o) => `नमस्ते ${n} — आपके ऑर्डर के लिए धन्यवाद। आपकी ${s} रिपोर्ट (#${o}) आपके ईमेल पर भेज दी गई है। अपनी कुंडली या ऑर्डर के बारे में कुछ भी पूछें — मैं मदद के लिए यहाँ हूँ।`,
 };
 
 const RETRY_TEXT: Record<ChatLanguage, string> = {
@@ -88,8 +106,6 @@ export default function AiAstrologerPanel({
   const [error, setError] = useState<string | null>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [sessionOrderLabel, setSessionOrderLabel] = useState<string | undefined>(orderLabel);
-  const [uploading, setUploading] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
   const timers = useRef<number[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -116,7 +132,16 @@ export default function AiAstrologerPanel({
         if (cancelled) return;
         setMessages(h.messages);
         if (h.messages.length === 0) {
-          push({ role: 'system', language, content: GREETING[language](customerName) });
+          // A delivered report gets a welcome that names it; anything else
+          // (admins, report-less sessions) gets the general greeting.
+          const serviceTitle = s.serviceType ? (SERVICE_TITLE[s.serviceType]?.[language] ?? s.serviceType) : null;
+          push({
+            role: 'system',
+            language,
+            content: s.orderNumber && serviceTitle
+              ? ORDER_GREETING[language](customerName, serviceTitle, s.orderNumber)
+              : GREETING[language](customerName),
+          });
         }
         const u = await aiAstrologer.usage();
         if (!cancelled) setRemaining(u.remaining);
@@ -193,31 +218,6 @@ export default function AiAstrologerPanel({
       } else {
         setError(RETRY_TEXT[language]);
       }
-    }
-  };
-
-  const onUpload = async (file: File) => {
-    if (!sessionId) return;
-    setUploading(true);
-    setError(null);
-    try {
-      const r = await aiAstrologer.uploadReport(sessionId, file);
-      push({
-        role: 'system',
-        language,
-        content: language === 'ta'
-          ? `அறிக்கை இணைக்கப்பட்டது (#${r.orderNumber}). எந்த பகுதியை விளக்க வேண்டும்?`
-          : language === 'hi'
-            ? `रिपोर्ट जुड़ गई (#${r.orderNumber})। कौन सा हिस्सा समझाऊँ?`
-            : `Report attached (#${r.orderNumber}). Which part would you like me to explain?`,
-      });
-    } catch (e) {
-      const err = e as AiAstrologerError;
-      const localized = language === 'ta' ? err.messageTa : language === 'hi' ? err.messageHi : null;
-      push({ role: 'system', language, content: localized || err.message });
-    } finally {
-      setUploading(false);
-      if (fileRef.current) fileRef.current.value = '';
     }
   };
 
@@ -317,21 +317,6 @@ export default function AiAstrologerPanel({
 
       <div className="p-3 border-t border-slate-200 dark:border-slate-800 shrink-0">
         <div className="flex items-end gap-2">
-          <input
-            ref={fileRef}
-            type="file"
-            accept="application/pdf"
-            className="hidden"
-            onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])}
-          />
-          <button
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading || !sessionId}
-            title="Upload your ASTRO SIVAM report"
-            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 cursor-pointer"
-          >
-            <Paperclip className="w-4 h-4" />
-          </button>
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}

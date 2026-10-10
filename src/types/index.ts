@@ -563,6 +563,24 @@ export interface AuditLog {
   details: string;
 }
 
+/** One customer complaint / "talk to our astrologer" escalation from the AI chat queue. */
+export interface AiChatHandoff {
+  id: number;
+  session_id: string | null;
+  user_id: string;
+  user_name: string;
+  user_email: string | null;
+  user_mobile: string | null;
+  language: string;
+  question: string;
+  reason: string;
+  order_number: string | null;
+  status: 'NEW' | 'ACKNOWLEDGED' | 'RESOLVED';
+  admin_notes: string | null;
+  resolved_at: string | null;
+  created_at: string;
+}
+
 export interface Statistics {
   totalOrders: number;
   completedOrders: number;

@@ -89,7 +89,8 @@ check('the paid-order gate is strict for customers and admins bypass it by datab
   );
   assert.match(entitlement, /NO_PAID_ORDER/, 'customers must receive a distinct refusal code');
   assert.match(entitlement, /payment_confirmed\s*=\s*1/, 'customers must require confirmed payment');
-  assert.match(entitlement, /service_mode <> 'FREE_BETA'/, 'free beta orders must not qualify');
+  assert.doesNotMatch(entitlement, /FREE_BETA/,
+    'free-beta first reports must qualify for chat exactly like paid orders');
   assert.match(entitlement, /status IN \('COMPLETED', 'PROCESSING'\)/, 'must restrict to real statuses');
   assert.match(entitlement, /refund_status/, 'a refunded order must not qualify');
   assert.match(entitlement, /email_status = 'SENT'/, 'chat access must wait for successful email delivery');
@@ -236,13 +237,26 @@ check('the endpoint only calls functions that exist somewhere in api/', () => {
     if (!fs.existsSync(path.join(root, f))) {
       assert.fail(`endpoint requires a file that does not exist: ${f}`);
     }
+    // Nested requires must resolve too. A broken path inside a required file
+    // (say api/astrology/ requiring '/config.php' instead of '/../config.php')
+    // fatals the endpoint with an empty HTTP 500 exactly like a broken
+    // top-level require would, so it belongs to the same class of bug.
+    // Column-0 requires only: indented ones are guarded runtime includes
+    // (e.g. engine.php's optional vendor/autoload.php behind is_file()).
+    for (const m of read(f).matchAll(/^require(?:_once)? __DIR__ \. '([^']+)'/gm)) {
+      const nested = path.posix.normalize(path.posix.join(path.posix.dirname(f), m[1]));
+      assert.ok(
+        fs.existsSync(path.join(root, nested)),
+        `${f} requires a file that does not exist: ${nested}`
+      );
+    }
     for (const m of read(f).matchAll(/function\s+([a-z_][a-z0-9_]*)\s*\(/g)) available.add(m[1]);
   }
 
   const builtins = new Set(`if foreach for while switch catch function return use array_map array_filter
     define strtotime ceil gmdate time error_log is_numeric file_get_contents json_decode is_file
     array_reverse array_slice implode explode trim basename pathinfo strtolower strtoupper mb_strlen mb_substr
-    mb_strpos microtime round max min is_string is_array is_uploaded_file file_get_contents json_decode
+    mb_strpos mb_strtolower microtime round max min is_string is_array is_uploaded_file file_get_contents json_decode
     random_bytes bin2hex header error_log time date count in_array isset empty class_exists file_exists
     is_readable strpos substr array_keys array_values intval number_format htmlspecialchars http_response_code
     exit dirname preg_split preg_replace str_replace file`.split(/\s+/));
@@ -312,7 +326,9 @@ check('the old floating-chat position now hosts the email-gated AI Astrologer fo
   assert.match(dashboard, /Ask about this report/);
   assert.match(dashboard, /order\.emailSentAt/,
     'the report-specific dashboard action must wait for email delivery');
-  assert.match(dashboard, /status === 'COMPLETED' && order\.hasPdf && order\.serviceMode !== 'FREE_BETA'/);
+  assert.match(dashboard, /status === 'COMPLETED' && order\.hasPdf && order\.emailStatus === 'SENT'/);
+  assert.doesNotMatch(dashboard, /serviceMode !== 'FREE_BETA'/,
+    'the dashboard chat shortcut must also appear on delivered free-beta first reports');
   assert.match(panel, /\[customerId, orderId\]/);
   const session = sliceText(
     endpoint, 'function astro_ai_action_session', 'function astro_ai_action_history', 'session handler'
@@ -347,6 +363,39 @@ check('a generation failure is recorded, not swallowed, and costs nothing', () =
   // and the endpoint delegates to the provider rather than calling a model itself
   assert.match(code(endpoint), /AstroAiProvider::answer\(/);
   assert.ok(!/curl_init/.test(code(endpoint)), 'the endpoint must not call a model directly');
+});
+
+check('complaints are forwarded to the admin queue in every supported language', () => {
+  // The detector exists and is trilingual: English, Tamil and Hindi complaint
+  // words must all be present, or a complaining customer in one language would
+  // never reach the admin panel.
+  const detector = sliceText(endpoint, 'function astro_ai_escalation_reason', 'function astro_ai_escalation_notice', 'complaint detector');
+  assert.match(detector, /complaint/);
+  assert.match(detector, /புகார்/, 'Tamil complaint word missing');
+  assert.match(detector, /शिकायत/, 'Hindi complaint word missing');
+  assert.match(detector, /refund/);
+  assert.match(detector, /return 'complaint'/);
+
+  // ask() records the escalation into the admin queue and shows the customer
+  // a visible confirmation bubble.
+  const ask = sliceText(endpoint, 'function astro_ai_action_ask', 'function astro_ai_action_upload', 'ask handler body');
+  assert.match(ask, /astro_ai_escalation_reason\(\$question\)/, 'ask must screen every question for complaints');
+  assert.match(ask, /astro_ai_record_escalation\(/, 'a detected complaint must be queued for the admin');
+  assert.match(endpoint, /INSERT INTO ai_chat_handoffs/);
+  assert.match(ask, /\$bubbles\[\] = \$notice/, 'the customer must see that the message was forwarded');
+});
+
+check('the admin panel can read and update the AI escalation queue', () => {
+  const adminRouter = read('api/admin/index.php');
+  assert.match(adminRouter, /admin\/ai-handoffs/, 'the admin router must expose the AI handoff queue');
+  assert.match(adminRouter, /FROM ai_chat_handoffs/);
+  assert.match(adminRouter, /'NEW', 'ACKNOWLEDGED', 'RESOLVED'/, 'queue statuses must match the migration lifecycle');
+  assert.match(adminRouter, /UPDATE ai_chat_handoffs/);
+  assert.match(adminRouter, /logAudit\(\$pdo/, 'queue updates must be audited');
+  // The chat endpoint's session response carries the delivery date so the UI
+  // can greet the customer with the report that opened the chat.
+  const session = sliceText(endpoint, 'function astro_ai_action_session', 'function astro_ai_action_history', 'session handler');
+  assert.match(session, /'deliveredAt'/);
 });
 
 console.log(`\n[OK] ai-astrologer access control: ${passed} checks passed`);

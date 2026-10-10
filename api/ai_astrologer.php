@@ -18,10 +18,12 @@
  *
  *   1. requireAuth()       — a signed-in account, with the token_version check
  *                            that api/config.php already applies.
- *   2. Customer entitlement — customers need a delivered paid report. Admins
- *                            are exempt from payment and daily-usage gates.
+ *   2. Customer entitlement — customers need a delivered report (a paid order
+ *                            or the free-beta first report). Admins are exempt
+ *                            from payment and daily-usage gates.
  *
- * A free-beta order does not qualify for customer access. An order that is
+ * A free-beta first report qualifies for customer access exactly like a paid
+ * order once it has been delivered. An order that is
  * PENDING, PROCESSING, REJECTED or CANCELLED does not qualify. A refunded order
  * does not qualify. Admin access is based only on the persisted database role.
  *
@@ -56,7 +58,8 @@ function astro_ai_is_admin(array $user): bool
 }
 
 /**
- * GATE 2 — customers need a current paid-report entitlement; admins are exempt.
+ * GATE 2 — customers need a current delivered-report entitlement (a paid order
+ * or the free-beta first report); admins are exempt.
  *
  * Deliberately a single indexed lookup rather than loading the orders: this runs
  * on every customer request, including history reads, so it must stay cheap on
@@ -128,15 +131,15 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
         ];
     };
 
-    // Newest delivered paid order. Ordering by email_sent_at DESC is what makes
-    // "newest order wins" true: we only ever look at the one that would expire
-    // last, so an old order cannot keep the chat alive.
+    // Newest delivered order (paid or free-beta first report). Ordering by
+    // email_sent_at DESC is what makes "newest order wins" true: we only ever
+    // look at the one that would expire last, so an old order cannot keep the
+    // chat alive.
     $stmt = $pdo->prepare(
         "SELECT id, order_number, service_type, email_sent_at
            FROM orders
           WHERE user_id = :uid
             AND payment_confirmed = 1
-            AND service_mode <> 'FREE_BETA'
             AND status IN ('COMPLETED', 'PROCESSING')
             AND (refund_status IS NULL OR refund_status = 'NONE')
             AND email_status = 'SENT'
@@ -148,15 +151,14 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$order) {
-        // Either no paid order at all, or one that has not been delivered yet.
-        // Distinguishing them only for the server log - the customer sees the
-        // same message either way, so the endpoint never leaks which it was.
+        // Either no qualifying order at all, or one that has not been delivered
+        // yet. Distinguishing them only for the server log - the customer sees
+        // the same message either way, so the endpoint never leaks which it was.
         $countStmt = $pdo->prepare(
             "SELECT COUNT(*) AS c
                FROM orders
               WHERE user_id = :uid
                 AND payment_confirmed = 1
-                AND service_mode <> 'FREE_BETA'
                 AND status IN ('COMPLETED', 'PROCESSING')
                 AND (refund_status IS NULL OR refund_status = 'NONE')"
         );
@@ -221,11 +223,11 @@ function astro_ai_entitlement_copy(string $code, array $entitlement): array
     }
 
     return [
-        'en' => 'The AI Astrologer is available to customers with a completed paid report. '
+        'en' => 'The AI Astrologer is available to customers with a completed report. '
             . 'Once your order is complete, I will be here.',
-        'ta' => 'AI ஜோதிடர், முடிந்த கட்டண அறிக்கை உள்ள வாடிக்கையாளர்களுக்கு மட்டுமே. '
+        'ta' => 'AI ஜோதிடர், முடிந்த அறிக்கை உள்ள வாடிக்கையாளர்களுக்கு மட்டுமே. '
             . 'உங்கள் ஆர்டர் முடிந்ததும் நான் இங்கே இருப்பேன்.',
-        'hi' => 'AI ज्योतिषी उन ग्राहकों के लिए उपलब्ध है जिनकी भुगतान की गई रिपोर्ट पूरी हो चुकी है। '
+        'hi' => 'AI ज्योतिषी उन ग्राहकों के लिए उपलब्ध है जिनकी रिपोर्ट पूरी हो चुकी है। '
             . 'आपका ऑर्डर पूरा होते ही मैं यहाँ रहूँगा।',
     ];
 }
@@ -392,12 +394,12 @@ function astro_ai_action_session(PDO $pdo, array $user, array $body): void
     $serviceType = null;
 
     if ($orderId !== '') {
-        // A report-specific chat can only bind to this account's paid, delivered report.
+        // A report-specific chat can only bind to this account's delivered
+        // report (paid or free-beta first report).
         $stmt = $pdo->prepare(
             "SELECT id, order_number, service_type, email_sent_at
                FROM orders
               WHERE id = ? AND user_id = ? AND payment_confirmed = 1
-                AND service_mode <> 'FREE_BETA'
                 AND status IN ('COMPLETED', 'PROCESSING')
                 AND (refund_status IS NULL OR refund_status = 'NONE')
                 AND email_status = 'SENT'
@@ -450,12 +452,22 @@ function astro_ai_action_session(PDO $pdo, array $user, array $body): void
     );
     $stmt->execute([$sessionId, $user['id'], $language, $orderId !== '' ? $orderId : null, $orderNumber, $serviceType]);
 
+    // Real delivery timestamp, so the client can greet the customer with the
+    // report that just opened this chat.
+    $deliveredAt = null;
+    if ($orderId !== '') {
+        $dStmt = $pdo->prepare("SELECT email_sent_at FROM orders WHERE id = ? LIMIT 1");
+        $dStmt->execute([$orderId]);
+        $deliveredAt = $dStmt->fetchColumn() ?: null;
+    }
+
     jsonResponse([
         'success' => true,
         'sessionId' => $sessionId,
         'language' => $language,
         'orderNumber' => $orderNumber,
         'serviceType' => $serviceType,
+        'deliveredAt' => $deliveredAt,
         'dailyLimit' => $isAdmin ? null : astro_ai_daily_limit(),
         'unlimited' => $isAdmin,
     ], 201);
@@ -504,6 +516,19 @@ function astro_ai_action_history(PDO $pdo, array $user, array $body): void
 function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
 {
     astro_ai_ensure_tables($pdo);
+
+    // Fail fast on a server setup problem instead of letting the model call
+    // throw deep inside generation: a missing API key or a missing curl
+    // extension is an admin-facing configuration error, and this message is
+    // what tells the admin exactly what to fix.
+    if (!AstroAiProvider::isConfigured()) {
+        error_log('AI Astrologer: ask refused - provider not configured '
+            . '(set AI_ASTROLOGER_API_KEY; curl extension required).');
+        jsonResponse(['success' => false, 'code' => 'AI_NOT_CONFIGURED',
+            'message' => 'The AI Astrologer model is not configured on this server yet. '
+                . 'Set the AI_ASTROLOGER_API_KEY environment variable (optionally '
+                . 'AI_ASTROLOGER_BASE_URL and AI_ASTROLOGER_MODEL), then try again.'], 503);
+    }
 
     $sessionId = trim((string) ($body['sessionId'] ?? ''));
     $question = trim((string) ($body['question'] ?? ''));
@@ -565,6 +590,25 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
             'latency_ms' => (int) round((microtime(true) - $startedAt) * 1000),
         ]);
 
+        // 3. Complaints go straight to the admin queue (ai_chat_handoffs),
+        //    whatever the model answered, and the customer sees a visible
+        //    confirmation. Non-complaint handoffs (health, declined topics)
+        //    only OFFER the astrologer - they are queued when the customer
+        //    accepts via the "Talk to our astrologer" button, so the queue
+        //    is never flooded with offers nobody confirmed.
+        $escalation = astro_ai_escalation_reason($question);
+        $escalated = false;
+        $bubbles = $reply['bubbles'] ?? [];
+        if ($escalation !== null) {
+            astro_ai_record_escalation($pdo, $user, $session, $question, $escalation, $language);
+            $notice = astro_ai_escalation_notice($language);
+            astro_ai_save_message($pdo, $sessionId, (string) $user['id'], 'system', $language, $notice, [
+                'status' => 'SENT',
+            ]);
+            $bubbles[] = $notice;
+            $escalated = true;
+        }
+
         jsonResponse([
             'success' => true,
             'sessionId' => $sessionId,
@@ -572,10 +616,11 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
             'messageId' => $replyId,
             'language' => $language,
             'content' => $reply['content'],
-            'bubbles' => $reply['bubbles'] ?? [],
+            'bubbles' => $bubbles,
             'sources' => $reply['sourceLine'] ?? '',
             'areaId' => $reply['areaId'] ?? null,
-            'handoff' => (bool) ($reply['handoff'] ?? false),
+            'handoff' => (bool) ($reply['handoff'] ?? false) || $escalated,
+            'escalated' => $escalated,
             'latencyMs' => (int) round((microtime(true) - $startedAt) * 1000),
             'remainingToday' => $isAdmin ? null : max(0, $limit - astro_ai_usage_count($pdo, (string) $user['id'])),
             'unlimited' => $isAdmin,
@@ -804,6 +849,7 @@ function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $
     $context = [
         'customerName' => (string) ($user['name'] ?? 'there'),
         'orderTitle' => 'your report',
+        'orderDetails' => '(no order attached to this conversation yet)',
         'dashaEndDate' => null,
     ];
 
@@ -813,6 +859,7 @@ function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $
         $order = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
         if ($order) {
             $context['orderTitle'] = (string) ($order['service_type'] ?? 'your report');
+            $context['orderDetails'] = astro_ai_order_details_text($order);
             $facts = astro_ai_chart_facts($order);
             if ($facts !== null) {
                 $chart = $facts['chart'];
@@ -838,6 +885,106 @@ function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $
         : '(this is the first message)';
 
     return AstroAiProvider::answer($question, $language, $history, $chart, $context);
+}
+
+/** Trilingual complaint/escalation keywords. Deliberately broad: missing a
+ *  real complaint is worse than an extra queue row for the admin to dismiss. */
+function astro_ai_escalation_reason(string $question): ?string
+{
+    $q = mb_strtolower(trim($question), 'UTF-8');
+    $complaintTokens = [
+        // English
+        'complaint', 'refund', 'money back', 'wrong report', 'incorrect report',
+        'not received', "haven't received", 'did not receive', "didn't receive",
+        'never received', 'still waiting for my report', 'report missing',
+        'overcharged', 'charged twice', 'double charge', 'cheating', 'fraud',
+        'scam', 'disappointed with', 'unhappy with', 'not satisfied',
+        'poor quality', 'bad service',
+        // Tamil
+        'புகார்', 'பணம் திருப்பி', 'பணத்தை திருப்பி', 'ரீஃபண்ட்', 'ரிஃபண்ட்',
+        'தவறான அறிக்கை', 'கிடைக்கவில்லை', 'மோசடி', 'ஏமாற்றம்',
+        'வரவில்லை', 'அனுப்பவில்லை',
+        // Hindi
+        'शिकायत', 'रिफंड', 'पैसे वापस', 'पैसा वापस', 'गलत रिपोर्ट',
+        'रिपोर्ट नहीं मिली', 'नहीं मिली', 'धोखा', 'नाराज', 'दो बार चार्ज',
+    ];
+    foreach ($complaintTokens as $token) {
+        if ($token !== '' && mb_strpos($q, $token, 0, 'UTF-8') !== false) {
+            return 'complaint';
+        }
+    }
+    return null;
+}
+
+/** Confirmation shown in the chat once a message has reached the admin queue. */
+function astro_ai_escalation_notice(string $language): string
+{
+    if ($language === 'ta') {
+        return 'உங்கள் செய்தியை எங்கள் குழுவிடம் அனுப்பிவிட்டேன். அவர்கள் உங்களை விரைவில் தொடர்பு கொள்வார்கள்.';
+    }
+    if ($language === 'hi') {
+        return 'आपका संदेश हमारी टीम को भेज दिया गया है। वे जल्द ही आपसे संपर्क करेंगे।';
+    }
+    return 'I have forwarded your message to our team. They will get back to you shortly.';
+}
+
+/**
+ * Pushes the customer's message into the admin escalation queue
+ * (ai_chat_handoffs). Best-effort: a queue insert failure must never break
+ * the customer's answer - it is logged instead.
+ */
+function astro_ai_record_escalation(PDO $pdo, array $user, ?array $session, string $question, string $reason, string $language): void
+{
+    try {
+        $stmt = $pdo->prepare(
+            "INSERT INTO ai_chat_handoffs
+                (session_id, user_id, user_name, user_email, user_mobile, language, question, reason, order_number)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        );
+        $stmt->execute([
+            $session['id'] ?? null,
+            (string) $user['id'],
+            (string) ($user['name'] ?? 'Unknown'),
+            $user['email'] ?? null,
+            $user['mobile'] ?? null,
+            astro_normalize_report_language($language),
+            $question,
+            $reason,
+            $session['order_number'] ?? null,
+        ]);
+    } catch (Throwable $e) {
+        error_log('AI Astrologer: escalation insert failed: ' . $e->getMessage());
+    }
+}
+
+/**
+ * The customer's own order facts, for answering "where is my report / what
+ * did I pay" questions. Only data from their own row - never prices of other
+ * services or any discount.
+ */
+function astro_ai_order_details_text(array $order): string
+{
+    $parts = [
+        'Order number: ' . (string) ($order['order_number'] ?? ''),
+        'Service: ' . (string) ($order['service_type'] ?? ''),
+    ];
+    $amount = (string) ($order['amount'] ?? '');
+    if ($amount !== '') {
+        $parts[] = 'Amount paid: ' . trim((string) ($order['currency'] ?? '') . ' ' . $amount);
+    }
+    $parts[] = 'Payment: ' . ((int) ($order['payment_confirmed'] ?? 0) === 1
+        ? 'confirmed'
+        : (string) ($order['payment_status'] ?? 'pending'));
+    $placed = substr((string) ($order['created_at'] ?? ''), 0, 10);
+    if ($placed !== '') {
+        $parts[] = 'Placed on: ' . $placed;
+    }
+    $delivered = substr((string) ($order['email_sent_at'] ?? ''), 0, 10);
+    if ($delivered !== '') {
+        $parts[] = 'Report emailed on: ' . $delivered;
+    }
+    $parts[] = 'Order status: ' . (string) ($order['status'] ?? '');
+    return implode(' | ', $parts);
 }
 
 /**

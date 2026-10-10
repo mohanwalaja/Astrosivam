@@ -21,7 +21,10 @@
  * against rules/guardrails.json. Smoke-test on the server before relying on it.
  */
 
-require_once __DIR__ . '/config.php';
+// config.php lives one directory up in api/. Requiring '/config.php' here
+// would resolve to api/astrology/config.php, which does not exist, and fatal
+// the whole endpoint with an empty HTTP 500 before any JSON can be sent.
+require_once __DIR__ . '/../config.php';
 
 class AstroAiProvider
 {
@@ -59,9 +62,28 @@ class AstroAiProvider
         return $c['apiKey'] !== '' && function_exists('curl_init');
     }
 
+    /**
+     * Resolve a knowledge-base file against the candidate roots.
+     *
+     * knowledge/ lives at the repository root in development and at the
+     * document root on cPanel (the deployment copies it there), i.e. two
+     * levels up from this file. api/knowledge/ is accepted as a fallback for
+     * manual uploads. The first location that actually has the file wins, so
+     * a missing deploy copy fails loudly at read time instead of silently
+     * serving an empty knowledge base from the wrong directory.
+     */
     private static function kbPath(string $rel): string
     {
-        return dirname(__DIR__) . $rel;
+        $candidates = [
+            dirname(__DIR__, 2) . $rel,
+            dirname(__DIR__) . $rel,
+        ];
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+        return $candidates[0];
     }
 
     private static function kb(string $rel): array
@@ -209,6 +231,106 @@ class AstroAiProvider
             'rules' => $rules,
             'sourceLine' => $sourceLine,
             'refusal' => null,
+        ];
+    }
+
+    /**
+     * Multi-source fallback for questions no life-area card matched directly.
+     * Instead of answering "I don't know" immediately, the agent consults, in
+     * order:
+     *   1. EVERY life-area card with a loose phrase match (not just the best)
+     *   2. the remedies registry, on planet names mentioned in the question
+     *   3. the customer's own chart period (already in CHART_HEADER)
+     * The model is instructed to use only what these sources actually contain
+     * and, when nothing truly applies, to say so honestly and offer the
+     * handoff. No outside web search: every source is the curated knowledge
+     * base, so nothing unreviewed can reach a customer.
+     *
+     * @return array{rulesBlock:string, sourceLine:string}
+     */
+    public static function consultMoreSources(string $question, string $language, ?array $chart): array
+    {
+        $q = mb_strtolower(trim($question), 'UTF-8');
+        $lines = [];
+        $sources = [];
+
+        // Source 1: loose phrase match across ALL life-area cards.
+        $kb = self::kb(self::LIFE_AREAS_PATH);
+        foreach (($kb['areas'] ?? []) as $area) {
+            $phrases = array_merge(
+                $area['customerPhrases'][$language] ?? [],
+                $area['customerPhrases']['en'] ?? []
+            );
+            $hit = false;
+            foreach ($phrases as $p) {
+                $needle = mb_strtolower(trim((string) $p), 'UTF-8');
+                if ($needle !== '' && mb_strpos($q, $needle, 0, 'UTF-8') !== false) {
+                    $hit = true;
+                    break;
+                }
+            }
+            if (!$hit) {
+                continue;
+            }
+            $title = (string) ($area['cardTitle'][$language] ?? ($area['cardTitle']['en'] ?? ($area['id'] ?? 'card')));
+            $added = 0;
+            foreach (($area['rules'] ?? []) as $rule) {
+                if ($added >= 2) {
+                    break;
+                }
+                if (!self::evaluateCondition($rule['condition'] ?? [], $chart, $question)) {
+                    continue;
+                }
+                $meaning = (string) ($rule['meaning'][$language] ?? ($rule['meaning']['en'] ?? ''));
+                if ($meaning === '') {
+                    continue;
+                }
+                $lines[] = '- [' . $title . '] ' . $meaning;
+                $added++;
+            }
+            if ($added > 0) {
+                $sources[] = $title;
+            }
+        }
+
+        // Source 2: the remedies registry, matched on planet names in the question.
+        $remedies = self::kb(self::REMEDIES_PATH);
+        foreach (($remedies['grahas'] ?? []) as $g) {
+            $names = [
+                (string) ($g['graha'] ?? ''),
+                (string) ($g['tamil'] ?? ''),
+                (string) ($g['hindi'] ?? ''),
+            ];
+            $hit = false;
+            foreach ($names as $name) {
+                $needle = mb_strtolower(trim($name), 'UTF-8');
+                if ($needle !== '' && mb_strpos($q, $needle, 0, 'UTF-8') !== false) {
+                    $hit = true;
+                    break;
+                }
+            }
+            if (!$hit) {
+                continue;
+            }
+            $lines[] = '- [Remedies registry: ' . ($g['graha'] ?? 'planet') . '] '
+                . ($g['mantra']['simple'] ?? '') . ' | charity: ' . ($g['charity'] ?? '')
+                . ' | temple: ' . ($g['temple']['name'] ?? '');
+            $sources[] = 'Remedies registry (' . ($g['graha'] ?? 'planet') . ')';
+            if (count($lines) >= 6) {
+                break;
+            }
+        }
+
+        if (empty($lines)) {
+            return [
+                'rulesBlock' => "(Consulted every life-area card, the remedies registry and the customer's chart period; none covers this question directly. Give an honest general reading from their chart period if you can, say plainly that your knowledge base has no specific rule for it, and offer the astrologer handoff.)",
+                'sourceLine' => '',
+            ];
+        }
+
+        return [
+            'rulesBlock' => implode("\n", $lines),
+            'sourceLine' => 'Consulted: ' . implode(' · ', array_slice(array_values(array_unique($sources)), 0, 4)),
         ];
     }
 
@@ -545,17 +667,26 @@ class AstroAiProvider
                 $rulesBlock .= "  Practical: " . $p . "\n";
             }
         }
+        $sourceLine = $retrieved['sourceLine'];
         if ($rulesBlock === '') {
-            $rulesBlock = "(No rule in the knowledge base covers this question. Say so honestly and offer the handoff.)";
+            // No life-area card matched directly: consult the remaining
+            // sources before admitting we have nothing - every card loose
+            // match, the remedies registry, and the chart period.
+            $more = self::consultMoreSources($question, $language, $chart);
+            $rulesBlock = $more['rulesBlock'];
+            if ($more['sourceLine'] !== '') {
+                $sourceLine = $more['sourceLine'];
+            }
         }
 
         $prompt = self::fillPrompt(self::systemPrompt(), [
             'RETRIEVED_RULES' => $rulesBlock,
-            'SOURCE_LINE' => $retrieved['sourceLine'],
+            'SOURCE_LINE' => $sourceLine,
             'REMEDIES' => self::remedyBlock($chart),
             'CHART_HEADER' => $context['chartHeader'] ?? '(no chart attached to this conversation yet)',
             'CUSTOMER_NAME' => $context['customerName'] ?? 'there',
             'ORDER_TITLE' => $context['orderTitle'] ?? 'your report',
+            'ORDER_DETAILS' => $context['orderDetails'] ?? '(no order attached to this conversation yet)',
             'LANGUAGE' => $language,
             'CHAT_HISTORY' => $context['chatHistory'] ?? '(this is the first message)',
             'DASHA_END_DATE' => $context['dashaEndDate'] ?? 'the date shown on your report',
