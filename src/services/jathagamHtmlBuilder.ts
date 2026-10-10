@@ -455,11 +455,10 @@ export function buildJathagamLifeCards(result: HoroscopeResult, lang: AppLanguag
   /* ---------------------------------------------------------------
    * THE PAGE-2 VERDICT COMES FROM THE SHARED MODULE.
    *
-   * `badgeFor` used to recompute isChallenging here, duplicating the rule the
-   * AI Astrologer chat also implements. Now the verdict is computed once by
-   * computeLifeCardPredictions() - the same call the chat makes - and this
-   * function only reads it. Page 2 and the chat therefore cannot disagree,
-   * because neither of them decides anything any more.
+   * `badgeFor` used to recompute isChallenging here, duplicating the rule
+   * definitions in `api/astrology/life_cards_rules.json`. The report reads that
+   * shared file through computeLifeCardPredictions(); the PHP chart/report path
+   * reads the same JSON, so the source-based chat receives consistent report facts.
    *
    * The report still prints both a Good and a Caution sentence below: the badge
    * is the verdict, the prose is the explanation.

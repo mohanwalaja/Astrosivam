@@ -1,4 +1,4 @@
-# Free Beta First Report — AI Astrologer Chat Access
+# Free Beta First Report — Astrologer Chat Access
 
 > Fix date: 2026-10-10
 
@@ -7,11 +7,11 @@
 During the Free Beta, a customer's first order is created with
 `service_mode = 'FREE_BETA'` (amount 0). After the admin approved such an
 order from the admin panel, the customer received the report email and the
-invoice, but the **AI Astrologer chat stayed locked** for that customer.
+invoice, but the **astrologer chat stayed locked** for that customer.
 
 Root cause: the approval flow (`api/admin/approve_order.php`) correctly marks
 free orders as delivered — `status = 'COMPLETED'`, `payment_confirmed = 1`,
-`email_status = 'SENT'`, `email_sent_at = NOW()` — but the AI Astrologer
+`email_status = 'SENT'`, `email_sent_at = NOW()` — but the astrologer chat
 entitlement gate explicitly excluded every `FREE_BETA` order:
 
 * `astro_ai_chat_entitlement()` in `api/ai_astrologer.php` —
@@ -26,7 +26,7 @@ customer had received the report the chat would discuss.
 
 ## The fix
 
-A delivered free-beta first report now qualifies for the AI Astrologer chat
+A delivered free-beta first report now qualifies for the source-based astrologer chat
 **exactly like a paid order**:
 
 * All three `service_mode <> 'FREE_BETA'` exclusions are removed from
@@ -50,9 +50,14 @@ A delivered free-beta first report now qualifies for the AI Astrologer chat
 
 1. Sign in with the customer account (not admin), open the dashboard —
    "Ask about this report" appears on the delivered free order, and the
-   floating "Ask AI Astrologer" launcher appears site-wide.
+   floating "Ask ASTRO SIVAM" launcher appears site-wide.
 2. `POST /api/ai_astrologer.php?action=usage` returns the daily allowance
    instead of the 403 refusal.
 3. After 7 days from the report email the window still expires as before.
 
 No database migration is needed.
+
+
+## Reply implementation
+
+The chat currently uses local chart calculations and curated knowledge files only. It requires no external AI service or API key. The source catalogue includes metadata and links as well as a small set of text-read sources; it is not a full-text book corpus.

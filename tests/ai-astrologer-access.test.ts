@@ -4,7 +4,7 @@
  * PHP cannot be executed in this sandbox, so this test verifies the PHP by
  * reading it: that both gates run before any action, that the paid check is the
  * strict one, that the migration is idempotent and its columns really exist, and
- * that no AI credential appears anywhere the browser can reach.
+ * that no AI-provider credential appears anywhere the browser can reach.
  *
  * This is a static contract test, not a runtime test. It cannot prove the PHP
  * runs — only that it does not contradict the schema or the brief.
@@ -287,8 +287,8 @@ check('no AI credential is reachable from the browser', () => {
   assert.match(client, /ai_astrologer\.php/);
 });
 
-check('the chat header always names the AI Astrologer and never a person', () => {
-  assert.match(panel, /ASTRO SIVAM AI Astrologer/);
+check('the chat header names ASTRO SIVAM and never claims to be a person', () => {
+  assert.match(panel, /ASTRO SIVAM Astrologer/);
   assert.match(panel, /const DISCLAIMER: Record<ChatLanguage, string>/);
   assert.match(panel, /not a substitute for medical, legal or financial advice/);
   // trilingual disclaimer, status text and handoff label
@@ -311,10 +311,10 @@ check('the 12-second cap is enforced and the real response time counts', () => {
   assert.match(panel, /statusMax: 4000/);
 });
 
-check('the old floating-chat position now hosts the email-gated AI Astrologer for customers and admins', () => {
+check('the floating launcher hosts the email-gated source-based astrologer for customers and admins', () => {
   assert.match(app, /<AiAstrologerLauncher \/>/);
   assert.match(launcher, /fixed bottom-5 right-5/);
-  assert.match(launcher, /Ask AI Astrologer/);
+  assert.match(launcher, /Ask ASTRO SIVAM/);
   assert.match(launcher, /aiAstrologer\.usage\(\)/,
     'customer visibility must be confirmed by the server entitlement');
   assert.match(launcher, /if \(isAdmin\)/,
@@ -344,9 +344,8 @@ check('the old canned live-chat widget and its entry points are completely remov
   }
 });
 
-check('a generation failure is recorded, not swallowed, and costs nothing', () => {
-  // Part 5 replaced the throwing stub with the real provider, so what matters now
-  // is that a failure still produces a FAILED row and the friendly retry text.
+check('a local reply failure is recorded, not swallowed, and costs nothing', () => {
+  // A local runtime/data failure still produces a FAILED row and retry wording.
   const ask = code(sliceText(
     endpoint, 'function astro_ai_action_ask', 'function astro_ai_action_upload', 'ask handler body'
   ));
@@ -360,9 +359,9 @@ check('a generation failure is recorded, not swallowed, and costs nothing', () =
   const tryAt = ask.indexOf('try {');
   assert.ok(savedAt > 0 && tryAt > 0 && savedAt < tryAt,
     'the question must be persisted before generation starts, so a failure cannot lose it');
-  // and the endpoint delegates to the provider rather than calling a model itself
-  assert.match(code(endpoint), /AstroAiProvider::answer\(/);
-  assert.ok(!/curl_init/.test(code(endpoint)), 'the endpoint must not call a model directly');
+  // Reply generation delegates to the local source-based answer builder.
+  assert.match(endpoint, /AstroAiProvider::answerFromKnowledgeBase\(/);
+  assert.doesNotMatch(code(endpoint), /AstroAiProvider::complete|AstroAiProvider::ping|curl_init/);
 });
 
 check('complaints are forwarded to the admin queue in every supported language', () => {

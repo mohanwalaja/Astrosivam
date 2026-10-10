@@ -6,7 +6,7 @@ import { aiAstrologer, type ChatLanguage } from '../../services/aiAstrologerApi'
 import AiAstrologerPanel from './AiAstrologerPanel';
 
 /**
- * Site-wide AI Astrologer launcher, replacing the retired canned support chat.
+ * Site-wide source-based astrologer launcher, replacing the retired canned support chat.
  * Customers only see it while the server confirms a recently delivered report
  * (paid or free-beta first report). Administrators always see it while signed
  * in.
@@ -86,14 +86,14 @@ export const AiAstrologerLauncher: React.FC = () => {
         {!isOpen && (
           <div className="hidden items-center gap-2 rounded-full border border-amber-500/30 bg-slate-900/95 px-3.5 py-2 text-xs font-semibold text-white shadow-lg backdrop-blur-md sm:flex">
             <Sparkles className="h-4 w-4 text-amber-400" />
-            <span>Ask AI Astrologer</span>
+            <span>Ask ASTRO SIVAM</span>
           </div>
         )}
         <button
           type="button"
           onClick={() => setIsOpen((open) => !open)}
           className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-amber-500 text-slate-950 shadow-2xl transition-all hover:scale-110 active:scale-95"
-          aria-label={isOpen ? 'Close AI Astrologer chat' : 'Open AI Astrologer chat'}
+          aria-label={isOpen ? 'Close ASTRO SIVAM chat' : 'Open ASTRO SIVAM chat'}
           aria-expanded={isOpen}
         >
           {isOpen ? <X className="h-6 w-6" /> : <Sparkles className="h-6 w-6 transition-transform group-hover:rotate-6" />}

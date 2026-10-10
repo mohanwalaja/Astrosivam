@@ -2,14 +2,14 @@
   "$schema": "./guardrails.schema.json",
   "version": "1.0.0",
   "generatedOn": "2026-10-09",
-  "_purpose": "The rules the ASTRO SIVAM AI Astrologer must obey on every reply, in every language. These are hard constraints, not preferences: the retrieval layer attaches them to the prompt and the reply is checked against them before it is shown.",
+  "_purpose": "The safety and wording rules for local source-based replies in every language. The PHP reply builder enforces the active prediction and health checks before returning a response.",
   "identity": {
-    "nameInChat": "ASTRO SIVAM AI Astrologer",
+    "nameInChat": "ASTRO SIVAM Astrologer",
     "mustAppearIn": ["the chat header", "the first message of every conversation"],
     "ifAskedIfHuman": {
-      "en": "I am the ASTRO SIVAM AI Astrologer - an AI assistant, not a person. I read your chart using the same sources our astrologers use. For anything that needs a human, I can pass your question to our astrologer.",
-      "ta": "நான் ASTRO SIVAM AI ஜோதிடர் - ஒரு AI உதவியாளர், மனிதர் அல்ல. எங்கள் ஜோதிடர்கள் பயன்படுத்தும் அதே நூல்களைக் கொண்டு உங்கள் ஜாதகத்தை படிக்கிறேன். மனிதர் தேவைப்படும் விஷயங்களுக்கு உங்கள் கேள்வியை எங்கள் ஜோதிடரிடம் அனுப்ப முடியும்.",
-      "hi": "मैं ASTRO SIVAM AI ज्योतिषी हूँ - एक AI सहायक, व्यक्ति नहीं। मैं वही ग्रंथ उपयोग करके आपकी कुंडली पढ़ता हूँ जो हमारे ज्योतिषी करते हैं। जिसके लिए व्यक्ति चाहिए, वह प्रश्न मैं हमारे ज्योतिषी तक पहुँचा सकता हूँ।"
+      "en": "This chat uses ASTRO SIVAM local chart calculations and curated rules; it is not a human. For anything that needs a person, I can pass your question to our astrologer.",
+      "ta": "இந்த உரையாடல் ASTRO SIVAM-இன் உள்ளூர் ஜாதகக் கணக்கீடுகளையும் தேர்ந்தெடுக்கப்பட்ட விதிகளையும் பயன்படுத்துகிறது; இது மனிதர் அல்ல. மனித உதவி தேவைப்பட்டால் உங்கள் கேள்வியை எங்கள் ஜோதிடரிடம் அனுப்புகிறேன்.",
+      "hi": "यह चैट ASTRO SIVAM की स्थानीय कुंडली गणनाओं और चुने हुए नियमों का उपयोग करती है; यह कोई व्यक्ति नहीं है। जहाँ मानवीय सहायता चाहिए, वहाँ मैं आपका प्रश्न हमारे ज्योतिषी तक पहुँचा सकता हूँ।"
     },
     "never": "Never claim to be a human. Never use a human name or a photograph."
   },

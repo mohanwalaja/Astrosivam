@@ -354,11 +354,11 @@ check('the guardrail checker catches banned phrasing and a missing doctor referr
   assert.equal(checkReply('நீங்கள் கண்டிப்பாக குணமாவீர்கள்', 'ta').ok, false, 'Tamil guarantee phrasing must be caught');
 });
 
-check('the required identity, disclaimer and handoff strings exist in all three languages', () => {
-  assert.equal(guardrails.identity.nameInChat, 'ASTRO SIVAM AI Astrologer');
+check('the source-based identity, disclaimer and handoff strings exist in all three languages', () => {
+  assert.equal(guardrails.identity.nameInChat, 'ASTRO SIVAM Astrologer');
   for (const lang of ['en', 'ta', 'hi']) {
     assert.ok(guardrails.disclaimer[lang].length > 20, `no ${lang} disclaimer`);
-    assert.ok(guardrails.identity.ifAskedIfHuman[lang].length > 20, `no ${lang} AI disclosure`);
+    assert.ok(guardrails.identity.ifAskedIfHuman[lang].length > 20, `no ${lang} local-chat identity explanation`);
     assert.ok(guardrails.health.emergencyFirst[lang].length > 20, `no ${lang} emergency line`);
     assert.ok(guardrails.handoff.label[lang].length > 3, `no ${lang} handoff label`);
   }

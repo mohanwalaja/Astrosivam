@@ -1,8 +1,10 @@
-# ASTRO SIVAM AI Astrologer — Verified Source List (Part 1, rev. 2)
+# ASTRO SIVAM — Source Registry
 
-**Registry:** `knowledge/ai-astrologer/sources.json` · **55 active sources** + **13 excluded** · verified **2026-10-09**
+**Current registry (2026-10-10):** 224 active catalogue records + 13 excluded records. Only 11 active records are marked `content-read`; most are metadata or links, not searchable full-text books. Use [`sources.json`](./sources.json) for machine-readable verification fields and check the level before citing.
 
-Machine-readable form: [`sources.json`](./sources.json) · method and failures: [`VERIFICATION_LOG.md`](./VERIFICATION_LOG.md)
+Full-text limitation: the registry is bibliographic metadata and links—not a bundle of 224 searchable books. The tables below list the records and their current verification status.
+
+Machine-readable registry: [`sources.json`](./sources.json) · verification notes: [`VERIFICATION_LOG.md`](./VERIFICATION_LOG.md)
 
 > **Revision 2 applies four owner decisions taken on 2026-10-09:**
 > 1. Tamil books are cited at **passage** level wherever a passage was actually read.
@@ -17,12 +19,12 @@ Machine-readable form: [`sources.json`](./sources.json) · method and failures: 
 | Level | Meaning | Active |
 |---|---|---|
 | **content-read** | Opened the URL and read the content. Where a book was read through its full-text derivative, the row carries `verifiedPassages` and may be cited to a passage. | 11 |
-| **metadata-verified** | The item exists; the catalogue returned identifier + title + language + author. Body not read. **Book-level citation only.** | 32 |
+| **metadata-verified** | The item exists; the catalogue returned identifier + title + language + author. Body not read. **Book-level citation only.** | 144 |
 | **catalogue-verified** | Print book; two independent catalogues agree. No free full text. | 1 |
-| **linked-not-opened** | Link seen inside a page that *was* opened. **Not citable as an authority.** | 10 |
+| **linked-not-opened** | Link seen inside a page that *was* opened. **Not citable as an authority.** | 67 |
 | **dead** | Unreachable. Quarantined. | 1 |
 
-Totals: 11 + 32 + 1 + 10 + 1 = **55 active**. Plus 13 excluded (§2).
+Totals: 11 + 144 + 1 + 67 + 1 = **224 active catalogue records**. Plus 13 excluded (§2).
 
 ---
 

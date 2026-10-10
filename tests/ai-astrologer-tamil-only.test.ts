@@ -63,10 +63,15 @@ check('the output guard rejects any non-Tamil or unverified source id', () => {
   assert.match(guard, /isCitableId\(\$cited\)/, 'guard must check each id against the citable set');
 });
 
-check('the prompt gives the model the Tamil list and forbids other sources', () => {
+check('the old prompt is archived and not part of the active local reply path', () => {
   const md = read('knowledge/ai-astrologer/prompt/system-prompt.md');
-  assert.match(md, /\{\{TAMIL_SOURCES\}\}/);
-  assert.match(md, /Never name an English, Sanskrit or Hindi book/);
+  const provider = read('api/astrology/ai_astrologer_provider.php');
+  const endpoint = read('api/ai_astrologer.php');
+  assert.match(md, /Archived prompt draft — not used by the current reply path/);
+  assert.match(md, /not sent to an AI model/);
+  const answer = provider.slice(provider.indexOf('public static function answer('), provider.indexOf('/** At most three affordable remedies'));
+  assert.doesNotMatch(answer, /systemPrompt|fillPrompt|complete\(/);
+  assert.match(endpoint, /AstroAiProvider::answerFromKnowledgeBase\(/);
 });
 
 console.log(`\n${passed} checks passed.`);

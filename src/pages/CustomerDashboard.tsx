@@ -57,7 +57,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [activeTab, setActiveTab] = useState<'orders' | 'profile'>('orders');
-  // AI Astrologer entry point. `aiChatOrder` is null for a general chat, or the
+  // Source-based astrologer entry point. `aiChatOrder` is null for a general chat, or the
   // order whose report the customer wants explained.
   const [aiChatOpen, setAiChatOpen] = useState(false);
   const [aiChatOrder, setAiChatOrder] = useState<Order | null>(null);

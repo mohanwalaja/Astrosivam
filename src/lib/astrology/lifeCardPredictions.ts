@@ -1,14 +1,13 @@
 /**
- * SHARED life-area predictions — the single source of truth.
+ * Shared page-2 life-area prediction rules.
  *
- * Page 2 of the Birth Jathagam and the AI Astrologer chat both compute from
- * this module. Neither keeps a private copy of the verdict logic, which is what
- * makes "the chat must never contradict the report" a structural property rather
- * than a prompt instruction.
+ * The TypeScript report renderer reads these rules, while PHP report/chart
+ * rebuilding reads the same JSON file. The source-based chat uses those rebuilt
+ * local report facts plus its curated chat rules; this module is not an AI prompt
+ * and is not an external generation path.
  *
- * The rules live in api/astrology/life_cards_rules.json so the PHP engine can
- * json_decode the same file (the pattern this repo already uses for
- * api/astrology/rajju.json, shared between matchmaking.ts and babynames.ts).
+ * The rules live in api/astrology/life_cards_rules.json so both language stacks
+ * can read the same definitions.
  *
  * The constants and the verdict rule were extracted verbatim from
  * buildJathagamLifeCards in src/services/jathagamHtmlBuilder.ts (lines 122,
@@ -291,9 +290,8 @@ export function computeLifeCardPredictions(chart: ChartFacts): LifeCardPredictio
 }
 
 /**
- * The block injected into the chat prompt as OFFICIAL REPORT PREDICTIONS.
- * Because it is generated from the same call the report used, the model is
- * being handed the report's own words, not a paraphrase of them.
+ * Formats a prediction summary and its citations for reference/testing.
+ * This legacy formatter is not used by the current local customer reply path.
  */
 export function predictionsForPrompt(predictions: LifeCardPrediction[], lang: PredLang): string {
   return predictions

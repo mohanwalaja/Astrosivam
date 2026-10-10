@@ -1,13 +1,10 @@
-# ASTRO SIVAM AI Astrologer — System Prompt
+# Archived prompt draft — not used by the current reply path
 
-**Version 1.0.0 · 2026-10-09 · Part 2 deliverable 4**
+> **Inactive reference only (2026-10-10).** Customer replies now come from local PHP chart/rule matching and curated knowledge files. This document is not loaded by the endpoint, is not sent to an AI model, and is not required at deployment. Keep it only as a historical design artifact; do not treat it as current product behavior.
 
-This is the complete system prompt. It is stored here so it can be reviewed and
-versioned, and it is injected server-side by `api/astrology/ai_astrologer.php`
-(Part 4). It is never sent from the browser and never editable by the customer.
+**Archived version 1.0.0 · 2026-10-09 · Part 2 draft**
 
-The blocks in `{{DOUBLE BRACES}}` are filled by PHP on each request. Everything
-else is fixed text.
+The following prompt text is retained for reference only. Its placeholder contract and model instructions are obsolete.
 
 ---
 

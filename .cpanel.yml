@@ -7,8 +7,8 @@ deployment:
     - /bin/find api -type f ! -path 'api/astrology/tmp/app_secret_key.txt' ! -path 'api/astrology/tmp/app_secret_key.txt.*' -exec sh -c 'for file do relative="${file#api/}"; target="$DEPLOYPATH/api/$relative"; if [ "$relative" = "config.php" ] && [ -f "$target" ]; then continue; fi; /bin/mkdir -p "$(dirname "$target")"; /bin/cp -f "$file" "$target"; done' sh {} +
     - /bin/mkdir -p $DEPLOYPATH/src/lib/muhurtham
     - /bin/cp -f src/lib/muhurtham/rules.json $DEPLOYPATH/src/lib/muhurtham/rules.json
-    # AI Astrologer knowledge base (system prompt, rules, remedies). The PHP
-    # provider resolves it two levels up from api/astrology/, i.e. the doc root.
+    # Local source-based astrologer data: reviewed rules, remedies and source catalogue.
+    # PHP resolves knowledge/ from the document root (beside api/).
     - /bin/find knowledge -type f -exec sh -c 'for file do target="$DEPLOYPATH/$file"; /bin/mkdir -p "$(/bin/dirname "$target")"; /bin/cp -f "$file" "$target"; done' sh {} +
     - /bin/find dist -type f ! -name '*.map' ! -name '*.cjs' -exec sh -c 'for file do target="$DEPLOYPATH/${file#dist/}"; /bin/mkdir -p "$(dirname "$target")"; /bin/cp -f "$file" "$target"; done' sh {} +
     - /bin/cp -f public/.htaccess $DEPLOYPATH/.htaccess

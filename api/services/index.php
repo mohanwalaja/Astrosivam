@@ -290,7 +290,7 @@ if (($method === 'GET' || $method === 'HEAD') && (
         unset($settings['razorpayWebhookSecret']);
         unset($settings['razorpaySecret']);
         unset($settings['vodafoneMPaisaApiSecret']);
-        // The AI Astrologer model key and provider details are server-only.
+        // Legacy external-model settings are never exposed publicly.
         unset($settings['aiAstrologerSettings']);
         // Chat alert tokens must never be public - expose only the on/off flags.
         $chatPublic = is_array($settings['chatAlertSettings'] ?? null) ? $settings['chatAlertSettings'] : [];
