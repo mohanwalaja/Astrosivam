@@ -222,7 +222,9 @@ check('an unmatched question consults more sources before admitting it has nothi
   assert.match(fallback, /LIFE_AREAS_PATH/, 'fallback must search every life-area card');
   assert.match(fallback, /REMEDIES_PATH/, 'fallback must search the remedies registry');
   assert.match(fallback, /Consulted: /, 'the consulted sources must be named for the customer');
-  assert.match(fallback, /offer the astrologer handoff/, 'an empty consultation must stay honest');
+  // An empty consultation answers as LABELLED general Tamil guidance, never as a rule.
+  assert.match(fallback, /general guidance, not a reading/, 'a no-match answer must be labelled as general guidance');
+  assert.match(fallback, /TAMIL SOURCES list/, 'a no-match answer may only name the Tamil source list');
   // answer() only swaps the fallback in when the strict retrieval found nothing.
   const answer = sliceText(provider, 'public static function answer', 'private static function remedyBlock', 'answer body');
   assert.match(answer, /if \(\$rulesBlock === ''\) \{\s*\/\/ No life-area card matched directly/);
