@@ -121,6 +121,9 @@ check('muhurtham answers carry the report own dates, windows and place', () => {
   assert.match(reply('muhurtham-best').content as string, /09:10 AM/);
   assert.match(reply('muhurtham-why').content as string, /Rohini/);
   assert.match(reply('muhurtham-avoid').content as string, /01:30 PM/);
+  // Yamagandam and Gulikai are printed too, whenever the report carries them.
+  assert.match(reply('muhurtham-avoid').content as string, /यमगण्ड/);
+  assert.match(reply('muhurtham-avoid').content as string, /गुलिक काल/);
   assert.match(reply('muhurtham-place').content as string, /Chennai/);
   assert.match(reply('muhurtham-place').content as string, /both charts|இரு ஜாதகங்களோடும்|दोनों कुंडलियों/);
 });

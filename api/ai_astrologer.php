@@ -1134,7 +1134,8 @@ function astro_ai_attachable_orders(PDO $pdo, string $userId): array
             AND (refund_status IS NULL OR refund_status = 'NONE')
             AND email_status = 'SENT'
             AND email_sent_at IS NOT NULL
-          ORDER BY email_sent_at DESC"
+          ORDER BY email_sent_at DESC
+          LIMIT 50"
     );
     $stmt->execute([':uid' => $userId]);
     $orders = [];
@@ -1204,7 +1205,8 @@ function astro_ai_guided_menu(string $language, ?array $allowedServices = null, 
 
 function astro_ai_action_options(PDO $pdo, array $user, array $body): void
 {
-    astro_ai_ensure_tables($pdo);
+    // Read-only: the menu and the report list are answered from the knowledge
+    // files and the orders table, so there is nothing to bootstrap here.
     $language = astro_normalize_report_language((string) ($body['language'] ?? ($_GET['language'] ?? 'ta')));
     $isAdmin = astro_ai_is_admin($user);
     $services = $isAdmin ? [] : astro_ai_entitled_service_types($pdo, (string) $user['id']);
@@ -1791,6 +1793,7 @@ function astro_ai_service_facts(array $order): ?array
                 'nallaNeram' => array_values(array_filter(array_map('strval', (array) ($d['nallaNeram'] ?? [])))),
                 'rahuKalam' => (string) ($d['rahuKalam'] ?? ''),
                 'yamagandam' => (string) ($d['yamagandam'] ?? ''),
+                'gulikai' => (string) ($d['gulikai'] ?? ''),
                 'reasons' => $tri($d, 'reasons'),
                 'doshas' => $tri($d, 'doshas'),
             ];

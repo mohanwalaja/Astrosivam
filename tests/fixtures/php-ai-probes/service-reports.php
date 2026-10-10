@@ -164,6 +164,8 @@ $muhurthamPayload = array_merge($scanInputContext, [
                     'tithiNameEn' => 'Panchami', 'tithiNameTa' => 'பஞ்சமி', 'tithiNameHi' => 'पंचमी',
                     'nallaNeram' => [['start' => '09:10 AM', 'end' => '10:40 AM']],
                     'rahuKalam' => ['start' => '01:30 PM', 'end' => '03:00 PM'],
+                    'yamagandam' => ['start' => '06:00 AM', 'end' => '07:30 AM'],
+                    'gulikai' => ['start' => '09:00 AM', 'end' => '10:30 AM'],
                     'reasonsEn' => ['Rohini nakshatra', 'Shukla Paksha'],
                 ],
                 [
@@ -172,6 +174,7 @@ $muhurthamPayload = array_merge($scanInputContext, [
                     'tithiNameEn' => 'Dwadashi',
                     'nallaNeram' => [['start' => '07:05 AM', 'end' => '08:35 AM']],
                     'rahuKalam' => ['start' => '01:30 PM', 'end' => '03:00 PM'],
+                    'yamagandam' => ['start' => '06:00 AM', 'end' => '07:30 AM'],
                     'reasonsEn' => ['Uttara Phalguni nakshatra'],
                 ],
                 ['date' => '2027-01-05', 'pada' => 1, 'grade' => 'FAIR', 'score' => 41],

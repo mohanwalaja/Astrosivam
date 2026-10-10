@@ -1035,18 +1035,25 @@ class AstroAiOffline
             ];
         }
 
-        // avoid
+        // avoid — the three inauspicious windows the report prints per date.
+        $labels = [
+            'rahuKalam' => ['en' => 'Rahu Kalam', 'ta' => 'இராகு காலம்', 'hi' => 'राहु काल'],
+            'yamagandam' => ['en' => 'Yamagandam', 'ta' => 'எமகண்டம்', 'hi' => 'यमगण्ड'],
+            'gulikai' => ['en' => 'Gulikai Kalam', 'ta' => 'குளிகை காலம்', 'hi' => 'गुलिक काल'],
+        ];
         $lines = [];
         foreach (array_slice($recommended, 0, 4) as $d) {
-            $rahu = trim((string) ($d['rahuKalam'] ?? ''));
-            if ($rahu === '') {
+            $windows = [];
+            foreach ($labels as $key => $label) {
+                $window = trim((string) ($d[$key] ?? ''));
+                if ($window !== '') {
+                    $windows[] = self::t($lang, $label) . ' ' . $window;
+                }
+            }
+            if ($windows === []) {
                 continue;
             }
-            $lines[] = '• ' . self::prettyDate((string) ($d['date'] ?? '')) . ' — ' . self::t($lang, [
-                'en' => 'Rahu Kalam ',
-                'ta' => 'ராகு காலம் ',
-                'hi' => 'राहु काल ',
-            ]) . $rahu;
+            $lines[] = '• ' . self::prettyDate((string) ($d['date'] ?? '')) . ' — ' . implode(', ', $windows);
         }
         if ($lines === []) {
             return [self::t($lang, [
