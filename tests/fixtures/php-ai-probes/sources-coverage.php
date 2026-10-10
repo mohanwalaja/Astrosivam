@@ -1,6 +1,6 @@
 <?php
 /**
- * Probe: how much of the curated source library actually reaches a customer?
+ * Probe: does local rule retrieval keep references at their allowed citation level?
  *
  * Run with: node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/sources-coverage.php
  *
@@ -19,8 +19,8 @@ $line = str_repeat('-', 74);
 
 $citable = AstroAiProvider::citableTamilSources();
 echo $line, "\nCITABLE POOL\n", $line, "\n";
-echo 'Tamil sources the agent is allowed to name: ', count($citable), "\n";
-echo "source list handed to the model (first 400 chars):\n";
+echo 'Tamil references eligible at their registry verification level: ', count($citable), "\n";
+echo "sample local citation-reference list (first 400 chars):\n";
 echo mb_substr(AstroAiProvider::tamilSourceList(), 0, 400), "\n...\n";
 
 // A chart shaped the way astro_ai_chart_facts() builds it, so the chart-conditional
@@ -120,8 +120,8 @@ foreach ($cardQuestions as [$card, $lang, $q]) {
 printf("\n%d of 8 cards fired; %d of those kept a citable source line\n", $cardsFired, $cardsCited);
 
 echo "\n", $line, "\nGUARD vs THE RULES BLOCK (the important one)\n", $line, "\n";
-// The rules block the prompt receives names these sources. If the model repeats
-// one of them, does the output guard accept the draft?
+// Check that the local output guard still enforces reply safety independently
+// of any references present in a draft.
 $rulesBlockSources = ['EN-01', 'EN-02', 'EN-06', 'EN-09', 'EN-04', 'TA-02', 'TA-07', 'TA-25'];
 foreach ($rulesBlockSources as $sid) {
     $draft = 'Your chart shows this period is demanding. Source: ' . $sid . '. Please see a qualified doctor if health worries you.';
@@ -155,7 +155,7 @@ foreach ($citedIds as $id => $n) {
 }
 echo 'sources cited by the rules: ', count($citedIds), "\n";
 echo 'citable Tamil sources available: ', count($citable), "\n";
-echo 'cited but NOT citable (the model is told these, then forbidden them): ',
+echo 'rule-cited ids not eligible for Tamil customer citation: ',
     $citedNotCitable ? implode(', ', $citedNotCitable) : 'none', "\n";
 
 $out = [

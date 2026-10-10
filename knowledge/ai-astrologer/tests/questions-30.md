@@ -1,20 +1,15 @@
-# ASTRO SIVAM AI Astrologer — 30 Test Questions
+# Archived ASTRO SIVAM astrologer chat — 30 question examples
 
-**Deliverable 5 · Part 5 · 2026-10-09**
+> **Historical design document (2026-10-09), not a current response contract.** The customer chat now uses local deterministic PHP rules and chart/report data; no AI agent or external model writes replies. Use the current PHP-WASM and source tests to assess actual behavior. The sample answers below are illustrative drafts, not verified source text or guaranteed runtime output.
+
+**Archived deliverable · 2026-10-09**
 
 10 questions in each language, covering all eight life-area cards plus health,
 education, business/career and foreign opportunities. Each entry states the
 question, which area it must route to, what the answer must contain, and a sample
 answer.
 
-**How to use these.** Ask each one in the AI Astrologer chat against a real paid order and
-check the four *must contain* points. The sample answers are the shape to aim
-for, not text to copy — the real answer must be built from that customer's chart.
-
-Every answer must: greet by name (first reply only), answer in the language
-asked, name the planet and house, give a period with a date, offer at most three
-free remedies, end with a source line, and never predict death, never guarantee,
-never diagnose, never name a price.
+**How to use these examples.** They can seed manual questions in a test account, but the sample answers and original *must contain* points are historical and do not describe every current runtime response. Check supported local behavior against `tests/ai-astrologer-php-runtime.test.ts`, the rule JSON, and the health/guardrail tests. Do not use an illustrative sample as evidence that a source was read.
 
 ---
 

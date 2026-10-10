@@ -46,7 +46,7 @@ export const SetupChecklistPanel: React.FC<SetupChecklistPanelProps> = ({
   const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
   const [showDiagnosticConsole, setShowDiagnosticConsole] = useState(false);
   const [isRunningAiCheck, setIsRunningAiCheck] = useState(false);
-  /** Last real result of the AI Astrologer check, straight from the server. */
+  /** Last result of the local source-based astrologer check. */
   const [aiCheck, setAiCheck] = useState<Awaited<ReturnType<typeof aiAstrologer.diagnose>> | null>(null);
   const [aiCheckError, setAiCheckError] = useState<string | null>(null);
 
@@ -365,18 +365,16 @@ export const SetupChecklistPanel: React.FC<SetupChecklistPanelProps> = ({
       ]
     },
     {
-      // Reported from the server's own diagnose action, so this is the one item
-      // here that reflects a live check rather than a stored setting. Until the
-      // check has been run it says so instead of implying the chat works.
+      // Live server-side check of the local-only reply path.
       id: 'chk-ai-1',
       category: 'OPERATIONS',
-      title: 'AI Astrologer Model Connection',
-      description: 'The customer chat answers from this model. Every failure looks identical in the chat window, so run the check to see which step is broken.',
+      title: 'Local Astrologer Knowledge Base',
+      description: 'Checks PHP text support and deployed source/rule files. Replies are local; no external AI service is used.',
       isDone: aiCheck ? aiCheck.ok : false,
       indicator: aiCheck ? (aiCheck.ok ? '✓' : '✕') : '?',
       statusText: aiCheck
-        ? (aiCheck.ok ? 'Replying' : `Blocked: ${aiCheck.blocking.join(', ')}`)
-        : 'Not checked yet - run the AI check',
+        ? (aiCheck.ok ? 'Local reply path ready' : `Blocked: ${aiCheck.blocking.join(', ')}`)
+        : 'Not checked yet - run the local check',
       tab: 'logs',
       details: [
         {
@@ -390,11 +388,11 @@ export const SetupChecklistPanel: React.FC<SetupChecklistPanelProps> = ({
           value: aiCheck ? (aiCheck.blocking.join(', ') || 'None') : 'Unknown'
         },
         {
-          label: 'Live Model Call',
-          valid: Boolean(aiCheck?.ping?.ok),
-          value: aiCheck?.ping?.attempted
-            ? `HTTP ${aiCheck.ping.httpStatus} in ${aiCheck.ping.latencyMs}ms`
-            : 'Not attempted'
+          label: 'Source catalogue',
+          valid: Boolean(aiCheck?.sourceRegistry?.total),
+          value: aiCheck?.sourceRegistry
+            ? `${aiCheck.sourceRegistry.total} records; ${aiCheck.sourceRegistry.byVerification['content-read'] || 0} text-read`
+            : 'Not checked'
         }
       ]
     }
@@ -433,42 +431,32 @@ export const SetupChecklistPanel: React.FC<SetupChecklistPanelProps> = ({
     });
   };
 
-  /**
-   * A REAL check of the AI Astrologer, not a simulated one.
-   *
-   * When the chat stopped answering, every question produced the same customer
-   * line - "Please give me a moment, I am checking again." - and nothing on
-   * screen said why. This calls the server's own diagnose action with ping=1,
-   * so it walks the whole reply path (curl, API key, knowledge base, prompt,
-   * then one live model call) and prints the first thing that is actually wrong.
-   */
+  /** Checks the source-based chat's PHP runtime and local knowledge files. */
   const handleRunAiCheck = async () => {
     setIsRunningAiCheck(true);
     setAiCheckError(null);
     setShowDiagnosticConsole(true);
-    setDiagnosticLogs(prev => [...prev, '[AI] Asking the server to check the AI Astrologer end to end (includes one live model call)...']);
+    setDiagnosticLogs(prev => [...prev, '[Astrologer] Checking the local source-based reply path (no external service)...']);
     try {
-      const result = await aiAstrologer.diagnose(true);
+      const result = await aiAstrologer.diagnose();
       setAiCheck(result);
       setDiagnosticLogs(prev => [
         ...prev,
-        ...result.checks.map(c => `[AI] ${c.ok ? 'OK  ' : 'FAIL'} ${c.label}: ${c.detail}`),
-        result.ping.attempted
-          ? `[AI] Live model call: HTTP ${result.ping.httpStatus} in ${result.ping.latencyMs}ms${result.ping.error ? ` - ${result.ping.error}` : ''}`
-          : '[AI] Live model call: not attempted',
+        ...result.checks.map(c => `[Astrologer] ${c.ok ? 'OK  ' : 'FAIL'} ${c.label}: ${c.detail}`),
+        '[Astrologer] External service: disabled; no network request made.',
         result.recentMessages?.window !== undefined
-          ? `[AI] Last ${result.recentMessages.window} replies: ${result.recentMessages.failed} failed, ${result.recentMessages.sent} sent`
+          ? `[Astrologer] Last ${result.recentMessages.window} replies: ${result.recentMessages.failed} failed, ${result.recentMessages.sent} sent`
               + (result.recentMessages.lastError ? ` - last error: ${result.recentMessages.lastError}` : '')
-          : '[AI] No chat history available yet',
+          : '[Astrologer] No chat history available yet',
         result.ok
-          ? '[AI] RESULT: the reply path is healthy. A customer question should be answered.'
-          : `[AI] RESULT: blocked by ${result.blocking.join(', ')}. Fix the FAIL lines above.`,
+          ? '[Astrologer] RESULT: the local source-based reply path is healthy.'
+          : `[Astrologer] RESULT: blocked by ${result.blocking.join(', ')}. Fix the FAIL lines above.`,
       ]);
       setLastDiagnosticTime(new Date().toLocaleTimeString());
     } catch (e) {
       const message = e instanceof Error ? e.message : 'The check could not be run.';
       setAiCheckError(message);
-      setDiagnosticLogs(prev => [...prev, `[AI] The check itself failed: ${message}`]);
+      setDiagnosticLogs(prev => [...prev, `[Astrologer] The check itself failed: ${message}`]);
     } finally {
       setIsRunningAiCheck(false);
     }
@@ -553,14 +541,14 @@ export const SetupChecklistPanel: React.FC<SetupChecklistPanelProps> = ({
                 onClick={handleRunAiCheck}
                 disabled={isRunningAiCheck}
                 className="px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-amber-500/40 text-amber-200 font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
-                title="Checks the API key, the knowledge base and one live model call on the server"
+                title="Checks the local knowledge files and PHP runtime; no outside service is contacted"
               >
                 <Activity className={`w-3.5 h-3.5 ${isRunningAiCheck ? 'animate-pulse' : ''}`} />
-                <span>{isRunningAiCheck ? 'Checking AI Astrologer...' : 'Check AI Astrologer'}</span>
+                <span>{isRunningAiCheck ? 'Checking local sources...' : 'Check Source-Based Astrologer'}</span>
               </button>
             </div>
             {aiCheckError && (
-              <p className="mt-2 text-[11px] text-rose-300">AI check error: {aiCheckError}</p>
+              <p className="mt-2 text-[11px] text-rose-300">Astrologer check error: {aiCheckError}</p>
             )}
           </div>
         </div>

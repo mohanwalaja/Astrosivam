@@ -81,15 +81,8 @@ function astroRedactAdminSettings($settings) {
         }
     }
 
-    // AI Astrologer model key: report only whether it is stored and its last
-    // four characters so the admin can recognise it - never the key itself.
-    if (isset($settings['aiAstrologerSettings']) && is_array($settings['aiAstrologerSettings'])) {
-        $aiKey = $settings['aiAstrologerSettings']['apiKey'] ?? null;
-        $configured = astroAdminSecretConfigured($aiKey);
-        $settings['aiAstrologerSettings']['apiKeyConfigured'] = $configured;
-        $settings['aiAstrologerSettings']['apiKeyHint'] = $configured ? ('...' . substr(trim((string)$aiKey), -4)) : '';
-        $settings['aiAstrologerSettings']['apiKey'] = '';
-    }
+    // Legacy external-model credentials are no longer exposed or used.
+    unset($settings['aiAstrologerSettings']);
     return $settings;
 }
 
@@ -116,31 +109,8 @@ function astroOmitBlankAdminSecrets($body) {
             }
         }
     }
-    if (isset($body['aiAstrologerSettings']) && is_array($body['aiAstrologerSettings'])) {
-        $ai = $body['aiAstrologerSettings'];
-        if (!empty($ai['clearApiKey'])) {
-            // Explicit "remove the stored key" from the Admin Portal.
-            $ai['apiKey'] = '';
-        } elseif (!astroAdminSecretConfigured($ai['apiKey'] ?? null)
-            || preg_match('/^(?:your[-_ ]?api[-_ ]?key|paste|sk-xxx|xxx)/i', trim((string)$ai['apiKey']))) {
-            // Blank / masked field = keep the key that is already stored.
-            unset($ai['apiKey']);
-        } else {
-            $ai['apiKey'] = trim((string)$ai['apiKey']);
-        }
-        foreach (['baseUrl', 'model'] as $textField) {
-            if (isset($ai[$textField])) $ai[$textField] = trim((string)$ai[$textField]);
-        }
-        if (isset($ai['baseUrl']) && $ai['baseUrl'] !== '' && !preg_match('#^https://#i', $ai['baseUrl'])) {
-            // The key is sent as a Bearer token; never send it over plain HTTP.
-            unset($ai['baseUrl']);
-        }
-        if (isset($ai['maxTokens'])) {
-            $ai['maxTokens'] = $ai['maxTokens'] === '' ? '' : (string)max(100, min(4000, (int)$ai['maxTokens']));
-        }
-        unset($ai['clearApiKey'], $ai['apiKeyConfigured'], $ai['apiKeyHint']);
-        $body['aiAstrologerSettings'] = $ai;
-    }
+    // Ignore legacy external-model settings; the chat is local-only.
+    unset($body['aiAstrologerSettings']);
     return $body;
 }
 
@@ -1061,6 +1031,8 @@ if (strpos($path, 'admin/settings') !== false && !strpos($path, 'test-email')) {
 
         // Deep merge body into general settings
         $mergedGeneral = array_merge($existingGeneral, $body);
+        // Remove any legacy model credentials the local-only chat no longer uses.
+        unset($mergedGeneral['aiAstrologerSettings']);
 
         $serviceMode = $body['serviceMode'] ?? $mergedGeneral['serviceMode'] ?? ($existingRow['service_mode'] ?? 'PAID');
         $freeBetaActive = isset($body['freeBetaActive']) ? (!empty($body['freeBetaActive']) ? 1 : 0) : ($existingRow['free_beta_active'] ?? 0);
@@ -1086,12 +1058,6 @@ if (strpos($path, 'admin/settings') !== false && !strpos($path, 'test-email')) {
             $mergedGeneral['chatAlertSettings'] = $mergedChat;
         }
 
-        // AI Astrologer model settings: merge so saving the model name alone
-        // never wipes a stored API key.
-        if (isset($body['aiAstrologerSettings']) && is_array($body['aiAstrologerSettings'])) {
-            $existingAi = is_array($existingGeneral['aiAstrologerSettings'] ?? null) ? $existingGeneral['aiAstrologerSettings'] : [];
-            $mergedGeneral['aiAstrologerSettings'] = array_merge($existingAi, $body['aiAstrologerSettings']);
-        }
 
         $pricingJson = json_encode($pricing, JSON_UNESCAPED_UNICODE);
         $paymentJson = json_encode($paymentMethods, JSON_UNESCAPED_UNICODE);

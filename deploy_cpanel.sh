@@ -83,23 +83,18 @@ if [ -f "src/lib/muhurtham/rules.json" ]; then
   cp -f src/lib/muhurtham/rules.json "$TARGET_DIR/src/lib/muhurtham/rules.json"
 fi
 
-# AI Astrologer knowledge base: the system prompt, the life-area rules, the
-# remedies registry and the citation index. AstroAiProvider resolves these two
-# levels up from api/astrology/, i.e. the document root, and systemPrompt()
-# THROWS when the prompt file is absent - so a deployment that skips this
-# directory leaves the chat answering nothing at all, with the same generic
-# "Please give me a moment, I am checking again." for every question.
-# .cpanel.yml already copies this; this script did not, and the two deploy
-# paths must not disagree.
+# Local source-based astrologer data: reviewed rules, remedies, source registry
+# and guardrails are required application files. Copy tracked source only; this
+# does not touch api/config.php or live credentials. Both deploy paths include it.
 if [ -d "knowledge" ]; then
   while IFS= read -r -d '' file; do
     target="$TARGET_DIR/$file"
     mkdir -p "$(dirname "$target")"
     cp -f "$file" "$target"
   done < <(find knowledge -type f -print0)
-  echo "Copied AI Astrologer knowledge base to $TARGET_DIR/knowledge/"
+  echo "Copied local astrologer knowledge files to $TARGET_DIR/knowledge/"
 else
-  echo "WARNING: no knowledge/ directory in this checkout - the AI Astrologer cannot answer." >&2
+  echo "WARNING: no knowledge/ directory in this checkout - the source-based astrologer cannot answer." >&2
 fi
 
 # Restore the live database configuration after copying source API files.

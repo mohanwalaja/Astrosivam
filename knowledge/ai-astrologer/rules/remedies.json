@@ -2,7 +2,7 @@
   "$schema": "./remedies.schema.json",
   "version": "1.0.0",
   "generatedOn": "2026-10-09",
-  "_purpose": "The only remedies the ASTRO SIVAM AI Astrologer may offer. Every entry is free or near-free, every entry names its source, and every entry that replaces an expensive classical prescription carries the warrant that allows the substitution.",
+  "_purpose": "The limited remedies the ASTRO SIVAM local reply builder may offer. Entries are free or near-free, sourced, and constrained by the remedy policy below.",
   "_policy": [
     "Remedies must be simple and respectful: mantra, temple visit, charity, fasting day, lifestyle.",
     "No expensive remedies. No gemstones - the registry has no surviving gemstone source after the Hindi exclusion, and gemstones are expensive.",

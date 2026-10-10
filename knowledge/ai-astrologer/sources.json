@@ -2,7 +2,7 @@
   "$schema": "./sources.schema.json",
   "registryVersion": "1.0.0",
   "generatedOn": "2026-10-10",
-  "project": "ASTRO SIVAM AI Astrologer",
+  "project": "ASTRO SIVAM source-based astrologer",
   "verificationPolicy": {
     "rule": "A source is listed here ONLY if the URL was actually opened during verification, or its existence and metadata were returned by the publisher's own catalogue API.",
     "acceptedVerificationMethods": [

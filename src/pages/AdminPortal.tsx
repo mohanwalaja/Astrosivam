@@ -155,7 +155,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
     'orders' | 'analytics' | 'financial' | 'payments' | 'emails' | 'alerts' | 'aiastrologer' | 'database' | 'checklist' | 'messages' | 'team' | 'settings' | 'users' | 'logs' | 'google' | 'security' | 'errors' | 'escalations'
   >('orders');
 
-  // AI Astrologer escalation queue: complaints forwarded from the AI chat and
+  // Astrologer escalation queue: complaints forwarded from the source-based chat and
   // "Talk to our astrologer" handoffs waiting for a human reply.
   const [aiHandoffs, setAiHandoffs] = useState<AiChatHandoff[]>([]);
   const [aiHandoffNotes, setAiHandoffNotes] = useState<Record<number, string>>({});
@@ -1800,7 +1800,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
           }`}
         >
           <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-          <span>AI Astrologer</span>
+          <span>Source-Based Astrologer</span>
         </button>
 
         <button
@@ -3209,13 +3209,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
         />
       )}
 
-      {/* SECTION: AI ASTROLOGER CHAT MODEL */}
-      {activeSection === 'aiastrologer' && (
-        <AiAstrologerConfigPanel
-          settings={settings}
-          onUpdateSettings={handleUpdateSettingsGeneric}
-        />
-      )}
+      {/* SECTION: LOCAL SOURCE-BASED ASTROLOGER */}
+      {activeSection === 'aiastrologer' && <AiAstrologerConfigPanel />}
 
       {/* SECTION: DATABASE BACKUP & RESTORE */}
       {activeSection === 'database' && (
@@ -3863,10 +3858,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onNavigate }) => {
             <div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-rose-400" />
-                <span>AI Astrologer Escalations ({aiHandoffs.length})</span>
+                <span>Astrologer Chat Escalations ({aiHandoffs.length})</span>
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Customer complaints forwarded automatically from the AI Astrologer chat, plus &quot;Talk to our
+                Customer complaints forwarded automatically from the astrologer chat, plus &quot;Talk to our
                 astrologer&quot; handoffs. Reply to the customer directly by email or phone, then update the status.
               </p>
             </div>

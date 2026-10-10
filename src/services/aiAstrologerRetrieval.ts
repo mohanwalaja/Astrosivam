@@ -1,18 +1,13 @@
 /**
- * ASTRO SIVAM AI Astrologer — knowledge retrieval.
+ * ASTRO SIVAM source-based astrologer — knowledge retrieval.
  *
- * This is the executable spec for the retrieval half of the chat agent. The
- * Part 2 flow is: question -> detect language -> read the chart -> retrieve
- * matching rules and sources -> hand the context to the AI -> cite briefly.
+ * This module documents the curated question/rule matching used by the local
+ * reply path: question -> language -> chart facts -> matching rules/remedies ->
+ * source reference and possible human handoff. It does not call an AI model.
  *
- * WHY IT LIVES HERE: the knowledge base is JSON under knowledge/ai-astrologer/
- * so that the PHP endpoint and this module read the SAME files. The repo
- * already does this for muhurtham (src/lib/muhurtham/rules.json) and for
- * rajju.json. This module is the reference implementation; the PHP port in
- * api/astrology/ai_astrologer.php must match its behaviour, and
- * tests/ai-astrologer-knowledge.test.ts pins the behaviour down.
- *
- * NOTHING HERE CALLS AN AI MODEL. Model calls happen only in PHP, server-side.
+ * The knowledge base is JSON under knowledge/ai-astrologer/. The matching
+ * vocabulary and safety behavior are pinned by tests/ai-astrologer-knowledge.test.ts
+ * and mirrored in PHP for the customer-facing local-only implementation.
  */
 
 export type Lang = 'ta' | 'hi' | 'en';
@@ -440,17 +435,16 @@ export interface Retrieval {
   rules: RetrievedRule[];
   remedies: ReturnType<typeof remediesFor>;
   handoff: boolean;
-  /** The exact string the AI must append as its source reference. */
+  /** The exact local source reference to append to the reply. */
   sourceLine: string;
   /** Chart facts the prompt must include, in the customer's language. */
   chartHeader: string;
 }
 
 /**
- * The whole Part 2 flow, minus the model call. Given a question and the
- * customer's chart, returns everything the PHP endpoint needs to build the
- * prompt: language, refusal route, matched area, the rules that actually hold,
- * remedies, the source line, and whether to offer the astrologer handoff.
+ * The whole local retrieval flow. Given a question and the customer's chart,
+ * returns the language, refusal route, matched area, applicable rules, remedies,
+ * source line, and whether to offer the astrologer handoff.
  */
 export function retrieve(question: string, chart: ChartFacts): Retrieval {
   const lang = detectLanguage(question);

@@ -11,20 +11,17 @@
  *   upload             attach an ASTRO SIVAM report PDF (Part 3 gate)
  *   handoff            "Talk to our astrologer"
  *   usage              today's customer allowance (admins are unlimited)
- *   diagnose           admin-only: why the chat is not answering, step by step
+ *   diagnose           admin-only: check the local source-based reply path
  *
  * IF THE CHAT NEVER REPLIES, READ THIS FIRST
- * Every failure the customer can see renders as the same one line - "Please
- * give me a moment, I am checking again." A missing model key, a missing
- * knowledge/ directory, a blocked outbound connection and a slow model all look
- * identical in the chat window. Open
- *   /api/ai_astrologer.php?action=diagnose&ping=1
- * while signed in as an admin: it walks the reply path and names the first
- * thing that is wrong. See AI_CHAT_NOT_REPLYING_FIX.md.
+ * Replies are local-only: this endpoint never calls an external AI service
+ * and never needs an API key. If the chat cannot answer, sign in as an admin
+ * and run /api/ai_astrologer.php?action=diagnose to check PHP extensions and
+ * the deployed knowledge/ files. See AI_CHAT_NOT_REPLYING_FIX.md.
  *
  * ACCESS GATES — READ BEFORE EDITING
  * Authentication and entitlement checks run in PHP on EVERY action, including
- * read-only ones; the client is never trusted to decide who can use the agent:
+ * read-only ones; the client is never trusted to decide who can use the chat:
  *
  *   1. requireAuth()       — a signed-in account, with the token_version check
  *                            that api/config.php already applies.
@@ -37,12 +34,11 @@
  * PENDING, PROCESSING, REJECTED or CANCELLED does not qualify. A refunded order
  * does not qualify. Admin access is based only on the persisted database role.
  *
- * VERIFICATION STATUS: this file's HTTP dispatch is still not executed in the
- * build sandbox (there is no `php` binary and no database here). What IS
- * executed is the generation layer it calls — AstroAiProvider runs for real
- * under the wasm PHP runtime:
- *   node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/reply-path.php
- * and the gates, migration and schema contracts are checked by
+ * VERIFICATION STATUS: this file's HTTP dispatch is not executed in the build
+ * sandbox (there is no native `php` binary or database here). The local reply
+ * builder and chart path are exercised under the wasm PHP runtime:
+ *   node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/knowledge-base-mode.php
+ * The gates, migration and schema contracts are checked by
  * tests/ai-astrologer-access.test.ts. Smoke-test the dispatch on the server
  * before relying on it — see BIGROCK_CPANEL_DEPLOYMENT_GUIDE.md.
  */
@@ -215,31 +211,31 @@ function astro_ai_entitlement_copy(string $code, array $entitlement): array
 {
     if ($code === 'REPORT_NOT_DELIVERED') {
         return [
-            'en' => 'Your report has not been delivered yet. The AI Astrologer opens as soon as '
+            'en' => 'Your report has not been delivered yet. The astrologer chat opens as soon as '
                 . 'your report email is sent.',
             'ta' => 'உங்கள் அறிக்கை இன்னும் அனுப்பப்படவில்லை. அறிக்கை மின்னஞ்சல் சென்றவுடன் '
-                . 'AI ஜோதிடர் தொடங்கும்.',
-            'hi' => 'आपकी रिपोर्ट अभी नहीं भेजी गई है। रिपोर्ट ईमेल भेजते ही AI ज्योतिषी शुरू हो जाएगा।',
+                . 'ஜோதிடர் உரையாடல் தொடங்கும்.',
+            'hi' => 'आपकी रिपोर्ट अभी नहीं भेजी गई है। रिपोर्ट ईमेल भेजते ही ज्योतिषी चैट शुरू हो जाएगी।',
         ];
     }
 
     if ($code === 'CHAT_WINDOW_EXPIRED') {
         return [
-            'en' => 'The 7-day AI Astrologer period for this report has ended. '
+            'en' => 'The 7-day astrologer chat period for this report has ended. '
                 . 'Place a new order and the chat opens again.',
-            'ta' => 'இந்த அறிக்கைக்கான 7 நாள் AI ஜோதிடர் காலம் முடிந்தது. '
+            'ta' => 'இந்த அறிக்கைக்கான 7 நாள் ஜோதிடர் உரையாடல் காலம் முடிந்தது. '
                 . 'புதிய ஆர்டர் செய்தால் மீண்டும் தொடங்கும்.',
-            'hi' => 'इस रिपोर्ट के लिए 7 दिन की AI ज्योतिषी अवधि समाप्त हो गई है। '
+            'hi' => 'इस रिपोर्ट के लिए 7 दिन की ज्योतिषी चैट अवधि समाप्त हो गई है। '
                 . 'नया ऑर्डर करने पर चैट फिर शुरू हो जाएगी।',
         ];
     }
 
     return [
-        'en' => 'The AI Astrologer is available to customers with a completed report. '
+        'en' => 'The astrologer chat is available to customers with a completed report. '
             . 'Once your order is complete, I will be here.',
-        'ta' => 'AI ஜோதிடர், முடிந்த அறிக்கை உள்ள வாடிக்கையாளர்களுக்கு மட்டுமே. '
+        'ta' => 'முடிந்த அறிக்கை உள்ள வாடிக்கையாளர்களுக்கு மட்டுமே ஜோதிடர் உரையாடல் கிடைக்கும். '
             . 'உங்கள் ஆர்டர் முடிந்ததும் நான் இங்கே இருப்பேன்.',
-        'hi' => 'AI ज्योतिषी उन ग्राहकों के लिए उपलब्ध है जिनकी रिपोर्ट पूरी हो चुकी है। '
+        'hi' => 'ज्योतिषी चैट उन ग्राहकों के लिए उपलब्ध है जिनकी रिपोर्ट पूरी हो चुकी है। '
             . 'आपका ऑर्डर पूरा होते ही मैं यहाँ रहूँगा।',
     ];
 }
@@ -255,45 +251,6 @@ function astro_ai_gate(PDO $pdo): array
 function astro_ai_daily_limit(): int
 {
     return astro_env_int('AI_ASTROLOGER_DAILY_LIMIT', AI_ASTROLOGER_DAILY_LIMIT_DEFAULT, 1, 1000);
-}
-
-/**
- * Hands the provider the admin-saved model configuration, if there is any.
- *
- * WHY THIS EXISTS: the key was previously readable ONLY through getenv(). On
- * cPanel under LiteSpeed/PHP-FPM a value set with SetEnv in .htaccess lands in
- * $_SERVER instead of the process environment, so the endpoint reported itself
- * unconfigured and every question came back "Please give me a moment, I am
- * checking again." - with nothing on screen to say why. The Admin Portal can
- * now store the same three values in system_settings.general_settings
- * .aiAstrologerSettings, the same way payment and chat-alert credentials are
- * stored, and the environment still wins when it has a real value.
- *
- * Best-effort by design: a settings read failure must never stop a chat that
- * could otherwise answer from the environment.
- */
-function astro_ai_load_provider_settings(PDO $pdo): void
-{
-    try {
-        $stmt = $pdo->query("SELECT general_settings FROM system_settings ORDER BY id ASC LIMIT 1");
-        $row = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : false;
-        if (!$row) {
-            return;
-        }
-        $general = json_decode((string) ($row['general_settings'] ?? '{}'), true) ?: [];
-        $ai = is_array($general['aiAstrologerSettings'] ?? null) ? $general['aiAstrologerSettings'] : [];
-        if (!$ai) {
-            return;
-        }
-        AstroAiProvider::configure([
-            'apiKey' => (string) ($ai['apiKey'] ?? ''),
-            'baseUrl' => (string) ($ai['baseUrl'] ?? ''),
-            'model' => (string) ($ai['model'] ?? ''),
-            'maxTokens' => (string) ($ai['maxTokens'] ?? ''),
-        ]);
-    } catch (Throwable $e) {
-        error_log('AI Astrologer: could not read saved model settings: ' . $e->getMessage());
-    }
 }
 
 /**
@@ -414,9 +371,9 @@ function astro_ai_load_session(PDO $pdo, string $sessionId, string $userId): ?ar
 }
 
 /**
- * The recent conversation, oldest first, capped. The cap is what keeps the
- * prompt bounded on shared hosting; the agent still "remembers" the whole chat
- * because history() can page it, but only this window is sent to the model.
+ * The recent conversation, oldest first, capped for efficient history paging.
+ * The full conversation remains available through history(); customer replies
+ * are built from the current question and local chart/source data.
  */
 function astro_ai_recent_messages(PDO $pdo, string $sessionId): array
 {
@@ -568,22 +525,19 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
 {
     astro_ai_ensure_tables($pdo);
 
-    // Fail fast only when the chat truly cannot answer. An AI API key is
-    // OPTIONAL: without one the chat answers in knowledge-base mode from
-    // ASTRO SIVAM's own sources (see api/astrology/ai_astrologer_offline.php).
-    // What does stop every answer is a missing knowledge/ directory, so that
-    // is the setup problem this refusal names.
+    // Fail fast only when the local answer path cannot run. This chat never
+    // calls a model provider and never requires an API key.
     if (!AstroAiProvider::canAnswer()) {
         $diag = AstroAiProvider::diagnostics(false);
-        error_log('AI Astrologer: ask refused - knowledge base unavailable. Blocking: '
+        error_log('Source-based astrologer: ask refused - local knowledge unavailable. Blocking: '
             . (implode(', ', $diag['blocking']) ?: 'unknown')
             . '. Run /api/ai_astrologer.php?action=diagnose as an admin for the full report.');
-        jsonResponse(['success' => false, 'code' => 'AI_NOT_CONFIGURED',
-            'message' => 'The AI Astrologer knowledge base is missing on this server. '
+        jsonResponse(['success' => false, 'code' => 'LOCAL_KNOWLEDGE_UNAVAILABLE',
+            'message' => 'The local astrology knowledge base is missing on this server. '
                 . 'Upload the knowledge/ folder to the website root (see deploy_cpanel.sh), then try again.',
-            'message_ta' => 'AI ஜோதிடரின் அறிவுத் தளம் இந்த சர்வரில் இல்லை. '
+            'message_ta' => 'உள்ளூர் ஜோதிட அறிவுத் தளம் இந்த சர்வரில் இல்லை. '
                 . 'நிர்வாகி knowledge/ கோப்புறையை பதிவேற்ற வேண்டும்.',
-            'message_hi' => 'AI ज्योतिषी का ज्ञान-आधार इस सर्वर पर नहीं है। '
+            'message_hi' => 'स्थानीय ज्योतिष ज्ञान-आधार इस सर्वर पर नहीं है। '
                 . 'एडमिन को knowledge/ फ़ोल्डर अपलोड करना होगा।',
             'blocking' => $diag['blocking'],
             // Only an administrator can do anything with this, and the client
@@ -633,13 +587,12 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
     $language = astro_normalize_report_language((string) ($body['language'] ?? $session['language']));
     $startedAt = microtime(true);
 
-    // 1. Store the question BEFORE doing anything slow. If the model call dies
-    //    the customer's words are already safe.
+    // 1. Store the question before building a reply, so the customer's words are safe.
     $questionId = astro_ai_save_message($pdo, $sessionId, (string) $user['id'], 'customer', $language, $question);
 
     try {
-        // 2. Retrieve, then generate. Both are server-side; no key reaches the
-        //    browser. See knowledge/ai-astrologer/prompt/system-prompt.md.
+        // 2. Retrieve the local rules and build a deterministic reply. No external
+        //    provider, model call or API key is involved.
         $reply = astro_ai_generate_reply($pdo, $user, $session, $language, $question);
 
         // NOTE: no astro_rate_limit_bump() here. For customers,
@@ -654,7 +607,7 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
         ]);
 
         // 3. Complaints go straight to the admin queue (ai_chat_handoffs),
-        //    whatever the model answered, and the customer sees a visible
+        //    whatever the local rule engine answered, and the customer sees a visible
         //    confirmation. Non-complaint handoffs (health, declined topics)
         //    only OFFER the astrologer - they are queued when the customer
         //    accepts via the "Talk to our astrologer" button, so the queue
@@ -897,32 +850,23 @@ function astro_ai_action_usage(PDO $pdo, array $user): void
 /**
  * WHY THE CHAT IS NOT ANSWERING — the one request that says so.
  *
- * Admin-only. Every failure a customer can experience looks identical from the
- * chat window ("Please give me a moment, I am checking again."), so this walks
- * the whole reply path and names the first thing that is wrong: no curl, no key
- * visible to PHP, a placeholder key, a missing knowledge/ directory, an
- * unparseable prompt, or a model endpoint that refuses the call.
- *
- * Pass ping=1 to also make one real (1-token) model call and report its HTTP
- * status and latency. Without it the action makes no outbound request and costs
- * nothing, so it is safe to poll.
- *
- * It never returns a credential: the key is reported as a source plus its last
- * four characters, which is enough to confirm which key PHP is holding.
+ * Admin-only. Checks the local reply path (mbstring, JSON knowledge files and
+ * the source catalogue). External providers are disabled, and this diagnostic
+ * never makes an outbound network request, even if a legacy key is still stored.
  */
 function astro_ai_action_diagnose(PDO $pdo, array $user, array $body): void
 {
     if (!astro_ai_is_admin($user)) {
         jsonResponse(['success' => false, 'code' => 'ADMIN_ONLY',
-            'message' => 'Admin privileges are required to run the AI Astrologer check.'], 403);
+            'message' => 'Admin privileges are required to check the local astrology knowledge base.'], 403);
     }
 
-    $livePing = !empty($body['ping']) || !empty($_GET['ping']);
-    $diagnostics = AstroAiProvider::diagnostics((bool) $livePing);
+    // Ignore legacy ping requests: this endpoint is permanently local-only.
+    $diagnostics = AstroAiProvider::diagnostics(false);
 
     // The customer-facing view of the same problem: what the last few attempts
     // actually did. A wall of FAILED rows with the same error message is the
-    // signature of a configuration problem rather than a slow model.
+    // signature of a configuration problem rather than a slow computation.
     $recentFailures = [];
     try {
         astro_ai_ensure_tables($pdo);
@@ -958,7 +902,7 @@ function astro_ai_action_diagnose(PDO $pdo, array $user, array $body): void
         ];
     } catch (Throwable $e) {
         // The chat tables may not exist yet on a fresh install; that is itself
-        // worth reporting, but it must not hide the model diagnostics.
+        // worth reporting, but it must not hide the local knowledge checks.
         $recentFailures = ['error' => $e->getMessage()];
     }
 
@@ -969,19 +913,20 @@ function astro_ai_action_diagnose(PDO $pdo, array $user, array $body): void
         'blocking' => $diagnostics['blocking'],
         'checks' => $diagnostics['checks'],
         'ping' => $diagnostics['ping'],
+        'sourceRegistry' => $diagnostics['sourceRegistry'],
         'recentMessages' => $recentFailures,
         'generatedAt' => $diagnostics['generatedAt'],
     ]);
 }
 
 /* ================================================================== */
-/* Generation — the only place a model is called                      */
+/* Generation — deterministic local knowledge-base reply               */
 /* ================================================================== */
 
 /**
- * Builds the reply. All of it happens server-side: retrieval from the knowledge
- * base, prompt assembly, the model call and the output guard. No key reaches the
- * browser. Throws on failure so the caller records a FAILED row.
+ * Rebuilds the customer's chart from their own saved order inputs, then uses
+ * only local rules, report readings and remedies to assemble the reply. Throws
+ * on a real local setup/runtime failure so the caller records a FAILED row.
  *
  * @return array{content:string, bubbles:array, sourceLine:?string, areaId:?string, handoff:bool}
  */
@@ -1021,28 +966,7 @@ function astro_ai_generate_reply(PDO $pdo, array $user, array $session, string $
                 : 'No chart is attached to this conversation yet.');
     }
 
-    $history = astro_ai_recent_messages($pdo, $session['id']);
-    $context['chatHistory'] = $history
-        ? implode(' | ', array_map(function ($m) {
-            return $m['role'] . ': ' . mb_substr((string) $m['content'], 0, 120, 'UTF-8');
-        }, $history))
-        : '(this is the first message)';
-
-    if (!AstroAiProvider::isConfigured()) {
-        // No API key: our own sources only.
-        return AstroAiProvider::answerFromKnowledgeBase($question, $language, $chart, $context);
-    }
-    try {
-        $reply = AstroAiProvider::answer($question, $language, $history, $chart, $context);
-        $reply['mode'] = 'model';
-        return $reply;
-    } catch (Throwable $e) {
-        // A configured model that is down, out of credit or misconfigured must
-        // not leave the customer without an answer: fall back to the
-        // knowledge base and log why, so the admin can still fix the key.
-        error_log('AI Astrologer: model call failed, answering from the knowledge base instead: ' . $e->getMessage());
-        return AstroAiProvider::answerFromKnowledgeBase($question, $language, $chart, $context);
-    }
+    return AstroAiProvider::answerFromKnowledgeBase($question, $language, $chart, $context);
 }
 
 /** Trilingual complaint/escalation keywords. Deliberately broad: missing a
@@ -1281,11 +1205,6 @@ try {
 
     // BOTH GATES, on every action, before anything else.
     $user = astro_ai_gate($pdo);
-
-    // Model configuration saved in the Admin Portal, applied before any action
-    // can ask isConfigured(). The environment still wins when it holds a real
-    // value, so nothing that works today changes.
-    astro_ai_load_provider_settings($pdo);
 
     $action = strtolower((string) ($_GET['action'] ?? ($_POST['action'] ?? '')));
     $rawBody = file_get_contents('php://input');

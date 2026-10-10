@@ -1,5 +1,5 @@
 /**
- * ASTRO SIVAM AI Astrologer — browser client.
+ * ASTRO SIVAM source-based astrologer — browser client.
  *
  * Every call goes to /api/ai_astrologer.php, which requires an authenticated
  * account on every request. Customers need an active paid-report entitlement;
@@ -7,7 +7,7 @@
  * is allowed to ask - it only renders what the server allows, including 403 and
  * 429 responses.
  *
- * No AI key ever reaches this file. Model calls happen only in PHP.
+ * No AI key is used. Replies are built locally in PHP from chart data and curated knowledge.
  */
 import { API_BASE, safeJson } from './api';
 
@@ -66,19 +66,13 @@ export class AiAstrologerError extends Error {
     this.diagnostics = body?.diagnose ?? undefined;
   }
 
-  /**
-   * True when the failure is a server setup problem rather than a slow or
-   * flaky model. Those never fix themselves by retrying, so hiding them behind
-   * "I am checking again" is what left the chat looking broken with nothing on
-   * screen to explain it: the customer waited, retried, and got the same line
-   * forever while the real cause sat in a server log nobody was reading.
-   */
+  /** True when the local knowledge files or server setup need attention. */
   get isSetupProblem(): boolean {
-    return this.code === 'AI_NOT_CONFIGURED';
+    return this.code === 'LOCAL_KNOWLEDGE_UNAVAILABLE';
   }
 }
 
-/** Browser-side abort for a request. Sits above the server's 25s model timeout. */
+  /** Browser-side abort protects chart rebuilding and local source retrieval. */
 const ASK_TIMEOUT_MS = 30000;
 
 async function call(
@@ -147,27 +141,28 @@ export const aiAstrologer = {
     return call('usage', {}, 'GET');
   },
 
-  /**
-   * Admin-only: walks the reply path and reports the first thing that is wrong.
-   * `ping` also makes one real (1-token) model call, which is the only way to
-   * prove the host can actually reach the model. Without it the call makes no
-   * outbound request.
-   */
-  async diagnose(ping = false): Promise<{
+  /** Admin-only local health check. It never makes an outbound network call. */
+  async diagnose(): Promise<{
     ok: boolean;
-    configured: boolean;
-    /** 'knowledge-base' = no API key, replies from ASTRO SIVAM's own sources. */
-    mode?: 'model' | 'knowledge-base';
+    configured: false;
+    /** The only supported mode is local knowledge-base replies. */
+    mode?: 'knowledge-base';
     blocking: string[];
     checks: { id: string; label: string; ok: boolean; detail: string }[];
     ping: { attempted: boolean; ok: boolean; httpStatus: number; latencyMs: number; error: string };
+    sourceRegistry?: {
+      total: number;
+      excluded: number;
+      citableTamil: number;
+      byVerification: Record<string, number>;
+    };
     recentMessages: {
       window?: number; failed?: number; sent?: number; lastError?: string | null;
       slowestLatencyMs?: number; error?: string;
     };
     generatedAt: string;
   }> {
-    return call('diagnose', { ping: ping ? '1' : '' }, 'GET', 40000);
+    return call('diagnose', {}, 'GET', 40000);
   },
 
   /** Attaches an ASTRO SIVAM report PDF. The server proves ownership. */

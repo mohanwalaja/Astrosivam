@@ -1,5 +1,5 @@
 /**
- * ASTRO SIVAM AI Astrologer — the customer/admin chat panel.
+ * ASTRO SIVAM source-based astrologer — the customer/admin chat panel.
  *
  * Part 4 scope: the entry point, customer paid-gate handling and the history.
  * The typing choreography (status text for 2-4s, then three dots, then
@@ -7,8 +7,8 @@
  * are already here as TIMING constants so the tuning is a numbers change, not a
  * rewrite.
  *
- * The header always says "ASTRO SIVAM AI Astrologer" and the panel never claims
- * to be a person - both are hard requirements.
+ * Replies come only from ASTRO SIVAM's local chart calculations and curated
+ * source-based knowledge base; the panel never claims to be a person.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Bot, Send, RefreshCw, UserRound, X } from 'lucide-react';
@@ -20,8 +20,8 @@ import {
 } from '../../services/aiAstrologerApi';
 
 /**
- * Timing, in milliseconds. The 12s cap is absolute and the real AI response
- * time counts towards it - a slow model must never be padded out further.
+ * Timing, in milliseconds. The 12s cap is absolute; local rule matching and
+ * chart calculation usually finish well before it.
  */
 const TIMING = {
   statusMin: 2000,
@@ -43,9 +43,9 @@ const STATUS: Record<ChatLanguage, string> = {
 };
 
 const GREETING: Record<ChatLanguage, (name: string) => string> = {
-  en: (n) => `Hello ${n} — I am the ASTRO SIVAM AI Astrologer. Ask me anything about your chart or your report, and I will explain it.`,
-  ta: (n) => `வணக்கம் ${n} — நான் ASTRO SIVAM AI ஜோதிடர். உங்கள் ஜாதகம் அல்லது அறிக்கை பற்றி எதுவும் கேளுங்கள் — நான் விளக்குகிறேன்.`,
-  hi: (n) => `नमस्ते ${n} — मैं ASTRO SIVAM AI ज्योतिषी हूँ। अपनी कुंडली या रिपोर्ट के बारे में कुछ भी पूछें — मैं हर हिस्सा समझाऊँगा।`,
+  en: (n) => `Hello ${n} — welcome to ASTRO SIVAM. Ask me about your chart or report; I will answer using our own astrology rules and references.`,
+  ta: (n) => `வணக்கம் ${n} — ASTRO SIVAM-க்கு வரவேற்கிறோம். உங்கள் ஜாதகம் அல்லது அறிக்கை பற்றி கேளுங்கள்; எங்கள் சொந்த ஜோதிட விதிகளையும் ஆதாரங்களையும் கொண்டு பதிலளிக்கிறேன்.`,
+  hi: (n) => `नमस्ते ${n} — ASTRO SIVAM में आपका स्वागत है। अपनी कुंडली या रिपोर्ट के बारे में पूछें; मैं हमारे अपने ज्योतिष नियमों और संदर्भों से उत्तर दूँगा।`,
 };
 
 /** Display names for the report the customer just received, per language. */
@@ -61,9 +61,9 @@ const SERVICE_TITLE: Record<string, Record<ChatLanguage, string>> = {
  * its order number, and opens the floor to chart AND order questions.
  */
 const ORDER_GREETING: Record<ChatLanguage, (name: string, service: string, orderNo: string) => string> = {
-  en: (n, s, o) => `Hello ${n} — thank you for your order. Your ${s} report (#${o}) has been delivered to your email. Ask me anything about your chart or your order — I am here to help.`,
-  ta: (n, s, o) => `வணக்கம் ${n} — உங்கள் ஆர்டருக்கு நன்றி. உங்கள் ${s} அறிக்கை (#${o}) உங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்டுள்ளது. உங்கள் ஜாதகம் அல்லது ஆர்டர் பற்றி எதுவும் கேளுங்கள் — நான் உதவ தயாராக இருக்கிறேன்.`,
-  hi: (n, s, o) => `नमस्ते ${n} — आपके ऑर्डर के लिए धन्यवाद। आपकी ${s} रिपोर्ट (#${o}) आपके ईमेल पर भेज दी गई है। अपनी कुंडली या ऑर्डर के बारे में कुछ भी पूछें — मैं मदद के लिए यहाँ हूँ।`,
+  en: (n, s, o) => `Hello ${n} — your ${s} report (#${o}) has been delivered. Ask me about your chart or report; replies use our own astrology rules and references.`,
+  ta: (n, s, o) => `வணக்கம் ${n} — உங்கள் ${s} அறிக்கை (#${o}) அனுப்பப்பட்டுள்ளது. உங்கள் ஜாதகம் அல்லது அறிக்கை பற்றி கேளுங்கள்; எங்கள் சொந்த ஜோதிட விதிகளையும் ஆதாரங்களையும் கொண்டு பதிலளிக்கிறேன்.`,
+  hi: (n, s, o) => `नमस्ते ${n} — आपकी ${s} रिपोर्ट (#${o}) भेज दी गई है। अपनी कुंडली या रिपोर्ट के बारे में पूछें; उत्तर हमारे अपने ज्योतिष नियमों और संदर्भों पर आधारित होंगे।`,
 };
 
 const RETRY_TEXT: Record<ChatLanguage, string> = {
@@ -175,7 +175,7 @@ export default function AiAstrologerPanel({
 
     const startedAt = Date.now();
     // The status line shows for 2-4s, then the dots. Both are cut short by the
-    // 12s hard cap so a slow model is never padded.
+    // 12s hard cap so local chart/source work is never padded.
     const statusFor = TIMING.statusMin + Math.random() * (TIMING.statusMax - TIMING.statusMin);
     timers.current.push(
       window.setTimeout(() => {
@@ -280,7 +280,7 @@ export default function AiAstrologerPanel({
           <Bot className="w-5 h-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-bold leading-tight truncate">ASTRO SIVAM AI Astrologer</div>
+          <div className="text-sm font-bold leading-tight truncate">ASTRO SIVAM Astrologer</div>
           <div className="text-[11px] text-slate-400 truncate">
             {sessionOrderLabel || (isAdmin
               ? 'Administrator access · no daily limit'

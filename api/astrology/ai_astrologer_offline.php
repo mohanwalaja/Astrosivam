@@ -1,6 +1,6 @@
 <?php
 /**
- * AI Astrologer - KNOWLEDGE-BASE MODE (no external AI model, no API key).
+ * ASTRO SIVAM source-based astrologer - local knowledge-base mode.
  *
  * Every reply is assembled from ASTRO SIVAM's own sources only:
  *
@@ -540,9 +540,9 @@ class AstroAiOffline
     private static function personalHint(string $lang): string
     {
         return self::t($lang, [
-            'en' => 'For a reading of your own horoscope, open the AI Astrologer from a completed report in My Dashboard - I will then answer from your own chart.',
-            'ta' => 'உங்கள் சொந்த ஜாதகப் பலனுக்கு, என் டாஷ்போர்டில் முடிந்த அறிக்கையிலிருந்து AI ஜோதிடரை திறக்கவும் - அப்போது உங்கள் ஜாதகத்திலிருந்தே பதில் சொல்வேன்.',
-            'hi' => 'अपनी कुंडली का फल जानने के लिए, मेरे डैशबोर्ड में किसी पूर्ण रिपोर्ट से AI ज्योतिषी खोलें - तब मैं आपकी अपनी कुंडली से उत्तर दूँगा।',
+            'en' => 'For a reading of your own horoscope, open this chat from a completed report in My Dashboard - I can then answer from your own chart.',
+            'ta' => 'உங்கள் சொந்த ஜாதகப் பலனுக்கு, என் டாஷ்போர்டில் முடிந்த அறிக்கையிலிருந்து இந்த உரையாடலைத் திறக்கவும் - அப்போது உங்கள் ஜாதகத்திலிருந்தே பதில் சொல்வேன்.',
+            'hi' => 'अपनी कुंडली का फल जानने के लिए, मेरे डैशबोर्ड में किसी पूर्ण रिपोर्ट से यह चैट खोलें - तब मैं आपकी अपनी कुंडली से उत्तर दूँगा।',
         ]);
     }
 
@@ -699,7 +699,7 @@ class AstroAiOffline
 
     /**
      * Caps the bubbles at four, puts the source line on the last one, and runs
-     * the same output guard the model path uses. A health word without a doctor
+     * the same output guard on every local reply. A health word without a doctor
      * line gets the doctor line; anything else that fails ships the safe
      * fallback and offers the astrologer.
      */

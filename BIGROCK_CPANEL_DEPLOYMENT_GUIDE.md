@@ -110,12 +110,11 @@ The package contains only the compiled static website, PHP API, and deployment n
    ```
 > **CRITICAL:** Ensure `public_html/api/astrology/engine.php` is replaced with the latest version from your downloaded package.
 
-> **AI Astrologer knowledge base:** The AI Astrologer chat reads its system
-> prompt and rule base from the `knowledge/` folder. Upload the repository's
-> `knowledge/` folder to **`public_html/knowledge/`** (the PHP provider
-> resolves it two levels up from `api/astrology/`; `public_html/api/knowledge/`
-> also works). Without it the chat cannot build its prompt. Git-based cPanel
-> deployments copy it automatically via `.cpanel.yml`.
+> **Source-based astrologer data:** The local reply path reads reviewed rules,
+> remedies, guardrails, and the source registry from the repository's `knowledge/`
+> folder. Upload it to **`public_html/knowledge/`**, beside `api/`. Without these
+> local files the chat cannot reply. No system prompt, provider, external AI service,
+> or API key is needed; `.cpanel.yml` copies this directory automatically.
 
 ---
 
@@ -187,11 +186,7 @@ is only *active* when its variable is present.
 | `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TEMPLATE_NAME` | WhatsApp order alerts | alerts stay off |
 | `VIBER_AUTH_TOKEN`, `VIBER_SENDER_NAME` | Viber order alerts | alerts stay off |
 | `ASTROSIVAM_DIAGNOSTICS` | enables `/api/check_mpdf.php` (prints server paths) | page answers 404 |
-| `AI_ASTROLOGER_API_KEY` | OPTIONAL API key for AI-written chat replies (also settable in Admin Portal → AI Astrologer) | chat answers in knowledge-base mode from ASTRO SIVAM's own sources |
-| `AI_ASTROLOGER_BASE_URL` | OpenAI-compatible endpoint for the chat model | `https://api.openai.com/v1` |
-| `AI_ASTROLOGER_MODEL` | model name used by the chat | `gpt-4o-mini` |
-| `AI_ASTROLOGER_MAX_TOKENS` | reply length cap | `900` |
-| `AI_ASTROLOGER_DAILY_LIMIT` | customer questions per rolling 24 h (admins unlimited) | `20` |
+| `AI_ASTROLOGER_DAILY_LIMIT` | customer questions per rolling 24 h (admins unlimited) | `20`; local chat replies need no provider key or model settings |
 
 The application uses a 25 MiB email budget by default, so no email-budget `SetEnv` line is needed. To use this default on an existing deployment, remove any explicit `FAMILY_EMAIL_MAX_ATTACHMENT_MB` or `FAMILY_EMAIL_MAX_ATTACHMENT_BYTES` setting from the hosting environment or `api/.htaccess`; explicit host settings take precedence over the code default. Keep any custom value at or below your SMTP provider's message-size limit.
 

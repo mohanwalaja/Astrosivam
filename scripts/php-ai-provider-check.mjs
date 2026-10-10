@@ -1,22 +1,13 @@
 /**
- * Run a PHP probe against the AI Astrologer's real server code, locally.
+ * Run a PHP probe against ASTRO SIVAM's local source-based astrologer code.
  *
- * Same idea as scripts/php-wasm-check.mjs (there is no `php` binary in the
- * sandbox; the committed PHP suites run under a real PHP in CI), but it mounts
- * the trees the AI provider actually reads instead of the PDF report builder's:
- *
- *   /repo/api/astrology/ai_astrologer_provider.php  (the model-call layer)
- *   /repo/api/ai_astrologer.php                     (the endpoint)
- *   /repo/knowledge/**                              (prompt, rules, sources)
- *
- * The probe decides what to exercise. Two useful ones live in
- * tests/fixtures/php-ai-probes/: reply-path.php (does the whole answer path
- * build a prompt and return bubbles?) and provider-health.php (is the provider
- * configured, and is the knowledge base readable?).
+ * The sandbox has no native `php` binary, so this mounts the PHP endpoint,
+ * deterministic reply builder, chart engine, and knowledge/ files into PHP-WASM.
+ * No external model or API key is used by the local reply probe.
  *
  * Usage:
- *   npm install --no-save @php-wasm/node
- *   node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/reply-path.php
+ *   npm install --no-save @php-wasm/node @php-wasm/universal
+ *   node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/knowledge-base-mode.php
  */
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';

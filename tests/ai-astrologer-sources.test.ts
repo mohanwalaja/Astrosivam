@@ -1,10 +1,9 @@
 /**
  * ASTRO SIVAM AI Astrologer — source registry integrity.
  *
- * WHY THIS EXISTS: the chat agent may only answer with a source it can cite,
- * and the whole point of knowledge/ai-astrologer/ is that no source was
- * invented. If someone edits sources.json or SOURCES.md by hand, this test
- * fails before a broken or fabricated citation can reach a paying customer.
+ * WHY THIS EXISTS: local replies may only cite references allowed by their
+ * recorded verification level. The catalogue is metadata, not a full-text
+ * corpus. This test guards source ids, provenance, exclusions, and citation rules.
  *
  * It checks the registry against itself AND against the human-readable table,
  * so the two can never drift apart.
@@ -266,18 +265,18 @@ check('non-citable sources are never presented as authorities', () => {
 
 check('SOURCES.md only cites ids that exist in sources.json', () => {
   const cited = new Set<string>(
-    (sourcesMd.match(/\b(?:EN|HI|TA|TP|REF)-\d{2}\b/g) ?? []).filter(Boolean)
+    (sourcesMd.match(/\b(?:EN|HI|TA|TP|REF)-\d{2,3}\b/g) ?? []).filter(Boolean)
   );
-  assert.ok(cited.size > 40, `SOURCES.md cites only ${cited.size} ids; expected the full table`);
+  assert.ok(cited.size > 40, `SOURCES.md cites only ${cited.size} ids; expected the full current registry`);
   const missing = [...cited].filter((id) => !knownIds.has(id));
   assert.deepEqual(missing, [], `SOURCES.md cites ids absent from the registry: ${missing.join(', ')}`);
 });
 
-check('every registered source appears in SOURCES.md', () => {
-  const absent = [...sources, ...excluded]
-    .map((s) => s.id)
-    .filter((id) => !sourcesMd.includes(id));
-  assert.deepEqual(absent, [], `registered but missing from the table: ${absent.join(', ')}`);
+check('every registered active and excluded source is listed in SOURCES.md', () => {
+  const absent = [...sources, ...excluded].map((source) => source.id).filter((id) => !sourcesMd.includes(id));
+  assert.deepEqual(absent, [], `registered but missing from SOURCES.md: ${absent.join(', ')}`);
+  assert.match(sourcesMd, /224 active catalogue records/i);
+  assert.match(sourcesMd, /Only 11 active records are marked `content-read`/i);
 });
 
 check('the dead Gita Press catalogue is quarantined, not citable', () => {
@@ -408,20 +407,14 @@ check('SOURCES.md quarantines the excluded Hindi ids inside one clearly-marked s
 });
 
 check('every rule cites at least one source a customer may actually be shown', () => {
-  // THE INVARIANT THAT MAKES THE LIBRARY USABLE.
+  // THE INVARIANT THAT KEEPS CITATIONS HONEST.
   //
-  // The registry holds 220+ sources, but a customer reply may only name a Tamil
-  // one at an accepted verification level - AstroAiProvider::tamilOnlySourceLine()
-  // strips everything else. Until 2026-10-10 nearly every rule cited only its
-  // English edition (EN-01 was cited 27 times), so the filter stripped the whole
-  // line and the chat answered with NO source at all on five of the eight cards,
-  // while 139 citable Tamil sources sat unused. Executing the provider proved it:
-  // 0 of 8 questions kept a source line.
-  //
-  // The fix was to cite the Tamil edition of the SAME work alongside the English
-  // one - TA-01 is the Tamil Parashara, TA-02 the Tamil Jataka Parijata - so the
-  // reading is unchanged and the citation survives. This check is what stops a
-  // new rule being added with only an English citation and silently going mute.
+  // The registry has 224 catalogue records, but only 11 are marked content-read;
+  // most entries are metadata or unopened links. A customer reply may name only
+  // an eligible Tamil reference at its recorded verification level.
+  // AstroAiProvider::tamilOnlySourceLine() strips everything else. This check
+  // ensures each active rule retains at least one citation that survives that
+  // policy, without implying that the registry is a full-text search corpus.
   const lifeAreas = JSON.parse(
     fs.readFileSync(path.join(projectRoot, KB_DIR, 'rules', 'life-areas.json'), 'utf8')
   ) as { areas: { id: string; rules?: any[] }[] };

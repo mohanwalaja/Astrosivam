@@ -1,5 +1,5 @@
 /**
- * ASTRO SIVAM AI Astrologer — Part 3: uploaded report handling.
+ * ASTRO SIVAM source-based astrologer — uploaded report handling.
  *
  * The customer uploads a PDF into the chat. Before a single word of it is
  * discussed, this module decides three things:
@@ -19,7 +19,7 @@
  * which is already how official downloads are produced
  * (AstroEngine::rebuildReportResultFromSavedInputs).
  *
- * Nothing here calls an AI model. Model calls live only in PHP.
+ * This module validates report ownership and prepares local report explanations; it does not call a model or external service.
  */
 
 import type { Lang } from './aiAstrologerRetrieval';

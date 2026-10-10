@@ -2,7 +2,7 @@
   "$schema": "./report-sections.schema.json",
   "version": "1.0.0",
   "generatedOn": "2026-10-09",
-  "_purpose": "Part 3 of the ASTRO SIVAM AI Astrologer. Lets the agent identify an uploaded ASTRO SIVAM report, prove it belongs to the customer's paid order, and explain any section - or any single quoted line - in simple Tamil, English or Hindi, linked back to the chart positions that produced it.",
+  "_purpose": "Local report-section reference data. The application verifies that an uploaded ASTRO SIVAM report belongs to the customer and can map supported sections back to saved chart inputs.",
 
   "ownership": {
     "_why": "An uploaded PDF is untrusted input. It must be proved to be (a) an ASTRO SIVAM report and (b) this customer's, before a single word of it is discussed.",

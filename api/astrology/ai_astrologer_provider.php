@@ -1,27 +1,15 @@
 <?php
 /**
- * ASTRO SIVAM AI Astrologer — Part 5: prompt assembly, model call and output guard.
+ * ASTRO SIVAM local astrology knowledge base and safety rules.
  * -------------------------------------------------------------------------------
- * THE ONLY PLACE A MODEL IS CALLED. The API key lives in an environment
- * variable on the server and never reaches the browser.
+ * Customer replies are built only from the checked-in local knowledge base,
+ * chart calculations, curated rules, report readings and remedies. External AI
+ * providers are deliberately disabled: no API key is needed, read, or sent.
+ * See ai_astrologer_offline.php for the deterministic answer builder.
  *
- * The reply path is: assemble prompt -> call model -> parse bubbles -> GUARD ->
- * persist. The guard runs before the reply is returned, so a draft that breaks a
- * rule is regenerated once and then replaced by a safe fallback. The customer
- * never sees an unguarded draft.
- *
- * The provider is OpenAI-compatible (chat/completions), so the same code works
- * against OpenAI, Groq, Together, OpenRouter or a self-hosted endpoint by
- * changing AI_ASTROLOGER_BASE_URL and AI_ASTROLOGER_MODEL.
- *
- * VERIFICATION STATUS: this file IS executed in the sandbox — the wasm PHP
- * runtime runs the real retrieval, prompt-assembly, guard and bubble logic
- * against the committed knowledge base:
- *   node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/reply-path.php
- * What that cannot do is reach a live model, so the curl round trip itself is
- * still unverified here; `?action=diagnose&ping=1` checks it on the server.
- * The guard rules it enforces are the same ones checked by
- * tests/ai-astrologer-knowledge.test.ts against rules/guardrails.json.
+ * VERIFICATION STATUS: this file is exercised locally under the wasm PHP
+ * runtime against the committed knowledge base. No network request or external
+ * model is used by the customer reply path.
  */
 
 // config.php lives one directory up in api/. Requiring '/config.php' here
@@ -37,187 +25,29 @@ class AstroAiProvider
     const REMEDIES_PATH = '/knowledge/ai-astrologer/rules/remedies.json';
     const SOURCES_PATH = '/knowledge/ai-astrologer/sources.json';
 
-    /** One retry on a guard failure, then a safe fallback. Never a third try. */
-    const MAX_GENERATION_ATTEMPTS = 2;
-    // THE WHOLE ANSWER MUST FIT INSIDE THE BROWSER'S 30s ABORT.
-    // The client gives up at 30s (ASK_TIMEOUT_MS in src/services/aiAstrologerApi.ts).
-    // A guard-rejected draft costs a SECOND model call, so the budget is split:
-    // 20s for the first call and 8s for the retry, worst case 28s - inside the
-    // abort, with the host's proxy limit to spare. 25s x 2 = 50s was not: the
-    // browser disconnected first, the customer saw a network error, and the
-    // server kept working on an answer nobody would ever receive.
-    const CURL_TIMEOUT_SECONDS = 20;
-    const CURL_RETRY_TIMEOUT_SECONDS = 8;
-    /** The diagnostic ping must never hold an admin request open. */
-    const CURL_PING_TIMEOUT_SECONDS = 15;
-
     private static $promptCache = null;
     private static $kbCache = [];
     private static $tamilSourcesCache = null;
-    /**
-     * Configuration the endpoint resolved from the database, applied with
-     * configure() before any model call. Empty means "use the environment".
-     */
-    private static $overrides = [];
 
     // ------------------------------------------------------------------
-    // Configuration
+    // Local-only mode
     // ------------------------------------------------------------------
 
-    /**
-     * Applies admin-saved configuration (system_settings.general_settings
-     * .aiAstrologerSettings). The endpoint calls this once per request, before
-     * isConfigured() is asked anything, so a key saved in the Admin Portal is
-     * honoured exactly like one set in the environment.
-     */
-    public static function configure(array $overrides): void
-    {
-        self::$overrides = $overrides;
-        // A different key can mean a different provider with a different prompt
-        // contract; the caches hold no per-key state, but resetting keeps a
-        // later reconfigure predictable.
-        self::$promptCache = null;
-    }
-
-    /**
-     * A value that is not a credential. cPanel hosts and the Admin Portal both
-     * echo masked secrets back, and a literal "your_api_key_here" from a copied
-     * .env.example is the single most common reason a chat silently never
-     * answers - so it is treated as "not set", never as a key to try.
-     */
-    private static function isPlaceholder(string $value): bool
-    {
-        if (trim($value) === '' || strpos($value, '•') !== false) {
-            return true;
-        }
-        return preg_match('/^\*+$/', $value) === 1
-            || preg_match('/^(?:change[-_ ]?me|replace[-_ ]?me|paste[-_ ]?|your[-_ ]?(?:secret|token|api[-_ ]?key|key)|placeholder|sk-xxx|xxx)/i', $value) === 1;
-    }
-
-    /**
-     * Reads one environment variable from every place a shared host can put it.
-     *
-     * getenv() alone is NOT enough on cPanel: under LiteSpeed/PHP-FPM a value
-     * set with SetEnv in .htaccess lands in $_SERVER, not in the process
-     * environment, so getenv() returns false and the chat reports itself
-     * unconfigured while the owner is looking at a key they did set.
-     */
-    private static function envValue(string $name): string
-    {
-        $candidates = [getenv($name), $_SERVER[$name] ?? null, $_ENV[$name] ?? null];
-        foreach ($candidates as $candidate) {
-            if ($candidate === false || $candidate === null) {
-                continue;
-            }
-            $value = trim((string) $candidate);
-            if ($value === '' || self::isPlaceholder($value)) {
-                continue;
-            }
-            return $value;
-        }
-        return '';
-    }
-
-    /** First non-placeholder value wins. */
-    private static function pick(string ...$values): string
-    {
-        foreach ($values as $value) {
-            $value = trim((string) $value);
-            if ($value !== '' && !self::isPlaceholder($value)) {
-                return $value;
-            }
-        }
-        return '';
-    }
-
-    public static function config(): array
-    {
-        $o = self::$overrides;
-
-        $maxTokens = (int) self::pick((string) ($o['maxTokens'] ?? ''), self::envValue('AI_ASTROLOGER_MAX_TOKENS'), '900');
-        // Clamped: a typo must not request a completion the host will refuse.
-        if ($maxTokens < 100) {
-            $maxTokens = 900;
-        }
-        if ($maxTokens > 4000) {
-            $maxTokens = 4000;
-        }
-
-        return [
-            'baseUrl' => rtrim(self::pick(
-                (string) ($o['baseUrl'] ?? ''),
-                self::envValue('AI_ASTROLOGER_BASE_URL'),
-                'https://api.openai.com/v1'
-            ), '/'),
-            'apiKey' => self::pick((string) ($o['apiKey'] ?? ''), self::envValue('AI_ASTROLOGER_API_KEY')),
-            'model' => self::pick(
-                (string) ($o['model'] ?? ''),
-                self::envValue('AI_ASTROLOGER_MODEL'),
-                'gpt-4o-mini'
-            ),
-            'maxTokens' => $maxTokens,
-            'temperature' => 0.4,
-        ];
-    }
-
-    /**
-     * Where the active configuration came from, without ever returning the
-     * secret itself. This is the first thing an admin needs to know: "I set the
-     * key" and "PHP can see the key" are two different statements on a shared
-     * host, and the difference is the whole bug.
-     *
-     * @return array{source:string, keyHint:string}
-     */
-    public static function configSource(): array
-    {
-        $fromAdmin = trim((string) (self::$overrides['apiKey'] ?? ''));
-        if ($fromAdmin !== '' && !self::isPlaceholder($fromAdmin)) {
-            return ['source' => 'admin-settings', 'keyHint' => self::mask($fromAdmin)];
-        }
-        $fromEnv = self::envValue('AI_ASTROLOGER_API_KEY');
-        if ($fromEnv !== '') {
-            return ['source' => 'environment', 'keyHint' => self::mask($fromEnv)];
-        }
-        $raw = getenv('AI_ASTROLOGER_API_KEY');
-        if (is_string($raw) && trim($raw) !== '') {
-            // Set, but rejected as a placeholder. Say so rather than "not set".
-            return ['source' => 'placeholder-only', 'keyHint' => self::mask(trim($raw))];
-        }
-        return ['source' => 'none', 'keyHint' => ''];
-    }
-
-    /** Shows only enough of a key to recognise it: sk-...abcd. */
-    private static function mask(string $secret): string
-    {
-        $secret = trim($secret);
-        if ($secret === '') {
-            return '';
-        }
-        $prefix = preg_match('/^([a-z0-9]{2,6}-)/i', $secret, $m) === 1 ? $m[1] : '';
-        return $prefix . '...' . substr($secret, -4);
-    }
-
-    /** True when the endpoint can call a model at all. Checked before promising an answer. */
+    /** Legacy compatibility method: an external model is never configured. */
     public static function isConfigured(): bool
     {
-        $c = self::config();
-        return $c['apiKey'] !== '' && function_exists('curl_init');
+        return false;
     }
 
-    /**
-     * 'model' when an AI model is configured, otherwise 'knowledge-base': the
-     * chat then answers from ASTRO SIVAM's own sources only (the customer's
-     * report readings, the curated rules and the remedies registry) with no
-     * external service and no API key. See ai_astrologer_offline.php.
-     */
+    /** Every customer reply is built from ASTRO SIVAM's local knowledge base. */
     public static function mode(): string
     {
-        return self::isConfigured() ? 'model' : 'knowledge-base';
+        return 'knowledge-base';
     }
 
     /**
-     * True when the chat can answer at all, in either mode. Only a missing
-     * knowledge base (or mbstring) stops it - an API key is optional.
+     * True when local replies can be built. Only a missing knowledge file
+     * or the required mbstring extension stops the chat.
      */
     public static function canAnswer(): bool
     {
@@ -226,11 +56,40 @@ class AstroAiProvider
         }
         foreach ([self::LIFE_AREAS_PATH, self::GUARDRAILS_PATH, self::REMEDIES_PATH, self::SOURCES_PATH] as $rel) {
             $path = self::kbPath($rel);
-            if (!is_file($path) || !is_array(json_decode((string) file_get_contents($path), true))) {
+            if (!is_file($path)) {
+                return false;
+            }
+            $data = json_decode((string) file_get_contents($path), true);
+            if (!is_array($data)) {
+                return false;
+            }
+            if ($rel === self::SOURCES_PATH && empty($data['sources'])) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Counts the local source catalogue by verification level. The registry is
+     * bibliographic metadata, not a bundle of all the books' full text.
+     */
+    public static function sourceRegistryStats(): array
+    {
+        $registry = self::kb(self::SOURCES_PATH);
+        $sources = is_array($registry['sources'] ?? null) ? $registry['sources'] : [];
+        $byVerification = [];
+        foreach ($sources as $source) {
+            $level = (string) ($source['verification'] ?? 'unknown');
+            $byVerification[$level] = ($byVerification[$level] ?? 0) + 1;
+        }
+        ksort($byVerification);
+        return [
+            'total' => count($sources),
+            'excluded' => count(is_array($registry['excludedSources'] ?? null) ? $registry['excludedSources'] : []),
+            'citableTamil' => count(self::citableTamilSources()),
+            'byVerification' => $byVerification,
+        ];
     }
 
     /** The knowledge-base answer (no model). Same return shape as answer(). */
@@ -267,7 +126,10 @@ class AstroAiProvider
     private static function kb(string $rel): array
     {
         if (!isset(self::$kbCache[$rel])) {
-            self::$kbCache[$rel] = json_decode((string) file_get_contents(self::kbPath($rel)), true) ?: [];
+            $path = self::kbPath($rel);
+            $contents = is_file($path) ? @file_get_contents($path) : false;
+            $decoded = is_string($contents) ? json_decode($contents, true) : null;
+            self::$kbCache[$rel] = is_array($decoded) ? $decoded : [];
         }
         return self::$kbCache[$rel];
     }
@@ -286,7 +148,10 @@ class AstroAiProvider
         if (self::$tamilSourcesCache !== null) {
             return self::$tamilSourcesCache;
         }
-        $reg = json_decode((string) file_get_contents(self::kbPath(self::SOURCES_PATH)), true);
+        $path = self::kbPath(self::SOURCES_PATH);
+        $contents = is_file($path) ? @file_get_contents($path) : false;
+        $reg = is_string($contents) ? json_decode($contents, true) : null;
+        $reg = is_array($reg) ? $reg : [];
         $out = [];
         foreach (($reg['sources'] ?? []) as $s) {
             if (($s['language'] ?? '') === 'ta'
@@ -319,7 +184,7 @@ class AstroAiProvider
         return $kept ? 'Source: ' . implode(' · ', $kept) : '';
     }
 
-    /** The list the model may name, one line per citable Tamil source. */
+    /** Local source index of verified Tamil references available to rule citations. */
     public static function tamilSourceList(): string
     {
         $lines = [];
@@ -334,9 +199,8 @@ class AstroAiProvider
     // ------------------------------------------------------------------
 
     /**
-     * The system prompt, extracted from the fenced block in the markdown file.
-     * Keeping it in the repo means every change to what the agent may say is a
-     * reviewed diff, not a database row an admin panel can silently rewrite.
+     * Legacy prompt-file reader retained for compatibility only. The current
+     * customer reply path does not call it and never submits a prompt to a model.
      */
     public static function systemPrompt(): string
     {
@@ -357,8 +221,7 @@ class AstroAiProvider
 
     /**
      * Fills the {{PLACEHOLDERS}}. Anything left unfilled is replaced with an
-     * empty string rather than shipped to the model, because a literal
-     * "{{CHART_HEADER}}" in a prompt invites the model to talk about it.
+     * empty string rather than leave a visible unresolved template token.
      */
     public static function fillPrompt(string $prompt, array $values): string
     {
@@ -470,16 +333,10 @@ class AstroAiProvider
     }
 
     /**
-     * Multi-source fallback for questions no life-area card matched directly.
-     * Instead of answering "I don't know" immediately, the agent consults, in
-     * order:
-     *   1. EVERY life-area card with a loose phrase match (not just the best)
-     *   2. the remedies registry, on planet names mentioned in the question
-     *   3. the customer's own chart period (already in CHART_HEADER)
-     * The model is instructed to use only what these sources actually contain
-     * and, when nothing truly applies, to say so honestly and offer the
-     * handoff. No outside web search: every source is the curated knowledge
-     * base, so nothing unreviewed can reach a customer.
+     * Legacy retrieval-context helper retained for compatibility. It reads
+     * local rule/remedy JSON only; it is not full-text search and is not called
+     * by the active customer reply path, which handles unmatched questions with
+     * an explicit local no-match response and human handoff.
      *
      * @return array{rulesBlock:string, sourceLine:string}
      */
@@ -724,7 +581,7 @@ class AstroAiProvider
             $g['predictions']['noFrighteningLanguage']['banned'] ?? []
         );
         // Unique: when $language IS 'en' the same list is merged twice, and the
-        // retry instruction the model receives must name each fault once.
+        // safety diagnostic should name each fault once.
         foreach (array_unique(array_map(static function ($b) {
             return mb_strtolower(trim((string) $b), 'UTF-8');
         }, $lists)) as $banned) {
@@ -779,173 +636,35 @@ class AstroAiProvider
     }
 
     // ------------------------------------------------------------------
-    // The model call
+    // Disabled external generation (compatibility guard)
     // ------------------------------------------------------------------
 
     /**
      * One chat/completions call. Throws on any failure so the caller records a
-     * FAILED message row and returns the friendly retry text.
-     *
-     * @param int|null $timeoutSeconds Null means the normal budget; the guard
-     *                                 retry passes a short one so the whole
-     *                                 answer still fits inside the browser's
-     *                                 30s abort.
+     * FAILED message row. Kept only for compatibility; it always refuses
+     * rather than opening a network connection.
      */
     public static function complete(string $system, array $history, string $question, ?int $timeoutSeconds = null): string
     {
-        $cfg = self::config();
-        if ($cfg['apiKey'] === '') {
-            throw new RuntimeException('AI_ASTROLOGER_API_KEY is not set on this server.');
-        }
-        if (!function_exists('curl_init')) {
-            throw new RuntimeException('The PHP curl extension is not loaded on this server.');
-        }
-
-        $messages = [['role' => 'system', 'content' => $system]];
-        foreach ($history as $m) {
-            $role = ($m['role'] ?? '') === 'customer' ? 'user' : 'assistant';
-            $content = trim((string) ($m['content'] ?? ''));
-            if ($content !== '') {
-                $messages[] = ['role' => $role, 'content' => $content];
-            }
-        }
-        $messages[] = ['role' => 'user', 'content' => $question];
-
-        $payload = json_encode([
-            'model' => $cfg['model'],
-            'messages' => $messages,
-            'temperature' => $cfg['temperature'],
-            'max_tokens' => $cfg['maxTokens'],
-        ], JSON_UNESCAPED_UNICODE);
-        if (!is_string($payload)) {
-            throw new RuntimeException('The prompt could not be encoded as JSON.');
-        }
-
-        $ch = curl_init($cfg['baseUrl'] . '/chat/completions');
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $timeoutSeconds ?? self::CURL_TIMEOUT_SECONDS,
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $cfg['apiKey'],
-            ],
-        ]);
-
-        $raw = curl_exec($ch);
-        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $errno = (int) curl_errno($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-
-        if ($raw === false) {
-            // Name the likely cause: on shared hosting a curl error here is
-            // almost always outbound HTTPS being blocked, or no CA bundle.
-            throw new RuntimeException(sprintf(
-                'Model request to %s failed (curl %d: %s). If this repeats, the host is '
-                . 'probably blocking outbound HTTPS to that address.',
-                $cfg['baseUrl'],
-                $errno,
-                $err !== '' ? $err : 'no transport error reported'
-            ));
-        }
-        if ($status < 200 || $status >= 300) {
-            // Log the status only. The response body can echo prompt fragments.
-            throw new RuntimeException(sprintf(
-                'Model returned HTTP %d from %s for model "%s". 401/403 means the API key is '
-                . 'wrong or not enabled; 404 means that model name is not served at that base URL.',
-                $status,
-                $cfg['baseUrl'],
-                $cfg['model']
-            ));
-        }
-
-        $data = json_decode((string) $raw, true);
-        $content = $data['choices'][0]['message']['content'] ?? null;
-        if (!is_string($content) || trim($content) === '') {
-            throw new RuntimeException('Model returned an empty completion.');
-        }
-        return trim($content);
+        throw new RuntimeException("External AI providers are disabled. Replies use ASTRO SIVAM's local knowledge base.");
     }
 
-    /**
-     * A live, minimal model call used only by the admin diagnostics action.
-     * Never throws: it reports what happened, because the whole point is to
-     * explain a failure rather than produce one.
-     *
-     * @return array{attempted:bool, ok:bool, httpStatus:int, latencyMs:int, error:string}
-     */
+    /** A compatibility stub. It never makes an outbound network request. */
     public static function ping(): array
     {
-        $notAttempted = ['attempted' => false, 'ok' => false, 'httpStatus' => 0, 'latencyMs' => 0, 'error' => ''];
-        $cfg = self::config();
-        if (!function_exists('curl_init')) {
-            return $notAttempted + ['error' => 'The PHP curl extension is not loaded.'];
-        }
-        if ($cfg['apiKey'] === '') {
-            return $notAttempted + ['error' => 'No API key is visible to PHP, so there was nothing to call.'];
-        }
-
-        $payload = json_encode([
-            'model' => $cfg['model'],
-            'messages' => [['role' => 'user', 'content' => 'ping']],
-            'max_tokens' => 1,
-        ], JSON_UNESCAPED_UNICODE);
-
-        $started = microtime(true);
-        $ch = curl_init($cfg['baseUrl'] . '/chat/completions');
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => self::CURL_PING_TIMEOUT_SECONDS,
-            CURLOPT_CONNECTTIMEOUT => 8,
-            CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $cfg['apiKey'],
-            ],
-        ]);
-        $raw = curl_exec($ch);
-        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $errno = (int) curl_errno($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-        $latency = (int) round((microtime(true) - $started) * 1000);
-
-        if ($raw === false) {
-            return [
-                'attempted' => true, 'ok' => false, 'httpStatus' => 0, 'latencyMs' => $latency,
-                'error' => sprintf('curl %d: %s', $errno, $err !== '' ? $err : 'no transport error reported'),
-            ];
-        }
-        $ok = $status >= 200 && $status < 300;
         return [
-            'attempted' => true,
-            'ok' => $ok,
-            'httpStatus' => $status,
-            'latencyMs' => $latency,
-            // A provider's error body is safe to show an admin and is the fastest
-            // route to the fix ("model not found", "invalid api key", "quota").
-            'error' => $ok ? '' : substr((string) $raw, 0, 400),
+            'attempted' => false,
+            'ok' => false,
+            'httpStatus' => 0,
+            'latencyMs' => 0,
+            'error' => 'External model calls are disabled in local-only mode.',
         ];
     }
 
-    /**
-     * Every reason this endpoint could fail to answer, checked in the order the
-     * reply path hits them. Powers `?action=diagnose`, so "the chat never
-     * replies" becomes a named cause in one request instead of a guess.
-     *
-     * @return array{ok:bool, checks:array, blocking:array}
-     */
     public static function diagnostics(bool $livePing = false): array
     {
-        $cfg = self::config();
-        $source = self::configSource();
         $checks = [];
         $blocking = [];
-
         $add = function (string $id, string $label, bool $ok, string $detail, bool $blocks = true) use (&$checks, &$blocking) {
             $checks[] = ['id' => $id, 'label' => $label, 'ok' => $ok, 'detail' => $detail];
             if (!$ok && $blocks) {
@@ -953,100 +672,70 @@ class AstroAiProvider
             }
         };
 
-        // 1. The runtime the model call needs.
-        // curl and the model prompt matter only when an AI model is configured;
-        // knowledge-base mode needs neither.
-        $modelMode = $cfg['apiKey'] !== '';
-        $add('curl', 'PHP curl extension', function_exists('curl_init'),
-            function_exists('curl_init') ? 'loaded' : 'NOT loaded - the model call cannot be made (knowledge-base mode still works).',
-            $modelMode);
+        $add('localMode', 'Reply mode', true,
+            'Local-only: replies use ASTRO SIVAM knowledge and chart calculations. External AI providers and API keys are disabled.', false);
         $add('mbstring', 'PHP mbstring extension', function_exists('mb_strlen'),
-            function_exists('mb_strlen') ? 'loaded' : 'NOT loaded - Tamil/Hindi text handling would fail.');
+            function_exists('mb_strlen') ? 'loaded' : 'NOT loaded - Tamil/Hindi text handling needs mbstring.');
 
-        // 2. The credential, and WHERE PHP found it.
-        // OPTIONAL: without a key the chat answers in knowledge-base mode from
-        // our own sources, so a missing key never blocks a reply.
-        $add('apiKey', 'AI model API key (optional)', $source['source'] === 'environment' || $source['source'] === 'admin-settings',
-            $source['source'] === 'none'
-                ? 'Not set - the chat answers from the ASTRO SIVAM knowledge base (no AI model, no API key needed). Add a key in Admin Portal > AI Astrologer only if you want AI-written replies.'
-                : ($source['source'] === 'placeholder-only'
-                    ? 'A placeholder value (' . $source['keyHint'] . ') is set, which is treated as unset, so the chat uses knowledge-base mode.'
-                    : 'found in ' . $source['source'] . ' (' . $source['keyHint'] . ')'),
-            false);
-        $add('mode', 'Answer mode', true, $modelMode
-            ? 'AI model (falls back to the knowledge base if the model call fails)'
-            : 'Knowledge base - replies come only from ASTRO SIVAM\'s own sources (report readings, curated rules, remedies registry)', false);
-        $add('baseUrl', 'Base URL', $cfg['baseUrl'] !== '', $cfg['baseUrl'] . '/chat/completions', false);
-        $add('model', 'Model', $cfg['model'] !== '', $cfg['model'] . ' (max_tokens ' . $cfg['maxTokens'] . ')', false);
-
-        // 3. The knowledge base. A missing prompt file is a hard stop: systemPrompt()
-        //    throws, so EVERY question fails identically.
         foreach ([
-            'prompt' => [self::PROMPT_PATH, false],
-            'guardrails' => [self::GUARDRAILS_PATH, true],
-            'lifeAreas' => [self::LIFE_AREAS_PATH, true],
-            'remedies' => [self::REMEDIES_PATH, true],
-            'sources' => [self::SOURCES_PATH, true],
-        ] as $id => [$rel, $isJson]) {
+            'guardrails' => self::GUARDRAILS_PATH,
+            'lifeAreas' => self::LIFE_AREAS_PATH,
+            'remedies' => self::REMEDIES_PATH,
+            'sources' => self::SOURCES_PATH,
+        ] as $id => $rel) {
             $path = self::kbPath($rel);
             $exists = is_file($path);
-            $parsed = null;
-            if ($exists && $isJson) {
-                $parsed = json_decode((string) file_get_contents($path), true);
+            $parsed = $exists ? json_decode((string) file_get_contents($path), true) : null;
+            $valid = $exists && is_array($parsed);
+            if ($valid && $id === 'sources') {
+                $valid = !empty($parsed['sources']) && is_array($parsed['sources']);
             }
             $detail = !$exists
-                ? 'MISSING at ' . $path . ' - deploy knowledge/ to the document root (see deploy_cpanel.sh).'
+                ? 'MISSING at ' . $path . ' - deploy the knowledge/ folder to the website root.'
                 : basename($path) . ' (' . number_format((float) filesize($path)) . ' bytes)'
-                    . ($isJson ? (is_array($parsed) ? ', valid JSON' : ', INVALID JSON') : '');
-            $ok = $exists && (!$isJson || is_array($parsed));
-            // An empty remedies or sources file degrades the answer; a missing
-            // prompt or life-area file stops every answer.
-            $add('kb-' . $id, 'Knowledge base: ' . $id, $ok, $detail,
-                in_array($id, ['lifeAreas', 'guardrails', 'remedies', 'sources'], true) || ($id === 'prompt' && $modelMode));
-        }
-
-        // 4. The prompt actually extracts, and the retrieval layer has areas to match.
-        try {
-            $prompt = self::systemPrompt();
-            $add('systemPrompt', 'System prompt extracts', strlen($prompt) > 1000,
-                strlen($prompt) . ' bytes extracted from the ```text block.', $modelMode);
-        } catch (Throwable $e) {
-            $add('systemPrompt', 'System prompt extracts', false, 'THREW: ' . $e->getMessage(), $modelMode);
+                    . ($valid ? ', valid local data' : ', missing or invalid data');
+            $add('kb-' . $id, 'Local knowledge: ' . $id, $valid, $detail);
         }
 
         $kb = self::kb(self::LIFE_AREAS_PATH);
-        $add('lifeAreaCount', 'Life-area cards loaded', count($kb['areas'] ?? []) > 0,
-            count($kb['areas'] ?? []) . ' card(s) available for retrieval.');
-        $add('tamilSources', 'Citable Tamil sources', count(self::citableTamilSources()) > 0,
-            count(self::citableTamilSources()) . ' verified Tamil source(s) may be cited.');
+        $add('lifeAreaCount', 'Curated question topics', count($kb['areas'] ?? []) > 0,
+            count($kb['areas'] ?? []) . ' locally reviewed topic cards available.');
 
-        // 5. The live call. Only when asked for: it spends a real request.
-        $pingResult = ['attempted' => false, 'ok' => false, 'httpStatus' => 0, 'latencyMs' => 0, 'error' => 'not requested'];
-        if ($livePing && self::isConfigured()) {
-            $pingResult = self::ping();
-            $add('modelPing', 'Live model call', $pingResult['ok'],
-                $pingResult['ok']
-                    ? 'HTTP ' . $pingResult['httpStatus'] . ' in ' . $pingResult['latencyMs'] . 'ms'
-                    : ($pingResult['error'] !== '' ? $pingResult['error'] : 'no response'),
-                true);
-        }
+        $stats = self::sourceRegistryStats();
+        $levels = $stats['byVerification'];
+        $sourceDetail = sprintf(
+            '%d catalogue records; %d text-read, %d metadata-verified, %d catalogue-verified, %d linked-not-opened, %d dead; %d Tamil references eligible at their recorded citation level. Catalogue records are not full-text books.',
+            $stats['total'],
+            (int) ($levels['content-read'] ?? 0),
+            (int) ($levels['metadata-verified'] ?? 0),
+            (int) ($levels['catalogue-verified'] ?? 0),
+            (int) ($levels['linked-not-opened'] ?? 0),
+            (int) ($levels['dead'] ?? 0),
+            $stats['citableTamil']
+        );
+        $add('sourceLibrary', 'Local source catalogue', $stats['total'] > 0, $sourceDetail);
+
+        $pingResult = [
+            'attempted' => false,
+            'ok' => false,
+            'httpStatus' => 0,
+            'latencyMs' => 0,
+            'error' => $livePing ? 'External model checks are disabled; no network request was made.' : 'not requested',
+        ];
 
         return [
-            'ok' => empty($blocking) && (!$pingResult['attempted'] || $pingResult['ok']),
-            'configured' => self::isConfigured(),
+            'ok' => empty($blocking),
+            'configured' => false,
             'mode' => self::mode(),
             'blocking' => $blocking,
             'checks' => $checks,
             'ping' => $pingResult,
+            'sourceRegistry' => $stats,
             'generatedAt' => gmdate('Y-m-d\TH:i:s\Z'),
         ];
     }
 
-    /**
-     * Splits the model's answer into the 2-4 bubbles the UI shows one at a time.
-     * The prompt asks for ---BUBBLE--- separators; this also copes with a model
-     * that ignores them, by splitting on blank lines and merging anything short.
-     */
+    /** Splits a locally assembled reply into readable bubbles. */
     public static function toBubbles(string $content): array
     {
         $parts = preg_split('/-{2,}BUBBLE-{2,}/i', $content) ?: [$content];
@@ -1088,121 +777,10 @@ class AstroAiProvider
      */
     public static function answer(string $question, string $language, array $history, ?array $chart, array $context = []): array
     {
-        if (!self::isConfigured()) {
-            // No API key: answer from our own sources instead of refusing.
-            return self::answerFromKnowledgeBase($question, $language, $chart, $context);
-        }
-
-        $retrieved = self::retrieve($question, $language, $chart);
-        // Tamil-only citations: drop any English, Sanskrit or unverified id before
-        // it reaches the prompt or the customer.
-        $retrieved['sourceLine'] = self::tamilOnlySourceLine((string) $retrieved['sourceLine']);
-
-        // A refusal route short-circuits: no chart reading, offer the handoff.
-        if (!empty($retrieved['refusal'])) {
-            return [
-                'content' => $retrieved['refusal']['text'],
-                'bubbles' => [$retrieved['refusal']['text']],
-                'sourceLine' => '',
-                'areaId' => null,
-                'handoff' => true,
-            ];
-        }
-
-        $rulesBlock = '';
-        foreach ($retrieved['rules'] as $r) {
-            $rulesBlock .= "- " . $r['meaning'] . "\n  Eases: " . $r['easing'] . "\n";
-            foreach (($r['practical'] ?? []) as $p) {
-                $rulesBlock .= "  Practical: " . $p . "\n";
-            }
-        }
-        $sourceLine = $retrieved['sourceLine'];
-        if ($rulesBlock === '') {
-            // No life-area card matched directly: consult the remaining
-            // sources before admitting we have nothing - every card loose
-            // match, the remedies registry, and the chart period.
-            $more = self::consultMoreSources($question, $language, $chart);
-            $rulesBlock = $more['rulesBlock'];
-            if ($more['sourceLine'] !== '') {
-                $sourceLine = $more['sourceLine'];
-            }
-        }
-
-        $prompt = self::fillPrompt(self::systemPrompt(), [
-            'RETRIEVED_RULES' => $rulesBlock,
-            // Never leave this placeholder empty. The prompt says "use exactly the
-            // source labels you were given", so an empty SOURCE_LINE reads as an
-            // instruction with nothing to follow and invites the model to invent
-            // one - which the guard then rejects. Say what to do instead.
-            'SOURCE_LINE' => $sourceLine !== ''
-                ? $sourceLine
-                : '(No retrieved rule matched this question, so there is no given source label. '
-                    . 'Name a source only if one from the TAMIL SOURCES list genuinely supports what '
-                    . 'you are saying; otherwise give no source line at all. Do not invent an id.)',
-            'REMEDIES' => self::remedyBlock($chart),
-            'CHART_HEADER' => $context['chartHeader'] ?? '(no chart attached to this conversation yet)',
-            'CUSTOMER_NAME' => $context['customerName'] ?? 'there',
-            'ORDER_TITLE' => $context['orderTitle'] ?? 'your report',
-            'ORDER_DETAILS' => $context['orderDetails'] ?? '(no order attached to this conversation yet)',
-            'LANGUAGE' => $language,
-            'CHAT_HISTORY' => $context['chatHistory'] ?? '(this is the first message)',
-            'DASHA_END_DATE' => $context['dashaEndDate'] ?? 'the date shown on your report',
-            'TAMIL_SOURCES' => self::tamilSourceList(),
-        ]);
-
-        $draft = null;
-        $violations = [];
-        for ($attempt = 1; $attempt <= self::MAX_GENERATION_ATTEMPTS; $attempt++) {
-            // The guard retry gets the short budget: two full-timeout calls would
-            // outlast the browser's 30s abort and the answer would be written to
-            // a conversation the customer had already given up on.
-            $candidate = self::complete(
-                $prompt,
-                $history,
-                $question,
-                $attempt === 1 ? null : self::CURL_RETRY_TIMEOUT_SECONDS
-            );
-            $check = self::checkReply($candidate, $language);
-            if ($check['ok']) {
-                $draft = $candidate;
-                break;
-            }
-            $violations = $check['violations'];
-            error_log('AI Astrologer guard rejected a draft (attempt ' . $attempt . '): ' . implode('; ', $violations));
-            // Tell the model what it did wrong, once.
-            $prompt .= "\n\nYour previous draft was rejected because it contained: "
-                . implode('; ', $violations)
-                . "\nRewrite it without those. Keep everything else the same.";
-        }
-
-        if ($draft === null) {
-            // Two non-compliant drafts is enough. Ship the safe fallback rather
-            // than an unguarded answer, and escalate to a human.
-            return [
-                'content' => self::fallbackReply($language),
-                'bubbles' => [self::fallbackReply($language)],
-                'sourceLine' => '',
-                'areaId' => $retrieved['areaId'],
-                'handoff' => true,
-            ];
-        }
-
-        $bubbles = self::toBubbles($draft);
-        // The source line rides on the last bubble so it is the last thing read.
-        if ($retrieved['sourceLine'] !== '') {
-            $bubbles[count($bubbles) - 1] .= "\n" . $retrieved['sourceLine'];
-        }
-
-        return [
-            'content' => implode("\n\n", $bubbles),
-            'bubbles' => $bubbles,
-            'sourceLine' => $retrieved['sourceLine'],
-            'areaId' => $retrieved['areaId'],
-            'handoff' => self::shouldOfferHandoff($retrieved['areaId'] ?? null, $question),
-        ];
+        return self::answerFromKnowledgeBase($question, $language, $chart, $context);
     }
 
-    /** At most three remedies, all from the cheap sourced register. */
+/** At most three affordable remedies, all from the curated local register. */
     private static function remedyBlock(?array $chart): string
     {
         $kb = self::kb(self::REMEDIES_PATH);

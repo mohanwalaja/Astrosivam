@@ -1,105 +1,37 @@
-# AI Astrologer chat not replying — cause, fix and how to check it
+# Source-based astrologer chat: diagnosis and setup
 
-**Symptom reported:** the AI Astrologer answers nothing. Every question shows the
-typing indicator and then, eventually, the single line *"Please give me a moment,
-I am checking again."* Retrying does not help.
+The customer chat is local-only. It does not require an API key, call an external AI/chat service, or use an AI agent to write replies. The reply path rebuilds an eligible customer's chart from their order, then combines local report readings, curated astrology rules, remedies, and safety/refusal rules. PHP performs the matching and response assembly.
 
-That one line is the whole problem: it is the wording the chat uses for **every**
-failure, so a missing API key, a missing knowledge directory, a blocked outbound
-connection and a slow model are indistinguishable in the chat window. Nothing on
-screen says which one it is, so there is nothing to act on.
+## Check a deployed site
 
-## The 30-second check
+Sign in as an administrator and use **Admin Portal → Setup → Check Source-Based Astrologer**, or request:
 
-Sign in as an **administrator** and open:
-
-```
-/api/ai_astrologer.php?action=diagnose&ping=1
+```text
+/api/ai_astrologer.php?action=diagnose
 ```
 
-or use **Admin Portal → Setup → "Check AI Astrologer"**, which prints the same
-result into the diagnostics console.
+The endpoint is admin-only. It checks PHP `mbstring`, local rules/remedy/source files, and the source-catalogue counts. It ignores any legacy `ping` parameter and makes no outbound network request. If the chat cannot answer, check the diagnostic's blocking items and ensure the `knowledge/` directory was deployed to the website root.
 
-It walks the reply path in order and names the first thing that is wrong:
+## What the source library contains
 
-| Check | What a failure means |
-|---|---|
-| `curl` | The PHP curl extension is not loaded; no model call is possible. |
-| `mbstring` | Tamil/Hindi text handling would fail. |
-| `apiKey` | PHP cannot see a key. The detail says whether it found one in the environment or in the admin settings, and shows its last four characters. `placeholder-only` means a copied `.env.example` value is being used. |
-| `kb-prompt`, `kb-lifeAreas`, `kb-guardrails` | The `knowledge/` directory is not in the document root. This makes **every** question fail, because `systemPrompt()` throws. |
-| `systemPrompt` | The prompt file is present but has no extractable ```text block. |
-| `modelPing` | The live call. Reports the HTTP status and latency, or the curl error. |
+The registry currently has 224 catalogue records and 13 excluded records. Of those 224, 11 are marked `content-read`; 144 are metadata-verified, 67 are linked-but-not-opened, one is catalogue-verified, and one is marked dead. The catalogue is bibliographic metadata and links—not 224 searchable full-text books. Replies are based on the specific reviewed rule and remedy files, eligible chart/report readings, and references attached to those rules; the catalogue is not treated as an indexed book corpus.
 
-The response also summarises the last 50 assistant rows — a run of `FAILED` rows
-with one identical `error_message` is a configuration problem, not a slow model.
+## Deploy the local files
 
-## What was actually wrong, and what changed
+Both deployment paths should copy `knowledge/` into the document root:
 
-### 1. The reason was thrown away at the client
+- `.cpanel.yml` copies the tree on cPanel Git deployment.
+- `deploy_cpanel.sh` copies it during SSH deployment.
 
-`AiAstrologerPanel.tsx` used the server's own message only for 403 and 429. Every
-other error — including the 503 that says *"the model is not configured, set
-AI_ASTROLOGER_API_KEY"* — was replaced by `RETRY_TEXT`. The most informative
-message in the system was the one being discarded.
+The minimum runtime needs include PHP `mbstring` and valid local JSON files under `knowledge/ai-astrologer/`. No curl/model provider, API key, model name, or provider URL is required for this chat.
 
-**Fix:** a configuration failure (`AI_NOT_CONFIGURED`) now shows the server's
-message; only genuinely transient failures get the retry wording.
+## Verify in this checkout
 
-### 2. One failed reply froze the panel
+The regular tests include static reply-path, source, safety, and access checks. To execute the PHP reply path when PHP is not installed locally, the repository also has a PHP-WASM probe:
 
-On failure the panel set `phase` to `'failed'` and only the small "Retry" link
-reset it. Meanwhile `send()` returns early unless `phase === 'idle'`, and the
-send button is disabled unless `phase === 'idle'`. So after the first failure the
-chat accepted nothing: Enter did nothing and the button stayed greyed out. That
-is the "does not reply to **any** question" behaviour — the later questions were
-never sent at all.
-
-**Fix:** the phase returns to `idle` after every failure, and the error bar's
-Retry now resends the unanswered question (removing the bubble that got no
-reply) instead of only clearing the message.
-
-### 3. The key was readable only through `getenv()`
-
-`AstroAiProvider::config()` called `getenv('AI_ASTROLOGER_API_KEY')` and nothing
-else. On cPanel under LiteSpeed/PHP-FPM a value set with `SetEnv` in `.htaccess`
-lands in `$_SERVER`, not in the process environment, so `getenv()` returns
-`false` and the endpoint reports itself unconfigured while the owner is looking
-at a key they did set. (The rest of the site kept working because the live
-`api/config.php` holds hardcoded database credentials, so a broken `getenv()`
-was invisible.)
-
-**Fix:** the key is resolved from `getenv()`, then `$_SERVER`, then `$_ENV`, and
-it can also be stored in `system_settings.general_settings.aiAstrologerSettings`
-— the same place payment and chat-alert credentials live — with the environment
-winning when it holds a real value. A placeholder (`your_api_key_here`,
-`••••`, `***`) is treated as unset rather than attempted.
-
-### 4. `deploy_cpanel.sh` did not copy the knowledge base
-
-`.cpanel.yml` copies `knowledge/` to the document root; the SSH deployment
-script did not. Without it `systemPrompt()` throws for every question, which is
-exactly this symptom. The two deploy paths now agree, and the script warns when
-the directory is missing from the checkout.
-
-### 5. A guard retry could outlast the browser
-
-Two generation attempts at 25s each is 50s, but the client aborts at 30s
-(`ASK_TIMEOUT_MS`). The browser gave up first, the customer saw a network error,
-and the server kept producing an answer nobody would receive. The budget is now
-split — 20s for the first call, 8s for the retry — so the worst case is 28s.
-
-## Verifying the generation layer locally
-
-There is no `php` binary in the build sandbox, but the provider runs for real
-under the wasm PHP runtime against the committed knowledge base:
-
-```
+```sh
 npm install --no-save @php-wasm/node @php-wasm/universal
-node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/reply-path.php
+node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/knowledge-base-mode.php
 ```
 
-That executes `config()`, `configSource()`, `diagnostics()`, `retrieve()`,
-`systemPrompt()`, `checkReply()`, `toBubbles()` and the full `answer()` path. It
-cannot reach a live model, so the curl round trip is still verified on the server
-with `ping=1`.
+The test does not contact any external service. On the actual host, use the admin diagnostic above to verify deployed files and PHP capabilities.

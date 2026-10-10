@@ -1,7 +1,8 @@
-# Verification log — ASTRO SIVAM AI Astrologer source registry
+# Verification log — ASTRO SIVAM source registry
 
-Every source in [`sources.json`](./sources.json) is backed by an entry here. Re-run these
-checks any time to confirm the registry is still live.
+> **Scope note (2026-10-10):** this log describes the earlier 2026-10-09 curated registry snapshot and is not a per-record audit of every later catalogue addition. The current `sources.json` contains 224 records (11 `content-read`, 144 `metadata-verified`, 67 `linked-not-opened`, one `catalogue-verified`, one `dead`) plus 13 excluded records. Do not treat catalogue records as searchable full text; verify each record's current status before use.
+
+The entries below document the verification work recorded for that snapshot. They do not imply every record in the current registry has a corresponding detailed log entry.
 
 **Verification date:** 2026-10-09
 **Tools used:** `fetch_page` (page open + content read) and `web_search` (discovery only —

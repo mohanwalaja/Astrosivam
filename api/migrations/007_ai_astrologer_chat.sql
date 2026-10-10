@@ -1,10 +1,9 @@
--- Part 4: per-customer chat history for the ASTRO SIVAM AI Astrologer.
+-- Per-customer chat history for the ASTRO SIVAM source-based astrologer.
 --
 -- WHY THESE TABLES EXIST
---   The brief requires every message to be stored with a timestamp, the agent
---   to remember earlier messages in the same conversation, and a daily question
---   limit per customer. History is also what makes the agent honest: if it
---   cannot reload a conversation it must not pretend to remember it.
+--   Store each customer question and local reply with a timestamp, preserve
+--   conversation history, and enforce the daily question limit per customer.
+--   History is also useful for human handoff and support review.
 --
 -- WHAT IS DELIBERATELY NOT HERE
 --   No daily-counter table. api/rate_limit.php already owns sliding-window
@@ -25,7 +24,7 @@
 CREATE TABLE IF NOT EXISTS `ai_chat_sessions` (
   `id` VARCHAR(64) NOT NULL PRIMARY KEY,
   `user_id` VARCHAR(64) NOT NULL,
-  `title` VARCHAR(191) NOT NULL DEFAULT 'Chat with ASTRO SIVAM AI Astrologer',
+  `title` VARCHAR(191) NOT NULL DEFAULT 'Chat with ASTRO SIVAM Astrologer',
   `language` VARCHAR(8) NOT NULL DEFAULT 'en',
   -- The order whose chart this conversation is about, once one is attached.
   -- NULL until the customer picks or uploads a report.
@@ -52,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `ai_chat_messages` (
   `session_id` VARCHAR(64) NOT NULL,
   `user_id` VARCHAR(64) NOT NULL,
   -- customer = what the customer typed
-  -- assistant = what the AI Astrologer replied
+  -- assistant = the source-based astrologer reply
   -- system    = the disclaimer and the status notices
   -- handoff   = the "Talk to our astrologer" request
   `role` ENUM('customer', 'assistant', 'system', 'handoff') NOT NULL,
@@ -67,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `ai_chat_messages` (
   `sources` VARCHAR(255) NULL,
   -- SAVED     = written before the customer saw anything
   -- SENT      = delivered to the chat
-  -- FAILED    = the model call failed; content holds the customer-facing text
+  -- FAILED    = the local reply path failed; content holds the customer-facing text
   -- RETRIED   = a retry of an earlier FAILED row
   `status` ENUM('SAVED', 'SENT', 'FAILED', 'RETRIED') NOT NULL DEFAULT 'SAVED',
   `attempt` TINYINT UNSIGNED NOT NULL DEFAULT 1,
@@ -99,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `ai_chat_handoffs` (
   `user_mobile` VARCHAR(64) NULL,
   `language` VARCHAR(8) NOT NULL DEFAULT 'en',
   `question` TEXT NOT NULL,
-  -- Why the AI escalated: health, repeated_worry, complaint, declined, requested
+  -- Why the chat escalated: health, repeated_worry, complaint, declined, requested
   `reason` VARCHAR(32) NOT NULL DEFAULT 'requested',
   `order_number` VARCHAR(32) NULL,
   `status` ENUM('NEW', 'ACKNOWLEDGED', 'RESOLVED') NOT NULL DEFAULT 'NEW',

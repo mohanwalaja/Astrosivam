@@ -1,24 +1,19 @@
 <?php
 /**
- * Probe: the AI Astrologer answers with NO API key, from our own sources only.
+ * PHP-WASM probe for the current local-only astrologer reply path.
  *
- * Run with: node scripts/php-ai-provider-check.mjs tests/fixtures/php-ai-probes/knowledge-base-mode.php --emit out.json
- *
- * 1. Without a key, answer() must return a real reply (mode knowledge-base),
- *    not throw, for general questions, refusals and greetings.
- * 2. With a real chart built by AstroEngine and mapped by the endpoint's own
- *    astro_ai_chart_facts(), the reply must carry the customer's report text.
+ * Executes representative multilingual replies, source diagnostics, and a
+ * chart rebuilt through the endpoint helper. It does not set/read credentials
+ * or contact an external service.
  */
 error_reporting(E_ALL);
 file_put_contents('/repo/api/config.php', "<?php\n// probe stub\n");
-putenv('AI_ASTROLOGER_API_KEY');
-unset($_SERVER['AI_ASTROLOGER_API_KEY'], $_ENV['AI_ASTROLOGER_API_KEY']);
 
 require_once '/repo/api/astrology/ai_astrologer_provider.php';
 require_once '/repo/api/astrology/engine.php';
 
-// astro_ai_chart_facts() lives in the endpoint, which dispatches on include.
-// Load just that function (and the language helper it calls) from the source.
+// Load only astro_ai_chart_facts() from the endpoint; including the full endpoint
+// would start its normal session/CORS/database dispatch in this isolated probe.
 $endpoint = file_get_contents('/repo/api/ai_astrologer.php');
 $start = strpos($endpoint, 'function astro_ai_chart_facts(');
 $end = strpos($endpoint, '/* ================================================================== */', $start);
@@ -27,22 +22,40 @@ if (!function_exists('astro_normalize_report_language')) {
 }
 eval(str_replace('__DIR__', "'/repo/api'", substr($endpoint, $start, $end - $start)));
 
+$diagnostics = AstroAiProvider::diagnostics(false);
+$liveDiagnostics = AstroAiProvider::diagnostics(true);
 $out = [
     'configured' => AstroAiProvider::isConfigured(),
     'mode' => AstroAiProvider::mode(),
     'canAnswer' => AstroAiProvider::canAnswer(),
-    'diagBlocking' => AstroAiProvider::diagnostics(false)['blocking'],
+    'diagBlocking' => $diagnostics['blocking'],
+    'sourceRegistry' => $diagnostics['sourceRegistry'],
+    'pingAttempted' => $liveDiagnostics['ping']['attempted'],
+    'guardChecks' => [],
     'general' => [],
     'personal' => [],
 ];
+
+try {
+    AstroAiProvider::complete('', [], 'probe');
+    $out['externalCompletionError'] = '';
+} catch (Throwable $e) {
+    $out['externalCompletionError'] = $e->getMessage();
+}
+
+$guardrails = json_decode((string) file_get_contents('/repo/knowledge/ai-astrologer/rules/guardrails.json'), true);
+foreach (['en', 'ta', 'hi'] as $guardLanguage) {
+    $bannedPhrase = $guardrails['predictions']['noGuarantees']['banned'][$guardLanguage][0] ?? '';
+    $out['guardChecks'][$guardLanguage] = AstroAiProvider::checkReply((string) $bannedPhrase, $guardLanguage);
+}
 
 $ask = function (string $lang, string $q, ?array $chart) {
     try {
         $r = AstroAiProvider::answer($q, $lang, [], $chart, ['customerName' => 'Mohan']);
         $guard = AstroAiProvider::checkReply($r['content'], $lang);
         return ['lang' => $lang, 'q' => $q, 'mode' => $r['mode'] ?? '', 'areaId' => $r['areaId'],
-            'handoff' => $r['handoff'], 'bubbles' => $r['bubbles'], 'guardOk' => $guard['ok'],
-            'violations' => $guard['violations']];
+            'handoff' => $r['handoff'], 'content' => $r['content'], 'bubbles' => $r['bubbles'],
+            'sourceLine' => $r['sourceLine'] ?? '', 'guardOk' => $guard['ok'], 'violations' => $guard['violations']];
     } catch (Throwable $e) {
         return ['lang' => $lang, 'q' => $q, 'error' => get_class($e) . ': ' . $e->getMessage()];
     }
@@ -70,15 +83,15 @@ foreach ($questions as [$lang, $q]) {
     $out['general'][] = $ask($lang, $q, null);
 }
 
-$horoscope = AstroEngine::calculateHoroscope([
+$input = [
     'name' => 'Probe Native', 'dob' => '1990-05-15', 'tob' => '06:30',
     'birthPlace' => 'Chennai', 'country' => 'India',
     'latitude' => 13.0827, 'longitude' => 80.2707, 'timezoneOffsetHours' => 5.5,
-]);
-$order = ['service_type' => 'BIRTH_JATHAGAM', 'language' => 'en', 'order_number' => 'AST-PROBE',
-    'input_payload' => json_encode(['name' => 'Probe Native', 'dob' => '1990-05-15', 'tob' => '06:30',
-        'birthPlace' => 'Chennai', 'country' => 'India', 'latitude' => 13.0827, 'longitude' => 80.2707,
-        'timezoneOffsetHours' => 5.5])];
+];
+$order = [
+    'service_type' => 'BIRTH_JATHAGAM', 'language' => 'en', 'order_number' => 'AST-PROBE',
+    'input_payload' => json_encode($input),
+];
 $facts = astro_ai_chart_facts($order);
 $out['chartFacts'] = $facts ? array_diff_key($facts['chart'], ['summary' => 1, 'labels' => 1]) : null;
 $out['chartHeader'] = $facts['header'] ?? null;
