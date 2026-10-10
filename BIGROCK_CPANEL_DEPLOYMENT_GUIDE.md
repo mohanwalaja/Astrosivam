@@ -110,6 +110,13 @@ The package contains only the compiled static website, PHP API, and deployment n
    ```
 > **CRITICAL:** Ensure `public_html/api/astrology/engine.php` is replaced with the latest version from your downloaded package.
 
+> **AI Astrologer knowledge base:** The AI Astrologer chat reads its system
+> prompt and rule base from the `knowledge/` folder. Upload the repository's
+> `knowledge/` folder to **`public_html/knowledge/`** (the PHP provider
+> resolves it two levels up from `api/astrology/`; `public_html/api/knowledge/`
+> also works). Without it the chat cannot build its prompt. Git-based cPanel
+> deployments copy it automatically via `.cpanel.yml`.
+
 ---
 
 ## 🗄️ Step 3: Creating Your Single MySQL Database in cPanel
@@ -180,6 +187,11 @@ is only *active* when its variable is present.
 | `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TEMPLATE_NAME` | WhatsApp order alerts | alerts stay off |
 | `VIBER_AUTH_TOKEN`, `VIBER_SENDER_NAME` | Viber order alerts | alerts stay off |
 | `ASTROSIVAM_DIAGNOSTICS` | enables `/api/check_mpdf.php` (prints server paths) | page answers 404 |
+| `AI_ASTROLOGER_API_KEY` | API key for the AI Astrologer chat model | chat replies with 503 `AI_NOT_CONFIGURED` |
+| `AI_ASTROLOGER_BASE_URL` | OpenAI-compatible endpoint for the chat model | `https://api.openai.com/v1` |
+| `AI_ASTROLOGER_MODEL` | model name used by the chat | `gpt-4o-mini` |
+| `AI_ASTROLOGER_MAX_TOKENS` | reply length cap | `900` |
+| `AI_ASTROLOGER_DAILY_LIMIT` | customer questions per rolling 24 h (admins unlimited) | `20` |
 
 The application uses a 25 MiB email budget by default, so no email-budget `SetEnv` line is needed. To use this default on an existing deployment, remove any explicit `FAMILY_EMAIL_MAX_ATTACHMENT_MB` or `FAMILY_EMAIL_MAX_ATTACHMENT_BYTES` setting from the hosting environment or `api/.htaccess`; explicit host settings take precedence over the code default. Keep any custom value at or below your SMTP provider's message-size limit.
 

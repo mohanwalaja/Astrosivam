@@ -237,6 +237,19 @@ check('the endpoint only calls functions that exist somewhere in api/', () => {
     if (!fs.existsSync(path.join(root, f))) {
       assert.fail(`endpoint requires a file that does not exist: ${f}`);
     }
+    // Nested requires must resolve too. A broken path inside a required file
+    // (say api/astrology/ requiring '/config.php' instead of '/../config.php')
+    // fatals the endpoint with an empty HTTP 500 exactly like a broken
+    // top-level require would, so it belongs to the same class of bug.
+    // Column-0 requires only: indented ones are guarded runtime includes
+    // (e.g. engine.php's optional vendor/autoload.php behind is_file()).
+    for (const m of read(f).matchAll(/^require(?:_once)? __DIR__ \. '([^']+)'/gm)) {
+      const nested = path.posix.normalize(path.posix.join(path.posix.dirname(f), m[1]));
+      assert.ok(
+        fs.existsSync(path.join(root, nested)),
+        `${f} requires a file that does not exist: ${nested}`
+      );
+    }
     for (const m of read(f).matchAll(/function\s+([a-z_][a-z0-9_]*)\s*\(/g)) available.add(m[1]);
   }
 

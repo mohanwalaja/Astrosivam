@@ -507,6 +507,19 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
 {
     astro_ai_ensure_tables($pdo);
 
+    // Fail fast on a server setup problem instead of letting the model call
+    // throw deep inside generation: a missing API key or a missing curl
+    // extension is an admin-facing configuration error, and this message is
+    // what tells the admin exactly what to fix.
+    if (!AstroAiProvider::isConfigured()) {
+        error_log('AI Astrologer: ask refused - provider not configured '
+            . '(set AI_ASTROLOGER_API_KEY; curl extension required).');
+        jsonResponse(['success' => false, 'code' => 'AI_NOT_CONFIGURED',
+            'message' => 'The AI Astrologer model is not configured on this server yet. '
+                . 'Set the AI_ASTROLOGER_API_KEY environment variable (optionally '
+                . 'AI_ASTROLOGER_BASE_URL and AI_ASTROLOGER_MODEL), then try again.'], 503);
+    }
+
     $sessionId = trim((string) ($body['sessionId'] ?? ''));
     $question = trim((string) ($body['question'] ?? ''));
 

@@ -203,6 +203,15 @@ check('a chart that cannot be built declines rather than guessing', () => {
   assert.match(facts, /is_array\(\$result\['planetHouses'\] \?\? null\)/);
 });
 
+check('the provider includes resolve relative to this file, never to the wrong directory', () => {
+  // The provider lives in api/astrology/, so config.php is one level up and
+  // the knowledge base is two levels up (repo root / document root). Requiring
+  // '/config.php' here shipped as a fatal empty-500 on every chat request.
+  assert.match(provider, /require_once __DIR__ \. '\/\.\.\/config\.php'/);
+  assert.doesNotMatch(provider, /require_once __DIR__ \. '\/config\.php'/);
+  assert.match(provider, /dirname\(__DIR__, 2\) \. \$rel/);
+});
+
 check('the model call fails loudly and never returns a degraded answer', () => {
   const complete = sliceText(provider, 'public static function complete', 'public static function toBubbles', 'complete body');
   assert.match(complete, /throw new RuntimeException\('AI_ASTROLOGER_API_KEY is not set/);

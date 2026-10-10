@@ -21,7 +21,10 @@
  * against rules/guardrails.json. Smoke-test on the server before relying on it.
  */
 
-require_once __DIR__ . '/config.php';
+// config.php lives one directory up in api/. Requiring '/config.php' here
+// would resolve to api/astrology/config.php, which does not exist, and fatal
+// the whole endpoint with an empty HTTP 500 before any JSON can be sent.
+require_once __DIR__ . '/../config.php';
 
 class AstroAiProvider
 {
@@ -59,9 +62,28 @@ class AstroAiProvider
         return $c['apiKey'] !== '' && function_exists('curl_init');
     }
 
+    /**
+     * Resolve a knowledge-base file against the candidate roots.
+     *
+     * knowledge/ lives at the repository root in development and at the
+     * document root on cPanel (the deployment copies it there), i.e. two
+     * levels up from this file. api/knowledge/ is accepted as a fallback for
+     * manual uploads. The first location that actually has the file wins, so
+     * a missing deploy copy fails loudly at read time instead of silently
+     * serving an empty knowledge base from the wrong directory.
+     */
     private static function kbPath(string $rel): string
     {
-        return dirname(__DIR__) . $rel;
+        $candidates = [
+            dirname(__DIR__, 2) . $rel,
+            dirname(__DIR__) . $rel,
+        ];
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+        return $candidates[0];
     }
 
     private static function kb(string $rel): array
