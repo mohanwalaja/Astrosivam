@@ -54,7 +54,7 @@ the result against the fixed tree (identical).
 
 * `api/admin/index.php` and its deployed `public_html/api/admin/index.php` copy contain no
   matching logic (only the service label), so nothing had to be synced by hand; the deploy
-  path is `.cpanel.yml` / `scripts/sync_public_html_api.sh`.
+  path is `deploy_cpanel.sh` / `scripts/sync_public_html_api.sh`.
 * The PHP report scores on its traditional weighted 35-point denominator; the Node preview
   scores the ten Poruthams equally out of 10. That divergence is intentional (see the comment
   in `engine.php`). A separate, pre-existing Node/PHP difference in the **Vasiya** table

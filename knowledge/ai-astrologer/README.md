@@ -58,6 +58,6 @@ The automated contracts are in `tests/ai-astrologer-knowledge.test.ts`, `tests/a
 
 ## Deployment and diagnosis
 
-Deploy the whole `knowledge/` directory beside `api/` in the document root. Both `.cpanel.yml` and `deploy_cpanel.sh` include it. PHP `mbstring` is required for Tamil/Hindi text handling.
+Deploy the whole `knowledge/` directory beside `api/` in the document root. `deploy_cpanel.sh` includes it. PHP `mbstring` is required for Tamil/Hindi text handling.
 
 An administrator can run the local-only check from **Admin Portal → Setup → Check Source-Based Astrologer** or `/api/ai_astrologer.php?action=diagnose`. The check never pings a provider or makes an outbound network request. Full deployment instructions are in `DEPLOYMENT.md`; diagnosis notes are in `../../AI_CHAT_NOT_REPLYING_FIX.md`.

@@ -114,7 +114,7 @@ The package contains only the compiled static website, PHP API, and deployment n
 > remedies, guardrails, and the source registry from the repository's `knowledge/`
 > folder. Upload it to **`public_html/knowledge/`**, beside `api/`. Without these
 > local files the chat cannot reply. No system prompt, provider, external AI service,
-> or API key is needed; `.cpanel.yml` copies this directory automatically.
+> or API key is needed. Upload this directory by hand (or with `deploy_cpanel.sh`).
 
 ---
 

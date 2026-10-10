@@ -4,7 +4,7 @@
 #
 # WHY THIS EXISTS
 # ---------------
-# `.cpanel.yml` deploys `api/*` to `/home/$USER/public_html/api/` on the live
+# `deploy_cpanel.sh` deploys `api/*` to `/home/$USER/public_html/api/` on the live
 # host. `public_html/` is git-ignored and is NOT part of this checkout, so the
 # "synced copy" of `api/admin/index.php` cannot be edited here. This script
 # performs the exact same copy locally (same exclusions, same config.php
@@ -22,7 +22,7 @@
 #
 # SAFETY
 #   * api/config.php is NEVER overwritten when the target already has one
-#     (it holds the live database credentials) - identical to .cpanel.yml.
+#     (it holds the live database credentials) - identical to deploy_cpanel.sh.
 #   * api/astrology/tmp/app_secret_key.txt (the HMAC signing key) is never
 #     copied.
 #   * Nothing is deleted; only files present in this repo are (re)copied.
@@ -71,7 +71,7 @@ if [ -f "$ROOT/src/lib/muhurtham/rules.json" ]; then
   cp -f "$ROOT/src/lib/muhurtham/rules.json" "$TARGET/src/lib/muhurtham/rules.json"
 fi
 
-# Static front-end bundle (dist/*), same source-map exclusion as .cpanel.yml.
+# Static front-end bundle (dist/*), same source-map exclusion as deploy_cpanel.sh.
 # A CommonJS server bundle is not part of the PHP/shared-host deployment.
 if [ -d "$ROOT/dist" ]; then
   while IFS= read -r -d '' file; do
@@ -95,7 +95,7 @@ fi
 
 echo "Synced $copied file(s) into $TARGET (skipped $skipped protected file(s))."
 echo
-echo "Per-file permissions expected on the host (.cpanel.yml):"
+echo "Per-file permissions expected on the host (deploy_cpanel.sh):"
 echo "  directories 755, files 644, api/config.php 640, api/astrology/tmp/app_secret_key.txt 600"
 echo
 echo "REMOTE HOST: this script cannot upload. After running it, upload the changed"

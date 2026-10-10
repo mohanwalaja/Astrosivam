@@ -92,7 +92,7 @@ Created:
 | `src/services/multiPersonOrder.ts` | checkout model: limits, drafts, validation, pricing, `people[]` payload |
 | `src/services/orderItems.ts` | shared `getOrCalculateResult` + preview-exact per-report PDF/email helpers |
 | `src/components/cart/MultiPersonCheckout.tsx` | person cards, add/remove, service checklist, totals (TA/EN/HI) |
-| `scripts/sync_public_html_api.sh` | mirrors the `.cpanel.yml` `api/` deploy locally |
+| `scripts/sync_public_html_api.sh` | mirrors the `api/` deploy locally |
 | `tests/multi-person-orders.test.ts` | end-to-end coverage of all of the above |
 
 Modified: `api/services/index.php`, `api/admin/index.php`, `server/db/store.ts`,
@@ -111,8 +111,7 @@ No secrets, passwords or API keys were added anywhere.
    `api/migrations/003_multi_person_orders.sql` → Go. It creates the two tables
    and backfills every existing order with one person + one item. Re-running is
    safe.
-2. **Upload the PHP backend** — deploy `api/` as usual (`.cpanel.yml` does this
-   on push), or copy these files to `public_html/api/`:
+2. **Upload the PHP backend** — upload `api/` as usual, or copy these files to `public_html/api/`:
    * `services/index.php`, `services/multi_person_order.php` (new)
    * `admin/index.php`, `admin/order_items.php` (new)
    * `migrations/003_multi_person_orders.sql` (keep for reference)

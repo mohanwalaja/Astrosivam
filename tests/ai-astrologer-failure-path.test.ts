@@ -19,7 +19,6 @@ const endpoint = read('api/ai_astrologer.php');
 const panel = read('src/components/ai-astrologer/AiAstrologerPanel.tsx');
 const client = read('src/services/aiAstrologerApi.ts');
 const deploySh = read('deploy_cpanel.sh');
-const deployYml = read('.cpanel.yml');
 const setupPanel = read('src/components/admin/SetupChecklistPanel.tsx');
 const providerAdmin = read('src/components/admin/AiAstrologerConfigPanel.tsx');
 
@@ -119,7 +118,6 @@ check('the browser client exposes only the authenticated local diagnostic action
 });
 
 check('both deployment paths copy the complete local knowledge directory', () => {
-  assert.match(deployYml, /find knowledge -type f/);
   assert.match(deploySh, /find knowledge -type f/);
   assert.match(deploySh, /WARNING: no knowledge\//);
   assert.match(deploySh, /source-based astrologer cannot answer/);
