@@ -243,6 +243,30 @@ function astro_ai_daily_limit(): int
     return astro_env_int('AI_ASTROLOGER_DAILY_LIMIT', AI_ASTROLOGER_DAILY_LIMIT_DEFAULT, 1, 1000);
 }
 
+/**
+ * Split the small, checked-in chat migration into statements.
+ *
+ * Strip full-line SQL comments before splitting: the migration's documentation
+ * contains semicolons, and splitting first would truncate CREATE TABLE blocks
+ * (then silently leave the chat tables missing on a fresh database).
+ */
+function astro_ai_migration_statements(string $sql): array
+{
+    $sql = preg_replace('/^[[:blank:]]*--.*$/m', '', $sql);
+    if (!is_string($sql)) {
+        throw new RuntimeException('AI Astrologer schema comments could not be parsed.');
+    }
+
+    $statements = [];
+    foreach (explode(';', $sql) as $statement) {
+        $statement = trim($statement);
+        if ($statement !== '') {
+            $statements[] = $statement;
+        }
+    }
+    return $statements;
+}
+
 /** Create the chat tables if the migration has not been run yet. */
 function astro_ai_ensure_tables(PDO $pdo): void
 {
@@ -250,19 +274,18 @@ function astro_ai_ensure_tables(PDO $pdo): void
     if ($ready) {
         return;
     }
-    $sql = @file_get_contents(__DIR__ . '/migrations/007_ai_astrologer_chat.sql');
-    if ($sql !== false && $sql !== '') {
-        foreach (array_filter(array_map('trim', explode(';', $sql))) as $statement) {
-            if ($statement === '' || strpos($statement, '--') === 0) {
-                continue;
-            }
-            try {
-                $pdo->exec($statement);
-            } catch (Throwable $e) {
-                // A table that already exists is the normal case on re-run.
-                error_log('AI Astrologer schema: ' . $e->getMessage());
-            }
-        }
+
+    $path = __DIR__ . '/migrations/007_ai_astrologer_chat.sql';
+    $sql = @file_get_contents($path);
+    if (!is_string($sql) || trim($sql) === '') {
+        throw new RuntimeException('AI Astrologer chat schema migration is missing or empty.');
+    }
+
+    foreach (astro_ai_migration_statements($sql) as $statement) {
+        // The migration uses CREATE TABLE IF NOT EXISTS, so a deployed schema is
+        // already a successful no-op. Let real DDL/permission errors surface
+        // instead of swallowing them and failing later on an INSERT.
+        $pdo->exec($statement);
     }
     $ready = true;
 }
