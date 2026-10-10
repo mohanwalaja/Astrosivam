@@ -6,7 +6,6 @@ import {
   ShieldCheck,
   ChevronRight,
   ArrowUp,
-  MessageCircle,
   Lock,
   Facebook
 } from 'lucide-react';
@@ -22,16 +21,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const openLiveChat = () => {
-    const launcher = document.getElementById('astrosivam-live-chat-launcher') || document.getElementById('fijiastro-live-chat-launcher');
-    if (launcher) {
-      launcher.click();
-    } else {
-      window.dispatchEvent(new CustomEvent('app:open-live-chat'));
-      onNavigate('contact');
-    }
   };
 
   return (
@@ -84,14 +73,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 <Facebook className="w-3.5 h-3.5 text-[#1877F2]" />
                 <span>Facebook</span>
               </a>
-              <button
-                type="button"
-                onClick={openLiveChat}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-colors cursor-pointer"
-              >
-                <MessageCircle className="w-3 h-3 text-amber-400" />
-                <span>Live Chat</span>
-              </button>
               <button
                 type="button"
                 onClick={() => onNavigate('contact')}

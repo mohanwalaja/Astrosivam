@@ -13,7 +13,6 @@ import {
   ChevronRight,
   FileText,
   Layers,
-  MessageCircle,
   ShoppingBag,
   Calendar,
   CircleHelp
@@ -59,17 +58,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
     onNavigate(route);
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
-  };
-
-  const openLiveChat = () => {
-    setIsMobileMenuOpen(false);
-    const launcher = document.getElementById('astrosivam-live-chat-launcher') || document.getElementById('fijiastro-live-chat-launcher');
-    if (launcher) {
-      launcher.click();
-    } else {
-      window.dispatchEvent(new CustomEvent('app:open-live-chat'));
-      navTo('contact');
-    }
   };
 
   return (
@@ -402,37 +390,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, onNavigate }) => {
               )}
             </div>
 
-            {/* Reassuring Live Support & Guidance Card */}
-            <div className="mt-3.5 pt-3.5 border-t border-white/10">
-              <button
-                type="button"
-                onClick={openLiveChat}
-                className="group flex w-full items-center justify-between rounded-2xl border border-emerald-500/25 bg-gradient-to-r from-emerald-950/35 via-slate-900/60 to-slate-900/80 p-3 text-left transition-all duration-200 hover:border-emerald-400/45 hover:bg-emerald-950/50 active:scale-[0.99] shadow-lg shadow-black/20"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 transition-colors group-hover:bg-emerald-500/25">
-                    <MessageCircle className="h-4.5 w-4.5" strokeWidth={2} />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-bold text-slate-100 group-hover:text-emerald-200 transition-colors">
-                        Need Astrological Help?
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        Online
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
-                      Open live chat with our astrology team
-                    </p>
-                  </div>
-                </div>
-                <span className="rounded-xl bg-emerald-500/20 border border-emerald-400/35 px-2.5 py-1 text-xs font-bold text-emerald-200 transition-colors group-hover:bg-emerald-500/35 shadow-xs">
-                  Chat
-                </span>
-              </button>
-            </div>
           </nav>
         </div>
       )}

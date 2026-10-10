@@ -24,6 +24,10 @@ const schema = read('api/schema.sql');
 const panel = read('src/components/ai-astrologer/AiAstrologerPanel.tsx');
 const client = read('src/services/aiAstrologerApi.ts');
 const dashboard = read('src/pages/CustomerDashboard.tsx');
+const launcher = read('src/components/ai-astrologer/AiAstrologerLauncher.tsx');
+const app = read('src/App.tsx');
+const navbar = read('src/components/layout/Navbar.tsx');
+const footer = read('src/components/layout/Footer.tsx');
 
 
 /**
@@ -64,20 +68,34 @@ function check(name: string, fn: () => void) {
 
 /* ------------------------------------------------------------------ */
 
-check('the paid-order gate is defined and is the strict one', () => {
+check('the paid-order gate is strict for customers and admins bypass it by database role', () => {
+  assert.match(endpoint, /function astro_ai_is_admin/);
   assert.match(endpoint, /function astro_ai_require_paid_order/);
+  const adminRole = sliceText(endpoint, 'function astro_ai_is_admin', 'function astro_ai_require_paid_order', 'admin role check');
+  assert.match(adminRole, /\$user\['role'\]/);
+  assert.match(adminRole, /=== 'admin'/);
+
   const gate = sliceText(
-    endpoint, 'function astro_ai_require_paid_order', 'function astro_ai_gate', 'requirePaidOrder body'
+    endpoint, 'function astro_ai_require_paid_order', 'function astro_ai_chat_entitlement', 'requirePaidOrder body'
   );
-  assert.match(gate, /payment_confirmed\s*=\s*1/, 'must require confirmed payment');
-  assert.match(gate, /status IN \('COMPLETED', 'PROCESSING'\)/, 'must restrict to real statuses');
-  assert.match(gate, /refund_status/, 'a refunded order must not qualify');
-  assert.match(gate, /user_id = :uid/, 'must be scoped to the customer');
-  assert.match(gate, /NO_PAID_ORDER/, 'must fail with a distinct code');
-  assert.match(gate, /403\)/, 'must answer 403, not 401');
-  // the refusal is trilingual, because the customer may be browsing in any one
+  assert.match(gate, /if \(astro_ai_is_admin\(\$user\)\)\s*\{\s*return \$user;/,
+    'admins must bypass customer purchase and report-expiry checks');
+  assert.match(gate, /403\)/, 'customers without entitlement must receive 403');
   assert.match(gate, /message_ta/);
   assert.match(gate, /message_hi/);
+
+  const entitlement = sliceText(
+    endpoint, 'function astro_ai_chat_entitlement', 'function astro_ai_entitlement_copy', 'customer entitlement body'
+  );
+  assert.match(entitlement, /NO_PAID_ORDER/, 'customers must receive a distinct refusal code');
+  assert.match(entitlement, /payment_confirmed\s*=\s*1/, 'customers must require confirmed payment');
+  assert.match(entitlement, /service_mode <> 'FREE_BETA'/, 'free beta orders must not qualify');
+  assert.match(entitlement, /status IN \('COMPLETED', 'PROCESSING'\)/, 'must restrict to real statuses');
+  assert.match(entitlement, /refund_status/, 'a refunded order must not qualify');
+  assert.match(entitlement, /email_status = 'SENT'/, 'chat access must wait for successful email delivery');
+  assert.match(entitlement, /email_sent_at IS NOT NULL/);
+  assert.match(entitlement, /user_id = :uid/, 'must be scoped to the customer');
+  assert.match(entitlement, /CHAT_WINDOW_EXPIRED/, 'customer chat must still expire by report window');
 });
 
 check('BOTH gates run before any action is dispatched', () => {
@@ -116,8 +134,11 @@ check('the daily question limit uses the existing rate limiter', () => {
   // pin that first: an empty slice would make "!bump" pass for no reason.
   assert.ok(askBody.length > 400, 'the ask handler slice looks truncated');
   assert.ok(!/astro_rate_limit_bump\(/.test(askBody), 'the ask handler double-counts the question');
-  // and the gate really is in there
+  // Customers are counted; authenticated admins are deliberately unlimited.
+  assert.match(askBody, /\$isAdmin = astro_ai_is_admin\(\$user\)/);
+  assert.match(askBody, /if\s*\(!\$isAdmin\)/);
   assert.match(askBody, /astro_rate_limit_enforce\(\s*\$pdo,\s*AI_ASTROLOGER_RATE_BUCKET/);
+  assert.match(askBody, /'remainingToday'\s*=>\s*\$isAdmin\s*\?\s*null/);
 });
 
 check('the usage counter accounts for window expiry', () => {
@@ -126,6 +147,16 @@ check('the usage counter accounts for window expiry', () => {
   );
   assert.match(usage, /windowStartedAt/, 'astro_rate_limit_fetch() ignores expiry, so the caller must handle it');
   assert.match(usage, /time\(\) - AI_ASTROLOGER_WINDOW_SECONDS/);
+});
+
+check('admin usage is reported as unlimited instead of showing the customer quota', () => {
+  const usage = sliceText(
+    endpoint, 'function astro_ai_action_usage', '/* ================================================================== */', 'usage handler body'
+  );
+  assert.match(usage, /if \(astro_ai_is_admin\(\$user\)\)/);
+  assert.match(usage, /'limit'\s*=>\s*null/);
+  assert.match(usage, /'remaining'\s*=>\s*null/);
+  assert.match(usage, /'unlimited'\s*=>\s*true/);
 });
 
 check('the migration is idempotent and creates all three tables', () => {
@@ -243,15 +274,35 @@ check('the 12-second cap is enforced and the real response time counts', () => {
   assert.match(panel, /statusMax: 4000/);
 });
 
-check('the entry points exist on the dashboard and on each paid order', () => {
-  assert.match(dashboard, /Ask AI Astrologer/);
+check('the old floating-chat position now hosts the email-gated AI Astrologer for customers and admins', () => {
+  assert.match(app, /<AiAstrologerLauncher \/>/);
+  assert.match(launcher, /fixed bottom-5 right-5/);
+  assert.match(launcher, /Ask AI Astrologer/);
+  assert.match(launcher, /aiAstrologer\.usage\(\)/,
+    'customer visibility must be confirmed by the server entitlement');
+  assert.match(launcher, /if \(isAdmin\)/,
+    'admins must always see the launcher when signed in');
+  assert.match(launcher, /window\.setInterval/,
+    'delivery entitlement should refresh while the customer has the site open');
+  assert.match(launcher, /<AiAstrologerPanel/);
+  assert.match(panel, /Administrator access · no daily limit/);
   assert.match(dashboard, /Ask about this report/);
-  assert.match(dashboard, /import AiAstrologerPanel/);
-  // the client-side hint is a hint, not the gate
-  assert.match(dashboard, /re-checks this on EVERY request/);
+  assert.match(dashboard, /order\.emailSentAt/,
+    'the report-specific dashboard action must wait for email delivery');
   assert.match(dashboard, /status === 'COMPLETED' && order\.hasPdf && order\.serviceMode !== 'FREE_BETA'/);
-  // the session is keyed on the customer so a different account cannot inherit it
   assert.match(panel, /\[customerId, orderId\]/);
+  const session = sliceText(
+    endpoint, 'function astro_ai_action_session', 'function astro_ai_action_history', 'session handler'
+  );
+  assert.match(session, /astro_ai_chat_entitlement/,
+    'the floating customer chat should automatically bind to the delivered report');
+});
+
+check('the old canned live-chat widget and its entry points are completely removed', () => {
+  assert.equal(fs.existsSync(path.join(root, 'src/components/common/LiveChatWidget.tsx')), false);
+  for (const source of [app, navbar, footer]) {
+    assert.doesNotMatch(source, /LiveChatWidget|app:open-live-chat|astrosivam-live-chat-launcher|Live Chat/);
+  }
 });
 
 check('a generation failure is recorded, not swallowed, and costs nothing', () => {

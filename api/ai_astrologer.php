@@ -1,28 +1,29 @@
 <?php
 /**
- * ASTRO SIVAM AI Astrologer — customer chat endpoint.
- * --------------------------------------------------
+ * ASTRO SIVAM AI Astrologer — customer and admin chat endpoint.
+ * -------------------------------------------------------------
  * POST /api/ai_astrologer.php?action=...
  *
  * ACTIONS
  *   session            create a conversation, optionally bound to an order
- *   history            the messages of one of the customer's own sessions
+ *   history            the messages of the signed-in account's own sessions
  *   ask                send a question, get an answer
  *   upload             attach an ASTRO SIVAM report PDF (Part 3 gate)
  *   handoff            "Talk to our astrologer"
- *   usage              today's remaining question allowance
+ *   usage              today's customer allowance (admins are unlimited)
  *
- * THE TWO GATES — READ BEFORE EDITING
- * Both run on EVERY action, including read-only ones. The brief is explicit
- * that the paid check happens in PHP on every request and never only in React,
- * because React is client-side and the client is not trustworthy:
+ * ACCESS GATES — READ BEFORE EDITING
+ * Authentication and entitlement checks run in PHP on EVERY action, including
+ * read-only ones; the client is never trusted to decide who can use the agent:
  *
- *   1. requireAuth()      — a signed-in customer, with the token_version check
- *                           that api/config.php already applies.
- *   2. requirePaidOrder() — at least one PAID order owned by THAT customer.
+ *   1. requireAuth()       — a signed-in account, with the token_version check
+ *                            that api/config.php already applies.
+ *   2. Customer entitlement — customers need a delivered paid report. Admins
+ *                            are exempt from payment and daily-usage gates.
  *
- * A free-beta order does not qualify. An order that is PENDING, PROCESSING,
- * REJECTED or CANCELLED does not qualify. A refunded order does not qualify.
+ * A free-beta order does not qualify for customer access. An order that is
+ * PENDING, PROCESSING, REJECTED or CANCELLED does not qualify. A refunded order
+ * does not qualify. Admin access is based only on the persisted database role.
  *
  * VERIFICATION STATUS: PHP cannot be installed in the build sandbox (the Debian
  * apt repositories are unreachable; only github.com, registry.npmjs.org and
@@ -48,15 +49,26 @@ const AI_ASTROLOGER_RATE_BUCKET = 'ai_astrologer_ask';
 const AI_ASTROLOGER_MAX_UPLOAD_BYTES = 8388608; // 8 MB
 const AI_ASTROLOGER_HISTORY_CONTEXT_MESSAGES = 20;
 
+/** The account role is loaded from the database by requireAuth(). */
+function astro_ai_is_admin(array $user): bool
+{
+    return strtolower(trim((string) ($user['role'] ?? ''))) === 'admin';
+}
+
 /**
- * GATE 2 — at least one PAID order belonging to this customer.
+ * GATE 2 — customers need a current paid-report entitlement; admins are exempt.
  *
- * Deliberately a single indexed COUNT rather than loading the orders: this runs
- * on every request, including history reads, so it must stay cheap on shared
- * hosting.
+ * Deliberately a single indexed lookup rather than loading the orders: this runs
+ * on every customer request, including history reads, so it must stay cheap on
+ * shared hosting. An authenticated administrator always has access and does
+ * not need a paid order.
  */
 function astro_ai_require_paid_order(PDO $pdo, array $user): array
 {
+    if (astro_ai_is_admin($user)) {
+        return $user;
+    }
+
     $entitlement = astro_ai_chat_entitlement($pdo, $user['id']);
 
     if (!$entitlement['allowed']) {
@@ -99,7 +111,8 @@ function astro_ai_require_paid_order(PDO $pdo, array $user): array
 define('ASTRO_AI_CHAT_WINDOW_DAYS', 7);
 
 /**
- * @return array{allowed: bool, code: string, daysRemaining: int, expiresAt: ?string, orderNumber: ?string}
+ * @return array{allowed: bool, code: string, daysRemaining: int, expiresAt: ?string,
+ *                orderId: ?string, orderNumber: ?string, serviceType: ?string}
  */
 function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
 {
@@ -109,7 +122,9 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
             'code' => $code,
             'daysRemaining' => 0,
             'expiresAt' => null,
+            'orderId' => null,
             'orderNumber' => null,
+            'serviceType' => null,
         ];
     };
 
@@ -117,12 +132,14 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
     // "newest order wins" true: we only ever look at the one that would expire
     // last, so an old order cannot keep the chat alive.
     $stmt = $pdo->prepare(
-        "SELECT order_number, email_sent_at
+        "SELECT id, order_number, service_type, email_sent_at
            FROM orders
           WHERE user_id = :uid
             AND payment_confirmed = 1
+            AND service_mode <> 'FREE_BETA'
             AND status IN ('COMPLETED', 'PROCESSING')
             AND (refund_status IS NULL OR refund_status = 'NONE')
+            AND email_status = 'SENT'
             AND email_sent_at IS NOT NULL
           ORDER BY email_sent_at DESC
           LIMIT 1"
@@ -139,6 +156,7 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
                FROM orders
               WHERE user_id = :uid
                 AND payment_confirmed = 1
+                AND service_mode <> 'FREE_BETA'
                 AND status IN ('COMPLETED', 'PROCESSING')
                 AND (refund_status IS NULL OR refund_status = 'NONE')"
         );
@@ -159,7 +177,9 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
 
     if ($now >= $expiresAt) {
         $expired = $denied('CHAT_WINDOW_EXPIRED');
+        $expired['orderId'] = (string) $order['id'];
         $expired['orderNumber'] = (string) $order['order_number'];
+        $expired['serviceType'] = (string) $order['service_type'];
         return $expired;
     }
 
@@ -170,7 +190,9 @@ function astro_ai_chat_entitlement(PDO $pdo, string $userId): array
         'code' => 'OK',
         'daysRemaining' => (int) ceil($secondsLeft / 86400),
         'expiresAt' => gmdate('Y-m-d\TH:i:s\Z', $expiresAt),
+        'orderId' => (string) $order['id'],
         'orderNumber' => (string) $order['order_number'],
+        'serviceType' => (string) $order['service_type'],
     ];
 }
 
@@ -341,38 +363,69 @@ function astro_ai_action_session(PDO $pdo, array $user, array $body): void
 {
     astro_ai_ensure_tables($pdo);
 
+    $isAdmin = astro_ai_is_admin($user);
     $orderId = trim((string) ($body['orderId'] ?? ''));
     $orderNumber = null;
     $serviceType = null;
 
     if ($orderId !== '') {
-        // The order must be the customer's own and paid. Same rule as Part 3.
+        // A report-specific chat can only bind to this account's paid, delivered report.
         $stmt = $pdo->prepare(
-            "SELECT order_number, service_type
+            "SELECT id, order_number, service_type, email_sent_at
                FROM orders
               WHERE id = ? AND user_id = ? AND payment_confirmed = 1
+                AND service_mode <> 'FREE_BETA'
                 AND status IN ('COMPLETED', 'PROCESSING')
                 AND (refund_status IS NULL OR refund_status = 'NONE')
+                AND email_status = 'SENT'
+                AND email_sent_at IS NOT NULL
               LIMIT 1"
         );
         $stmt->execute([$orderId, $user['id']]);
         $order = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$order) {
             jsonResponse(['success' => false, 'code' => 'ORDER_NOT_FOUND',
-                'message' => 'I could not find that report on your account.'], 404);
+                'message' => 'I could not find that delivered report on your account.'], 404);
         }
-        $orderNumber = $order['order_number'];
-        $serviceType = $order['service_type'];
+
+        $sentAt = strtotime((string) $order['email_sent_at']);
+        if ($sentAt === false || (!$isAdmin && time() >= $sentAt + (ASTRO_AI_CHAT_WINDOW_DAYS * 86400))) {
+            $copy = astro_ai_entitlement_copy('CHAT_WINDOW_EXPIRED', []);
+            jsonResponse(['success' => false, 'code' => 'CHAT_WINDOW_EXPIRED', 'message' => $copy['en']], 403);
+        }
+
+        $orderId = (string) $order['id'];
+        $orderNumber = (string) $order['order_number'];
+        $serviceType = (string) $order['service_type'];
     }
 
-    $language = astro_normalize_report_language((string) ($body['language'] ?? ($user['country'] === 'India' ? 'hi' : 'ta')));
+    if ($orderId === '' && !$isAdmin) {
+        // The floating launcher starts a general session with the newest report
+        // that opened access, so its first answer has the customer's chart.
+        $entitlement = astro_ai_chat_entitlement($pdo, (string) $user['id']);
+        if (!$entitlement['allowed'] || empty($entitlement['orderId'])) {
+            $copy = astro_ai_entitlement_copy($entitlement['code'], $entitlement);
+            jsonResponse([
+                'success' => false,
+                'code' => $entitlement['code'],
+                'message' => $copy['en'],
+                'message_ta' => $copy['ta'],
+                'message_hi' => $copy['hi'],
+            ], 403);
+        }
+        $orderId = (string) $entitlement['orderId'];
+        $orderNumber = $entitlement['orderNumber'];
+        $serviceType = $entitlement['serviceType'];
+    }
+
+    $language = astro_normalize_report_language((string) ($body['language'] ?? (($user['country'] ?? '') === 'India' ? 'hi' : 'ta')));
     $sessionId = astro_ai_new_session_id();
 
     $stmt = $pdo->prepare(
         "INSERT INTO ai_chat_sessions (id, user_id, language, order_id, order_number, service_type)
          VALUES (?, ?, ?, ?, ?, ?)"
     );
-    $stmt->execute([$sessionId, $user['id'], $language, $orderId ?: null, $orderNumber, $serviceType]);
+    $stmt->execute([$sessionId, $user['id'], $language, $orderId !== '' ? $orderId : null, $orderNumber, $serviceType]);
 
     jsonResponse([
         'success' => true,
@@ -380,7 +433,8 @@ function astro_ai_action_session(PDO $pdo, array $user, array $body): void
         'language' => $language,
         'orderNumber' => $orderNumber,
         'serviceType' => $serviceType,
-        'dailyLimit' => astro_ai_daily_limit(),
+        'dailyLimit' => $isAdmin ? null : astro_ai_daily_limit(),
+        'unlimited' => $isAdmin,
     ], 201);
 }
 
@@ -449,17 +503,21 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
             'message' => 'That conversation is closed. Please start a new one.'], 409);
     }
 
-    // DAILY LIMIT — the existing sliding-window limiter, keyed on the user id so
-    // signing in from another device does not reset it.
+    // Customers use the existing sliding-window limiter, keyed on their user id.
+    // Authenticated admins are permanently exempt from the paid-order gate and
+    // the daily question allowance so they can evaluate the assistant at any time.
+    $isAdmin = astro_ai_is_admin($user);
     $limit = astro_ai_daily_limit();
-    astro_rate_limit_enforce(
-        $pdo,
-        AI_ASTROLOGER_RATE_BUCKET,
-        (string) $user['id'],
-        $limit,
-        AI_ASTROLOGER_WINDOW_SECONDS,
-        'You have reached today\'s question limit. Please come back tomorrow - your earlier answers are saved in this chat.'
-    );
+    if (!$isAdmin) {
+        astro_rate_limit_enforce(
+            $pdo,
+            AI_ASTROLOGER_RATE_BUCKET,
+            (string) $user['id'],
+            $limit,
+            AI_ASTROLOGER_WINDOW_SECONDS,
+            'You have reached today\'s question limit. Please come back tomorrow - your earlier answers are saved in this chat.'
+        );
+    }
 
     $language = astro_normalize_report_language((string) ($body['language'] ?? $session['language']));
     $startedAt = microtime(true);
@@ -473,9 +531,9 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
         //    browser. See knowledge/ai-astrologer/prompt/system-prompt.md.
         $reply = astro_ai_generate_reply($pdo, $user, $session, $language, $question);
 
-        // NOTE: no astro_rate_limit_bump() here. astro_rate_limit_enforce() above
-        // already counted this request (enforce -> hit -> upsert). Bumping again
-        // would charge the customer two questions for one answer.
+        // NOTE: no astro_rate_limit_bump() here. For customers,
+        // astro_rate_limit_enforce() above already counted this request
+        // (enforce -> hit -> upsert); admins intentionally skip that daily cap.
 
         $replyId = astro_ai_save_message($pdo, $sessionId, (string) $user['id'], 'assistant', $language, $reply['content'], [
             'area_id' => $reply['areaId'] ?? null,
@@ -496,7 +554,8 @@ function astro_ai_action_ask(PDO $pdo, array $user, array $body): void
             'areaId' => $reply['areaId'] ?? null,
             'handoff' => (bool) ($reply['handoff'] ?? false),
             'latencyMs' => (int) round((microtime(true) - $startedAt) * 1000),
-            'remainingToday' => max(0, $limit - astro_ai_usage_count($pdo, (string) $user['id']) ),
+            'remainingToday' => $isAdmin ? null : max(0, $limit - astro_ai_usage_count($pdo, (string) $user['id'])),
+            'unlimited' => $isAdmin,
         ]);
     } catch (Throwable $e) {
         error_log('AI Astrologer generation failed: ' . $e->getMessage());
@@ -679,6 +738,18 @@ function astro_ai_usage_count(PDO $pdo, string $userId): int
 function astro_ai_action_usage(PDO $pdo, array $user): void
 {
     astro_ai_ensure_tables($pdo);
+
+    if (astro_ai_is_admin($user)) {
+        jsonResponse([
+            'success' => true,
+            'used' => null,
+            'limit' => null,
+            'remaining' => null,
+            'unlimited' => true,
+            'windowSeconds' => AI_ASTROLOGER_WINDOW_SECONDS,
+        ]);
+    }
+
     $used = astro_ai_usage_count($pdo, (string) $user['id']);
     $limit = astro_ai_daily_limit();
     jsonResponse([
@@ -686,6 +757,7 @@ function astro_ai_action_usage(PDO $pdo, array $user): void
         'used' => $used,
         'limit' => $limit,
         'remaining' => max(0, $limit - $used),
+        'unlimited' => false,
         'windowSeconds' => AI_ASTROLOGER_WINDOW_SECONDS,
     ]);
 }

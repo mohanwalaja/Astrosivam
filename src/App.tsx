@@ -22,7 +22,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
-import { LiveChatWidget } from './components/common/LiveChatWidget';
+import { AiAstrologerLauncher } from './components/ai-astrologer/AiAstrologerLauncher';
 import { CosmicBackground } from './components/common/CosmicBackground';
 import { CartProvider } from './context/CartContext';
 import { FamilyCartDrawer } from './components/cart/FamilyCartDrawer';
@@ -222,8 +222,8 @@ function AppContent() {
       <FamilyCartFloatingBar onNavigate={handleNavigate} />
       <FamilyCartDrawer onNavigate={handleNavigate} />
       <UnifiedCheckoutModal onNavigate={handleNavigate} />
+      <AiAstrologerLauncher />
 
-      <LiveChatWidget />
     </div>
   );
 }
