@@ -1,0 +1,826 @@
+{
+  "$schema": "./guided-questions.schema.json",
+  "version": "1.1.0",
+  "generatedOn": "2026-10-11",
+  "_purpose": "Guided AI-astrologer menu. Customers do NOT type their own questions: they pick one of these curated options. Every question maps to a supported answer path (life-area card, service report reading, dosha, remedy, order fact, or human complaint queue), so no unrelated question can be asked.",
+  "_page2Anchors": "Categories 1-8 mirror the eight page-2 life cards of the Birth Jathagam in order (src/services/jathagamHtmlBuilder.ts buildJathagamLifeCards), with the same icons and titles, so the chat and the PDF agree. The next three categories are the other three services: Wedding Matching (the 10 Poruthams report), Baby Naming (the Namakaran certificate) and Subha Muhurtham (the auspicious-date calendar). The remaining four cover doshas (page 1), remedies (remedies.json registry), order facts (the customer's own order row), and complaints (human handoff queue).",
+  "_serviceGating": "A category that carries a `services` list is shown only to a customer who has a delivered report of one of those service types (or to an administrator). The server decides; the client only renders what it is given.",
+  "_kinds": "area = answered from the customer's chart + life-areas.json rules for that card. service = answered by reading the customer's own report for that service (porutham table, birth-pada syllables, muhurtham calendar) - never re-judged by the chat. dosha = answered from the engine dosha block of the bound order. remedy = answered from remedies.json only. order = answered from the customer's own order row only. complaint = never answered by rules; always queued to the human team with a fixed acknowledgement.",
+  "categories": [
+    {
+      "id": "health",
+      "icon": "🩺",
+      "cardIndex": 1,
+      "title": { "en": "Health & Vitality", "ta": "ஆரோக்கியம் & நல்வாழ்வு", "hi": "स्वास्थ्य एवं आरोग्य" },
+      "hint": { "en": "Body, energy and recovery", "ta": "உடல், சக்தி, குணமாதல்", "hi": "शरीर, ऊर्जा और स्वास्थ्य-लाभ" },
+      "questions": [
+        {
+          "id": "health-overview",
+          "kind": "area",
+          "area": "health",
+          "text": {
+            "en": "How is my health according to my chart?",
+            "ta": "என் ஜாதகப்படி என் உடல்நலம் எப்படி?",
+            "hi": "मेरी कुंडली के अनुसार मेरा स्वास्थ्य कैसा है?"
+          }
+        },
+        {
+          "id": "health-energy",
+          "kind": "area",
+          "area": "health",
+          "text": {
+            "en": "Why do I feel tired often? What does my chart say?",
+            "ta": "அடிக்கடி சோர்வாக இருப்பது ஏன்? ஜாதகம் என்ன சொல்கிறது?",
+            "hi": "मुझे अक्सर थकान क्यों रहती है? कुंडली क्या कहती है?"
+          }
+        },
+        {
+          "id": "health-timing",
+          "kind": "area",
+          "area": "health",
+          "timing": true,
+          "text": {
+            "en": "When will my health improve?",
+            "ta": "என் உடல்நலம் எப்போது முன்னேறும்?",
+            "hi": "मेरा स्वास्थ्य कब सुधरेगा?"
+          }
+        },
+        {
+          "id": "health-remedy",
+          "kind": "area",
+          "area": "health",
+          "remedy": true,
+          "text": {
+            "en": "What remedies help my health?",
+            "ta": "என் உடல்நலத்திற்கு என்ன பரிகாரம்?",
+            "hi": "मेरे स्वास्थ्य के लिए क्या उपाय हैं?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wealth",
+      "icon": "💰",
+      "cardIndex": 2,
+      "title": { "en": "Wealth & Finance", "ta": "தனம் & நிதி நிலை", "hi": "धन एवं संपत्ति" },
+      "hint": { "en": "Money, savings and debt", "ta": "பணம், சேமிப்பு, கடன்", "hi": "धन, बचत और कर्ज़" },
+      "questions": [
+        {
+          "id": "wealth-overview",
+          "kind": "area",
+          "area": "wealth",
+          "text": {
+            "en": "How is my wealth and money situation?",
+            "ta": "என் செல்வம் மற்றும் பண நிலை எப்படி?",
+            "hi": "मेरी धन और पैसे की स्थिति कैसी है?"
+          }
+        },
+        {
+          "id": "wealth-savings",
+          "kind": "area",
+          "area": "wealth",
+          "text": {
+            "en": "Will my savings grow? What blocks them?",
+            "ta": "என் சேமிப்பு வளருமா? தடை என்ன?",
+            "hi": "क्या मेरी बचत बढ़ेगी? बाधा क्या है?"
+          }
+        },
+        {
+          "id": "wealth-debt",
+          "kind": "area",
+          "area": "wealth",
+          "text": {
+            "en": "What does my chart say about loans and debt?",
+            "ta": "கடன் பற்றி என் ஜாதகம் என்ன சொல்கிறது?",
+            "hi": "कर्ज़ के बारे में मेरी कुंडली क्या कहती है?"
+          }
+        },
+        {
+          "id": "wealth-timing",
+          "kind": "area",
+          "area": "wealth",
+          "timing": true,
+          "text": {
+            "en": "When is a good time for money matters?",
+            "ta": "பண விஷயங்களுக்கு நல்ல காலம் எப்போது?",
+            "hi": "धन के मामलों के लिए अच्छा समय कब है?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "icon": "📚",
+      "cardIndex": 3,
+      "title": { "en": "Education & Intellect", "ta": "கல்வி & அறிவுத்திறன்", "hi": "शिक्षा एवं बौद्धिकता" },
+      "hint": { "en": "Study, exams and memory", "ta": "படிப்பு, தேர்வு, ஞாபகம்", "hi": "पढ़ाई, परीक्षा और स्मृति" },
+      "questions": [
+        {
+          "id": "education-overview",
+          "kind": "area",
+          "area": "education",
+          "text": {
+            "en": "How is my education and learning?",
+            "ta": "என் கல்வி மற்றும் படிப்பு எப்படி?",
+            "hi": "मेरी शिक्षा और पढ़ाई कैसी है?"
+          }
+        },
+        {
+          "id": "education-exam",
+          "kind": "area",
+          "area": "education",
+          "timing": true,
+          "text": {
+            "en": "How should I prepare for my exams?",
+            "ta": "தேர்வுக்கு நான் எப்படி தயார் செய்வது?",
+            "hi": "परीक्षा की तैयारी मैं कैसे करूँ?"
+          }
+        },
+        {
+          "id": "education-higher",
+          "kind": "area",
+          "area": "education",
+          "text": {
+            "en": "Should I go for higher studies?",
+            "ta": "நான் உயர்கல்வி செல்லலாமா?",
+            "hi": "क्या मुझे उच्च शिक्षा लेनी चाहिए?"
+          }
+        },
+        {
+          "id": "education-focus",
+          "kind": "area",
+          "area": "education",
+          "text": {
+            "en": "Why can't I concentrate on my studies?",
+            "ta": "படிப்பில் என்னால் கவனம் செலுத்த முடியவில்லை, ஏன்?",
+            "hi": "पढ़ाई में मेरा ध्यान क्यों नहीं लगता?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "career",
+      "icon": "💼",
+      "cardIndex": 4,
+      "title": { "en": "Career & Profession", "ta": "தொழில் & உத்தியோகம்", "hi": "व्यवसाय एवं आजीविका" },
+      "hint": { "en": "Job, business and promotion", "ta": "வேலை, தொழில், பதவி உயர்வு", "hi": "नौकरी, व्यवसाय और प्रमोशन" },
+      "questions": [
+        {
+          "id": "career-overview",
+          "kind": "area",
+          "area": "career",
+          "text": {
+            "en": "How is my career and job?",
+            "ta": "என் தொழில் மற்றும் வேலை எப்படி?",
+            "hi": "मेरा करियर और नौकरी कैसी है?"
+          }
+        },
+        {
+          "id": "career-change",
+          "kind": "area",
+          "area": "career",
+          "timing": true,
+          "text": {
+            "en": "Is this a good time to change my job?",
+            "ta": "வேலை மாற இது நல்ல காலமா?",
+            "hi": "क्या नौकरी बदलने का यह अच्छा समय है?"
+          }
+        },
+        {
+          "id": "career-business",
+          "kind": "area",
+          "area": "career",
+          "text": {
+            "en": "Can I start my own business?",
+            "ta": "நான் சொந்த தொழில் தொடங்கலாமா?",
+            "hi": "क्या मैं अपना व्यवसाय शुरू कर सकता हूँ?"
+          }
+        },
+        {
+          "id": "career-boss",
+          "kind": "area",
+          "area": "career",
+          "text": {
+            "en": "Problems with seniors at work — what should I do?",
+            "ta": "வேலையில் மேலதிகாரி பிரச்சினை — என்ன செய்வது?",
+            "hi": "काम पर वरिष्ठों से समस्या — मुझे क्या करना चाहिए?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "marriage",
+      "icon": "💍",
+      "cardIndex": 5,
+      "title": { "en": "Marriage & Relations", "ta": "திருமணம் & உறவு", "hi": "विवाह एवं सम्बंध" },
+      "hint": { "en": "Wedding, partner and children", "ta": "திருமணம், துணை, குழந்தை", "hi": "विवाह, जीवनसाथी और संतान" },
+      "questions": [
+        {
+          "id": "marriage-overview",
+          "kind": "area",
+          "area": "marriage",
+          "text": {
+            "en": "What does my chart say about marriage?",
+            "ta": "திருமணம் பற்றி என் ஜாதகம் என்ன சொல்கிறது?",
+            "hi": "विवाह के बारे में मेरी कुंडली क्या कहती है?"
+          }
+        },
+        {
+          "id": "marriage-timing",
+          "kind": "area",
+          "area": "marriage",
+          "timing": true,
+          "text": {
+            "en": "When will I get married?",
+            "ta": "எனக்கு எப்போது திருமணம் நடக்கும்?",
+            "hi": "मेरी शादी कब होगी?"
+          }
+        },
+        {
+          "id": "marriage-partner",
+          "kind": "area",
+          "area": "marriage",
+          "text": {
+            "en": "What kind of partner suits me?",
+            "ta": "எனக்கு எப்படிப்பட்ட துணை பொருந்தும்?",
+            "hi": "मेरे लिए कैसा जीवनसाथी ठीक रहेगा?"
+          }
+        },
+        {
+          "id": "marriage-children",
+          "kind": "area",
+          "area": "marriage",
+          "text": {
+            "en": "What about children in my chart?",
+            "ta": "ஜாதகத்தில் என் குழந்தை பாக்கியம் எப்படி?",
+            "hi": "कुंडली में मेरी संतान का योग कैसा है?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "property",
+      "icon": "🏠",
+      "cardIndex": 6,
+      "title": { "en": "Property & Real Estate", "ta": "வீடு, நிலம் & சொத்து", "hi": "भूमि, भवन एवं संपत्ति" },
+      "hint": { "en": "House, land and vehicle", "ta": "வீடு, நிலம், வாகனம்", "hi": "घर, ज़मीन और वाहन" },
+      "questions": [
+        {
+          "id": "property-overview",
+          "kind": "area",
+          "area": "property",
+          "text": {
+            "en": "Will I own a house or land?",
+            "ta": "நான் சொந்த வீடு அல்லது நிலம் வாங்குவேனா?",
+            "hi": "क्या मेरा अपना घर या ज़मीन होगा?"
+          }
+        },
+        {
+          "id": "property-timing",
+          "kind": "area",
+          "area": "property",
+          "timing": true,
+          "text": {
+            "en": "When is a good time to buy property?",
+            "ta": "சொத்து வாங்க நல்ல காலம் எப்போது?",
+            "hi": "संपत्ति खरीदने का अच्छा समय कब है?"
+          }
+        },
+        {
+          "id": "property-move",
+          "kind": "area",
+          "area": "property",
+          "text": {
+            "en": "Should I move to a new house?",
+            "ta": "நான் புது வீடு மாறலாமா?",
+            "hi": "क्या मुझे नए घर में जाना चाहिए?"
+          }
+        },
+        {
+          "id": "property-loan",
+          "kind": "area",
+          "area": "property",
+          "text": {
+            "en": "What about a home loan now?",
+            "ta": "இப்போது வீட்டுக் கடன் வாங்குவது எப்படி?",
+            "hi": "अभी होम लोन लेना कैसा रहेगा?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "travel-foreign",
+      "icon": "✈️",
+      "cardIndex": 7,
+      "title": { "en": "Travel & Global Fortune", "ta": "பயணம் & அதிர்ஷ்டம்", "hi": "विदेश यात्रा एवं भाग्य" },
+      "hint": { "en": "Foreign travel, visa and settling abroad", "ta": "வெளிநாடு, விசா, குடியேற்றம்", "hi": "विदेश, वीज़ा और बसावट" },
+      "questions": [
+        {
+          "id": "travel-overview",
+          "kind": "area",
+          "area": "travel-foreign",
+          "text": {
+            "en": "Is foreign travel or settling abroad in my chart?",
+            "ta": "வெளிநாடு செல்வது அல்லது குடியேறுவது என் ஜாதகத்தில் உள்ளதா?",
+            "hi": "क्या विदेश यात्रा या बसावट मेरी कुंडली में है?"
+          }
+        },
+        {
+          "id": "travel-job",
+          "kind": "area",
+          "area": "travel-foreign",
+          "text": {
+            "en": "Can I get a job abroad?",
+            "ta": "எனக்கு வெளிநாட்டில் வேலை கிடைக்குமா?",
+            "hi": "क्या मुझे विदेश में नौकरी मिलेगी?"
+          }
+        },
+        {
+          "id": "travel-study",
+          "kind": "area",
+          "area": "travel-foreign",
+          "text": {
+            "en": "Can I study abroad?",
+            "ta": "நான் வெளிநாட்டில் படிக்கலாமா?",
+            "hi": "क्या मैं विदेश में पढ़ सकता हूँ?"
+          }
+        },
+        {
+          "id": "travel-timing",
+          "kind": "area",
+          "area": "travel-foreign",
+          "timing": true,
+          "text": {
+            "en": "When is travel favourable for me?",
+            "ta": "பயணத்திற்கு சாதகமான காலம் எனக்கு எப்போது?",
+            "hi": "मेरे लिए यात्रा का अनुकूल समय कब है?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "current-guidance",
+      "icon": "🧭",
+      "cardIndex": 8,
+      "title": { "en": "Current Guidance", "ta": "தற்போதைய வழிகாட்டல்", "hi": "ज्योतिषीय मार्गदर्शन" },
+      "hint": { "en": "Dasha, this year and birth star", "ta": "தசை, இந்த வருடம், நட்சத்திரம்", "hi": "दशा, यह वर्ष और नक्षत्र" },
+      "questions": [
+        {
+          "id": "current-period",
+          "kind": "area",
+          "area": "current-guidance",
+          "text": {
+            "en": "Which Dasha and Bhukti am I in now?",
+            "ta": "இப்போது நான் எந்த தசை, புக்தியில் இருக்கிறேன்?",
+            "hi": "अभी मैं किस दशा और भुक्ति में हूँ?"
+          }
+        },
+        {
+          "id": "current-year",
+          "kind": "area",
+          "area": "current-guidance",
+          "timing": true,
+          "text": {
+            "en": "How is this year for me?",
+            "ta": "இந்த வருடம் எனக்கு எப்படி இருக்கும்?",
+            "hi": "यह वर्ष मेरे लिए कैसा है?"
+          }
+        },
+        {
+          "id": "current-star",
+          "kind": "area",
+          "area": "current-guidance",
+          "text": {
+            "en": "What is my Rasi and birth star?",
+            "ta": "என் ராசி மற்றும் நட்சத்திரம் என்ன?",
+            "hi": "मेरी राशि और नक्षत्र क्या है?"
+          }
+        },
+        {
+          "id": "current-sade-sati",
+          "kind": "area",
+          "area": "current-guidance",
+          "text": {
+            "en": "Am I in Sade Sati (Ezharai Sani)?",
+            "ta": "நான் ஏழரைச் சனியில் இருக்கிறேனா?",
+            "hi": "क्या मैं साढ़ेसाती में हूँ?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wedding-match",
+      "icon": "💞",
+      "services": ["MARRIAGE_COMPATIBILITY"],
+      "title": { "en": "Wedding Matching", "ta": "திருமணப் பொருத்தம்", "hi": "विवाह मिलान" },
+      "hint": { "en": "Your 10 Poruthams report", "ta": "உங்கள் 10 பொருத்த அறிக்கை", "hi": "आपकी 10 पोरुतम रिपोर्ट" },
+      "questions": [
+        {
+          "id": "match-verdict",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "verdict",
+          "text": {
+            "en": "Is our match recommended?",
+            "ta": "எங்கள் பொருத்தம் பரிந்துரைக்கப்படுகிறதா?",
+            "hi": "क्या हमारा मिलान अनुशंसित है?"
+          }
+        },
+        {
+          "id": "match-score",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "score",
+          "text": {
+            "en": "How many poruthams matched, and what is our score?",
+            "ta": "எத்தனை பொருத்தங்கள் பொருந்தின? எங்கள் மதிப்பெண் என்ன?",
+            "hi": "कितने पोरुतम मिले, और हमारा स्कोर क्या है?"
+          }
+        },
+        {
+          "id": "match-poruthams",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "poruthams",
+          "text": {
+            "en": "Which poruthams matched for us?",
+            "ta": "எந்தப் பொருத்தங்கள் எங்களுக்குப் பொருந்தின?",
+            "hi": "हमें कौन से पोरुतम मिले?"
+          }
+        },
+        {
+          "id": "match-unmatched",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "unmatched",
+          "text": {
+            "en": "Which poruthams did not match, and what does that mean?",
+            "ta": "எந்தப் பொருத்தங்கள் பொருந்தவில்லை? அதன் பொருள் என்ன?",
+            "hi": "कौन से पोरुतम नहीं मिले, और इसका क्या अर्थ है?"
+          }
+        },
+        {
+          "id": "match-sevvai",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "sevvai",
+          "text": {
+            "en": "Is there Sevvai (Kuja) Dosha in our match?",
+            "ta": "எங்கள் பொருத்தத்தில் செவ்வாய் தோஷம் உள்ளதா?",
+            "hi": "क्या हमारे मिलान में मंगल (कुज) दोष है?"
+          }
+        },
+        {
+          "id": "match-remedy",
+          "kind": "service",
+          "service": "MARRIAGE_COMPATIBILITY",
+          "topic": "remedy",
+          "text": {
+            "en": "What remedies are advised for our match?",
+            "ta": "எங்கள் பொருத்தத்திற்கு என்ன பரிகாரங்கள் பரிந்துரைக்கப்படுகின்றன?",
+            "hi": "हमारे मिलान के लिए कौन से उपाय सुझाए गए हैं?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "baby-naming",
+      "icon": "👶",
+      "services": ["BABY_NAMING"],
+      "title": { "en": "Baby Naming", "ta": "குழந்தை பெயர்", "hi": "शिशु नामकरण" },
+      "hint": { "en": "Birth star, syllables and names", "ta": "ஜன்ம நட்சத்திரம், எழுத்துகள், பெயர்கள்", "hi": "जन्म नक्षत्र, अक्षर और नाम" },
+      "questions": [
+        {
+          "id": "naming-star",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "star",
+          "text": {
+            "en": "What is my baby's birth star and rasi?",
+            "ta": "என் குழந்தையின் ஜன்ம நட்சத்திரம் மற்றும் ராசி என்ன?",
+            "hi": "मेरे शिशु का जन्म नक्षत्र और राशि क्या है?"
+          }
+        },
+        {
+          "id": "naming-letters",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "letters",
+          "text": {
+            "en": "Which letters should my baby's name start with?",
+            "ta": "என் குழந்தையின் பெயர் எந்த எழுத்தில் தொடங்க வேண்டும்?",
+            "hi": "मेरे शिशु का नाम किस अक्षर से शुरू होना चाहिए?"
+          }
+        },
+        {
+          "id": "naming-suggestions",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "suggestions",
+          "text": {
+            "en": "Can you suggest names for my baby?",
+            "ta": "என் குழந்தைக்கு பெயர்கள் பரிந்துரைக்க முடியுமா?",
+            "hi": "क्या आप मेरे शिशु के लिए नाम सुझा सकते हैं?"
+          }
+        },
+        {
+          "id": "naming-meaning",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "meaning",
+          "text": {
+            "en": "What do the suggested names mean?",
+            "ta": "பரிந்துரைக்கப்பட்ட பெயர்களின் பொருள் என்ன?",
+            "hi": "सुझाए गए नामों का क्या अर्थ है?"
+          }
+        },
+        {
+          "id": "naming-our-name",
+          "kind": "service",
+          "service": "BABY_NAMING",
+          "topic": "our-name",
+          "text": {
+            "en": "Does the name we have chosen suit my baby?",
+            "ta": "நாங்கள் தேர்வு செய்த பெயர் என் குழந்தைக்கு பொருந்துமா?",
+            "hi": "क्या हमने जो नाम चुना है वह मेरे शिशु के अनुकूल है?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "muhurtham",
+      "icon": "🗓️",
+      "services": ["MUHURTHAM"],
+      "title": { "en": "Subha Muhurtham", "ta": "சுப முகூர்த்தம்", "hi": "शुभ मुहूर्त" },
+      "hint": { "en": "Auspicious dates and times", "ta": "சுப நாட்கள் மற்றும் நேரங்கள்", "hi": "शुभ तिथियाँ और समय" },
+      "questions": [
+        {
+          "id": "muhurtham-dates",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "dates",
+          "text": {
+            "en": "Which are my auspicious dates?",
+            "ta": "எனக்கு சுபமான நாட்கள் எவை?",
+            "hi": "मेरे लिए शुभ तिथियाँ कौन सी हैं?"
+          }
+        },
+        {
+          "id": "muhurtham-best",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "best",
+          "text": {
+            "en": "Which is the best date and time for my ceremony?",
+            "ta": "என் நிகழ்ச்சிக்கு சிறந்த நாளும் நேரமும் எது?",
+            "hi": "मेरे कार्य के लिए सर्वोत्तम तिथि और समय कौन सा है?"
+          }
+        },
+        {
+          "id": "muhurtham-why",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "why",
+          "text": {
+            "en": "Why is that date auspicious?",
+            "ta": "அந்த நாள் ஏன் சுபமானது?",
+            "hi": "वह तिथि शुभ क्यों है?"
+          }
+        },
+        {
+          "id": "muhurtham-avoid",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "avoid",
+          "text": {
+            "en": "Are there times we should avoid?",
+            "ta": "நாம் தவிர்க்க வேண்டிய நேரங்கள் உள்ளனவா?",
+            "hi": "क्या ऐसे समय हैं जिनसे बचना चाहिए?"
+          }
+        },
+        {
+          "id": "muhurtham-place",
+          "kind": "service",
+          "service": "MUHURTHAM",
+          "topic": "place",
+          "text": {
+            "en": "Were these dates calculated for our place?",
+            "ta": "இந்த நாட்கள் எங்கள் இடத்திற்காக கணிக்கப்பட்டவையா?",
+            "hi": "क्या ये तिथियाँ हमारे स्थान के लिए गणना की गई हैं?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "doshas",
+      "icon": "🛡️",
+      "title": { "en": "Doshas in My Chart", "ta": "என் ஜாதக தோஷங்கள்", "hi": "मेरी कुंडली के दोष" },
+      "hint": { "en": "Kuja, Kala Sarpa, Pitru, Guru Chandala", "ta": "செவ்வாய், காலசர்ப்ப, பித்ரு, குரு சண்டாள", "hi": "कुज, काल सर्प, पितृ, गुरु चांडाल" },
+      "questions": [
+        {
+          "id": "dosha-all",
+          "kind": "dosha",
+          "dosha": "all",
+          "text": {
+            "en": "Which doshas are in my chart?",
+            "ta": "என் ஜாதகத்தில் என்ன தோஷங்கள் உள்ளன?",
+            "hi": "मेरी कुंडली में कौन से दोष हैं?"
+          }
+        },
+        {
+          "id": "dosha-kuja",
+          "kind": "dosha",
+          "dosha": "kuja",
+          "text": {
+            "en": "Do I have Kuja (Sevvai) Dosha?",
+            "ta": "எனக்கு செவ்வாய் தோஷம் உள்ளதா?",
+            "hi": "क्या मुझे कुज (मंगल) दोष है?"
+          }
+        },
+        {
+          "id": "dosha-kalasarpa",
+          "kind": "dosha",
+          "dosha": "kalasarpa",
+          "text": {
+            "en": "Do I have Kala Sarpa Dosha?",
+            "ta": "எனக்கு காலசர்ப தோஷம் உள்ளதா?",
+            "hi": "क्या मुझे काल सर्प दोष है?"
+          }
+        },
+        {
+          "id": "dosha-pitru",
+          "kind": "dosha",
+          "dosha": "pitru",
+          "text": {
+            "en": "Do I have Pitru Dosha?",
+            "ta": "எனக்கு பித்ரு தோஷம் உள்ளதா?",
+            "hi": "क्या मुझे पितृ दोष है?"
+          }
+        },
+        {
+          "id": "dosha-guruchandala",
+          "kind": "dosha",
+          "dosha": "guruchandala",
+          "text": {
+            "en": "Do I have Guru Chandala Dosha?",
+            "ta": "எனக்கு குரு சண்டாள தோஷம் உள்ளதா?",
+            "hi": "क्या मुझे गुरु चांडाल दोष है?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "remedies",
+      "icon": "🪔",
+      "title": { "en": "Remedies (Pariharam)", "ta": "பரிகாரங்கள்", "hi": "उपाय (परिहार)" },
+      "hint": { "en": "Simple prayer, charity and temple", "ta": "எளிய வழிபாடு, தானம், கோயில்", "hi": "सरल प्रार्थना, दान और मंदिर" },
+      "questions": [
+        {
+          "id": "remedy-personal",
+          "kind": "remedy",
+          "planet": null,
+          "text": {
+            "en": "What pariharam is best for me now?",
+            "ta": "இப்போது எனக்கு சிறந்த பரிகாரம் என்ன?",
+            "hi": "अभी मेरे लिए सबसे अच्छा उपाय क्या है?"
+          }
+        },
+        {
+          "id": "remedy-sani",
+          "kind": "remedy",
+          "planet": "Sani",
+          "text": {
+            "en": "Remedies for Sani (Saturday)?",
+            "ta": "சனிக்கு (சனிக்கிழமை) என்ன பரிகாரம்?",
+            "hi": "शनि के लिए क्या उपाय हैं?"
+          }
+        },
+        {
+          "id": "remedy-rahuketu",
+          "kind": "remedy",
+          "planet": "Rahu",
+          "text": {
+            "en": "Remedies for Rahu and Ketu?",
+            "ta": "ராகு கேதுவுக்கு என்ன பரிகாரம்?",
+            "hi": "राहु और केतु के लिए क्या उपाय हैं?"
+          }
+        },
+        {
+          "id": "remedy-temple",
+          "kind": "remedy",
+          "planet": null,
+          "focus": "temple",
+          "text": {
+            "en": "Which temple should I visit?",
+            "ta": "நான் எந்த கோயிலுக்கு செல்ல வேண்டும்?",
+            "hi": "मुझे किस मंदिर जाना चाहिए?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "order",
+      "icon": "📦",
+      "title": { "en": "My Order & Report", "ta": "என் ஆர்டர் & அறிக்கை", "hi": "मेरा ऑर्डर और रिपोर्ट" },
+      "hint": { "en": "Delivery, payment and birth details", "ta": "விநியோகம், பணம், பிறப்பு விவரம்", "hi": "डिलीवरी, भुगतान और जन्म विवरण" },
+      "questions": [
+        {
+          "id": "order-status",
+          "kind": "order",
+          "topic": "status",
+          "text": {
+            "en": "Where is my report? What is the delivery status?",
+            "ta": "என் அறிக்கை எங்கே? விநியோக நிலை என்ன?",
+            "hi": "मेरी रिपोर्ट कहाँ है? डिलीवरी की स्थिति क्या है?"
+          }
+        },
+        {
+          "id": "order-payment",
+          "kind": "order",
+          "topic": "payment",
+          "text": {
+            "en": "What did I pay for this order?",
+            "ta": "இந்த ஆர்டருக்கு நான் என்ன செலுத்தினேன்?",
+            "hi": "इस ऑर्डर के लिए मैंने क्या भुगतान किया?"
+          }
+        },
+        {
+          "id": "order-details",
+          "kind": "order",
+          "topic": "details",
+          "text": {
+            "en": "Which birth details were used for my chart?",
+            "ta": "என் ஜாதகத்திற்கு எந்த பிறப்பு விவரங்கள் பயன்படுத்தப்பட்டன?",
+            "hi": "मेरी कुंडली के लिए कौन से जन्म विवरण उपयोग किए गए?"
+          }
+        },
+        {
+          "id": "order-correction",
+          "kind": "order",
+          "topic": "correction",
+          "escalate": true,
+          "text": {
+            "en": "My birth details are wrong — how to correct them?",
+            "ta": "என் பிறப்பு விவரங்கள் தவறு — திருத்துவது எப்படி?",
+            "hi": "मेरे जन्म विवरण गलत हैं — उन्हें कैसे सुधारें?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "support",
+      "icon": "💬",
+      "title": { "en": "Complaint & Help", "ta": "புகார் & உதவி", "hi": "शिकायत और सहायता" },
+      "hint": { "en": "Goes directly to our team", "ta": "நேரடியாக எங்கள் குழுவுக்கு செல்லும்", "hi": "सीधे हमारी टीम को जाएगा" },
+      "questions": [
+        {
+          "id": "complaint-not-received",
+          "kind": "complaint",
+          "topic": "not-received",
+          "escalate": true,
+          "text": {
+            "en": "I have not received my report",
+            "ta": "என் அறிக்கை எனக்கு கிடைக்கவில்லை",
+            "hi": "मुझे मेरी रिपोर्ट नहीं मिली"
+          }
+        },
+        {
+          "id": "complaint-report-wrong",
+          "kind": "complaint",
+          "topic": "report-wrong",
+          "escalate": true,
+          "needsDetails": true,
+          "text": {
+            "en": "Something in my report looks wrong",
+            "ta": "என் அறிக்கையில் ஏதோ தவறாகத் தெரிகிறது",
+            "hi": "मेरी रिपोर्ट में कुछ गलत लग रहा है"
+          }
+        },
+        {
+          "id": "complaint-payment",
+          "kind": "complaint",
+          "topic": "payment",
+          "escalate": true,
+          "needsDetails": true,
+          "text": {
+            "en": "I have a payment or refund question",
+            "ta": "பணம் அல்லது திருப்பிச் செலுத்தல் பற்றி கேள்வி உள்ளது",
+            "hi": "मुझे भुगतान या रिफंड के बारे में सवाल है"
+          }
+        },
+        {
+          "id": "complaint-talk-astrologer",
+          "kind": "complaint",
+          "topic": "talk-astrologer",
+          "escalate": true,
+          "needsDetails": true,
+          "text": {
+            "en": "I want to talk to your astrologer",
+            "ta": "உங்கள் ஜோதிடரிடம் பேச விரும்புகிறேன்",
+            "hi": "मैं आपके ज्योतिषी से बात करना चाहता हूँ"
+          }
+        }
+      ]
+    }
+  ]
+}

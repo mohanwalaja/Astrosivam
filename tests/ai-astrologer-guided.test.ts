@@ -336,4 +336,24 @@ check('the panel can attach one of the customer reports, so the service chapters
   assert.doesNotMatch(panel, /orders\.push\(/);
 });
 
+check('api/knowledge/ mirrors the runtime knowledge base and the panel falls back to bundled guided options', () => {
+  const runtimeFiles = [
+    'ai-astrologer/prompt/system-prompt.md',
+    'ai-astrologer/rules/guardrails.json',
+    'ai-astrologer/rules/guided-questions.json',
+    'ai-astrologer/rules/life-areas.json',
+    'ai-astrologer/rules/remedies.json',
+    'ai-astrologer/rules/report-sections.json',
+    'ai-astrologer/sources.json',
+  ];
+  for (const rel of runtimeFiles) {
+    assert.equal(
+      read(`api/knowledge/${rel}`),
+      read(`knowledge/${rel}`),
+      `api/knowledge/${rel} must stay in sync with knowledge/${rel}`
+    );
+  }
+  assert.match(panel, /buildLocalGuidedMenu/);
+});
+
 console.log(`\n[OK] ai-astrologer guided: ${passed} checks passed`);

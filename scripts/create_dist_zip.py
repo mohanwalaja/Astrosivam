@@ -75,6 +75,21 @@ def create_dist_zip():
         if os.path.exists(rules_path):
             zipf.write(rules_path, rules_path)
 
+        # Local source-based astrologer knowledge base (guided questions,
+        # life-area rules, remedies, guardrails, report sections, and Tamil
+        # source registry). Shipped at root knowledge/ for full dist.zip
+        # extraction (and mirrored in api/knowledge/ for api/-only uploads).
+        knowledge_dir = 'knowledge'
+        if os.path.exists(knowledge_dir):
+            for root, dirs, files in os.walk(knowledge_dir):
+                dirs[:] = [d for d in dirs if d not in excluded_dirs and d != 'ingest']
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    if file in excluded_files or file.endswith(('.map', '.cjs', '.py')):
+                        continue
+                    arcname = os.path.relpath(file_path, '.')
+                    zipf.write(file_path, arcname)
+
         # 3. Add root .htaccess if dist didn't contain it
         if os.path.exists('public/.htaccess') and '.htaccess' not in zipf.namelist():
             zipf.write('public/.htaccess', '.htaccess')

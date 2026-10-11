@@ -23,10 +23,10 @@ Options -Indexes
     </IfModule>
 </FilesMatch>
 
-# Block direct web access to vendor folder
+# Block direct web access to vendor and bundled knowledge folders
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^vendor(/.*)?$ - [F,L]
+    RewriteRule ^(vendor|knowledge)(/.*)?$ - [F,L]
 </IfModule>
 
 # Block direct access to internal include files

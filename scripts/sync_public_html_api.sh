@@ -71,6 +71,16 @@ if [ -f "$ROOT/src/lib/muhurtham/rules.json" ]; then
   cp -f "$ROOT/src/lib/muhurtham/rules.json" "$TARGET/src/lib/muhurtham/rules.json"
 fi
 
+# Local source-based astrologer knowledge files (guided menu, rules, remedies, sources).
+if [ -d "$ROOT/knowledge" ]; then
+  while IFS= read -r -d '' file; do
+    destination="$TARGET/${file#"$ROOT"/}"
+    mkdir -p "$(dirname "$destination")"
+    cp -f "$file" "$destination"
+    copied=$((copied + 1))
+  done < <(find "$ROOT/knowledge" -type f -print0)
+fi
+
 # Static front-end bundle (dist/*), same source-map exclusion as deploy_cpanel.sh.
 # A CommonJS server bundle is not part of the PHP/shared-host deployment.
 if [ -d "$ROOT/dist" ]; then

@@ -283,6 +283,19 @@ class AstroAiReportExtract
     // Rejection wording
     // ------------------------------------------------------------------
 
+    private static function reportSectionsPath(): string
+    {
+        foreach ([
+            dirname(__DIR__, 2) . '/knowledge/ai-astrologer/rules/report-sections.json',
+            dirname(__DIR__) . '/knowledge/ai-astrologer/rules/report-sections.json',
+        ] as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+        return dirname(__DIR__, 2) . '/knowledge/ai-astrologer/rules/report-sections.json';
+    }
+
     /**
      * The polite refusal, in the customer's language, straight from the knowledge
      * base so the wording can never drift from what the agent says elsewhere.
@@ -291,8 +304,8 @@ class AstroAiReportExtract
     {
         static $kb = null;
         if ($kb === null) {
-            $path = dirname(__DIR__, 2) . '/knowledge/ai-astrologer/rules/report-sections.json';
-            $kb = json_decode((string) file_get_contents($path), true) ?: [];
+            $path = self::reportSectionsPath();
+            $kb = is_file($path) ? (json_decode((string) @file_get_contents($path), true) ?: []) : [];
         }
         $entry = $kb['rejection'][$kind] ?? null;
         if (!is_array($entry)) {
@@ -379,8 +392,8 @@ class AstroAiReportExtract
         $norm = self::normalise($text);
         $upper = mb_strtoupper($norm, 'UTF-8');
 
-        $path = dirname(__DIR__, 2) . '/knowledge/ai-astrologer/rules/report-sections.json';
-        $kb = json_decode((string) file_get_contents($path), true) ?: [];
+        $path = self::reportSectionsPath();
+        $kb = is_file($path) ? (json_decode((string) @file_get_contents($path), true) ?: []) : [];
 
         $best = null;
         foreach (($kb['reportTypes'] ?? []) as $type) {
