@@ -60,6 +60,16 @@ jobs:
               names = archive.namelist()
           assert 'index.html' in names, 'Missing index.html'
           assert any(name.startswith('api/') for name in names), 'Missing PHP api/ folder'
+          for kb in (
+              'knowledge/ai-astrologer/rules/guided-questions.json',
+              'knowledge/ai-astrologer/rules/life-areas.json',
+              'knowledge/ai-astrologer/rules/guardrails.json',
+              'knowledge/ai-astrologer/rules/remedies.json',
+              'knowledge/ai-astrologer/rules/report-sections.json',
+              'knowledge/ai-astrologer/sources.json',
+              'api/knowledge/ai-astrologer/rules/guided-questions.json',
+          ):
+              assert kb in names, f'Missing {kb} in dist.zip'
           assert not any(name.endswith(('.cjs', '.map')) for name in names), 'Server bundle or source map must not be deployed'
           print(f'Static/PHP dist.zip verified successfully! Total files: {len(names)}')
           PY

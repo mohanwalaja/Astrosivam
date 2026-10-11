@@ -28,6 +28,38 @@ import {
   type GuidedCategory,
   type GuidedQuestion,
 } from '../../services/aiAstrologerApi';
+import guidedQuestionsData from '../../../knowledge/ai-astrologer/rules/guided-questions.json';
+
+function buildLocalGuidedMenu(
+  language: ChatLanguage,
+  allowedServices: string[] = [],
+  isAdmin = false,
+): GuidedCategory[] {
+  const lang: ChatLanguage = language === 'ta' || language === 'hi' ? language : 'en';
+  const allowed = new Set(allowedServices.map((s) => s.trim().toUpperCase()).filter(Boolean));
+  const menu: GuidedCategory[] = [];
+  for (const category of (guidedQuestionsData as any).categories ?? []) {
+    const needs: string[] = Array.isArray(category.services)
+      ? category.services.map((s: unknown) => String(s).trim().toUpperCase()).filter(Boolean)
+      : [];
+    if (needs.length > 0 && !isAdmin && !needs.some((s) => allowed.has(s))) {
+      continue;
+    }
+    menu.push({
+      id: String(category.id ?? ''),
+      icon: String(category.icon ?? ''),
+      title: String(category.title?.[lang] ?? category.title?.en ?? ''),
+      hint: String(category.hint?.[lang] ?? category.hint?.en ?? ''),
+      questions: ((category.questions as any[]) ?? []).map((q) => ({
+        id: String(q.id ?? ''),
+        kind: (q.kind ?? 'area') as GuidedQuestion['kind'],
+        text: String(q.text?.[lang] ?? q.text?.en ?? ''),
+        needsDetails: Boolean(q.needsDetails),
+      })),
+    });
+  }
+  return menu;
+}
 
 /**
  * Timing, in milliseconds. The 12s cap is absolute; local rule matching and
@@ -265,10 +297,22 @@ export default function AiAstrologerPanel({
         try {
           const menu = await aiAstrologer.options(language);
           if (cancelled) return;
-          setCategories(menu.categories);
+          if (menu.categories?.length) {
+            setCategories(menu.categories);
+          } else {
+            const fallback = buildLocalGuidedMenu(language, s.serviceType ? [s.serviceType] : [], isAdmin);
+            if (fallback.length > 0) setCategories(fallback);
+            else setMenuFailed(true);
+          }
           setOrders(menu.orders ?? []);
         } catch {
-          if (!cancelled) setMenuFailed(true);
+          if (cancelled) return;
+          const fallback = buildLocalGuidedMenu(language, s.serviceType ? [s.serviceType] : [], isAdmin);
+          if (fallback.length > 0) {
+            setCategories(fallback);
+          } else {
+            setMenuFailed(true);
+          }
         }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Could not open the chat.');
@@ -314,7 +358,7 @@ export default function AiAstrologerPanel({
       const reply = await aiAstrologer.ask(
         sessionId,
         ask.questionId
-          ? { questionId: ask.questionId, ...(ask.complaintDetails ? { complaintDetails: ask.complaintDetails } : {}) }
+          ? { questionId: ask.questionId, question, ...(ask.complaintDetails ? { complaintDetails: ask.complaintDetails } : {}) }
           : { question },
         language,
       );

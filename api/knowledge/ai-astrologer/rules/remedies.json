@@ -1,0 +1,153 @@
+{
+  "$schema": "./remedies.schema.json",
+  "version": "1.0.0",
+  "generatedOn": "2026-10-09",
+  "_purpose": "The limited remedies the ASTRO SIVAM local reply builder may offer. Entries are free or near-free, sourced, and constrained by the remedy policy below.",
+  "_policy": [
+    "Remedies must be simple and respectful: mantra, temple visit, charity, fasting day, lifestyle.",
+    "No expensive remedies. No gemstones - the registry has no surviving gemstone source after the Hindi exclusion, and gemstones are expensive.",
+    "No fear-based remedies. No remedy may be framed as averting a disaster.",
+    "Every remedy may be qualified with 'according to your means' - the source texts say it themselves.",
+    "Never more than three remedies in one answer. A long list is its own kind of pressure."
+  ],
+  "warrant": {
+    "source": { "id": "TA-07", "level": "passage", "page": "16-17" },
+    "text": "எதாசக்தி / யதாசக்தி - according to one's capacity.",
+    "use": "Quote this when explaining why a remedy is offered in a cheaper form than the classical text states. It is the book's own scale dial, not an invention."
+  },
+  "grahas": [
+    {
+      "graha": "Surya",
+      "tamil": "சூரியன்",
+      "hindi": "सूर्य",
+      "weekday": "Sunday",
+      "mantra": { "sanskrit": "ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः", "tamil": "ஓம் ஹ்ராங் ஹ்ரீங் ஹ்ரௌங் ஸஃ சூர்யாய நமஹ", "simple": "Aditya Hridayam, or simply offer water to the rising Sun" },
+      "temple": { "id": "TP-01", "name": "Suryanar Kovil (Suryanar Koil, near Aduthurai, Thanjavur)", "note": "The only temple in Tamil Nadu with separate shrines for all nine grahas, so one visit covers the whole Navagraha." },
+      "charity": "Feed one person on a Sunday; jaggery and wheat",
+      "fasting": "Sunday - a simple vegetarian meal",
+      "lifestyle": "Early rising and morning sunlight; keep promises made to elders and to employers",
+      "source": [{ "id": "EN-01", "level": "book" }, { "id": "TA-07", "level": "book" }, { "id": "TP-01", "level": "content" }]
+    },
+    {
+      "graha": "Chandra",
+      "tamil": "சந்திரன்",
+      "hindi": "चंद्र",
+      "weekday": "Monday",
+      "mantra": { "sanskrit": "ॐ श्रां श्रीं श्रौं सः चन्द्रमसे नमः", "tamil": "ஓம் ஸ்ராங் ஸ்ரீங் ஸ்ரௌங் ஸஃ சந்த்ரமஸே நமஹ", "simple": "Siva Panchakshari, or the Lalitha Sahasranama" },
+      "temple": { "id": "TP-02", "name": "Kailasanathar Temple, Thingalur (Thanjavur)" },
+      "charity": "White rice on a Monday; rice cooked in milk offered to the temple",
+      "fasting": "Monday",
+      "lifestyle": "Protect sleep - a fixed bedtime is the single highest-value remedy for an afflicted Moon",
+      "source": [{ "id": "TA-07", "level": "passage", "page": "18", "note": "Monday observance and பச்சரிசி (raw rice) dana - the silver and copper dana in the same passage is scaled down under the yathashakti clause." }, { "id": "EN-01", "level": "book" }, { "id": "TP-02", "level": "content" }]
+    },
+    {
+      "graha": "Sevvai",
+      "tamil": "செவ்வாய்",
+      "hindi": "मंगल",
+      "weekday": "Tuesday",
+      "mantra": { "sanskrit": "ॐ क्रां क्रीं क्रौं सः भौमाय नमः", "tamil": "ஓம் க்ராங் க்ரீங் க்ரௌங் ஸஃ பௌமாய நமஹ", "simple": "Hanuman Chalisa, or the Subramaniya Shatkam" },
+      "temple": { "id": "TP-05", "name": "Vaitheeswaran Koil (Mayiladuthurai)" },
+      "charity": "Lentils or red gram on a Tuesday",
+      "fasting": "Tuesday",
+      "lifestyle": "Channel the energy: physical work or sport on Tuesdays rather than letting it turn into argument",
+      "source": [{ "id": "EN-01", "level": "book" }, { "id": "TA-07", "level": "book" }]
+    },
+    {
+      "graha": "Budha",
+      "tamil": "புதன்",
+      "hindi": "बुध",
+      "weekday": "Wednesday",
+      "mantra": { "sanskrit": "ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः", "tamil": "ஓம் ப்ராங் ப்ரீங் ப்ரௌங் ஸஃ புதாய நமஹ", "simple": "Vishnu Sahasranama, or 108 japa on Wednesday" },
+      "temple": { "id": "TP-06", "name": "Swetharanyeswarar Temple, Thiruvenkadu (Mayiladuthurai)" },
+      "charity": "Green gram on a Wednesday; jasmine or malligai flowers at the shrine",
+      "fasting": "Wednesday",
+      "lifestyle": "A fixed place and fixed time for study; teach one thing you know to someone else",
+      "source": [{ "id": "TA-07", "level": "passage", "page": "17", "note": "Wednesday observance, மல்லிகை/ஜாதி flowers, பச்சை வஸ்திரம் (green cloth). The 11-palam silver image in the same passage is scaled down under the yathashakti clause." }, { "id": "EN-01", "level": "book" }]
+    },
+    {
+      "graha": "Guru",
+      "tamil": "குரு",
+      "hindi": "गुरु",
+      "weekday": "Thursday",
+      "mantra": { "sanskrit": "ॐ ग्रां ग्रीं ग्रौं सः गुरुवे नमः", "tamil": "ஓம் க்ராங் க்ரீங் க்ரௌங் ஸஃ குரவே நமஹ", "simple": "Guru Ashtakam, or Vishnu Sahasranama on Thursday" },
+      "temple": { "id": "TP-07", "name": "Apatsahayesvarar Temple, Alangudi (Thanjavur)" },
+      "charity": "Chana dal, turmeric or a book on a Thursday; feed a student or a teacher",
+      "fasting": "Thursday",
+      "lifestyle": "Respect for teachers and for parents; keep studying something",
+      "source": [{ "id": "TA-07", "level": "passage", "page": "15", "note": "Thursday dana and the Jupiter-by-house structure. The gold dana in the same passage is scaled down under the yathashakti clause." }, { "id": "EN-01", "level": "book" }]
+    },
+    {
+      "graha": "Sukra",
+      "tamil": "சுக்ரன்",
+      "hindi": "शुक्र",
+      "weekday": "Friday",
+      "mantra": { "sanskrit": "ॐ द्रां द्रीं द्रौं सः शुक्राय नमः", "tamil": "ஓம் த்ராங் த்ரீங் த்ரௌங் ஸஃ சுக்ராய நமஹ", "simple": "Lakshmi Ashtottara, or 108 japa on Friday" },
+      "temple": { "id": "TP-08", "name": "Agniswarar Temple, Kanjanur (Thanjavur)" },
+      "charity": "White cloth or white rice on a Friday",
+      "fasting": "Friday",
+      "lifestyle": "Cleanliness, order in the home, and keeping one's word in a relationship",
+      "source": [{ "id": "TA-07", "level": "passage", "page": "18", "note": "Friday observance and rudraksha japa. The white silk dana in the same passage is scaled down under the yathashakti clause." }, { "id": "TA-19", "level": "book" }]
+    },
+    {
+      "graha": "Sani",
+      "tamil": "சனி",
+      "hindi": "शनि",
+      "weekday": "Saturday",
+      "mantra": { "sanskrit": "ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः", "tamil": "ஓம் ப்ராங் ப்ரீங் ப்ரௌங் ஸஃ சனைஸ்வராய நமஹ", "simple": "The Sambandar pathigam that Thirunallar itself recommends, beginning போகமார்த்த பூண்முலையாள்" },
+      "temple": { "id": "TP-03", "name": "Dharbaranyeswarar Temple, Thirunallar (Karaikal, Puducherry)" },
+      "charity": "Sesame, black gram, iron or mustard on a Saturday; feed a worker or a stray animal",
+      "fasting": "Saturday",
+      "lifestyle": "Finish what was started; pay debts on time; do not take shortcuts",
+      "source": [{ "id": "TA-07", "level": "passage", "page": "16", "note": "The timing list (அஷ்டமி, சதுர்த்தசி, அமாவாசை, ஜன்ம நட்சத்திரம், குரூர காலம், பர்வதினம், and the Sun/Mars/Friday cautions) and the four grains கோதுமை, உளுந்து, நெல்லு, எள். The நீல வஸ்திரம் (blue cloth) is affordable and kept; the goat dana in the same passage is scaled down under the yathashakti clause." }, { "id": "EN-02", "level": "chapter", "note": "Adhyaya XXVI - Saturn's results house by house from the natal Moon; penance at XXVI-50." }, { "id": "TP-03", "level": "content", "note": "The temple names the Sambandar pathigam for Sani dosha on its own site." }]
+    },
+    {
+      "graha": "Rahu",
+      "tamil": "ராகு",
+      "hindi": "राहु",
+      "weekday": "Saturday (observed with Sani) or Sunday",
+      "mantra": { "sanskrit": "ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः", "tamil": "ஓம் ப்ராங் ப்ரீங் ப்ரௌங் ஸஃ ராஹவே நமஹ", "simple": "Durga japa - the text prescribes துர்க்கை ஜபம் for Rahu-Ketu affliction" },
+      "temple": { "id": "TP-10", "name": "Naganathar Temple, Thirunageswaram (Thanjavur)" },
+      "charity": "Coconut or black sesame; feed a bird",
+      "fasting": "No specific fast - offer water and flowers instead",
+      "lifestyle": "Cut one addictive habit during this period; keep records honest",
+      "source": [{ "id": "TA-07", "level": "passage", "page": "17", "note": "துர்க்கை ஜபம் and மஹா மிருத்யுஞ்ஜய ஜபம் for Rahu-Ketu in the 9th or 7th, or conjunct their lords. The மஹிஷீதானம் (buffalo dana) in the same passage is DROPPED entirely, not scaled down - it is not a remedy this product will ever suggest." }, { "id": "EN-09", "level": "book" }]
+    },
+    {
+      "graha": "Ketu",
+      "tamil": "கேது",
+      "hindi": "केतु",
+      "weekday": "Tuesday (observed with Sevvai)",
+      "mantra": { "sanskrit": "ॐ स्रां स्रीं स्रौं सः केतवे नमः", "tamil": "ஓம் ஸ்ராங் ஸ்ரீங் ஸ்ரௌங் ஸஃ கேதவே நமஹ", "simple": "Ganesha japa, or Durga japa" },
+      "temple": { "id": "TP-11", "name": "Nagannathaswamy Temple, Keezhaperumpallam (Mayiladuthurai)" },
+      "charity": "Blanket or cloth to someone in need; feed a dog",
+      "fasting": "No specific fast",
+      "lifestyle": "Give one thing away each month rather than accumulating",
+      "source": [{ "id": "TA-07", "level": "passage", "page": "17", "note": "Same passage as Rahu: துர்க்கை ஜபம் and மஹா மிருத்யுஞ்ஜய ஜபம். The goat dana is scaled down under the yathashakti clause." }, { "id": "EN-09", "level": "book" }]
+    }
+  ],
+  "universal": [
+    {
+      "id": "navagraha-sthalam",
+      "offer": "A visit to the Navagraha temples. Suryanar Kovil has shrines for all nine in one place, so it is the practical first visit; Thirunallar is the Sani sthalam and Thingalur the Chandra sthalam.",
+      "source": [{ "id": "TP-01", "level": "content" }, { "id": "TP-03", "level": "content" }, { "id": "REF-02", "level": "content", "note": "Nine-temple table and district mapping." }]
+    },
+    {
+      "id": "weekday-observance",
+      "offer": "Keep the weekday of the afflicted planet: a simple vegetarian meal, the day's japa, and one act of charity. This is the cheapest remedy in the register and it is the one the texts return to most often.",
+      "source": [{ "id": "TA-07", "level": "passage", "page": "15-18" }, { "id": "EN-01", "level": "book" }]
+    },
+    {
+      "id": "lifestyle-first",
+      "offer": "For anything touching sleep, mood, digestion or stamina, the first remedy is routine - a fixed sleep window, a daily walk, regular meals. The chart says where the strain lands; the routine is what relieves it.",
+      "source": [{ "id": "EN-02", "level": "chapter", "note": "Adhyaya XIV - the classics connect planetary condition to bodily constitution, not to a specific cure." }]
+    }
+  ],
+  "neverOffer": [
+    { "thing": "Gemstones", "reason": "No surviving source in the registry after the Hindi exclusion, and gemstones are expensive. Uttara Kalamrita (EN-09) is print-only." },
+    { "thing": "Gold, silver images, or any metal dana above a few rupees", "reason": "Scaled down to a meal, grain or cloth under the yathashakti clause." },
+    { "thing": "Goat, buffalo or any animal dana", "reason": "Dropped entirely. Not offered in any form." },
+    { "thing": "Homa, yagna or paid puja packages", "reason": "Expensive, and the brief forbids sales talk inside an answer." },
+    { "thing": "Any remedy framed as averting death, accident or a disaster", "reason": "Fear-based remedies are prohibited, and no death or accident prediction is made." },
+    { "thing": "Black-magic reversal, spell-breaking, or amulets sold as protection", "reason": "Out of scope for this product." }
+  ]
+}

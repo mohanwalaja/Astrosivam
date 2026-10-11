@@ -121,6 +121,9 @@ check('both deployment paths copy the complete local knowledge directory', () =>
   assert.match(deploySh, /find knowledge -type f/);
   assert.match(deploySh, /WARNING: no knowledge\//);
   assert.match(deploySh, /source-based astrologer cannot answer/);
+  const createZip = read('scripts/create_dist_zip.py');
+  assert.match(createZip, /knowledge_dir = 'knowledge'/);
+  assert.match(createZip, /os\.walk\(knowledge_dir\)/);
 });
 
 check('the frontend response cap remains bounded without provider timeout budgets', () => {
